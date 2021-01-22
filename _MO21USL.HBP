@@ -1,0 +1,10 @@
+-L..\_mylib_hbt
+-lMyLib_HBT
+-lhbct
+-mt
+-workdir=C:\TEMP
+-o_mo21usl
+xmlparse.c
+hxmldoc.prg
+_mo21usl.prg
+_mo21n00.prg
