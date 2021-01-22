@@ -1,1 +1,1 @@
-c:\Harbour\bin\hbmk2 _mo21usl -inc -workdir=.\build 
+c:\hb32\bin\hbmk2.exe _mo21usl -inc -workdir=.\build 
