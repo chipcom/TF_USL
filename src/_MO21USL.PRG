@@ -1366,7 +1366,10 @@ else
         next j1
       endif
       if (oNode1 := oXmlNode:Find("SERVICE")) != NIL
-        ? oNode2 := oNode1:aItems
+        select T2V1
+        append blank
+        T2V1->SHIFR := lshifr
+        T2V1->SHIFR_MZ := mo_read_xml_stroke(oXmlNode,"SERVICE",)
       endif
     endif
   NEXT j
