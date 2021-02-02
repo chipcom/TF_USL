@@ -18,6 +18,8 @@
    _mo1uslc   - _mo_uslc - справочник услуг с ценами для конкретных МО
                            без КСГ
 
+  _mo_t2_v1   - справочник соответсвия услуг ТФОМС услугам МЗ РФ
+
 
 
 */
@@ -165,6 +167,12 @@ Local _mo_shema := {;
    {"DATEBEG",    "D",      8,      0},;
    {"DATEEND",    "D",      8,      0};
   }
+
+local _t2_v1 := {;
+  {"SHIFR",        "C",     10,      0},;
+  {"SHIFR_MZ",     "C",     20,      0};
+}
+
 Local arr_err := {}
 delete file ttt.ttt
 f_first()
@@ -185,7 +193,7 @@ work_mo_uslf(_mo_uslf)
 work_SprUnit(_mo_unit)
 work_SprKslp(_mo_kslp)
 work_SprKiro(_mo_kslp)
-work_SprMU(_mo_prof,_mo_spec)
+work_SprMU(_mo_prof, _mo_spec, _t2_v1)
 work_SprDS()
 work_t006(_mo_usl)
 close databases
@@ -1209,8 +1217,12 @@ return NIL
 
 
 ***** 05.01.18
-Function work_SprMU(_mo_prof,_mo_spec)
-dbcreate("_mo_prof",_mo_prof)
+Function work_SprMU(_mo_prof,_mo_spec,_mo_t2)
+
+  dbcreate( "_mo_t2_v1", _mo_t2 )
+  use _mo_t2_v1 new alias T2V1
+
+  dbcreate("_mo_prof",_mo_prof)
 use _mo_prof new alias PROF
 dbcreate("_mo_spec",_mo_spec)
 use _mo_spec new alias SPEC
@@ -1352,6 +1364,9 @@ else
             spec->PRVS_NEW := val(mo_read_xml_stroke(oNode2,"S_CODE",))
           endif
         next j1
+      endif
+      if (oNode1 := oXmlNode:Find("SERVICE")) != NIL
+        ? oNode2 := oNode1:aItems
       endif
     endif
   NEXT j
