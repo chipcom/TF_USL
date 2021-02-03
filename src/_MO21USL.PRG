@@ -11,6 +11,8 @@
    SPRKSLP.xml  - для КСГ - КСЛП
    T006.xml     - КСГ
    V024.xml     - для КСГ - Допкритерии
+   V018.xml     - классификатор видов высокотехнологичной медицинской помощи (HVid)
+   V019.xml     - классификатор методов высокотехнологичной медицинской помощи (HMet)
 
 //  Что получаем на выходе - наши файлы
 
@@ -19,6 +21,7 @@
                            без КСГ
 
   _mo_t2_v1   - справочник соответсвия услуг ТФОМС услугам МЗ РФ
+  _mo_V018    - классификатор видов высокотехнологичной медицинской помощи (HVid)
 
 
 
@@ -173,6 +176,25 @@ local _t2_v1 := {;
   {"SHIFR_MZ",     "C",     20,      0};
 }
 
+local _mo_V018 := {;
+  {"IDHVID",     "C",     12,      0},;
+  {"HVIDNAME",   "C",    254,      0},;
+  {"DATEBEG",    "D",      8,      0},;
+  {"DATEEND",    "D",      8,      0};
+}
+
+local _mo_V019 := {;
+  {"IDHM",       "N",      4,      0},;
+  {"HMNAME",     "C",    254,      0},;
+  {"DIAG",       "C",    254,      0},;
+  {"HVID",       "C",     12,      0},;
+  {"HGR",        "N",      3,      0},;
+  {"HMODP",      "C",    254,      0},;
+  {"IDMODP",     "C",      5,      0},;
+  {"DATEBEG",    "D",      8,      0},;
+  {"DATEEND",    "D",      8,      0};
+}
+
 Local arr_err := {}
 delete file ttt.ttt
 f_first()
@@ -196,6 +218,8 @@ work_SprKiro(_mo_kslp)
 work_SprMU(_mo_prof, _mo_spec, _t2_v1)
 work_SprDS()
 work_t006(_mo_usl)
+work_V018(_mo_V018)
+work_V019(_mo_V019)
 close databases
 //
 copy file t006_2.dbf to _mo1k006.dbf
@@ -2627,3 +2651,81 @@ else // ????????? ??????
   endif
 endif
 return arr
+
+***** 03.02.21
+Function work_V018(_mo_V018)
+  dbcreate("_mo_V018",_mo_V018)
+  use _mo_V018 new alias V018
+  // index on kod to tmp_shema
+  nfile := "V018.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V018.xml     - виды высокотехнологичной медицинской помощи (HVid)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDHVID := mo_read_xml_stroke(oXmlNode,"IDHVID",)
+        mHVIDNAME := mo_read_xml_stroke(oXmlNode,"HVIDNAME",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V018
+        append blank
+        V018->IDHVID := mIDHVID
+        V018->HVIDNAME := mHVIDNAME
+        V018->DATEBEG := mDATEBEG
+        V018->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+  
+***** 03.02.21
+Function work_V019(_mo_V019)
+  dbcreate("_mo_V019",_mo_V019)
+  use _mo_V019 new alias V019
+  nfile := "V019.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V018.xml     - методы высокотехнологичной медицинской помощи (HMet)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDHM := mo_read_xml_stroke(oXmlNode,"IDHM",)
+        mHMNAME := mo_read_xml_stroke(oXmlNode,"HMNAME",)
+        mDIAG := mo_read_xml_stroke(oXmlNode,"DIAG",)
+        mHVID := mo_read_xml_stroke(oXmlNode,"HVID",)
+        mHGR := mo_read_xml_stroke(oXmlNode,"HGR",)
+        mHMODP := mo_read_xml_stroke(oXmlNode,"HMODP",)
+        mIDMODP := mo_read_xml_stroke(oXmlNode,"IDMODP",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V019
+        append blank
+        V019->IDHM := val(mIDHM)
+        V019->HMNAME := mHMNAME
+        V019->DIAG := mDIAG
+        V019->HVID := mHVID
+        V019->HGR := val(mHGR)
+        V019->HMODP := mHMODP
+        V019->IDMODP := mIDMODP
+        V019->DATEBEG := mDATEBEG
+        V019->DATEEND := mDATEEND
+      
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
