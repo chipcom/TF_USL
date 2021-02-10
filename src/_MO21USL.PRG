@@ -195,6 +195,11 @@ local _mo_V019 := {;
   {"DATEEND",    "D",      8,      0};
 }
 
+local _mo_Q015 := {;
+  {"KOD",       "C",     12,      0},;
+  {"NAME",      "C",     60,      0};
+}
+
 Local arr_err := {}
 delete file ttt.ttt
 f_first()
@@ -220,6 +225,7 @@ work_SprDS()
 work_t006(_mo_usl)
 work_V018(_mo_V018)
 work_V019(_mo_V019)
+work_Q015(_mo_Q015)
 close databases
 //
 copy file t006_2.dbf to _mo1k006.dbf
@@ -2723,6 +2729,36 @@ Function work_V019(_mo_V019)
         V019->IDMODP := mIDMODP
         V019->DATEBEG := mDATEBEG
         V019->DATEEND := mDATEEND
+      
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 10.02.21
+Function work_Q015(_mo_Q015)
+  dbcreate("_mo_Q015",_mo_Q015)
+  use _mo_Q015 new alias Q015
+  nfile := "Q015.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "Q015.xml     - Перечень технологических правил реализации ФЛК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (FLK_MPF)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDTEST := mo_read_xml_stroke(oXmlNode,"ID_TEST",)
+        mIDEL := mo_read_xml_stroke(oXmlNode,"ID_EL",)
+        select Q015
+        append blank
+        Q015->KOD := mIDTEST
+        Q015->NAME := mIDEL
       
       endif
     NEXT j
