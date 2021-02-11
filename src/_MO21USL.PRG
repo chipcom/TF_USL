@@ -190,7 +190,7 @@ local _mo_V019 := {;
   {"HVID",       "C",     12,      0},;
   {"HGR",        "N",      3,      0},;
   {"HMODP",      "C",    254,      0},;
-  {"IDMODP",     "C",      5,      0},;
+  {"IDMODP",     "N",      5,      0},;
   {"DATEBEG",    "D",      8,      0},;
   {"DATEEND",    "D",      8,      0};
 }
@@ -2734,7 +2734,7 @@ Function work_V019(_mo_V019)
         V019->HVID := mHVID
         V019->HGR := val(mHGR)
         V019->HMODP := mHMODP
-        V019->IDMODP := mIDMODP
+        V019->IDMODP := val(mIDMODP)
         V019->DATEBEG := mDATEBEG
         V019->DATEEND := mDATEEND
       
