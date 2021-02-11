@@ -195,6 +195,13 @@ local _mo_V019 := {;
   {"DATEEND",    "D",      8,      0};
 }
 
+local _mo_V022 := {;
+  {"IDMPAC",     "N",      5,      0},;
+  {"MPACNAME",   "C",   1250,      0},;
+  {"DATEBEG",    "D",      8,      0},;
+  {"DATEEND",    "D",      8,      0};
+}
+
 local _mo_Q015 := {;
   {"KOD",       "C",     12,      0},;
   {"NAME",      "C",     60,      0};
@@ -225,6 +232,7 @@ work_SprDS()
 work_t006(_mo_usl)
 work_V018(_mo_V018)
 work_V019(_mo_V019)
+work_V022(_mo_V022)
 work_Q015(_mo_Q015)
 close databases
 //
@@ -2730,6 +2738,41 @@ Function work_V019(_mo_V019)
         V019->DATEBEG := mDATEBEG
         V019->DATEEND := mDATEEND
       
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 11.02.21
+Function work_V022(_mo_V022)
+  dbcreate("_mo_V022",_mo_V022)
+  use _mo_V022 new alias V022
+  nfile := "V022.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V022.xml     - Классификатор моделей пациента при оказании высокотехнологичной медицинской помощи (ModPac)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDMPAC := mo_read_xml_stroke(oXmlNode,"IDMPAC",)
+        mMPACNAME := mo_read_xml_stroke(oXmlNode,"MPACNAME",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        if mDATEBEG >= 0d20210101
+          select V022
+          append blank
+          V022->IDMPAC := val(mIDMPAC)
+          V022->MPACNAME := mMPACNAME
+          V022->DATEBEG := mDATEBEG
+          V022->DATEEND := mDATEEND
+        endif
       endif
     NEXT j
   ENDIF
