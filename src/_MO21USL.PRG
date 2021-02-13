@@ -580,7 +580,7 @@ return NIL
 
 *
 
-***** 30.12.18
+***** 13.02.21
 Function work_Shema(_mo_shema)
 dbcreate("_mo1shema",_mo_shema)
 use _mo1shema new alias SH
@@ -603,7 +603,7 @@ else
       mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
       mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
       fl := .t.
-      if !empty(mDATEEND) .and. mDATEEND < 0d20190601
+      if !empty(mDATEEND) .and. mDATEEND < 0d20210101
         fl := .f.
       endif
       if fl
