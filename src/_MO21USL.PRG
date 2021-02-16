@@ -202,6 +202,15 @@ local _mo_V019 := {;
   {"DATEEND",    "D",      8,      0};
 }
 
+local _mo_V021 := {;
+  {"IDSPEC",     "N",      3,      0},;
+  {"SPECNAME",   "C",    250,      0},;
+  {"POSTNAME",   "C",    250,      0},;
+  {"IDPOST_MZ",  "C",      4,      0},;
+  {"DATEBEG",    "D",      8,      0},;
+  {"DATEEND",    "D",      8,      0};
+}
+
 local _mo_V022 := {;
   {"IDMPAC",     "N",      5,      0},;
   {"MPACNAME",   "C",   1250,      0},;
@@ -220,6 +229,7 @@ f_first()
 Public sys_date := date(), sys_year := year(date())
 
 work_V002(_mo_V002)
+work_V021(_mo_V021)
 
 InitSpravFFOMS()
 //
@@ -2550,6 +2560,74 @@ function getV002()
   (dbName)->(dbCloseArea())
 
   return _v002
+
+***** 16.02.21
+Function work_V021(_mo_V021)
+  dbcreate("_mo_V021",_mo_V021)
+  use _mo_V021 new alias V021
+  nfile := "V021.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V021.xml     - Классификатор медицинских специальностей (должностей) (MedSpec)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDSPEC := mo_read_xml_stroke(oXmlNode,"IDSPEC",)
+        mSPECNAME := mo_read_xml_stroke(oXmlNode,"SPECNAME",)
+        mPOSTNAME := mo_read_xml_stroke(oXmlNode,"POSTNAME",)
+        mIDPOST_MZ := mo_read_xml_stroke(oXmlNode,"IDPOST_MZ",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+
+      //   local _mo_V021 := {;
+      //   {"IDSPEC",     "N",      3,      0},;
+      //   {"SPECNAME",   "C",    250,      0},;
+      //   {"POSTNAME",   "C",    250,      0},;
+      //   {"IDPOST_MZ",  "C",      4,      0},;
+      //   {"DATEBEG",    "D",      8,      0},;
+      //   {"DATEEND",    "D",      8,      0};
+      // }
+      
+
+        if !empty(mDATEEND) .and. mDATEEND < 0d20180101
+        else
+          select V021
+          append blank
+          V021->IDSPEC := val(mIDSPEC)
+          V021->SPECNAME := alltrim(mSPECNAME)
+          V021->POSTNAME := alltrim(mPOSTNAME)
+          V021->IDPOST_MZ := alltrim(mIDPOST_MZ)
+          V021->DATEBEG := mDATEBEG
+          V021->DATEEND := mDATEEND
+        endif
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+* 16.02.21 вернуть массив по справочнику ТФОМС V021.xml
+function getV021()
+  // V021.xml - Классификатор медицинских специальностей (последний)
+  //  1 - SPECNAME(C)  2 - IDSPEC(N)  3 - DATEBEG(D)  4 - DATEEND(D)
+  local dbName := "_mo_V021"
+  local _v021 := {}
+
+  dbUseArea( .t.,, exe_dir + dbName, dbName, .f., .f. )
+  (dbName)->(dbGoTop())
+  do while !(dbName)->(EOF())
+      aadd(_v021, { (dbName)->SPECNAME, (dbName)->IDSPEC, (dbName)->DATEBEG, (dbName)->DATEEND })
+      (dbName)->(dbSkip())
+  enddo
+  (dbName)->(dbCloseArea())
+
+  return _v021
 
 ***** 03.02.21
 Function work_V018(_mo_V018)
