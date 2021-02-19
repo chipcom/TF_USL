@@ -2805,11 +2805,6 @@ Function work_Q017(_mo_Q017)
         Q017->COMMENT := mo_read_xml_stroke(oXmlNode,"COMMENT",)
         Q017->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         Q017->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-        // Q017->ID_KTEST := mID_KTEST
-        // Q017->NAM_KTEST := mNAM_KTEST
-        // Q017->COMMENT := mCOMMENT
-        // Q017->DATEBEG := mDATEBEG
-        // Q017->DATEEND := mDATEEND
     
       endif
     NEXT j
