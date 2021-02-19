@@ -223,6 +223,14 @@ local _mo_Q015 := {;
   {"NAME",      "C",     60,      0};
 }
 
+local _mo_Q017 := {;
+  {"ID_KTEST",   "C",      4,      0},;
+  {"NAM_KTEST",  "C",    250,      0},;
+  {"COMMENT",    "M",     10,      0},;
+  {"DATEBEG",    "D",      8,      0},;
+  {"DATEEND",    "D",      8,      0};
+}
+
 Local arr_err := {}
 delete file ttt.ttt
 f_first()
@@ -254,6 +262,7 @@ work_V018(_mo_V018)
 work_V019(_mo_V019)
 work_V022(_mo_V022)
 work_Q015(_mo_Q015)
+work_Q017(_mo_Q017)
 close databases
 //
 copy file t006_2.dbf to _mo1k006.dbf
@@ -2766,6 +2775,42 @@ Function work_Q015(_mo_Q015)
         Q015->KOD := mIDTEST
         Q015->NAME := mIDEL
       
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 19.02.21
+Function work_Q017(_mo_Q017)
+  dbcreate("_mo_Q017",_mo_Q017)
+  use _mo_Q017 new alias Q017
+  nfile := "Q017.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "Q017.xml     - Перечень категорий проверок ФЛК и МЭК (TEST_K)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        select Q017
+        append blank
+        Q017->ID_KTEST := mo_read_xml_stroke(oXmlNode,"ID_KTEST",)
+        Q017->NAM_KTEST := mo_read_xml_stroke(oXmlNode,"NAM_KTEST",)
+        Q017->COMMENT := mo_read_xml_stroke(oXmlNode,"COMMENT",)
+        Q017->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        Q017->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        // Q017->ID_KTEST := mID_KTEST
+        // Q017->NAM_KTEST := mNAM_KTEST
+        // Q017->COMMENT := mCOMMENT
+        // Q017->DATEBEG := mDATEBEG
+        // Q017->DATEEND := mDATEEND
+    
       endif
     NEXT j
   ENDIF
