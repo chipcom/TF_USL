@@ -220,7 +220,14 @@ local _mo_V022 := {;
 
 local _mo_Q015 := {;
   {"KOD",       "C",     12,      0},;
-  {"NAME",      "C",     60,      0};
+  {"NAME",      "C",     60,      0},;
+  {"NSI_OBJ",   "C",      4,      0},;
+  {"NSI_EL",    "C",     20,      0},;
+  {"USL_TEST",  "C",    250,      0},;
+  {"VAL_EL",    "C",    250,      0},;
+  {"COMMENT",   "M",     10,      0},;
+  {"DATEBEG",   "D",      8,      0},;
+  {"DATEEND",   "D",      8,      0};
 }
 
 local _mo_Q017 := {;
@@ -2751,7 +2758,7 @@ Function work_V022(_mo_V022)
   close databases
   return NIL
 
-***** 10.02.21
+***** 20.02.21
 Function work_Q015(_mo_Q015)
   dbcreate("_mo_Q015",_mo_Q015)
   use _mo_Q015 new alias Q015
@@ -2768,13 +2775,22 @@ Function work_Q015(_mo_Q015)
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
         @ row(),30 say str(j/k*100,6,2)+"%"
-        mIDTEST := mo_read_xml_stroke(oXmlNode,"ID_TEST",)
-        mIDEL := mo_read_xml_stroke(oXmlNode,"ID_EL",)
         select Q015
         append blank
-        Q015->KOD := mIDTEST
-        Q015->NAME := mIDEL
-      
+        Q015->KOD := mo_read_xml_stroke(oXmlNode,"ID_TEST",)
+        Q015->NAME := mo_read_xml_stroke(oXmlNode,"ID_EL",)
+
+        Q015->NSI_OBJ := mo_read_xml_stroke(oXmlNode,"NSI_OBJ",)
+        Q015->NSI_EL := mo_read_xml_stroke(oXmlNode,"NSI_EL",)
+        Q015->USL_TEST := mo_read_xml_stroke(oXmlNode,"USL_TEST",)
+        Q015->VAL_EL := mo_read_xml_stroke(oXmlNode,"VAL_EL",)
+        Q015->COMMENT := mo_read_xml_stroke(oXmlNode,"COMMENT",)
+        Q015->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        Q015->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+
+        // mIDTEST := mo_read_xml_stroke(oXmlNode,"ID_TEST",)
+        // mIDEL := mo_read_xml_stroke(oXmlNode,"ID_EL",)
+        
       endif
     NEXT j
   ENDIF
