@@ -250,8 +250,7 @@ work_V019(_mo_V019)
 work_V022(_mo_V022)
 make_Q015()
 make_Q017()
-// work_Q015(_mo_Q015)
-// work_Q017(_mo_Q017)
+make_O001()
 close databases
 //
 copy file t006_2.dbf to _mo1k006.dbf
@@ -2823,6 +2822,57 @@ Function make_Q017()
         Q017->COMMENT := mo_read_xml_stroke(oXmlNode,"COMMENT",)
         Q017->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         Q017->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+    
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 21.02.21
+Function make_O001()
+
+    //  1 - NAME11(C)  2 - KOD(C)  3 - DATEBEG(D)  4 - DATEEND(D)  5 - ALFA2(C)  6 - ALFA3(C)
+    local _mo_O001 := {;
+    {"KOD",     "C",    3,      0},;
+    {"NAME11",  "C",  100,      0},;
+    {"NAME12",  "C",  100,      0},;
+    {"ALFA2",   "C",    2,      0},;
+    {"ALFA3",   "C",    3,      0},;
+    {"DATEBEG", "D",    8,      0},;
+    {"DATEEND", "D",    8,      0};
+  }
+  local mName := '', mArr
+
+  dbcreate("_mo_O001",_mo_O001)
+  use _mo_O001 new alias O001
+  nfile := "O001.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "O001.xml     - Общероссийский классификатор стран мира (OKSM) "
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        select O001
+        append blank
+        mArr := hb_ATokens( mo_read_xml_stroke(oXmlNode,"NAME11",), '^' )
+        O001->KOD := mo_read_xml_stroke(oXmlNode,"KOD",)
+        if len(mArr) == 1
+          O001->NAME11 := mArr[1]
+        else
+          O001->NAME11 := mArr[1]
+          O001->NAME12 := mArr[2]
+        endif
+        O001->ALFA2 := mo_read_xml_stroke(oXmlNode,"ALFA2",)
+        O001->ALFA3 := mo_read_xml_stroke(oXmlNode,"ALFA3",)
+        O001->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        O001->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
     
       endif
     NEXT j
