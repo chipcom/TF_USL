@@ -218,26 +218,6 @@ local _mo_V022 := {;
   {"DATEEND",    "D",      8,      0};
 }
 
-local _mo_Q015 := {;
-  {"KOD",       "C",     12,      0},;
-  {"NAME",      "C",     60,      0},;
-  {"NSI_OBJ",   "C",      4,      0},;
-  {"NSI_EL",    "C",     20,      0},;
-  {"USL_TEST",  "M",     10,      0},;
-  {"VAL_EL",    "M",     10,      0},;
-  {"COMMENT",   "M",     10,      0},;
-  {"DATEBEG",   "D",      8,      0},;
-  {"DATEEND",   "D",      8,      0};
-}
-
-local _mo_Q017 := {;
-  {"ID_KTEST",   "C",      4,      0},;
-  {"NAM_KTEST",  "C",    250,      0},;
-  {"COMMENT",    "M",     10,      0},;
-  {"DATEBEG",    "D",      8,      0},;
-  {"DATEEND",    "D",      8,      0};
-}
-
 Local arr_err := {}
 delete file ttt.ttt
 f_first()
@@ -268,8 +248,10 @@ work_t006(_mo_usl)
 work_V018(_mo_V018)
 work_V019(_mo_V019)
 work_V022(_mo_V022)
-work_Q015(_mo_Q015)
-work_Q017(_mo_Q017)
+make_Q015()
+make_Q017()
+// work_Q015(_mo_Q015)
+// work_Q017(_mo_Q017)
 close databases
 //
 copy file t006_2.dbf to _mo1k006.dbf
@@ -2758,8 +2740,21 @@ Function work_V022(_mo_V022)
   close databases
   return NIL
 
-***** 20.02.21
-Function work_Q015(_mo_Q015)
+***** 21.02.21
+Function make_Q015()
+
+  local _mo_Q015 := {;
+    {"KOD",       "C",     12,      0},;
+    {"NAME",      "C",     60,      0},;
+    {"NSI_OBJ",   "C",      4,      0},;
+    {"NSI_EL",    "C",     20,      0},;
+    {"USL_TEST",  "M",     10,      0},;
+    {"VAL_EL",    "M",     10,      0},;
+    {"COMMENT",   "M",     10,      0},;
+    {"DATEBEG",   "D",      8,      0},;
+    {"DATEEND",   "D",      8,      0};
+  }
+
   dbcreate("_mo_Q015",_mo_Q015)
   use _mo_Q015 new alias Q015
   nfile := "Q015.xml"
@@ -2788,17 +2783,24 @@ Function work_Q015(_mo_Q015)
         Q015->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         Q015->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
 
-        // mIDTEST := mo_read_xml_stroke(oXmlNode,"ID_TEST",)
-        // mIDEL := mo_read_xml_stroke(oXmlNode,"ID_EL",)
-        
       endif
     NEXT j
   ENDIF
   close databases
   return NIL
 
-***** 19.02.21
-Function work_Q017(_mo_Q017)
+***** 21.02.21
+Function make_Q017()
+  // Function work_Q017(_mo_Q017)
+
+  local _mo_Q017 := {;
+    {"ID_KTEST",   "C",      4,      0},;
+    {"NAM_KTEST",  "C",    250,      0},;
+    {"COMMENT",    "M",     10,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+
   dbcreate("_mo_Q017",_mo_Q017)
   use _mo_Q017 new alias Q017
   nfile := "Q017.xml"
