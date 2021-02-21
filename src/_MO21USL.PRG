@@ -2835,8 +2835,8 @@ Function make_O001()
     //  1 - NAME11(C)  2 - KOD(C)  3 - DATEBEG(D)  4 - DATEEND(D)  5 - ALFA2(C)  6 - ALFA3(C)
     local _mo_O001 := {;
     {"KOD",     "C",    3,      0},;
-    {"NAME11",  "C",  100,      0},;
-    {"NAME12",  "C",  100,      0},;
+    {"NAME11",  "C",   60,      0},;
+    {"NAME12",  "C",   60,      0},;
     {"ALFA2",   "C",    2,      0},;
     {"ALFA3",   "C",    3,      0},;
     {"DATEBEG", "D",    8,      0},;
