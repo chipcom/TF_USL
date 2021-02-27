@@ -146,7 +146,7 @@ Local _mo_usl := {;
 //
 Local _mo_kslp := {;
    {"CODE",       "N",      2,      0},;
-   {"NAME",       "C",     35,      0},;
+   {"NAME",       "C",     55,      0},;
    {"NAME_F",     "C",    255,      0},;
    {"COEFF",      "N",      4,      2},;
    {"DATEBEG",    "D",      8,      0},;
