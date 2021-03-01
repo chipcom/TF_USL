@@ -250,6 +250,7 @@ work_V019(_mo_V019)
 work_V022(_mo_V022)
 make_Q015()
 make_Q017()
+make_F010()
 make_O001()
 close databases
 //
@@ -2874,6 +2875,49 @@ Function make_O001()
         O001->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         O001->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
     
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 01.03.21
+Function make_F010()
+
+  //  1 - SUBNAME(C) 2 - KOD_TF(N)  3 - OKRUG(N)  4 - KOD_OKATO(C)  5 - DATEBEG(D)  6 - DATEEND(D)
+  local _mo_F010 := {;
+    { 'KOD_TF',     'C',    2,      0 },;
+    { 'KOD_OKATO',  'C',    5,      0 },;
+    { 'SUBNAME',    'C',  250,      0 },;
+    { 'OKRUG',      'N',    1,      0 },;
+    { 'DATEBEG',    'D',    8,      0 },;
+    { 'DATEEND',    'D',    8,      0 };
+  }
+  local mName := '', mArr
+
+  dbcreate('_mo_F010',_mo_F010)
+  use _mo_F010 new alias F010
+  nfile := 'F010.xml'
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? 'F010.xml     - Классификатор субъектов Российской Федерации (Subekti)'
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        select F010
+        append blank
+        F010->KOD_TF := mo_read_xml_stroke(oXmlNode, 'KOD_TF',)
+        F010->KOD_OKATO := mo_read_xml_stroke(oXmlNode, 'KOD_OKATO',)
+        F010->SUBNAME := mo_read_xml_stroke(oXmlNode, 'SUBNAME',)
+        F010->OKRUG := val(mo_read_xml_stroke(oXmlNode, 'OKRUG',))
+        F010->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
+        F010->DATEEND := ctod(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
       endif
     NEXT j
   ENDIF
