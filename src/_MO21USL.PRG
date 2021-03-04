@@ -2968,7 +2968,7 @@ Function make_F010()
 ***** 04.03.21
 Function make_F011()
 
-  //  1 - VIDNAME(C)  2 - IDVID(N)  3 - DATEBEG(D)  4 - DATEEND(D)
+  //  1 - DOCNAME(C)  2 - IDDOC(N) 3 - DOCSER(C) 4 - DOCNUM(C) 5 - DATEBEG(D)  6 - DATEEND(D)
   local _mo_F011 := {;
     { 'IDDOC',      'N',    2,      0 },;
     { 'DOCNAME',    'C',  250,      0 },;
