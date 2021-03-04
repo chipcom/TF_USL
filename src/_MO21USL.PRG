@@ -252,6 +252,7 @@ make_Q015()
 make_Q017()
 make_F006()
 make_F010()
+make_F011()
 make_O001()
 close databases
 //
@@ -2958,6 +2959,49 @@ Function make_F010()
         F010->OKRUG := val(mo_read_xml_stroke(oXmlNode, 'OKRUG',))
         F010->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
         F010->DATEEND := ctod(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 04.03.21
+Function make_F011()
+
+  //  1 - VIDNAME(C)  2 - IDVID(N)  3 - DATEBEG(D)  4 - DATEEND(D)
+  local _mo_F011 := {;
+    { 'IDDOC',      'N',    2,      0 },;
+    { 'DOCNAME',    'C',  250,      0 },;
+    { 'DOCSER',     'C',   10,      0 },;
+    { 'DOCNUM',     'C',   20,      0 },;
+    { 'DATEBEG',    'D',    8,      0 },;
+    { 'DATEEND',    'D',    8,      0 };
+  }
+  local mName := '', mArr
+
+  dbcreate('_mo_f011',_mo_F011)
+  use _mo_f011 new alias F011
+  nfile := 'F011.xml'
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? 'F011.xml     - Классификатор типов документов, удостоверяющих личность (Tipdoc)'
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        select F011
+        append blank
+        F011->IDDOC := val(mo_read_xml_stroke(oXmlNode, 'IDDOC',))
+        F011->DOCNAME := mo_read_xml_stroke(oXmlNode, 'DOCNAME',)
+        F011->DOCSER := mo_read_xml_stroke(oXmlNode, 'DOCSER',)
+        F011->DOCNUM := mo_read_xml_stroke(oXmlNode, 'DOCNUM',)
+        F011->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
+        F011->DATEEND := ctod(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
       endif
     NEXT j
   ENDIF
