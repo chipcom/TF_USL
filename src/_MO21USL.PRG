@@ -176,12 +176,12 @@ local _t2_v1 := {;
   {"SHIFR_MZ",     "C",     20,      0};
 }
 
-local _mo_V002 := {;
-  {"IDPR",       "N",      3,      0},;
-  {"PRNAME",     "C",    250,      0},;
-  {"DATEBEG",    "D",      8,      0},;
-  {"DATEEND",    "D",      8,      0};
-}
+// local _mo_V002 := {;
+//   {"IDPR",       "N",      3,      0},;
+//   {"PRNAME",     "C",    250,      0},;
+//   {"DATEBEG",    "D",      8,      0},;
+//   {"DATEEND",    "D",      8,      0};
+// }
 
 local _mo_V018 := {;
   {"IDHVID",     "C",     12,      0},;
@@ -223,7 +223,8 @@ delete file ttt.ttt
 f_first()
 Public sys_date := date(), sys_year := year(date())
 
-work_V002(_mo_V002)
+make_TO01()
+work_V002(  )//_mo_V002)
 work_V021(_mo_V021)
 
 InitSpravFFOMS()
@@ -2506,8 +2507,15 @@ else // ????????? ??????
 endif
 return arr
 
-***** 15.02.21
-Function work_V002(_mo_V002)
+***** 09.03.21
+Function work_V002()  //_mo_V002)
+  local _mo_V002 := {;
+    {"IDPR",       "N",      3,      0},;
+    {"PRNAME",     "C",    250,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+
   dbcreate("_mo_V002",_mo_V002)
   use _mo_V002 new alias V002
   nfile := "V002.xml"
@@ -3006,4 +3014,77 @@ Function make_F011()
     NEXT j
   ENDIF
   close databases
+  return NIL
+
+***** 09.03.21
+Function make_TO01()
+
+  local _mo_T001 := {;
+    { 'MCOD',       'C',    6,      0 },;
+    { 'CODEM',      'C',    6,      0 },;
+    { 'NAMEF',      'M',    10,     0 },;
+    { 'NAMES',      'C',    80,     0 },;
+    { 'ADRES',      'M',    10,     0 },;
+    { 'MAIN',       'C',    1,      0 },;
+    { 'PFA',        'C',    1,      0 },;
+    { 'PFS',        'C',    1,      0 },;
+    { 'DATEBEG',    'D',    8,      0 },;
+    { 'DATEEND',    'D',    8,      0 };
+  }
+  local dbName := '_mo_t001'
+  local dbSource := 'T001'
+  local mName := '', mArr
+
+  ? 'Т001.dbf     - Справочник МО и обособленных подразделений, финансируемых самостоятельно'
+  dbcreate('_mo_t001', _mo_T001)
+  dbUseArea( .t.,, dbName, dbName, .t., .f. )
+  // use _mo_t001 new alias T001
+
+  dbUseArea( .t.,, dbSource, dbSource, .f., .f. )
+  (dbSource)->(dbGoTop())
+  do while !(dbSource)->(EOF())
+    if (dbSource)->(DATEEND) > 0d20210101
+      (dbName)->(dbAppend())
+      (dbName)->MCOD := (dbSource)->MCOD
+      (dbName)->CODEM := (dbSource)->CODEM
+      (dbName)->NAMEF := (dbSource)->NAMEF
+      (dbName)->NAMES := (dbSource)->NAMES
+      (dbName)->ADRES := (dbSource)->ADRES_M
+      (dbName)->MAIN := (dbSource)->MAIN
+      (dbName)->PFA := (dbSource)->PFA
+      (dbName)->PFS := (dbSource)->PFS
+      (dbName)->DATEBEG := (dbSource)->DATEBEG
+      (dbName)->DATEEND := (dbSource)->DATEEND
+    endif
+      // aadd(_v002, { (dbName)->PRNAME, (dbName)->IDPR, (dbName)->DATEBEG, (dbName)->DATEEND })
+    (dbSource)->(dbSkip())
+  enddo
+  (dbSource)->(dbCloseArea())
+  (dbName)->(dbCloseArea())
+
+  // nfile := 'F011.xml'
+  // oXmlDoc := HXMLDoc():Read(nfile)
+  // ? 'F011.xml     - Классификатор типов документов, удостоверяющих личность (Tipdoc)'
+  // IF Empty( oXmlDoc:aItems )
+  //   ? "Ошибка в чтении файла",nfile
+    // wait
+  // else
+  //   ? "Обработка файла "+nfile+" - "
+  //   k := Len( oXmlDoc:aItems[1]:aItems )
+  //   FOR j := 1 TO k
+  //     oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+  //     if "ZAP" == upper(oXmlNode:title)
+  //       @ row(),30 say str(j/k*100,6,2)+"%"
+  //       select F011
+  //       append blank
+  //       F011->IDDOC := val(mo_read_xml_stroke(oXmlNode, 'IDDOC',))
+  //       F011->DOCNAME := mo_read_xml_stroke(oXmlNode, 'DOCNAME',)
+  //       F011->DOCSER := mo_read_xml_stroke(oXmlNode, 'DOCSER',)
+  //       F011->DOCNUM := mo_read_xml_stroke(oXmlNode, 'DOCNUM',)
+  //       F011->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
+  //       F011->DATEEND := ctod(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
+  //     endif
+  //   NEXT j
+  // ENDIF
+  // close databases
   return NIL
