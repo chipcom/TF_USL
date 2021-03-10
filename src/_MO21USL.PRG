@@ -223,8 +223,8 @@ delete file ttt.ttt
 f_first()
 Public sys_date := date(), sys_year := year(date())
 
-make_TO01()
-work_V002(  )//_mo_V002)
+// make_TO01()
+work_V002()//_mo_V002)
 work_V021(_mo_V021)
 
 InitSpravFFOMS()
