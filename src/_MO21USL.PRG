@@ -202,14 +202,14 @@ local _mo_V019 := {;
   {"DATEEND",    "D",      8,      0};
 }
 
-local _mo_V021 := {;
-  {"IDSPEC",     "N",      3,      0},;
-  {"SPECNAME",   "C",    250,      0},;
-  {"POSTNAME",   "C",    250,      0},;
-  {"IDPOST_MZ",  "C",      4,      0},;
-  {"DATEBEG",    "D",      8,      0},;
-  {"DATEEND",    "D",      8,      0};
-}
+// local _mo_V021 := {;
+//   {"IDSPEC",     "N",      3,      0},;
+//   {"SPECNAME",   "C",    250,      0},;
+//   {"POSTNAME",   "C",    250,      0},;
+//   {"IDPOST_MZ",  "C",      4,      0},;
+//   {"DATEBEG",    "D",      8,      0},;
+//   {"DATEEND",    "D",      8,      0};
+// }
 
 local _mo_V022 := {;
   {"IDMPAC",     "N",      5,      0},;
@@ -225,7 +225,7 @@ Public sys_date := date(), sys_year := year(date())
 
 // make_TO01()
 work_V002()//_mo_V002)
-work_V021(_mo_V021)
+work_V021() //_mo_V021)
 
 InitSpravFFOMS()
 //
@@ -2570,7 +2570,17 @@ function getV002()
   return _v002
 
 ***** 16.02.21
-Function work_V021(_mo_V021)
+Function work_V021()  //_mo_V021)
+
+  local _mo_V021 := {;
+    {"IDSPEC",     "N",      3,      0},;
+    {"SPECNAME",   "C",    250,      0},;
+    {"POSTNAME",   "C",    250,      0},;
+    {"IDPOST_MZ",  "C",      4,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+
   dbcreate("_mo_V021",_mo_V021)
   use _mo_V021 new alias V021
   nfile := "V021.xml"
@@ -2592,16 +2602,6 @@ Function work_V021(_mo_V021)
         mIDPOST_MZ := mo_read_xml_stroke(oXmlNode,"IDPOST_MZ",)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-
-      //   local _mo_V021 := {;
-      //   {"IDSPEC",     "N",      3,      0},;
-      //   {"SPECNAME",   "C",    250,      0},;
-      //   {"POSTNAME",   "C",    250,      0},;
-      //   {"IDPOST_MZ",  "C",      4,      0},;
-      //   {"DATEBEG",    "D",      8,      0},;
-      //   {"DATEEND",    "D",      8,      0};
-      // }
-      
 
         if !empty(mDATEEND) .and. mDATEEND < 0d20180101
         else
