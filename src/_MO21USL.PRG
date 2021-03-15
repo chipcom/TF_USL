@@ -2516,7 +2516,7 @@ Function work_V002()  //_mo_V002)
     {"DATEEND",    "D",      8,      0};
   }
 
-  dbcreate("_mo_V002",_mo_V002)
+  dbcreate("_mo_v002",_mo_V002)
   use _mo_V002 new alias V002
   nfile := "V002.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -2581,7 +2581,7 @@ Function work_V021()  //_mo_V021)
     {"DATEEND",    "D",      8,      0};
   }
 
-  dbcreate("_mo_V021",_mo_V021)
+  dbcreate("_mo_v021",_mo_V021)
   use _mo_V021 new alias V021
   nfile := "V021.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -2639,7 +2639,7 @@ function getV021()
 
 ***** 03.02.21
 Function work_V018(_mo_V018)
-  dbcreate("_mo_V018",_mo_V018)
+  dbcreate("_mo_v018",_mo_V018)
   use _mo_V018 new alias V018
   // index on kod to tmp_shema
   nfile := "V018.xml"
@@ -2673,7 +2673,7 @@ Function work_V018(_mo_V018)
   
 ***** 03.02.21
 Function work_V019(_mo_V019)
-  dbcreate("_mo_V019",_mo_V019)
+  dbcreate("_mo_v019",_mo_V019)
   use _mo_V019 new alias V019
   nfile := "V019.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -2717,7 +2717,7 @@ Function work_V019(_mo_V019)
 
 ***** 11.02.21
 Function work_V022(_mo_V022)
-  dbcreate("_mo_V022",_mo_V022)
+  dbcreate("_mo_v022",_mo_V022)
   use _mo_V022 new alias V022
   nfile := "V022.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -2765,7 +2765,7 @@ Function make_Q015()
     {"DATEEND",   "D",      8,      0};
   }
 
-  dbcreate("_mo_Q015",_mo_Q015)
+  dbcreate("_mo_q015",_mo_Q015)
   use _mo_Q015 new alias Q015
   nfile := "Q015.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -2811,7 +2811,7 @@ Function make_Q017()
     {"DATEEND",    "D",      8,      0};
   }
 
-  dbcreate("_mo_Q017",_mo_Q017)
+  dbcreate("_mo_q017",_mo_Q017)
   use _mo_Q017 new alias Q017
   nfile := "Q017.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -2855,7 +2855,7 @@ Function make_O001()
   }
   local mName := '', mArr
 
-  dbcreate("_mo_O001",_mo_O001)
+  dbcreate("_mo_o001",_mo_O001)
   use _mo_O001 new alias O001
   nfile := "O001.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -2944,7 +2944,7 @@ Function make_F010()
   }
   local mName := '', mArr
 
-  dbcreate('_mo_F010',_mo_F010)
+  dbcreate('_mo_f010',_mo_F010)
   use _mo_F010 new alias F010
   nfile := 'F010.xml'
   oXmlDoc := HXMLDoc():Read(nfile)
