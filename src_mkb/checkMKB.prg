@@ -20,11 +20,23 @@ proc main()
     // ? (dbName)->SHIFR
     dbSelectArea(dbSource)
     if dbSeek((dbName)->SHIFR)
-      // ? .T.
-      // TODO 
+      if (dbName)->(dbRLock())
+        if (dbSource)->ACTUAL == 1
+          (dbName)->DEND := CToD('  /  /    ')
+        elseif (dbSource)->ACTUAL == 0
+          (dbName)->DEND := CToD((dbSource)->DATE)
+        endif
+        (dbName)->(dbUnlock())
+      endif
     else
-      notFound++
-      aadd(aup,{(dbName)->shifr,(dbName)->Name})
+      if Empty((dbName)->DEND)
+        notFound++
+        aadd(aup,{(dbName)->shifr,(dbName)->Name})
+        if (dbName)->(dbRLock())
+          (dbName)->DEND := CToD('28/02/2021')
+          (dbName)->(dbUnlock())
+        endif
+      endif
     endif
     dbSelectArea(dbName)
     (dbName)->(dbSkip())
