@@ -1,0 +1,32 @@
+1 24 WindowsXP.Manifest
+
+1 VERSIONINFO
+FILEVERSION 1,1,0,0
+PRODUCTVERSION 1,1,0,0
+FILEOS 0x4
+FILETYPE 0x1
+{
+BLOCK "StringFileInfo"
+{
+   BLOCK "040904b0"
+   {
+      VALUE "FileDescription", "Утилита проверки и корректировки файла БД МКБ\0"
+      VALUE "FileVersion", "1.1.0.0\0"
+      VALUE "InternalName", "checkMKB\0"
+      VALUE "LegalCopyright", "ЧИП плюс 2021\0"
+      VALUE "LegalTrademarks", "\0"
+      VALUE "OriginalFilename", "checkMKB.exe\0"
+      VALUE "CompanyName", "ООО ЧИП плюс\0"
+      VALUE "ProductName", "checkMKB\0"
+      VALUE "ProductVersion", "1.1.0.0\0"
+      VALUE "Info", "smirnova@chipplus.ru\0"
+      VALUE "Comments", "\0"
+      VALUE "Toolset",  "Built with Harbour 3.4 & MinGW\0"
+   }
+}
+
+BLOCK "VarFileInfo"
+   {
+      VALUE "Translation", 0x0409, 0x40B
+   }
+}

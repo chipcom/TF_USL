@@ -1,0 +1,13 @@
+-L..\..\_mylib_hbt
+-lMyLib_HBT
+-lhbct
+-mt
+-inc
+
+-workdir=d:\_MO\TEMP\MO_MKB10
+-ocheckMKB
+-icon=database.ico
+
+checkMKB.prg
+
+checkMKB.rc
