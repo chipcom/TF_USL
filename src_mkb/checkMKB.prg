@@ -1,6 +1,8 @@
 // #include "edit_spr.ch"
 // #include "function.ch"
 
+#include "hblibxlsxwriter.ch"
+
 external errorsys
 
 proc main()
@@ -71,8 +73,6 @@ proc main()
   next
   fclose(fp)
   
-  // ? notFound
-  // inkey(0)
   
   (dbName)->(dbCloseArea())
   (dbSource)->(dbCloseArea())
@@ -80,6 +80,23 @@ proc main()
   filedelete(dbName + '.ntx')
   filedelete(dbSource + '.ntx')
 
+  main_ex()
+
+  // inkey(0)
+
   f_end()
   return
   
+function main_ex() 
+  local workbook, worksheet
+
+  lxw_init() 
+
+  workbook  = lxw_workbook_new("hello_world.xlsx")
+  worksheet = lxw_workbook_add_worksheet(workbook, NIL)
+
+  lxw_worksheet_write_string(worksheet, 0, 0, "Hello", NIL)
+  lxw_worksheet_write_number(worksheet, 1, 0, 123, NIL)
+
+  lxw_workbook_close(workbook)
+  return 0
