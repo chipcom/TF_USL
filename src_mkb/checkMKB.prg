@@ -10,7 +10,6 @@ proc main()
   local notFound := 0, aup := {}
   f_first()
 
-  // use (dbSource) new alias (dbSource)
   dbUseArea( .t.,, dbSource, dbSource, .t., .f. )
   index on MKB_CODE to (dbSource)
   
@@ -41,14 +40,33 @@ proc main()
     dbSelectArea(dbName)
     (dbName)->(dbSkip())
   end
-  fp := fcreate("notFoundMKB.txt") ; n_list := 1 ; tek_stroke := 0
+  fp := fcreate("notFoundMKB.txt")
   for j := 1 to len(aup)
-    // for i := 1 to len(aup[j,3])
-    //   s += lstr(aup[j,3,i])+"-"+inieditspr(A__MENUVERT,glob_V021,aup[j,3,i])
-    //   if i < len(aup[j,3])
-    //     s += ","
-    //   endif
-    // next
+    add_string(aup[j,1] + " - " + aup[j,2])
+  next
+  fclose(fp)
+
+  aup := {}
+
+  dbSelectArea(dbName)
+  index on SHIFR to (dbSource)
+
+  dbSelectArea(dbSource)
+  (dbSource)->(dbGoTop())
+  do while !(dbSource)->(EOF())
+    if ! empty((dbSource)->MKB_CODE)
+      dbSelectArea(dbName)
+      if ((dbSource)->ACTUAL == 1) .and. ! dbSeek((dbSource)->MKB_CODE)
+        // TODO
+        aadd(aup,{(dbSource)->MKB_CODE,(dbSource)->MKB_NAME})
+      endif
+      dbSelectArea(dbSource)
+    endif
+    (dbSource)->(dbSkip())
+  end
+
+  fp := fcreate("newMKB.txt")
+  for j := 1 to len(aup)
     add_string(aup[j,1] + " - " + aup[j,2])
   next
   fclose(fp)
@@ -58,6 +76,10 @@ proc main()
   
   (dbName)->(dbCloseArea())
   (dbSource)->(dbCloseArea())
+
+  filedelete(dbName + '.ntx')
+  filedelete(dbSource + '.ntx')
+
   f_end()
   return
   
