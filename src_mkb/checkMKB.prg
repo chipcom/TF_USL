@@ -1,8 +1,6 @@
 // #include "edit_spr.ch"
 // #include "function.ch"
 
-#include "hblibxlsxwriter.ch"
-
 external errorsys
 
 proc main()
@@ -42,13 +40,13 @@ proc main()
     dbSelectArea(dbName)
     (dbName)->(dbSkip())
   end
-  fp := fcreate("notFoundMKB.txt")
-  for j := 1 to len(aup)
-    add_string(aup[j,1] + " - " + aup[j,2])
-  next
-  fclose(fp)
+  // fp := fcreate("notFoundMKB.txt")
+  // for j := 1 to len(aup)
+  //   add_string(aup[j,1] + " - " + aup[j,2])
+  // next
+  // fclose(fp)
 
-  aup := {}
+  // aup := {}
 
   dbSelectArea(dbName)
   index on SHIFR to (dbSource)
@@ -60,18 +58,18 @@ proc main()
       dbSelectArea(dbName)
       if ((dbSource)->ACTUAL == 1) .and. ! dbSeek((dbSource)->MKB_CODE)
         // TODO
-        aadd(aup,{(dbSource)->MKB_CODE,(dbSource)->MKB_NAME})
+        // aadd(aup,{(dbSource)->MKB_CODE,(dbSource)->MKB_NAME})
       endif
       dbSelectArea(dbSource)
     endif
     (dbSource)->(dbSkip())
   end
 
-  fp := fcreate("newMKB.txt")
-  for j := 1 to len(aup)
-    add_string(aup[j,1] + " - " + aup[j,2])
-  next
-  fclose(fp)
+  // fp := fcreate("newMKB.txt")
+  // for j := 1 to len(aup)
+  //   add_string(aup[j,1] + " - " + aup[j,2])
+  // next
+  // fclose(fp)
   
   
   (dbName)->(dbCloseArea())
@@ -80,23 +78,10 @@ proc main()
   filedelete(dbName + '.ntx')
   filedelete(dbSource + '.ntx')
 
-  main_ex()
+  main_ex(aup)
 
   // inkey(0)
 
   f_end()
   return
   
-function main_ex() 
-  local workbook, worksheet
-
-  lxw_init() 
-
-  workbook  = lxw_workbook_new("hello_world.xlsx")
-  worksheet = lxw_workbook_add_worksheet(workbook, NIL)
-
-  lxw_worksheet_write_string(worksheet, 0, 0, "Hello", NIL)
-  lxw_worksheet_write_number(worksheet, 1, 0, 123, NIL)
-
-  lxw_workbook_close(workbook)
-  return 0

@@ -21,6 +21,7 @@
 *.ntx
 *.dbt
 *.zip
+*.rar
 *.txt
 *.ttt
 /build

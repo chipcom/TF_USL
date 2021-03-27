@@ -13,5 +13,6 @@ xhb.hbc
 -icon=database.ico
 
 checkMKB.prg
+excelPage.prg
 
 checkMKB.rc
