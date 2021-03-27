@@ -7,7 +7,8 @@ proc main()
 
   local sys_date := date(), sys_year := year(date())
   local dbName := '_mo_mkb', dbSource := 'm001'
-  local notFound := 0, aup := {}
+  local aRemoved := {}, aAdded := {}
+  local lastNotFound
   f_first()
 
   dbUseArea( .t.,, dbSource, dbSource, .t., .f. )
@@ -29,8 +30,10 @@ proc main()
       endif
     else
       if Empty((dbName)->DEND)
-        notFound++
-        aadd(aup,{(dbName)->shifr,(dbName)->Name})
+        if lastNotFound != (dbName)->SHIFR
+          lastNotFound := (dbName)->SHIFR
+          aadd(aRemoved,{(dbName)->shifr,(dbName)->Name})
+        endif
         if (dbName)->(dbRLock())
           (dbName)->DEND := CToD('28/02/2021')
           (dbName)->(dbUnlock())
@@ -41,12 +44,10 @@ proc main()
     (dbName)->(dbSkip())
   end
   // fp := fcreate("notFoundMKB.txt")
-  // for j := 1 to len(aup)
-  //   add_string(aup[j,1] + " - " + aup[j,2])
+  // for j := 1 to len(aRemoved)
+  //   add_string(aRemoved[j,1] + " - " + aRemoved[j,2])
   // next
   // fclose(fp)
-
-  // aup := {}
 
   dbSelectArea(dbName)
   index on SHIFR to (dbSource)
@@ -58,7 +59,7 @@ proc main()
       dbSelectArea(dbName)
       if ((dbSource)->ACTUAL == 1) .and. ! dbSeek((dbSource)->MKB_CODE)
         // TODO
-        // aadd(aup,{(dbSource)->MKB_CODE,(dbSource)->MKB_NAME})
+        aadd(aAdded,{(dbSource)->MKB_CODE,(dbSource)->MKB_NAME})
       endif
       dbSelectArea(dbSource)
     endif
@@ -66,8 +67,8 @@ proc main()
   end
 
   // fp := fcreate("newMKB.txt")
-  // for j := 1 to len(aup)
-  //   add_string(aup[j,1] + " - " + aup[j,2])
+  // for j := 1 to len(aAdded)
+  //   add_string(aAdded[j,1] + " - " + aAdded[j,2])
   // next
   // fclose(fp)
   
@@ -78,7 +79,9 @@ proc main()
   filedelete(dbName + '.ntx')
   filedelete(dbSource + '.ntx')
 
-  main_ex(aup)
+  if WriteToExcel(aAdded, aRemoved) != 0
+    ? 'ERROR'
+  endif
 
   // inkey(0)
 
