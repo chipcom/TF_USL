@@ -20,7 +20,6 @@ proc main()
   dbUseArea( .t.,, dbName, dbName, .t., .f. )
   (dbName)->(dbGoTop())
   do while !(dbName)->(EOF())
-    // ? (dbName)->SHIFR
     dbSelectArea(dbSource)
     if dbSeek((dbName)->SHIFR)
       if (dbName)->(dbRLock())
@@ -28,6 +27,7 @@ proc main()
           (dbName)->DEND := CToD('  /  /    ')
         elseif (dbSource)->ACTUAL == 0
           (dbName)->DEND := CToD((dbSource)->DATE)
+          aadd(aRemoved,{(dbName)->shifr,(dbName)->Name})
         endif
         (dbName)->(dbUnlock())
       endif
@@ -53,21 +53,23 @@ proc main()
   // fclose(fp)
 
   dbSelectArea(dbName)
-  index on SHIFR to (dbSource)
+  index on SHIFR to (dbName)
 
   dbSelectArea(dbSource)
   (dbSource)->(dbGoTop())
   do while !(dbSource)->(EOF())
     if ! empty((dbSource)->MKB_CODE)
       dbSelectArea(dbName)
-      if ((dbSource)->ACTUAL == 1) .and. ! dbSeek((dbSource)->MKB_CODE)
-        // TODO
-        (dbName)->(dbAppend())
-        (dbName)->SHIFR := (dbSource)->MKB_CODE
-        (dbName)->NAME := (dbSource)->MKB_NAME
-        (dbName)->KS := 0
-        (dbName)->DBEGIN := CToD((dbSource)->DATE)
-        aadd(aAdded,{(dbSource)->MKB_CODE,(dbSource)->MKB_NAME})
+      if ((dbSource)->ACTUAL == 1)
+        if !dbSeek((dbSource)->MKB_CODE)
+          // TODO
+          (dbName)->(dbAppend())
+          (dbName)->SHIFR := (dbSource)->MKB_CODE
+          (dbName)->NAME := (dbSource)->MKB_NAME
+          (dbName)->KS := 0
+          (dbName)->DBEGIN := CToD((dbSource)->DATE)
+          aadd(aAdded,{(dbSource)->MKB_CODE,(dbSource)->MKB_NAME})
+        endif
       endif
       dbSelectArea(dbSource)
     endif

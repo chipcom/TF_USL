@@ -9,6 +9,6 @@ hbodbc.hbc
 sddodbc.hbc
 
 -workdir=d:\_MO\TEMP\MO_MKB10
--otest
+-ovmp_ref
 
-test.prg
+vmp_ref.prg
