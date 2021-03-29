@@ -6,10 +6,13 @@ external errorsys
 proc main()
 
   local sys_date := date(), sys_year := year(date())
-  local dbName := '_mo_mkb', dbSource := 'm001'
+  local dbName := '_mo_mkb', dbSource := 'm001', dbTFOMS := 'mkb_10_tf'
   local aRemoved := {}, aAdded := {}
   local lastNotFound
   f_first()
+
+  dbUseArea( .t.,, dbTFOMS, dbTFOMS, .t., .f. )
+  index on CODED to (dbTFOMS)
 
   dbUseArea( .t.,, dbSource, dbSource, .t., .f. )
   index on MKB_CODE to (dbSource)
@@ -77,12 +80,34 @@ proc main()
   // next
   // fclose(fp)
   
+  (dbSource)->(dbCloseArea())
+
+  dbSelectArea(dbName)
+  (dbName)->(dbGoTop())
+  do while !(dbName)->(EOF())
+    dbSelectArea(dbTFOMS)
+    if dbSeek((dbName)->SHIFR)
+      // if ! empty((dbTFOMS)->DATE_E)
+        if (dbName)->(dbRLock())
+          (dbName)->DBEGIN := (dbTFOMS)->DATE_B
+          (dbName)->DEND := (dbTFOMS)->DATE_E
+          (dbName)->(dbUnlock())
+    //     elseif (dbSource)->ACTUAL == 0
+    //       (dbName)->DEND := CToD((dbSource)->DATE)
+        // endif
+      endif
+    endif
+    dbSelectArea(dbName)
+    (dbName)->(dbSkip())
+  end
+
   
   (dbName)->(dbCloseArea())
-  (dbSource)->(dbCloseArea())
+  (dbTFOMS)->(dbCloseArea())
 
   filedelete(dbName + '.ntx')
   filedelete(dbSource + '.ntx')
+  filedelete(dbTFOMS + '.ntx')
 
   if WriteToExcel(aAdded, aRemoved) != 0
     ? 'ERROR'

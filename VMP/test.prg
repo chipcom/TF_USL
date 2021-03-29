@@ -15,7 +15,8 @@ PROCEDURE Main()
     {'SHIFR',    'C',     10,      0},;
     {'HVID',     'C',     12,      0},;
     {'HMETHOD',  'N',      4,      0},;
-    {'DIAGNOZIS','C',    250,      0};
+    {'MODEL',    'N',      5,      0},;
+    {'DIAGNOZIS','C',    700,      0};
   }
 
   #if defined( __HBSCRIPT__HBSHELL ) 
@@ -48,6 +49,9 @@ PROCEDURE Main()
       MO1VMP->HVID := hb_ValToStr(VMP->(fieldget(7)))
     endif
     MO1VMP->HMETHOD := VMP->(fieldget(9))
+    if VMP->(fieldget(10)) != nil
+      MO1VMP->MODEL := val(alltrim(VMP->(fieldget(10))))
+    endif
     MO1VMP->DIAGNOZIS := VMP->(fieldget(12))
 
     VMP->(dbSkip())
