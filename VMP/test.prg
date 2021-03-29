@@ -11,24 +11,53 @@ REQUEST HB_CODEPAGE_RU1251, HB_CODEPAGE_RU866
 
 PROCEDURE Main() 
   
+  local _vmp_usl := {;
+    {'SHIFR',    'C',     10,      0},;
+    {'HVID',     'C',     12,      0},;
+    {'HMETHOD',  'N',      4,      0},;
+    {'DIAGNOZIS','C',    250,      0};
+  }
+
   #if defined( __HBSCRIPT__HBSHELL ) 
     rddRegister( "SQLBASE" ) 
     rddRegister( "SQLMIX" ) 
     hb_SDDODBC_Register() 
   #endif 
   
+  dbcreate("_mo1vmp_usl",_vmp_usl)
+  dbUseArea( .t.,, "_mo1vmp_usl", 'MO1VMP', .f., .f. )
+  MO1VMP->(dbGoTop())
+
   Set( _SET_DATEFORMAT, "yyyy-mm-dd" ) 
   HB_SETCODEPAGE( "RU1251" ) 
   
   rddSetDefault( "SQLMIX" ) 
   ? "Connect:", rddInfo( RDDI_CONNECT, { "ODBC", "Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=TEST.XLS;" } ) 
-  ? "Use:", dbUseArea( .T., , "select * from [111$] ", "test" ) 
+  ? "Use:", dbUseArea( .T., , "select * from [111$] ", "VMP" ) 
   ? "Alias:", Alias() 
-  ? "DB struct:", hb_ValToExp( dbStruct() ) 
-  wait 
-  
-  dbGoTop() 
-  Browse() 
-  dbCloseArea() 
+  // ? "DB struct:", hb_ValToExp( dbStruct() ) 
+  // wait 
+
+  VMP->(dbGoTop())
+  VMP->(dbSkip())
+  while (VMP->(fieldget(1))) != nil //(eof())
+    // ? VMP->(fieldget(1))
+    MO1VMP->(dbAppend())
+    MO1VMP->SHIFR := VMP->(fieldget(1))
+    if VMP->(fieldget(7)) != nil
+      MO1VMP->HVID := hb_ValToStr(VMP->(fieldget(7)))
+    endif
+    MO1VMP->HMETHOD := VMP->(fieldget(9))
+    MO1VMP->DIAGNOZIS := VMP->(fieldget(12))
+
+    VMP->(dbSkip())
+  end
+
+  // , доступ к полям через fieldget( n )
+
+  // dbGoTop() 
+  // Browse() 
+  VMP->(dbCloseArea())
+  MO1VMP->(dbCloseArea())
   
   RETURN

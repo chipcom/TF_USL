@@ -59,6 +59,11 @@ proc main()
       dbSelectArea(dbName)
       if ((dbSource)->ACTUAL == 1) .and. ! dbSeek((dbSource)->MKB_CODE)
         // TODO
+        (dbName)->(dbAppend())
+        (dbName)->SHIFR := (dbSource)->MKB_CODE
+        (dbName)->NAME := (dbSource)->MKB_NAME
+        (dbName)->KS := 0
+        (dbName)->DBEGIN := CToD((dbSource)->DATE)
         aadd(aAdded,{(dbSource)->MKB_CODE,(dbSource)->MKB_NAME})
       endif
       dbSelectArea(dbSource)
