@@ -42,7 +42,6 @@ PROCEDURE Main()
   VMP->(dbGoTop())
   VMP->(dbSkip())
   while (VMP->(fieldget(1))) != nil //(eof())
-    // ? VMP->(fieldget(1))
     MO1VMP->(dbAppend())
     MO1VMP->SHIFR := VMP->(fieldget(1))
     if VMP->(fieldget(7)) != nil

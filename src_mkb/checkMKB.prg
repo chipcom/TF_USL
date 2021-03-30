@@ -1,5 +1,3 @@
-// #include "edit_spr.ch"
-// #include "function.ch"
 
 external errorsys
 
@@ -62,7 +60,6 @@ proc main()
       dbSelectArea(dbName)
       if ((dbSource)->ACTUAL == 1)
         if !dbSeek((dbSource)->MKB_CODE)
-          // TODO
           (dbName)->(dbAppend())
           (dbName)->SHIFR := (dbSource)->MKB_CODE
           (dbName)->NAME := (dbSource)->MKB_NAME
@@ -89,14 +86,10 @@ proc main()
   do while !(dbName)->(EOF())
     dbSelectArea(dbTFOMS)
     if dbSeek((dbName)->SHIFR)
-      // if ! empty((dbTFOMS)->DATE_E)
-        if (dbName)->(dbRLock())
-          (dbName)->DBEGIN := (dbTFOMS)->DATE_B
-          (dbName)->DEND := (dbTFOMS)->DATE_E
-          (dbName)->(dbUnlock())
-    //     elseif (dbSource)->ACTUAL == 0
-    //       (dbName)->DEND := CToD((dbSource)->DATE)
-        // endif
+      if (dbName)->(dbRLock())
+        (dbName)->DBEGIN := (dbTFOMS)->DATE_B
+        (dbName)->DEND := (dbTFOMS)->DATE_E
+        (dbName)->(dbUnlock())
       endif
     endif
     dbSelectArea(dbName)
@@ -114,8 +107,6 @@ proc main()
   if WriteToExcel(aAdded, aRemoved) != 0
     ? 'ERROR'
   endif
-
-  // inkey(0)
 
   f_end()
   return
