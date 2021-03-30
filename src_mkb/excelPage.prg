@@ -71,6 +71,10 @@ function WriteToExcel(aAdded, aRemoved)
   /* Объединить 18 ячейки  две строки. */
   lxw_worksheet_merge_range(worksheetAdded, 0, 1, 1, 18, sName, merge_format)
 
+  /* Установить ширину первой колонки */
+  lxw_worksheet_set_column(worksheetRemoved, 0, 0, 10.0)
+  lxw_worksheet_set_column(worksheetAdded, 0, 0, 10.0)
+
   /* Заморозим 2-е верхние строки на закладке. */
   lxw_worksheet_freeze_panes(worksheetRemoved, 2, 0)
   lxw_worksheet_freeze_panes(worksheetAdded, 2, 0)
