@@ -176,13 +176,6 @@ local _t2_v1 := {;
   {"SHIFR_MZ",     "C",     20,      0};
 }
 
-local _mo_V018 := {;
-  {"IDHVID",     "C",     12,      0},;
-  {"HVIDNAME",   "C",    254,      0},;
-  {"DATEBEG",    "D",      8,      0},;
-  {"DATEEND",    "D",      8,      0};
-}
-
 local _mo_V022 := {;
   {"IDMPAC",     "N",      5,      0},;
   {"MPACNAME",   "C",   1250,      0},;
@@ -218,7 +211,8 @@ work_SprKiro(_mo_kslp)
 work_SprMU(_mo_prof, _mo_spec, _t2_v1)
 work_SprDS()
 work_t006(_mo_usl)
-work_V018(_mo_V018)
+work_V018()
+// work_V018(_mo_V018)
 work_V019()
 work_V022(_mo_V022)
 make_Q015()
@@ -2586,8 +2580,17 @@ function getV021()
 
   return _v021
 
-***** 03.02.21
-Function work_V018(_mo_V018)
+***** 31.03.21
+Function work_V018()
+  // Function work_V018(_mo_V018)
+  local _mo_V018 := {;
+    {"IDHVID",     "C",     12,      0},;
+    {"HVIDNAME",   "C",    254,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+  // {"HVIDNAME",   "M",     10,      0},;
+
   dbcreate("_mo_v018",_mo_V018)
   use _mo_V018 new alias V018
   // index on kod to tmp_shema
