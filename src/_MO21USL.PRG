@@ -176,40 +176,12 @@ local _t2_v1 := {;
   {"SHIFR_MZ",     "C",     20,      0};
 }
 
-// local _mo_V002 := {;
-//   {"IDPR",       "N",      3,      0},;
-//   {"PRNAME",     "C",    250,      0},;
-//   {"DATEBEG",    "D",      8,      0},;
-//   {"DATEEND",    "D",      8,      0};
-// }
-
 local _mo_V018 := {;
   {"IDHVID",     "C",     12,      0},;
   {"HVIDNAME",   "C",    254,      0},;
   {"DATEBEG",    "D",      8,      0},;
   {"DATEEND",    "D",      8,      0};
 }
-
-local _mo_V019 := {;
-  {"IDHM",       "N",      4,      0},;
-  {"HMNAME",     "C",    254,      0},;
-  {"DIAG",       "C",    700,      0},;
-  {"HVID",       "C",     12,      0},;
-  {"HGR",        "N",      3,      0},;
-  {"HMODP",      "C",    254,      0},;
-  {"IDMODP",     "N",      5,      0},;
-  {"DATEBEG",    "D",      8,      0},;
-  {"DATEEND",    "D",      8,      0};
-}
-
-// local _mo_V021 := {;
-//   {"IDSPEC",     "N",      3,      0},;
-//   {"SPECNAME",   "C",    250,      0},;
-//   {"POSTNAME",   "C",    250,      0},;
-//   {"IDPOST_MZ",  "C",      4,      0},;
-//   {"DATEBEG",    "D",      8,      0},;
-//   {"DATEEND",    "D",      8,      0};
-// }
 
 local _mo_V022 := {;
   {"IDMPAC",     "N",      5,      0},;
@@ -247,7 +219,7 @@ work_SprMU(_mo_prof, _mo_spec, _t2_v1)
 work_SprDS()
 work_t006(_mo_usl)
 work_V018(_mo_V018)
-work_V019(_mo_V019)
+work_V019()
 work_V022(_mo_V022)
 make_Q015()
 make_Q017()
@@ -289,9 +261,6 @@ do while !eof()
   select LUSL
   find (t006->shifr)
   if found()
-    my_debug(,lusl->shifr+lusl->name)
-    my_debug(,t006->shifr+t006->name)
-    my_debug(,"=")
   endif
   append blank
   aeval(ar, {|x,i| fieldput(i,x) } )
@@ -425,8 +394,7 @@ do while !eof()
   select LUSL
   find (lshifr)
   if found()
-fld := lcodem=='801942' .and. alltrim(lshifr)=='2.78.15'
-my_debug(fld,lshifr+" ("+lcodem+")")
+    fld := lcodem=='801942' .and. alltrim(lshifr)=='2.78.15'
     lusl_ok := lusl->usl_ok
     arr1 := {} ; arr2 := {}
     select LP
@@ -434,26 +402,21 @@ my_debug(fld,lshifr+" ("+lcodem+")")
     do while lp->codem == lcodem .and. lp->usl_ok == lusl_ok .and. !eof()
       fl := .t.
       llevel := lp->level
-my_debug(fld,eos+print_array({llevel,lp->depart,lp->datebeg,lp->dateend}))
       aadd(arr1,llevel)
       select PRIC
       find (lshifr)
       if found()
-my_debug(fld,'price_found')
         for lvzros_reb := 0 to 1
           select PRIC
           find (lshifr+str(lvzros_reb,1)+llevel)
           do while pric->shifr == lshifr .and. pric->vzros_reb == lvzros_reb .and. pric->level == llevel .and. !eof()
-my_debug(fld,'price_level_found')
             if between_date(pric->datebeg,pric->dateend,lp->datebeg,lp->dateend) .or. ;
                between_date(lp->datebeg,lp->dateend,pric->datebeg,pric->dateend)
-my_debug(fld,'price_level_found + date')
               lcena := pric->cena
               bd := max(lp->datebeg,pric->datebeg)
               bd := max(bd,serv->datebeg)
               ed := min(lp->dateend,pric->dateend)
               ed := min(ed,serv->dateend)
-my_debug(fld,print_array({"bd",bd,"ed",ed}))
               if fl
                 aadd(arr2,llevel)
               endif
@@ -478,22 +441,17 @@ my_debug(fld,print_array({"bd",bd,"ed",ed}))
           enddo
         next
         if fl .and. empty(lp->depart)
-my_debug(fld,'empty(lp->depart)')
           for lvzros_reb := 0 to 1
             select PRIC
             find (lshifr+str(lvzros_reb,1)+nul_level)
             do while pric->shifr == lshifr .and. pric->vzros_reb == lvzros_reb .and. pric->level == nul_level .and. !eof()
-my_debug(fld,'empty(lp->depart)+nul_level')
-my_debug(fld,print_array({lp->datebeg,lp->dateend,pric->datebeg,pric->dateend}))
             if between_date(pric->datebeg,pric->dateend,lp->datebeg,lp->dateend) .or. ;
                between_date(lp->datebeg,lp->dateend,pric->datebeg,pric->dateend)
-my_debug(fld,'empty(lp->depart)+nul_level+date')
                 lcena := pric->cena
                 bd := max(lp->datebeg,pric->datebeg)
                 bd := max(bd,serv->datebeg)
                 ed := min(lp->dateend,pric->dateend)
                 ed := min(ed,serv->dateend)
-my_debug(fld,print_array({"bd",bd,"ed",ed}))
                 if fl
                   aadd(arr2,llevel)
                 endif
@@ -548,7 +506,6 @@ my_debug(fld,print_array({"bd",bd,"ed",ed}))
           ed := pric->dateend
           bd := max(bd,serv->datebeg)
           ed := min(ed,serv->dateend)
-my_debug(fld,print_array({"bd",bd,"ed",ed}))
           select LUSLC
           append blank
           luslc->CODEMO    := lcodem
@@ -1000,7 +957,6 @@ do while !eof()
     select LUSL
     find (padr(v001->IDRB,20))
     if found()
-      my_debug(,v001->IDRB)
     else
       append blank
       lusl->SHIFR   := v001->IDRB
@@ -1041,12 +997,10 @@ do while !eof()
   select LUSL
   find (padr(po->kod,20))
   if !found()
-    my_debug(,po->kod+" не найдено в LUSL")
   endif
   select V001
   find (padr(po->kod,15))
   if !found()
-    my_debug(,po->kod+" не найдено в V001")
   endif
   select PO
   skip
@@ -1207,10 +1161,6 @@ if !empty(d6->AD_CR) .and. !eq_any(left(d6->AD_CR,2),"sh","mt","rb")
   kl := max(kl,len(lds))
   kl1 := max(kl1,len(lds1))
   kl2 := max(kl2,len(lds2))
-  //my_debug(,eos+d6->AD_CR+d6->code)
-  //my_debug(,"1:"+alltrim(lDS))
-  //my_debug(,"2:"+alltrim(lDS1))
-  //my_debug(,"3:"+alltrim(lDS2))
 endif
             if empty(lDS) // нет основного диагноза
               select T62
@@ -1269,7 +1219,6 @@ endif
   NEXT j
 ENDIF
 close databases
-my_debug(,print_array({kl,kl1,kl2}))
 return NIL
 
 *
@@ -2671,8 +2620,21 @@ Function work_V018(_mo_V018)
   close databases
   return NIL
   
-***** 03.02.21
-Function work_V019(_mo_V019)
+***** 31.03.21
+Function work_V019()
+  // Function work_V019(_mo_V019)
+  local _mo_V019 := {;
+    {"IDHM",       "N",      4,      0},; // Идентификатор метода высокотехнологичной медицинской помощи
+    {"HMNAME",     "C",    254,      0},; // Наименование метода высокотехнологичной медицинской помощи
+    {"DIAG",       "C",    700,      0},; // Верхние уровни кодов диагноза по МКБ для данного метода; указываются через разделитель ";".
+    {"HVID",       "C",     12,      0},; // Код вида высокотехнологичной медицинской помощи для данного метода
+    {"HGR",        "N",      3,      0},; // Номер группы высокотехнологичной медицинской помощи для данного метода
+    {"HMODP",      "C",    254,      0},; // Модель пациента для методов высокотехнологичной медицинской помощи с одинаковыми значениями поля "HMNAME". Не заполняется, начиная с версии 3.0
+    {"IDMODP",     "N",      5,      0},; // Идентификатор модели пациента для данного метода (начиная с версии 3.0, заполняется значением поля IDMPAC классификатора V022)
+    {"DATEBEG",    "D",      8,      0},; // Дата начала действия записи
+    {"DATEEND",    "D",      8,      0};  // Дата окончания действия записи
+  }
+
   dbcreate("_mo_v019",_mo_V019)
   use _mo_V019 new alias V019
   nfile := "V019.xml"
