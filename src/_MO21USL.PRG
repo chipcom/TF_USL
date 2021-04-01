@@ -212,7 +212,6 @@ work_SprMU(_mo_prof, _mo_spec, _t2_v1)
 work_SprDS()
 work_t006(_mo_usl)
 work_V018()
-// work_V018(_mo_V018)
 work_V019()
 work_V022(_mo_V022)
 make_Q015()
@@ -2582,7 +2581,6 @@ function getV021()
 
 ***** 31.03.21
 Function work_V018()
-  // Function work_V018(_mo_V018)
   local _mo_V018 := {;
     {"IDHVID",     "C",     12,      0},;
     {"HVIDNAME",   "C",    254,      0},;
@@ -2625,7 +2623,6 @@ Function work_V018()
   
 ***** 31.03.21
 Function work_V019()
-  // Function work_V019(_mo_V019)
   local _mo_V019 := {;
     {"IDHM",       "N",      4,      0},; // Идентификатор метода высокотехнологичной медицинской помощи
     {"HMNAME",     "C",    254,      0},; // Наименование метода высокотехнологичной медицинской помощи
