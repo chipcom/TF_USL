@@ -1,0 +1,13 @@
+-L..\LIB
+-lMyLib_HBT
+-lFunLib
+-lhbct
+-mt
+-inc
+-i..\include
+xhb.hbc
+
+-workdir=d:\_MO\TEMP\MO_MKB10
+-oview
+
+view.prg

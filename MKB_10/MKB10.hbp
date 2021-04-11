@@ -1,10 +1,9 @@
 -L..\LIB
 -lMyLib_HBT
--lhblibxlsxwriter
+-lFunLib
 -lhbct
 -mt
 -inc
--i..\include\libxlsxwriter\include
 -i..\include
 xhb.hbc
 
@@ -13,6 +12,5 @@ xhb.hbc
 -icon=database.ico
 
 MKB10.prg
-excelPage.prg
 
 MKB10.rc
