@@ -6,6 +6,7 @@ proc main()
   local sys_date := date(), sys_year := year(date())
   local dbName := '_mo_mkb'
   local dbTFOMS := 'mkb_10_tf'
+  local dbNTX := dbTFOMS + '.ntx'
   local aResult
 
   f_first()
@@ -17,9 +18,9 @@ proc main()
     { 'KS',    'N',  1, 0 },; // Номер строки для длинных диагнозов
     { 'DBEGIN','D',  8, 0 },; // Дата начала действия диагноза
     { 'DEND',  'D',  8, 0 },; // Дата окончания действия диагноза
-    { 'POL',   'C',  1, 0 },; // Пол на который распространяется диагноз
-    { 'KOL',   'N',  1, 0 };  // Число строк в наименовании
+    { 'POL',   'C',  1, 0 }; // Пол на который распространяется диагноз
   })
+  // { 'KOL',   'N',  1, 0 };  // Число строк в наименовании
 
   dbUseArea( .t.,, dbTFOMS, dbTFOMS, .t., .f. )
   index on CODED to (dbTFOMS)
@@ -41,13 +42,15 @@ proc main()
       if ! empty((dbTFOMS)->W)
         (dbName)->POL   := iif((dbTFOMS)->W == '1', 'М', 'Ж')
       endif
-      (dbName)->KOL   := lenResult
+      // (dbName)->KOL   := lenResult
     next
 
     (dbTFOMS)->(dbSkip())
   end
 
-  filedelete(dbTFOMS + '.ntx')
+  dbCloseAll()  // закроем всё
+
+  filedelete(dbNTX)
 
   f_end()
   return
