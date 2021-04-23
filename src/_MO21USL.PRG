@@ -144,14 +144,14 @@ Local _mo_usl := {;
    {"DATEEND",    "D",      8,      0};  // дата конец действия - по умолчанию т.г
   }
 //
-Local _mo_kslp := {;
-   {"CODE",       "N",      2,      0},;
-   {"NAME",       "C",     55,      0},;
-   {"NAME_F",     "C",    255,      0},;
-   {"COEFF",      "N",      4,      2},;
-   {"DATEBEG",    "D",      8,      0},;
-   {"DATEEND",    "D",      8,      0};
-  }
+// Local _mo_kslp := {;
+//    {"CODE",       "N",      2,      0},;
+//    {"NAME",       "C",     55,      0},;
+//    {"NAME_F",     "C",    255,      0},;
+//    {"COEFF",      "N",      4,      2},;
+//    {"DATEBEG",    "D",      8,      0},;
+//    {"DATEEND",    "D",      8,      0};
+//   }
 //
 Local _mo_uslc := {;
    {"CODEMO",     "C",      6,      0},;
@@ -195,7 +195,6 @@ work_V021() //_mo_V021)
 InitSpravFFOMS()
 //
 read_spr_N00X()
-*
 //
 dbcreate("_mo1usl",_mo_usl)
 work_Shema(_mo_shema)
@@ -206,8 +205,8 @@ work_MOServ(_mo_moserv)
 work_Prices(_mo_prices)
 work_mo_uslf(_mo_uslf)
 work_SprUnit(_mo_unit)
-work_SprKslp(_mo_kslp)
-work_SprKiro(_mo_kslp)
+work_SprKslp()
+work_SprKiro()
 work_SprMU(_mo_prof, _mo_spec, _t2_v1)
 work_SprDS()
 work_t006(_mo_usl)
@@ -351,8 +350,6 @@ filedelete("tmp*.dbf")
 filedelete("tmp*.ntx")
 f_end()
 return
-
-*
 
 ***** 16.05.19
 Function work_uslc(_mo_uslc)
@@ -549,8 +546,6 @@ enddo
 close databases
 return NIL
 
-*
-
 ***** 13.02.21
 Function work_Shema(_mo_shema)
 dbcreate("_mo1shema",_mo_shema)
@@ -600,8 +595,6 @@ ENDIF
 close databases
 return NIL
 
-*
-
 ***** 00.01.21
 // S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
 Function work_SprSubDiv(_mo_subdiv)
@@ -641,8 +634,6 @@ else
 ENDIF
 close databases
 return NIL
-
-*
 
 ***** 30.12.18
 Function work_SprDep(_mo_dep,_mo_deppr)
@@ -714,8 +705,6 @@ else
 ENDIF
 close databases
 return NIL
-
-*
 
 ***** 11.01.21
 Function work_LvlPay(_mo_lvlpay)
@@ -791,8 +780,6 @@ ENDIF
 close databases
 return NIL
 
-*
-
 ***** 13.01.19
 Function work_MOServ(_mo_moserv)
 dbcreate("_mo1moserv",_mo_moserv)
@@ -848,8 +835,6 @@ else
 ENDIF
 close databases
 return NIL
-
-*
 
 ***** 16.04.18
 Function work_Prices(_mo_prices)
@@ -920,8 +905,6 @@ else
 ENDIF
 close databases
 return NIL
-
-*
 
 ***** 20.01.19
 Function work_mo_uslf(_mo_uslf)
@@ -1000,8 +983,6 @@ do while !eof()
 enddo
 close databases
 return NIL
-
-*
 
 ***** 15.01.20
 Function work_t006(_mo_usl)
@@ -1214,9 +1195,6 @@ ENDIF
 close databases
 return NIL
 
-*
-
-
 ***** 05.01.18
 Function work_SprMU(_mo_prof,_mo_spec,_mo_t2)
 
@@ -1378,9 +1356,6 @@ ENDIF
 close databases
 return NIL
 
-*
-
-
 ***** 28.12.18
 Function work_SprDS()
 Local fl := .f., lfp, s
@@ -1486,101 +1461,113 @@ ENDIF
 close databases
 return NIL
 
-*
+***** 23.04.21
+Function work_SprKslp()
+  Local _mo_kslp := {;
+    {"CODE",       "N",      2,      0},;
+    {"NAME",       "C",     55,      0},;
+    {"NAME_F",     "C",    255,      0},;
+    {"COEFF",      "N",      4,      2},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
 
-***** 30.12.18
-Function work_SprKslp(_mo_kslp)
-dbcreate("_mo1kslp",_mo_kslp)
-use _mo1kslp new alias KS
-nfile := "SprKslp.xml"
-oXmlDoc := HXMLDoc():Read(nfile)
-? "SPRKSLP.xml  - для КСГ - КСЛП"
-IF Empty( oXmlDoc:aItems )
-  ? "Ошибка в чтении файла",nfile
-  wait
-else
-  ? "Обработка файла "+nfile+" - "
-  k := Len( oXmlDoc:aItems[1]:aItems )
-  FOR j := 1 TO k
-    oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-    if "ZGLV" == oXmlNode:title
-      if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
-        ? "Ошибка в чтении файла",nfile
-        ? "Некорректное значение тега YEAR_REPORT",j1
-        wait
-        exit
+  dbcreate("_mo1kslp",_mo_kslp)
+  use _mo1kslp new alias KS
+  nfile := "SprKslp.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "SPRKSLP.xml  - для КСГ - КСЛП"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZGLV" == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
+          ? "Ошибка в чтении файла",nfile
+          ? "Некорректное значение тега YEAR_REPORT",j1
+          wait
+          exit
+        endif
+      elseif "ZAP" == oXmlNode:title
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        if (oNode1 := oXmlNode:Find("COEFF")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "ENTRY" == oNode2:title
+              select KS
+              append blank
+              ks->code    :=      val(mo_read_xml_stroke(oXmlNode,"CODE",))
+              ks->NAME    :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
+              ks->NAME_F  :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME_F",))))
+              ks->COEFF   :=      val(mo_read_xml_stroke(oNode2,"C_VAL",))
+              ks->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
+              ks->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
+            endif
+          next j1
+        endif
       endif
-    elseif "ZAP" == oXmlNode:title
-      @ row(),30 say str(j/k*100,6,2)+"%"
-      if (oNode1 := oXmlNode:Find("COEFF")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "ENTRY" == oNode2:title
-            select KS
-            append blank
-            ks->code    :=      val(mo_read_xml_stroke(oXmlNode,"CODE",))
-            ks->NAME    :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
-            ks->NAME_F  :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME_F",))))
-            ks->COEFF   :=      val(mo_read_xml_stroke(oNode2,"C_VAL",))
-            ks->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
-            ks->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
-          endif
-        next j1
-      endif
-    endif
-  NEXT j
-ENDIF
-close databases
-return NIL
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
 
-*
+***** 23.04.21
+Function work_SprKiro()
+  Local _mo_kiro := {;
+    {"CODE",       "N",      2,      0},;
+    {"NAME",       "C",     55,      0},;
+    {"NAME_F",     "C",    255,      0},;
+    {"COEFF",      "N",      4,      2},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
 
-***** 30.12.18
-Function work_SprKiro(_mo_kslp)
-dbcreate("_mo1kiro",_mo_kslp)
-use _mo1kiro new alias KS
-nfile := "S_KIRO.xml"
-oXmlDoc := HXMLDoc():Read(nfile)
-? "S_kiro.xml   - для КСГ - КИРО"
-IF Empty( oXmlDoc:aItems )
-  ? "Ошибка в чтении файла",nfile
-  wait
-else
-  ? "Обработка файла "+nfile+" - "
-  k := Len( oXmlDoc:aItems[1]:aItems )
-  FOR j := 1 TO k
-    oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-    if "ZGLV" == oXmlNode:title
-      if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
-        ? "Ошибка в чтении файла",nfile
-        ? "Некорректное значение тега YEAR_REPORT",j1
-        wait
-        exit
+  dbcreate("_mo1kiro",_mo_kiro)
+  use _mo1kiro new alias KS
+  nfile := "S_KIRO.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "S_kiro.xml   - для КСГ - КИРО"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZGLV" == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
+          ? "Ошибка в чтении файла",nfile
+          ? "Некорректное значение тега YEAR_REPORT",j1
+          wait
+          exit
+        endif
+      elseif "ZAP" == oXmlNode:title
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        if (oNode1 := oXmlNode:Find("COEFF")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "ENTRY" == oNode2:title
+              select KS
+              append blank
+              ks->code    :=      val(mo_read_xml_stroke(oXmlNode,"CODE",))
+              ks->NAME    :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
+              ks->NAME_F  :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME_F",))))
+              ks->COEFF   :=      val(mo_read_xml_stroke(oNode2,"C_VAL",))
+              ks->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
+              ks->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
+            endif
+          next j1
+        endif
       endif
-    elseif "ZAP" == oXmlNode:title
-      @ row(),30 say str(j/k*100,6,2)+"%"
-      if (oNode1 := oXmlNode:Find("COEFF")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "ENTRY" == oNode2:title
-            select KS
-            append blank
-            ks->code    :=      val(mo_read_xml_stroke(oXmlNode,"CODE",))
-            ks->NAME    :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
-            ks->NAME_F  :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME_F",))))
-            ks->COEFF   :=      val(mo_read_xml_stroke(oNode2,"C_VAL",))
-            ks->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
-            ks->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
-          endif
-        next j1
-      endif
-    endif
-  NEXT j
-ENDIF
-close databases
-return NIL
-
-*
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
 
 ***** 30.12.18
 Function work_SprUnit(_mo_unit)
@@ -1626,21 +1613,15 @@ ENDIF
 close databases
 return NIL
 
-*
-
 ***** строка даты для XML-файла
 Function date2xml(mdate)
 return strzero(year(mdate),4)+'-'+;
        strzero(month(mdate),2)+'-'+;
        strzero(day(mdate),2)
 
-*
-
 ***** пребразовать дату из "2002-02-01" в тип "DATE"
 Function xml2date(s)
 return stod(charrem("-",s))
-
-*
 
 ***** проверить наличие в XML-файле тэга и вернуть его значение
 Function mo_read_xml_stroke(_node,_title,_aerr,_binding)
@@ -1661,8 +1642,6 @@ if oNode != NIL
 endif
 return ret
 
-*
-
 ***** вернуть значение тэга
 Function mo_read_xml_tag(oNode,_aerr,_binding)
 // oNode - указатель на узел
@@ -1680,8 +1659,6 @@ elseif yes_err
   aadd(_aerr,'Неверный тип данных у тэга "'+oNode:title+'": "'+c+'"')
 endif
 return ret
-
-*
 
 ***** попадает ли date1 (диапазон date1-date2) в диапазон _begin_date-_end_date
 Function between_date(_begin_date,_end_date,date1,date2)
@@ -1706,8 +1683,6 @@ if valtype(date2) == 'D'
   fl := (fl .or. fl2)
 endif
 return fl
-
-*
 
 *****
 Function InitSpravFFOMS()
@@ -2366,15 +2341,11 @@ Public glob_arr_V004_V015 := {;
  }
 return NIL
 
-*
-
 ***** вернуть в массиве запись базы данных
 Function get_field()
 Local arr := array(fcount())
 aeval(arr, {|x,i| arr[i] := fieldget(i) }  )
 return arr
-
-*
 
 ***** 15.01.14 функция сортировки шифров услуг по возрастанию (для команды INDEX)
 Function fsort_usl(sh_u)
@@ -2396,8 +2367,6 @@ for i := 1 to len(arr)
   endif
 next
 return s
-
-*
 
 ***** 28.01.17
 Function usl2arr(sh_u,/*@*/j)
