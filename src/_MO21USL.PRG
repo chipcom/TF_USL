@@ -214,6 +214,7 @@ work_V018()
 work_V019()
 work_V022(_mo_V022)
 make_Q015()
+make_Q016()
 make_Q017()
 make_F006()
 make_F010()
@@ -2724,6 +2725,55 @@ Function make_Q015()
         Q015->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         Q015->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
 
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 21.05.21
+Function make_Q016()
+
+  local _mo_Q016 := {;
+    {"KOD",       "C",     12,      0},;
+    {"NAME",      "C",     60,      0},;
+    {"NSI_OBJ",   "C",      4,      0},;
+    {"NSI_EL",    "C",     20,      0},;
+    {"USL_TEST",  "M",     10,      0},;
+    {"VAL_EL",    "M",     10,      0},;
+    {"COMMENT",   "M",     10,      0},;
+    {"DATEBEG",   "D",      8,      0},;
+    {"DATEEND",   "D",      8,      0};
+  }
+
+  dbcreate("_mo_q016",_mo_Q016)
+  use _mo_Q016 new alias Q016
+  nfile := "Q016.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "Q016.xml     - Перечень проверок автоматизированной поддержки МЭК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (MEK_MPF)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        select Q016
+        append blank
+        Q016->KOD := mo_read_xml_stroke(oXmlNode,"ID_TEST",)
+        Q016->NAME := mo_read_xml_stroke(oXmlNode,"DESC_TEST",)
+
+        Q016->NSI_OBJ := mo_read_xml_stroke(oXmlNode,"NSI_OBJ",)
+        Q016->NSI_EL := mo_read_xml_stroke(oXmlNode,"NSI_EL",)
+        Q016->USL_TEST := mo_read_xml_stroke(oXmlNode,"USL_TEST",)
+        Q016->VAL_EL := mo_read_xml_stroke(oXmlNode,"VAL_EL",)
+        Q016->COMMENT := mo_read_xml_stroke(oXmlNode,"COMMENT",)
+        Q016->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        Q016->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+    
       endif
     NEXT j
   ENDIF
