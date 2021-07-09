@@ -219,6 +219,7 @@ make_Q017()
 make_F006()
 make_F010()
 make_F011()
+make_F014()
 make_O001()
 close databases
 //
@@ -3069,3 +3070,44 @@ Function make_TO01()
   // ENDIF
   // close databases
   return NIL
+
+***** 09.07.21
+Function make_F014()
+
+  local _mo_F014 := {;
+    {'KOD',     'N',      4,      0},;
+    {'NAME',    'C',    250,      0},;
+    {'OPIS',    'M',     10,      0},;
+    {'DATEBEG', 'D',      8,      0},;
+    {'DATEEND', 'D',      8,      0};
+  }
+
+  dbcreate("_mo_f014",_mo_F014)
+  use _mo_F014 new alias F014
+  nfile := "F014.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? 'F014.xml     - Классификатор причин отказа в оплате медицинской помощи (OplOtk)'
+  IF Empty( oXmlDoc:aItems )
+    ? 'Ошибка в чтении файла', nfile
+    wait
+  else
+    ? 'Обработка файла ' + nfile + ' - '
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if 'ZAP' == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2) + '%'
+        select F014
+        append blank
+        F014->KOD := val( mo_read_xml_stroke(oXmlNode, 'KOD',) )
+        F014->NAME := mo_read_xml_stroke(oXmlNode, 'KOMMENT',)
+        F014->OPIS := mo_read_xml_stroke(oXmlNode, 'NAIM',)
+        F014->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
+        F014->DATEEND := ctod(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
+    
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
