@@ -49,12 +49,17 @@ procedure main()
     sqlite3_exec( db, "PRAGMA auto_vacuum=0" )
     sqlite3_exec( db, "PRAGMA page_size=4096" )
 
-    ? time()
+    // ? time()
+    // справочники группы F___
     make_f006( db )
     make_f010( db )
     make_f011( db )
     make_f014( db )
-    ? time()
+    // справочники группы O___
+    make_o001( db )
+    // справочники группы Q___
+    make_q015( db )
+    // ? time()
   endif
   return
 

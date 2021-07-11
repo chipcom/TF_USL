@@ -14,6 +14,8 @@ hbsqlit3.hbc
 xmlparse.c
 hxmldoc.prg
 main.prg
+catalog_o.prg
+catalog_q.prg
 
 
 sqlite_mo.rc
