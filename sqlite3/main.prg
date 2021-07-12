@@ -65,7 +65,12 @@ procedure main()
     make_q016( db )
     make_q017( db )
     // справочники группы V___
+    make_v002( db )
+    make_v005( db )
+    make_v006( db )
+    make_v008( db )
     make_v009( db )
+    make_v010( db )
     make_v012( db )
     // ? time()
   endif
