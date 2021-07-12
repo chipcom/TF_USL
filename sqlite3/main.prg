@@ -4,6 +4,9 @@
 
 // #define TRACE
 
+/*
+ * 12.07.2021
+*/
 procedure main()
   LOCAL lCreateIfNotExist := .T.
   LOCAL db := sqlite3_open( "chip_mo.s3db", lCreateIfNotExist )
@@ -59,6 +62,11 @@ procedure main()
     make_o001( db )
     // справочники группы Q___
     make_q015( db )
+    make_q016( db )
+    make_q017( db )
+    // справочники группы V___
+    make_v009( db )
+    make_v012( db )
     // ? time()
   endif
   return

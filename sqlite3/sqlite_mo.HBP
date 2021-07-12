@@ -16,6 +16,7 @@ hxmldoc.prg
 main.prg
 catalog_o.prg
 catalog_q.prg
+catalog_v.prg
 
 
 sqlite_mo.rc
