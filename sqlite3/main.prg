@@ -78,7 +78,14 @@ procedure main()
     // make_v017( db )
     // make_v018( db )
     // make_v019( db )
-    make_v020( db )
+    // make_v020( db )
+    // make_v021( db )
+    // make_v022( db )
+    make_v023( db )
+    make_v024( db )
+    // make_v025( db )
+    // make_v026( db )
+    make_v027( db )
 
   endif
   return
