@@ -59,13 +59,13 @@ PROCEDURE make_v010(db)
     ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
     ? ""
 
-    aTable := sqlite3_get_table( db, "SELECT * FROM v010" )
-    FOR nI := 1 TO Len( aTable )
-      // FOR nJ := 1 TO Len( aTable[ nI ] )
-      //   ?? aTable[ nI ][ nJ ], " "
-      // NEXT
-      ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
-    NEXT
+    // aTable := sqlite3_get_table( db, "SELECT * FROM v010" )
+    // FOR nI := 1 TO Len( aTable )
+    //   // FOR nJ := 1 TO Len( aTable[ nI ] )
+    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   // NEXT
+    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    // NEXT
 
   endif
 
@@ -474,3 +474,556 @@ PROCEDURE make_v009(db)
   endif
 
   return
+
+/*
+ * 13.07.2021
+*/
+PROCEDURE make_v013(db)
+
+  LOCAL stmt
+  LOCAL nI, nJ
+  LOCAL aTable
+  local k, j
+  local ss1, d1, d2
+  local table_sql := "CREATE TABLE v013( idkat INTEGER, katname TEXT, datebeg TEXT, dateend TEXT )"
+
+  sqlite3_exec( db, "DROP TABLE v013" )
+     
+  IF sqlite3_exec( db, table_sql ) == SQLITE_OK
+     ? "CREATE TABLE v013 - Ok"
+  ENDIF
+
+  nfile := "v013.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  IF Empty( oXmlDoc:aItems )
+    ? 'Ошибка в чтении файла', nfile
+    wait 'Press any key'
+  else
+    ? 'Обработка файла v013.xml - Классификатор категорий застрахованного лица (KategZL)'
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    stmt := sqlite3_prepare( db, "INSERT INTO v013 ( idkat, katname, datebeg, dateend ) VALUES( :idkat, :katname, :datebeg, :dateend )" )
+    IF ! Empty( stmt )
+      FOR j := 1 TO k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          s_idkat := mo_read_xml_stroke(oXmlNode, 'IDKAT',)
+          s_katname := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'KATNAME',), 'RU1251')
+          d1 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEBEG',) )
+          d2 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEEND',) )
+          if sqlite3_bind_int( stmt, 1, val( s_idkat ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 2, s_katname ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
+            IF sqlite3_step( stmt ) != SQLITE_DONE
+              ? 'Ошибка при загрузки строки - ', j
+            ENDIF
+          ENDIF
+          sqlite3_reset( stmt )
+        endif
+      NEXT j
+    endif
+    sqlite3_clear_bindings( stmt )
+    sqlite3_finalize( stmt )
+
+    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
+    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
+    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
+    ? ""
+
+    // aTable := sqlite3_get_table( db, "SELECT * FROM v013" )
+    // FOR nI := 1 TO Len( aTable )
+    //   // FOR nJ := 1 TO Len( aTable[ nI ] )
+    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   // NEXT
+    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    // NEXT
+
+  endif
+
+  return
+
+/*
+ * 13.07.2021
+*/
+PROCEDURE make_v014(db)
+
+  LOCAL stmt
+  LOCAL nI, nJ
+  LOCAL aTable
+  local k, j
+  local ss1, d1, d2
+  local table_sql := "CREATE TABLE v014( idfrmmp INTEGER, frmmpname TEXT, datebeg TEXT, dateend TEXT )"
+
+  sqlite3_exec( db, "DROP TABLE v014" )
+     
+  IF sqlite3_exec( db, table_sql ) == SQLITE_OK
+     ? "CREATE TABLE v014 - Ok"
+  ENDIF
+
+  nfile := "v014.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  IF Empty( oXmlDoc:aItems )
+    ? 'Ошибка в чтении файла', nfile
+    wait 'Press any key'
+  else
+    ? 'Обработка файла v014.xml - Классификатор форм оказания медицинской помощи (FRMMP)'
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    stmt := sqlite3_prepare( db, "INSERT INTO v014 ( idfrmmp, frmmpname, datebeg, dateend ) VALUES( :idfrmmp, :frmmpname, :datebeg, :dateend )" )
+    IF ! Empty( stmt )
+      FOR j := 1 TO k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          s_idfrmmp := mo_read_xml_stroke(oXmlNode, 'IDFRMMP',)
+          s_frmmpname := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'FRMMPNAME',), 'RU1251')
+          d1 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEBEG',) )
+          d2 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEEND',) )
+          if sqlite3_bind_int( stmt, 1, val( s_idfrmmp ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 2, s_frmmpname ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
+            IF sqlite3_step( stmt ) != SQLITE_DONE
+              ? 'Ошибка при загрузки строки - ', j
+            ENDIF
+          ENDIF
+          sqlite3_reset( stmt )
+        endif
+      NEXT j
+    endif
+    sqlite3_clear_bindings( stmt )
+    sqlite3_finalize( stmt )
+
+    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
+    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
+    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
+    ? ""
+
+    // aTable := sqlite3_get_table( db, "SELECT * FROM v014" )
+    // FOR nI := 1 TO Len( aTable )
+    //   // FOR nJ := 1 TO Len( aTable[ nI ] )
+    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   // NEXT
+    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    // NEXT
+
+  endif
+
+  return
+
+/*
+ * 13.07.2021
+*/
+PROCEDURE make_v015(db)
+
+  LOCAL stmt
+  LOCAL nI, nJ
+  LOCAL aTable
+  local k, j
+  local ss1, d1, d2
+  local table_sql := "CREATE TABLE v015( recid INTEGER, code INTEGER, name TEXT, high INTEGER, okso INTEGER, datebeg TEXT, dateend TEXT )"
+
+  sqlite3_exec( db, "DROP TABLE v015" )
+     
+  IF sqlite3_exec( db, table_sql ) == SQLITE_OK
+     ? "CREATE TABLE v015 - Ok"
+  ENDIF
+
+  nfile := "v015.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  IF Empty( oXmlDoc:aItems )
+    ? 'Ошибка в чтении файла', nfile
+    wait 'Press any key'
+  else
+    ? 'Обработка файла v015.xml - Классификатор медицинских специальностей (Medspec)'
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    stmt := sqlite3_prepare( db, "INSERT INTO v015 ( recid, code, name, high, okso, datebeg, dateend ) VALUES( :recid, :code, :name, :high, :okso, :datebeg, :dateend )" )
+    IF ! Empty( stmt )
+      FOR j := 1 TO k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          s_recid := mo_read_xml_stroke(oXmlNode, 'RECID',)
+          s_code := mo_read_xml_stroke(oXmlNode, 'CODE',)
+          s_name := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'NAME',), 'RU1251')
+          s_high := mo_read_xml_stroke(oXmlNode, 'HIGH',)
+          s_okso := mo_read_xml_stroke(oXmlNode, 'OKSO',)
+          d1 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEBEG',) )
+          d2 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEEND',) )
+          if sqlite3_bind_int( stmt, 1, val( s_recid ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_int( stmt, 2, val( s_code ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 3, s_name ) == SQLITE_OK .AND. ;
+            sqlite3_bind_int( stmt, 4, val( s_high ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_int( stmt, 5, val( s_okso ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 6, d1 ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 7, d2 ) == SQLITE_OK
+            IF sqlite3_step( stmt ) != SQLITE_DONE
+              ? 'Ошибка при загрузки строки - ', j
+            ENDIF
+          ENDIF
+          sqlite3_reset( stmt )
+        endif
+      NEXT j
+    endif
+    sqlite3_clear_bindings( stmt )
+    sqlite3_finalize( stmt )
+
+    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
+    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
+    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
+    ? ""
+
+    // aTable := sqlite3_get_table( db, "SELECT * FROM v015" )
+    // FOR nI := 1 TO Len( aTable )
+    //   // FOR nJ := 1 TO Len( aTable[ nI ] )
+    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   // NEXT
+    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 3 ], 'RU866'), "-", aTable[ nI ][ 4 ], "-", aTable[ nI ][ 6 ]
+    // NEXT
+
+  endif
+
+  return
+
+/*
+ * 13.07.2021
+*/
+PROCEDURE make_v016(db)
+
+  LOCAL stmt
+  LOCAL nI, nJ
+  LOCAL aTable
+  local k, j
+  local ss1, d1, d2
+  local table_sql := "CREATE TABLE v016( iddt TEXT, dtname TEXT, datebeg TEXT, dateend TEXT )"
+
+  sqlite3_exec( db, "DROP TABLE v016" )
+     
+  IF sqlite3_exec( db, table_sql ) == SQLITE_OK
+     ? "CREATE TABLE v016 - Ok"
+  ENDIF
+
+  nfile := "v016.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  IF Empty( oXmlDoc:aItems )
+    ? 'Ошибка в чтении файла', nfile
+    wait 'Press any key'
+  else
+    ? 'Обработка файла v016.xml - Классификатор типов диспансеризации (DispT)'
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    stmt := sqlite3_prepare( db, "INSERT INTO v016 ( iddt, dtname, datebeg, dateend ) VALUES( :iddt, :dtname, :datebeg, :dateend )" )
+    IF ! Empty( stmt )
+      FOR j := 1 TO k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          s_iddt := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'IDDT',), 'RU1251')
+          s_dtname := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DTNAME',), 'RU1251')
+          d1 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEBEG',) )
+          d2 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEEND',) )
+          if sqlite3_bind_text( stmt, 1, s_iddt ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 2, s_dtname ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
+            IF sqlite3_step( stmt ) != SQLITE_DONE
+              ? 'Ошибка при загрузки строки - ', j
+            ENDIF
+          ENDIF
+          sqlite3_reset( stmt )
+        endif
+      NEXT j
+    endif
+    sqlite3_clear_bindings( stmt )
+    sqlite3_finalize( stmt )
+
+    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
+    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
+    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
+    ? ""
+
+    aTable := sqlite3_get_table( db, "SELECT * FROM v016" )
+    FOR nI := 1 TO Len( aTable )
+      // FOR nJ := 1 TO Len( aTable[ nI ] )
+      //   ?? aTable[ nI ][ nJ ], " "
+      // NEXT
+      ? hb_UTF8ToStr( aTable[ nI ][ 1 ], 'RU866'), "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    NEXT
+
+  endif
+
+  return
+
+/*
+ * 13.07.2021
+*/
+PROCEDURE make_v017(db)
+
+  LOCAL stmt
+  LOCAL nI, nJ
+  LOCAL aTable
+  local k, j
+  local ss1, d1, d2
+  local table_sql := "CREATE TABLE v017( iddr INTEGER, drname TEXT, datebeg TEXT, dateend TEXT )"
+
+  sqlite3_exec( db, "DROP TABLE v017" )
+     
+  IF sqlite3_exec( db, table_sql ) == SQLITE_OK
+     ? "CREATE TABLE v017 - Ok"
+  ENDIF
+
+  nfile := "v017.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  IF Empty( oXmlDoc:aItems )
+    ? 'Ошибка в чтении файла', nfile
+    wait 'Press any key'
+  else
+    ? 'Обработка файла v017.xml - Классификатор результатов диспансеризации (DispR)'
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    stmt := sqlite3_prepare( db, "INSERT INTO v017 ( iddr, drname, datebeg, dateend ) VALUES( :iddr, :drname, :datebeg, :dateend )" )
+    IF ! Empty( stmt )
+      FOR j := 1 TO k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          s_iddr := mo_read_xml_stroke(oXmlNode, 'IDDR',)
+          s_drname := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DRNAME',), 'RU1251')
+          d1 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEBEG',) )
+          d2 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEEND',) )
+          if sqlite3_bind_int( stmt, 1, val( s_iddr ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 2, s_drname ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
+            IF sqlite3_step( stmt ) != SQLITE_DONE
+              ? 'Ошибка при загрузки строки - ', j
+            ENDIF
+          ENDIF
+          sqlite3_reset( stmt )
+        endif
+      NEXT j
+    endif
+    sqlite3_clear_bindings( stmt )
+    sqlite3_finalize( stmt )
+
+    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
+    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
+    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
+    ? ""
+
+    // aTable := sqlite3_get_table( db, "SELECT * FROM v017" )
+    // FOR nI := 1 TO Len( aTable )
+    //   // FOR nJ := 1 TO Len( aTable[ nI ] )
+    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   // NEXT
+    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    // NEXT
+
+  endif
+
+  return
+
+/*
+ * 13.07.2021
+*/
+PROCEDURE make_v018(db)
+
+  LOCAL stmt
+  LOCAL nI, nJ
+  LOCAL aTable
+  local k, j
+  local ss1, d1, d2
+  local table_sql := "CREATE TABLE v018( idhvid TEXT, hvidname TEXT, datebeg TEXT, dateend TEXT )"
+
+  sqlite3_exec( db, "DROP TABLE v018" )
+     
+  IF sqlite3_exec( db, table_sql ) == SQLITE_OK
+     ? "CREATE TABLE v018 - Ok"
+  ENDIF
+
+  nfile := "v018.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  IF Empty( oXmlDoc:aItems )
+    ? 'Ошибка в чтении файла', nfile
+    wait 'Press any key'
+  else
+    ? 'Обработка файла v018.xml - Классификатор видов высокотехнологичной медицинской помощи (HVid)'
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    stmt := sqlite3_prepare( db, "INSERT INTO v018 ( idhvid, hvidname, datebeg, dateend ) VALUES( :idhvid, :hvidname, :datebeg, :dateend )" )
+    IF ! Empty( stmt )
+      FOR j := 1 TO k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          s_idhvid := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'IDHVID',), 'RU1251')
+          s_hvidname := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'HVIDNAME',), 'RU1251')
+          d1 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEBEG',) )
+          d2 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEEND',) )
+          if sqlite3_bind_text( stmt, 1, s_idhvid ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 2, s_hvidname ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
+            IF sqlite3_step( stmt ) != SQLITE_DONE
+              ? 'Ошибка при загрузки строки - ', j
+            ENDIF
+          ENDIF
+          sqlite3_reset( stmt )
+        endif
+      NEXT j
+    endif
+    sqlite3_clear_bindings( stmt )
+    sqlite3_finalize( stmt )
+
+    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
+    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
+    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
+    ? ""
+
+    // aTable := sqlite3_get_table( db, "SELECT * FROM v018" )
+    // FOR nI := 1 TO Len( aTable )
+    //   // FOR nJ := 1 TO Len( aTable[ nI ] )
+    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   // NEXT
+    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    // NEXT
+
+  endif
+
+  return
+
+/*
+ * 13.07.2021
+*/
+PROCEDURE make_v019(db)
+
+  LOCAL stmt
+  LOCAL nI, nJ
+  LOCAL aTable
+  local k, j
+  local ss1, d1, d2
+  local table_sql := "CREATE TABLE v019( idhm INTEGER, hmname TEXT, diag TEXT, hvid TEXT, hgr INTEGER, hmodp TEXT, idmodp INTEGER, datebeg TEXT, dateend TEXT )"
+
+  sqlite3_exec( db, "DROP TABLE v019" )
+     
+  IF sqlite3_exec( db, table_sql ) == SQLITE_OK
+     ? "CREATE TABLE v019 - Ok"
+  ENDIF
+
+  nfile := "v019.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  IF Empty( oXmlDoc:aItems )
+    ? 'Ошибка в чтении файла', nfile
+    wait 'Press any key'
+  else
+    ? 'Обработка файла v019.xml - Классификатор методов высокотехнологичной медицинской помощи (HMet)'
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    stmt := sqlite3_prepare( db, "INSERT INTO v019 ( idhm, hmname, diag, hvid, hgr, hmodp, idmodp, datebeg, dateend ) VALUES( :idhm, :hmname, :diag, :hvid, :hgr, :hmodp, :idmodp, :datebeg, :dateend )" )
+    IF ! Empty( stmt )
+      FOR j := 1 TO k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          s_idhm := mo_read_xml_stroke(oXmlNode, 'IDHM',)
+          s_hmname := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'HMNAME',), 'RU1251')
+          s_diag := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DIAG',), 'RU1251')
+          s_hvid := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'HVID',), 'RU1251')
+          s_hgr := mo_read_xml_stroke(oXmlNode, 'HGR',)
+          s_hmodp := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'HMODP',), 'RU1251')
+          s_idmodp := mo_read_xml_stroke(oXmlNode, 'IDMODP',)
+          d1 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEBEG',) )
+          d2 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEEND',) )
+          if sqlite3_bind_int( stmt, 1, val( s_idhm ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 2, s_hmname ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 3, s_diag ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 4, s_hvid ) == SQLITE_OK .AND. ;
+            sqlite3_bind_int( stmt, 5, val( s_hgr ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 6, s_hmodp ) == SQLITE_OK .AND. ;
+            sqlite3_bind_int( stmt, 7, val( s_idmodp ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 8, d1 ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 9, d2 ) == SQLITE_OK
+            IF sqlite3_step( stmt ) != SQLITE_DONE
+              ? 'Ошибка при загрузки строки - ', j
+            ENDIF
+          ENDIF
+          sqlite3_reset( stmt )
+        endif
+      NEXT j
+    endif
+    sqlite3_clear_bindings( stmt )
+    sqlite3_finalize( stmt )
+
+    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
+    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
+    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
+    ? ""
+
+    // aTable := sqlite3_get_table( db, "SELECT * FROM v019" )
+    // FOR nI := 1 TO Len( aTable )
+    //   // FOR nJ := 1 TO Len( aTable[ nI ] )
+    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   // NEXT
+    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 8 ], "-", aTable[ nI ][ 9 ]
+    // NEXT
+
+  endif
+
+  return
+
+/*
+ * 13.07.2021
+*/
+PROCEDURE make_v020(db)
+
+  LOCAL stmt
+  LOCAL nI, nJ
+  LOCAL aTable
+  local k, j
+  local ss1, d1, d2
+  local table_sql := "CREATE TABLE v020( idk_pr INTEGER, k_prname TEXT, datebeg TEXT, dateend TEXT )"
+
+  sqlite3_exec( db, "DROP TABLE v020" )
+     
+  IF sqlite3_exec( db, table_sql ) == SQLITE_OK
+     ? "CREATE TABLE v020 - Ok"
+  ENDIF
+
+  nfile := "v020.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  IF Empty( oXmlDoc:aItems )
+    ? 'Ошибка в чтении файла', nfile
+    wait 'Press any key'
+  else
+    ? 'Обработка файла v020.xml - Классификатор профиля койки (KoPr)'
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    stmt := sqlite3_prepare( db, "INSERT INTO v020 ( idk_pr, k_prname, datebeg, dateend ) VALUES( :idk_pr, :k_prname, :datebeg, :dateend )" )
+    IF ! Empty( stmt )
+      FOR j := 1 TO k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          s_idk_pr := mo_read_xml_stroke(oXmlNode, 'IDK_PR',)
+          s_k_prname := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'K_PRNAME',), 'RU1251')
+          d1 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEBEG',) )
+          d2 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEEND',) )
+          if sqlite3_bind_int( stmt, 1, val( s_idk_pr ) ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 2, s_k_prname ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
+            IF sqlite3_step( stmt ) != SQLITE_DONE
+              ? 'Ошибка при загрузки строки - ', j
+            ENDIF
+          ENDIF
+          sqlite3_reset( stmt )
+        endif
+      NEXT j
+    endif
+    sqlite3_clear_bindings( stmt )
+    sqlite3_finalize( stmt )
+
+    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
+    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
+    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
+    ? ""
+
+    aTable := sqlite3_get_table( db, "SELECT * FROM v020" )
+    FOR nI := 1 TO Len( aTable )
+      // FOR nJ := 1 TO Len( aTable[ nI ] )
+      //   ?? aTable[ nI ][ nJ ], " "
+      // NEXT
+      ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    NEXT
+
+  endif
+
+  return
+

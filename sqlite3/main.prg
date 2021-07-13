@@ -52,27 +52,34 @@ procedure main()
     sqlite3_exec( db, "PRAGMA auto_vacuum=0" )
     sqlite3_exec( db, "PRAGMA page_size=4096" )
 
-    // ? time()
-    // справочники группы F___
-    make_f006( db )
-    make_f010( db )
-    make_f011( db )
-    make_f014( db )
-    // справочники группы O___
-    make_o001( db )
-    // справочники группы Q___
-    make_q015( db )
-    make_q016( db )
-    make_q017( db )
-    // справочники группы V___
-    make_v002( db )
-    make_v005( db )
-    make_v006( db )
-    make_v008( db )
-    make_v009( db )
-    make_v010( db )
-    make_v012( db )
-    // ? time()
+    // // справочники группы F___
+    // make_f006( db )
+    // make_f010( db )
+    // make_f011( db )
+    // make_f014( db )
+    // // справочники группы O___
+    // make_o001( db )
+    // // справочники группы Q___
+    // make_q015( db )
+    // make_q016( db )
+    // make_q017( db )
+    // // справочники группы V___
+    // make_v002( db )
+    // make_v005( db )
+    // make_v006( db )
+    // make_v008( db )
+    // make_v009( db )
+    // make_v010( db )
+    // make_v012( db )
+    // make_v013( db )
+    // make_v014( db )
+    // make_v015( db )
+    // make_v016( db )
+    // make_v017( db )
+    // make_v018( db )
+    // make_v019( db )
+    make_v020( db )
+
   endif
   return
 
