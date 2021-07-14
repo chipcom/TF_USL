@@ -2,7 +2,7 @@
 
 #require 'hbsqlit3'
 
-static v_pom := { 'ст-р', 'дн.с', 'п-ка', 'вне МО' }
+// static v_pom := { 'ст-р', 'дн.с', 'п-ка', 'вне МО' }
 
 /*
  * 12.07.2021
@@ -301,8 +301,9 @@ PROCEDURE make_v009(db)
         if 'ZAP' == upper(oXmlNode:title)
           s_idrmp := mo_read_xml_stroke(oXmlNode, 'IDRMP',)
           v_dl_uslov := val( mo_read_xml_stroke(oXmlNode, 'DL_USLOV',) )
-          s_rmpname := s_idrmp + '/' + hb_StrToUTF8( v_pom[ v_dl_uslov ], 'RU866') + '/' + ;
-            hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'RMPNAME',), 'RU1251')
+          // s_rmpname := s_idrmp + '/' + hb_StrToUTF8( v_pom[ v_dl_uslov ], 'RU866') + '/' + ;
+          //   hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'RMPNAME',), 'RU1251')
+          s_rmpname := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'RMPNAME',), 'RU1251')
           d1 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEBEG',) )
           d2 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEEND',) )
           if sqlite3_bind_int( stmt, 1, val( s_idrmp ) ) == SQLITE_OK .AND. ;
@@ -438,12 +439,13 @@ PROCEDURE make_v012(db)
         if 'ZAP' == upper(oXmlNode:title)
           s_idrmp := mo_read_xml_stroke(oXmlNode, 'IDIZ',)
           v_dl_uslov := val( mo_read_xml_stroke(oXmlNode, 'DL_USLOV',) )
-          s_rmpname := s_idrmp + '/' + hb_StrToUTF8( v_pom[ v_dl_uslov ], 'RU866') + '/' + ;
-            hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'IZNAME',), 'RU1251')
+          // s_rmpname := s_idrmp + '/' + hb_StrToUTF8( v_pom[ v_dl_uslov ], 'RU866') + '/' + ;
+          //   hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'IZNAME',), 'RU1251')
+          s_izname := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'IZNAME',), 'RU1251')
           d1 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEBEG',) )
           d2 := hb_StrToUTF8( mo_read_xml_stroke(oXmlNode, 'DATEEND',) )
           if sqlite3_bind_int( stmt, 1, val( s_idrmp ) ) == SQLITE_OK .AND. ;
-            sqlite3_bind_text( stmt, 2, s_rmpname ) == SQLITE_OK .AND. ;
+            sqlite3_bind_text( stmt, 2, s_izname ) == SQLITE_OK .AND. ;
             sqlite3_bind_int( stmt, 3, v_dl_uslov ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
