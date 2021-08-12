@@ -3071,7 +3071,7 @@ Function make_TO01()
   // close databases
   return NIL
 
-***** 09.07.21
+***** 12.08.21
 Function make_F014()
 
   local _mo_F014 := {;
@@ -3079,7 +3079,8 @@ Function make_F014()
     {'NAME',    'C',    250,      0},;
     {'OPIS',    'M',     10,      0},;
     {'DATEBEG', 'D',      8,      0},;
-    {'DATEEND', 'D',      8,      0};
+    {'DATEEND', 'D',      8,      0},;
+    {'OSN',     'C',     20,      0};
   }
 
   dbcreate("_mo_f014",_mo_F014)
@@ -3104,6 +3105,7 @@ Function make_F014()
         F014->OPIS := mo_read_xml_stroke(oXmlNode, 'NAIM',)
         F014->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
         F014->DATEEND := ctod(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
+        F014->OSN := mo_read_xml_stroke(oXmlNode, 'OSN',)
     
       endif
     NEXT j
