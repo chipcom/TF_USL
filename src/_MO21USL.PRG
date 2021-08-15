@@ -2554,13 +2554,13 @@ function getV021()
 ***** 15.08.21
 Function work_V015()
   local _mo_V015 := {;
-    {"RECID",     "N",     3,      0},;
-    {"CODE",   "N",    4,      0},;
     {"NAME",   "C",    254,      0},;
-    {"HIGH",   "N",    4,      0},;
-    {"OKSO",   "N",    3,      0},;
+    {"CODE",   "N",    4,      0},;
+    {"HIGH",   "C",    4,      0},;
+    {"OKSO",   "C",    3,      0},;
     {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+    {"DATEEND",    "D",      8,      0},;
+    {"RECID",     "N",     3,      0};
   }
 
   dbcreate("_mo_v015",_mo_V015)
@@ -2590,8 +2590,8 @@ Function work_V015()
         V015->RECID := val(mRECID)
         V015->CODE := val(mCODE)
         V015->NAME := mNAME
-        V015->HIGH := val(mHIGH)
-        V015->OKSO := val(mOKSO)
+        V015->HIGH := mHIGH
+        V015->OKSO := mOKSO
         V015->DATEBEG := mDATEBEG
         V015->DATEEND := mDATEEND
       endif
