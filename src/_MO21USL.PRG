@@ -210,6 +210,7 @@ work_SprKiro()
 work_SprMU(_mo_prof, _mo_spec, _t2_v1)
 work_SprDS()
 work_t006(_mo_usl)
+work_V015()
 work_V018()
 work_V019()
 work_V022(_mo_V022)
@@ -2550,6 +2551,55 @@ function getV021()
 
   return _v021
 
+***** 15.08.21
+Function work_V015()
+  local _mo_V015 := {;
+    {"RECID",     "N",     3,      0},;
+    {"CODE",   "N",    4,      0},;
+    {"NAME",   "C",    254,      0},;
+    {"HIGH",   "N",    4,      0},;
+    {"OKSO",   "N",    3,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+
+  dbcreate("_mo_v015",_mo_V015)
+  use _mo_V015 new alias V015
+  nfile := "V015.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V015.xml     - Классификатор медицинских специальностей (Medspec)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mRECID := mo_read_xml_stroke(oXmlNode,"RECID",)
+        mCODE := mo_read_xml_stroke(oXmlNode,"CODE",)
+        mNAME := mo_read_xml_stroke(oXmlNode,"NAME",)
+        mHIGH := mo_read_xml_stroke(oXmlNode,"HIGH",)
+        mOKSO := mo_read_xml_stroke(oXmlNode,"OKSO",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V015
+        append blank
+        V015->RECID := val(mRECID)
+        V015->CODE := val(mCODE)
+        V015->NAME := mNAME
+        V015->HIGH := val(mHIGH)
+        V015->OKSO := val(mOKSO)
+        V015->DATEBEG := mDATEBEG
+        V015->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+  
 ***** 31.03.21
 Function work_V018()
   local _mo_V018 := {;
