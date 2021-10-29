@@ -30,7 +30,13 @@
 #include "edit_spr.ch"
 #include "function.ch"
 
+#define CURENT_YEAR '2021'
+
 external errorsys
+
+// вернуть последний символ года
+function symbolYear()
+  return substr(CURENT_YEAR,4,1)
 
 proc main()
 Local _mo_subdiv := {;
@@ -598,45 +604,59 @@ ENDIF
 close databases
 return NIL
 
-***** 00.01.21
+***** 29.10.21
 // S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
 Function work_SprSubDiv(_mo_subdiv)
-dbcreate("_mo1subdiv",_mo_subdiv)
-use _mo1subdiv new alias SD
-nfile := "S_SubDiv.xml"
-oXmlDoc := HXMLDoc():Read(nfile)
-? "S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты"
-IF Empty( oXmlDoc:aItems )
-  ? "Ошибка в чтении файла",nfile
-  wait
-else
-  ? "Обработка файла "+nfile+" - "
-  k := Len( oXmlDoc:aItems[1]:aItems )
-  FOR j := 1 TO k
-    oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-    if "MO_PLACES" == oXmlNode:title
-      @ row(),30 say str(j/k*100,6,2)+"%"
-      if (oNode1 := oXmlNode:Find("PLACES")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "PLACE" == oNode2:title
-            select SD
-            append blank
-            sd->codem    :=         mo_read_xml_stroke(oXmlNode,"CODEM",)
-            sd->mcode    :=         mo_read_xml_stroke(oXmlNode,"MCODE",)
-            sd->code    :=      val(mo_read_xml_stroke(oNode2,"CODE",))
-            sd->NAME    :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
-            sd->flag    :=      val(mo_read_xml_stroke(oNode2,"FLAG",))
-            sd->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
-            sd->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
-          endif
-        next j1
+
+  Local _mo_subdiv := {;
+    {"CODEM",      "C",      6,      0},;
+    {"MCODE",      "C",      6,      0},;
+    {"CODE",       "N",      3,      0},;
+    {"NAME",       "C",     60,      0},;
+    {"flag",       "N",      1,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+  local nameFile := '_mo' + symbolYear() + 'subdiv'
+
+  // dbcreate("_mo1subdiv",_mo_subdiv)
+  // use _mo1subdiv new alias SD
+  dbcreate(nameFile, _mo_subdiv)
+  use (nameFile) new alias SD
+  nfile := "S_SubDiv.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "MO_PLACES" == oXmlNode:title
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        if (oNode1 := oXmlNode:Find("PLACES")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "PLACE" == oNode2:title
+              select SD
+              append blank
+              sd->codem    :=         mo_read_xml_stroke(oXmlNode,"CODEM",)
+              sd->mcode    :=         mo_read_xml_stroke(oXmlNode,"MCODE",)
+              sd->code    :=      val(mo_read_xml_stroke(oNode2,"CODE",))
+              sd->NAME    :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
+              sd->flag    :=      val(mo_read_xml_stroke(oNode2,"FLAG",))
+              sd->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
+              sd->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
+            endif
+          next j1
+        endif
       endif
-    endif
-  NEXT j
-ENDIF
-close databases
-return NIL
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
 
 ***** 30.12.18
 Function work_SprDep(_mo_dep,_mo_deppr)
