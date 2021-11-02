@@ -1,0 +1,16 @@
+-L..\..\_mylib_hbt
+-lMyLib_HBT
+-lhbct
+-mt
+-inc
+
+-workdir=d:\_MO\TEMP\MO_USL
+-ocreate_dict
+-icon=database.ico
+
+xmlparse.c
+hxmldoc.prg
+create_dict.prg
+_mo21n00.prg
+
+create_dict.rc
