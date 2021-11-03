@@ -1,0 +1,3 @@
+#define CURENT_YEAR '2021'
+#define FIRST_DAY '20210101'
+#define LAST_DAY '20211231'
