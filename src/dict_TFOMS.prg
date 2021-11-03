@@ -4,8 +4,6 @@
 #include 'function.ch'
 #include 'settings.ch'
 
-
-
 ***** 09.03.21
 Function make_TO01()
 
@@ -28,7 +26,6 @@ Function make_TO01()
   ? 'Т001.dbf     - Справочник МО и обособленных подразделений, финансируемых самостоятельно'
   dbcreate('_mo_t001', _mo_T001)
   dbUseArea( .t.,, dbName, dbName, .t., .f. )
-  // use _mo_t001 new alias T001
 
   dbUseArea( .t.,, dbSource, dbSource, .f., .f. )
   (dbSource)->(dbGoTop())
@@ -46,7 +43,6 @@ Function make_TO01()
       (dbName)->DATEBEG := (dbSource)->DATEBEG
       (dbName)->DATEEND := (dbSource)->DATEEND
     endif
-      // aadd(_v002, { (dbName)->PRNAME, (dbName)->IDPR, (dbName)->DATEBEG, (dbName)->DATEEND })
     (dbSource)->(dbSkip())
   enddo
   (dbSource)->(dbCloseArea())
@@ -67,8 +63,6 @@ Function work_SprUnit()
 
   local nameFile := prefixFileName() + 'unit'
 
-  // dbcreate("_mo1unit",_mo_unit)
-  // use _mo1unit new alias UN
   dbcreate(nameFile, _mo_unit)
   use (nameFile) new alias UN
 
@@ -84,7 +78,6 @@ Function work_SprUnit()
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
-        // if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
             ? "Ошибка в чтении файла",nfile
           ? "Некорректное значение тега YEAR_REPORT",j1
@@ -124,8 +117,6 @@ Function work_MOServ()
   }
   local nameFile := prefixFileName() + 'moserv'
 
-  // dbcreate("_mo1moserv",_mo_moserv)
-  // use _mo1moserv new alias MS
   dbcreate(nameFile, _mo_moserv)
   use (nameFile) new alias MS
 
@@ -141,7 +132,6 @@ Function work_MOServ()
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
-        // if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
           ? "Ошибка в чтении файла",nfile
           ? "Некорректное значение тега YEAR_REPORT",j1
@@ -165,9 +155,9 @@ Function work_MOServ()
                     endif
                     select MS
                     append blank
-                    ms->codem   :=          mo_read_xml_stroke(oXmlNode,"CODEM",)
-                    ms->mcode   :=          mo_read_xml_stroke(oXmlNode,"MCOD",)
-                    ms->shifr   :=          mo_read_xml_stroke(oNode2,"CODE",)
+                    ms->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
+                    ms->mcode   := mo_read_xml_stroke(oXmlNode,"MCOD",)
+                    ms->shifr   := mo_read_xml_stroke(oNode2,"CODE",)
                     ms->DATEBEG := xml2date(mo_read_xml_stroke(oNode4,"D_B",))
                     ms->DATEEND := xml2date(mo_read_xml_stroke(oNode4,"D_E",))
                   endif
@@ -194,8 +184,6 @@ Function work_Prices()
   }
   local nameFile := prefixFileName() + 'prices'
 
-  // dbcreate("_mo1prices",_mo_prices)
-  // use _mo1prices new alias MP
   dbcreate(nameFile, _mo_prices)
   use (nameFile) new alias MP
 
@@ -211,7 +199,6 @@ Function work_Prices()
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
-        // if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
           ? "Ошибка в чтении файла",nfile
           ? "Некорректное значение тега YEAR_REPORT",j1
@@ -248,7 +235,7 @@ Function work_Prices()
                           mp->shifr     := lshifr
                           mp->vzros_reb := lvzros_reb
                           mp->LEVEL     := lLEVEL
-                          mp->cena      :=      val(mo_read_xml_stroke(oNode6,"COST",))
+                          mp->cena      := val(mo_read_xml_stroke(oNode6,"COST",))
                           mp->DATEBEG   := xml2date(mo_read_xml_stroke(oNode6,"D_B",))
                           mp->DATEEND   := xml2date(mo_read_xml_stroke(oNode6,"D_E",))
                         endif
@@ -267,7 +254,7 @@ Function work_Prices()
   return NIL
 
 ***** 02.11.21
-Function work_mo_uslf() //_mo_uslf)
+Function work_mo_uslf()
   Local _mo_uslf := {;
     {"SHIFR",      "C",     20,      0},;
     {"NAME",       "C",    255,      0},;
@@ -286,11 +273,9 @@ Function work_mo_uslf() //_mo_uslf)
   local nameFileUslF := prefixFileName() + 'uslf'
   Local i := 0
 
-  ? "index..."
-  // dbcreate("_mo1uslf",_mo_uslf)
-  // use _mo1uslf new alias LUSL
   dbcreate(nameFileUslF,_mo_uslf)
   use (nameFileUslF) new alias LUSL
+  ? "index..."
   index on shifr to tmp_usl
   use onko_napr new alias ON
   index on kod to tmp_on
@@ -364,8 +349,8 @@ Function work_mo_uslf() //_mo_uslf)
   close databases
   return NIL
 
-***** 01.11.21
-Function work_t006()  //_mo_usl)
+***** 03.11.21
+Function work_t006()
   Static nfile := "T006.XML"
   Local oXmlDoc, oXmlNode, i, j, k, s, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
@@ -426,182 +411,179 @@ Function work_t006()  //_mo_usl)
     {"DATEEND",    "D",      8,      0},;
     {"NAME",       "C",    255,      0};
   })
-// dbcreate("_mo1it1",{;
-dbcreate(nameFileIt1,{;
-  {"CODE",       "C",     10,      0},;
-  {"USL_OK",     "N",      1,      0},;
-  {"DS",         "C",   2300,      0},;
-  {"DS1",        "C",    150,      0},;
-  {"DS2",        "C",    250,      0};
- })
-//  use _mo1it1 new alias it
+  dbcreate(nameFileIt1,{;
+    {"CODE",       "C",     10,      0},;
+    {"USL_OK",     "N",      1,      0},;
+    {"DS",         "C",   2300,      0},;
+    {"DS1",        "C",    150,      0},;
+    {"DS2",        "C",    250,      0};
+  })
   use (nameFileIt1) new alias it
-index on code+str(usl_ok,1)+ds+ds1+ds2 to tmp_it
-use t006_u new alias t6
-use t006_2 new alias t62
-use t006_d new alias d6
-oXmlDoc := HXMLDoc():Read(nfile)
-kl := kl1 := kl2 := 0
-? "T006.xml     - КСГ"
-IF Empty( oXmlDoc:aItems )
-  ? "Ошибка в чтении файла",nfile
-  wait
-else
-  ? "Обработка файла "+nfile+" - "
-  k := Len( oXmlDoc:aItems[1]:aItems )
-  FOR j := 1 TO k
-    oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-    if "ZGLV" == oXmlNode:title
-      // if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
-      if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-        ? "Ошибка в чтении файла",nfile
-        ? "Некорректное значение тега YEAR_REPORT",j1
-        wait
-        exit
-      endif
-    elseif "KSG" == oXmlNode:title
-      @ row(),30 say str(j/k*100,6,2)+"%"
-      select T6
-      append blank
-      t6->SHIFR   :=          mo_read_xml_stroke(oXmlNode,"CODE",)
-      t6->NAME    := charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))
-      t6->USL_OK  :=      val(mo_read_xml_stroke(oXmlNode,"USL",))
-      t6->USL_OKS := lstr(t6->USL_OK)
-      t6->ST      :=      val(mo_read_xml_stroke(oXmlNode,"ST",))
-      //t6->DURV    :=      val(mo_read_xml_stroke(oXmlNode,"DUR_A",))
-      //t6->DURD    :=      val(mo_read_xml_stroke(oXmlNode,"DUR_C",))
-      t6->BUKVA   :=    upper(mo_read_xml_stroke(oXmlNode,"PAR",))
-      t6->DATEBEG := xml2date(mo_read_xml_stroke(oXmlNode,"D_BEG",))
-      t6->DATEEND := xml2date(mo_read_xml_stroke(oXmlNode,"D_END",))
-      lkz         :=      val(mo_read_xml_stroke(oXmlNode,"K_Z",))
-      if (oNode1 := oXmlNode:Find("VMP")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "TYPE_MP" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
-            s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
-            if empty(t6->VMP_F)
-              t6->VMP_F := s
+  index on code+str(usl_ok,1)+ds+ds1+ds2 to tmp_it
+  use t006_u new alias t6
+  use t006_2 new alias t62
+  use t006_d new alias d6
+  oXmlDoc := HXMLDoc():Read(nfile)
+  kl := kl1 := kl2 := 0
+  ? "T006.xml     - КСГ"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZGLV" == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
+          ? "Ошибка в чтении файла",nfile
+          ? "Некорректное значение тега YEAR_REPORT",j1
+          wait
+          exit
+        endif
+      elseif "KSG" == oXmlNode:title
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        select T6
+        append blank
+        t6->SHIFR   := mo_read_xml_stroke(oXmlNode,"CODE",)
+        t6->NAME    := charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))
+        t6->USL_OK  := val(mo_read_xml_stroke(oXmlNode,"USL",))
+        t6->USL_OKS := lstr(t6->USL_OK)
+        t6->ST      := val(mo_read_xml_stroke(oXmlNode,"ST",))
+        //t6->DURV    :=      val(mo_read_xml_stroke(oXmlNode,"DUR_A",))
+        //t6->DURD    :=      val(mo_read_xml_stroke(oXmlNode,"DUR_C",))
+        t6->BUKVA   := upper(mo_read_xml_stroke(oXmlNode,"PAR",))
+        t6->DATEBEG := xml2date(mo_read_xml_stroke(oXmlNode,"D_BEG",))
+        t6->DATEEND := xml2date(mo_read_xml_stroke(oXmlNode,"D_END",))
+        lkz         := val(mo_read_xml_stroke(oXmlNode,"K_Z",))
+        if (oNode1 := oXmlNode:Find("VMP")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "TYPE_MP" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+              s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
+              if empty(t6->VMP_F)
+                t6->VMP_F := s
+              endif
+              t6->VMP_S := iif(empty(t6->VMP_S), "", rtrim(t6->VMP_S)+",")+s
             endif
-            t6->VMP_S := iif(empty(t6->VMP_S), "", rtrim(t6->VMP_S)+",")+s
-          endif
-        next j1
-      endif
-      if (oNode1 := oXmlNode:Find("KSLPS")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "KSLP" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
-            s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
-            if empty(t6->KSLP)
-              t6->KSLP := val(s)
+          next j1
+        endif
+        if (oNode1 := oXmlNode:Find("KSLPS")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "KSLP" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+              s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
+              if empty(t6->KSLP)
+                t6->KSLP := val(s)
+              endif
+              t6->KSLPS := iif(empty(t6->KSLPS), "", rtrim(t6->KSLPS)+",")+s
             endif
-            t6->KSLPS := iif(empty(t6->KSLPS), "", rtrim(t6->KSLPS)+",")+s
-          endif
-        next j1
-      endif
-      if (oNode1 := oXmlNode:Find("KIROS")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "KIRO" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
-            s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
-            if empty(t6->KIRO)
-              t6->KIRO := val(s)
+          next j1
+        endif
+        if (oNode1 := oXmlNode:Find("KIROS")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "KIRO" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+              s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
+              if empty(t6->KIRO)
+                t6->KIRO := val(s)
+              endif
+              t6->KIROS := iif(empty(t6->KIROS), "", rtrim(t6->KIROS)+",")+s
             endif
-            t6->KIROS := iif(empty(t6->KIROS), "", rtrim(t6->KIROS)+",")+s
-          endif
-        next j1
-      endif
-      if (oNode1 := oXmlNode:Find("REGULATIONS")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "RULE" == oNode2:title
-            select D6
-            append blank
-            d6->code := t6->SHIFR
-            d6->DS  := lDS  := alltrim(mo_read_xml_stroke(oNode2,"DS",))+" "
-            d6->DS1 := lDS1 := alltrim(mo_read_xml_stroke(oNode2,"DS1",))+" "
-            d6->DS2 := lDS2 := alltrim(mo_read_xml_stroke(oNode2,"DS2",))+" "
-            d6->SY   := mo_read_xml_stroke(oNode2,"SY",)
-            d6->AGE  := mo_read_xml_stroke(oNode2,"AGE",)
-            d6->SEX  := mo_read_xml_stroke(oNode2,"SEX",)
-            d6->LOS  := alltrim(mo_read_xml_stroke(oNode2,"LOS",))
-            d6->AD_CR := mo_read_xml_stroke(oNode2,"AD_CRITERION",)
-            d6->AD_CR1 := mo_read_xml_stroke(oNode2,"OTHER_CRITERIA",)
-            d6->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_FROM",))
-            d6->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_TO",))
-            d6->name := t6->NAME
-if !empty(d6->AD_CR) .and. !eq_any(left(d6->AD_CR,2),"sh","mt","rb")
-  select IT
-  find (padr(d6->AD_CR,10)+str(t6->usl_ok,1)+padr(lds,2300)+padr(lds1,150)+padr(lds2,250))
-  if !found()
-    append blank
-    it->CODE := d6->AD_CR
-    it->USL_OK := t6->USL_OK
-    it->DS := lds
-    it->DS1 := lds1
-    it->DS2 := lds2
-  endif
-  kl := max(kl,len(lds))
-  kl1 := max(kl1,len(lds1))
-  kl2 := max(kl2,len(lds2))
-endif
-            if empty(lDS) // нет основного диагноза
-              select T62
+          next j1
+        endif
+        if (oNode1 := oXmlNode:Find("REGULATIONS")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "RULE" == oNode2:title
+              select D6
               append blank
-              t62->SHIFR := t6->SHIFR
-              t62->kz := lkz
-              //t62->PROFIL := ksg->PROFIL
-              if !empty(lDS1)
-                t62->DS1 := lds1
-              endif
-              if !empty(lDS2)
-                t62->DS2 := lds2
-              endif
-              t62->SY  := d6->SY
-              t62->AGE := d6->AGE
-              t62->SEX := d6->SEX
-              t62->LOS := d6->LOS
-              t62->AD_CR := d6->AD_CR
-              t62->AD_CR1 := d6->AD_CR1
-              t62->DATEBEG := d6->DATEBEG
-              t62->DATEEND := d6->DATEEND
-              t62->ns := d6->(recno())
-            else
-              sList := alltrim(lDS)
-              for is := 1 to numtoken(sList,",")
-                s := alltrim(token(sList,",",is))
-                if !empty(s)
-                  select T62
+              d6->code := t6->SHIFR
+              d6->DS  := lDS  := alltrim(mo_read_xml_stroke(oNode2,"DS",))+" "
+              d6->DS1 := lDS1 := alltrim(mo_read_xml_stroke(oNode2,"DS1",))+" "
+              d6->DS2 := lDS2 := alltrim(mo_read_xml_stroke(oNode2,"DS2",))+" "
+              d6->SY   := mo_read_xml_stroke(oNode2,"SY",)
+              d6->AGE  := mo_read_xml_stroke(oNode2,"AGE",)
+              d6->SEX  := mo_read_xml_stroke(oNode2,"SEX",)
+              d6->LOS  := alltrim(mo_read_xml_stroke(oNode2,"LOS",))
+              d6->AD_CR := mo_read_xml_stroke(oNode2,"AD_CRITERION",)
+              d6->AD_CR1 := mo_read_xml_stroke(oNode2,"OTHER_CRITERIA",)
+              d6->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_FROM",))
+              d6->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_TO",))
+              d6->name := t6->NAME
+              if !empty(d6->AD_CR) .and. !eq_any(left(d6->AD_CR,2),"sh","mt","rb")
+                select IT
+                find (padr(d6->AD_CR,10)+str(t6->usl_ok,1)+padr(lds,2300)+padr(lds1,150)+padr(lds2,250))
+                if !found()
                   append blank
-                  t62->SHIFR :=t6->SHIFR
-                  t62->kz := lkz
-                  //t62->PROFIL := ksg->PROFIL
-                  t62->DS := s
-                  if !empty(lDS1)
-                    t62->DS1 := lds1
-                  endif
-                  if !empty(lDS2)
-                    t62->DS2 := lds2
-                  endif
-                  t62->SY  := d6->SY
-                  t62->AGE := d6->AGE
-                  t62->SEX := d6->SEX
-                  t62->LOS := d6->LOS
-                  t62->AD_CR := d6->AD_CR
-                  t62->AD_CR1 := d6->AD_CR1
-                  t62->DATEBEG := d6->DATEBEG
-                  t62->DATEEND := d6->DATEEND
-                  t62->ns := d6->(recno())
+                  it->CODE := d6->AD_CR
+                  it->USL_OK := t6->USL_OK
+                  it->DS := lds
+                  it->DS1 := lds1
+                  it->DS2 := lds2
                 endif
-              next
+                kl := max(kl,len(lds))
+                kl1 := max(kl1,len(lds1))
+                kl2 := max(kl2,len(lds2))
+              endif
+              if empty(lDS) // нет основного диагноза
+                select T62
+                append blank
+                t62->SHIFR := t6->SHIFR
+                t62->kz := lkz
+                //t62->PROFIL := ksg->PROFIL
+                if !empty(lDS1)
+                  t62->DS1 := lds1
+                endif
+                if !empty(lDS2)
+                  t62->DS2 := lds2
+                endif
+                t62->SY  := d6->SY
+                t62->AGE := d6->AGE
+                t62->SEX := d6->SEX
+                t62->LOS := d6->LOS
+                t62->AD_CR := d6->AD_CR
+                t62->AD_CR1 := d6->AD_CR1
+                t62->DATEBEG := d6->DATEBEG
+                t62->DATEEND := d6->DATEEND
+                t62->ns := d6->(recno())
+              else
+                sList := alltrim(lDS)
+                for is := 1 to numtoken(sList,",")
+                  s := alltrim(token(sList,",",is))
+                  if !empty(s)
+                    select T62
+                    append blank
+                    t62->SHIFR :=t6->SHIFR
+                    t62->kz := lkz
+                    //t62->PROFIL := ksg->PROFIL
+                    t62->DS := s
+                    if !empty(lDS1)
+                      t62->DS1 := lds1
+                    endif
+                    if !empty(lDS2)
+                      t62->DS2 := lds2
+                    endif
+                    t62->SY  := d6->SY
+                    t62->AGE := d6->AGE
+                    t62->SEX := d6->SEX
+                    t62->LOS := d6->LOS
+                    t62->AD_CR := d6->AD_CR
+                    t62->AD_CR1 := d6->AD_CR1
+                    t62->DATEBEG := d6->DATEBEG
+                    t62->DATEEND := d6->DATEEND
+                    t62->ns := d6->(recno())
+                  endif
+                next
+              endif
             endif
-          endif
-        next j1
+          next j1
+        endif
       endif
-    endif
-  NEXT j
-ENDIF
-close databases
-return NIL
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
 
 ***** 02.11.21
 Function work_SprMU()
@@ -632,11 +614,9 @@ Function work_SprMU()
   dbcreate("_mo_spec",_mo_spec)
   use _mo_spec new alias SPEC
 
-  // use _mo1usl new alias LUSL
   use (nameFileUsl) new alias LUSL
   index on shifr to tmp_lusl
 
-  // use _mo1unit new alias UN
   use (nameFileUnit) new alias UN
   index on str(code,3) to tmp_unit
   nfile := "SprMU.xml"
@@ -651,7 +631,6 @@ Function work_SprMU()
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
-        // if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
           ? "Ошибка в чтении файла",nfile
           ? "Некорректное значение тега YEAR_REPORT",j1
@@ -794,7 +773,6 @@ Function work_SprDS()
 
   use _mo_prof new alias PROF
   use _mo_spec new alias SPEC
-  // use _mo1uslf new alias LUSL
   use (nameFileUslF) new alias LUSL
   index on shifr to tmp_lusl
   nfile := "SprDS.xml"
@@ -908,8 +886,6 @@ Function work_SprKslp()
 
   local nameFile := prefixFileName() + 'kslp'
 
-  // dbcreate("_mo1kslp",_mo_kslp)
-  // use _mo1kslp new alias KS
   dbcreate(nameFile, _mo_kslp)
   use (nameFile) new alias KS
 
@@ -925,7 +901,6 @@ Function work_SprKslp()
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
-        // if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
           ? "Ошибка в чтении файла",nfile
           ? "Некорректное значение тега YEAR_REPORT",j1
@@ -940,10 +915,10 @@ Function work_SprKslp()
             if "ENTRY" == oNode2:title
               select KS
               append blank
-              ks->code    :=      val(mo_read_xml_stroke(oXmlNode,"CODE",))
-              ks->NAME    :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
-              ks->NAME_F  :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME_F",))))
-              ks->COEFF   :=      val(mo_read_xml_stroke(oNode2,"C_VAL",))
+              ks->code    := val(mo_read_xml_stroke(oXmlNode,"CODE",))
+              ks->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
+              ks->NAME_F  := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME_F",))))
+              ks->COEFF   := val(mo_read_xml_stroke(oNode2,"C_VAL",))
               ks->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
               ks->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
             endif
@@ -968,8 +943,6 @@ Function work_SprKiro()
 
   local nameFile := prefixFileName() + 'kiro'
 
-  // dbcreate("_mo1kiro",_mo_kiro)
-  // use _mo1kiro new alias KS
   dbcreate(nameFile, _mo_kiro)
   use (nameFile) new alias KS
 
@@ -985,7 +958,6 @@ Function work_SprKiro()
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
-        // if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
           ? "Ошибка в чтении файла",nfile
           ? "Некорректное значение тега YEAR_REPORT",j1
@@ -1000,10 +972,10 @@ Function work_SprKiro()
             if "ENTRY" == oNode2:title
               select KS
               append blank
-              ks->code    :=      val(mo_read_xml_stroke(oXmlNode,"CODE",))
-              ks->NAME    :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
-              ks->NAME_F  :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME_F",))))
-              ks->COEFF   :=      val(mo_read_xml_stroke(oNode2,"C_VAL",))
+              ks->code    := val(mo_read_xml_stroke(oXmlNode,"CODE",))
+              ks->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
+              ks->NAME_F  := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME_F",))))
+              ks->COEFF   := val(mo_read_xml_stroke(oNode2,"C_VAL",))
               ks->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
               ks->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
             endif
@@ -1042,16 +1014,12 @@ Function work_uslc()
   //Local nul_level := padr('1',5)
 
   ? "Создание файла " + nameFile + ".dbf - "
-  // dbcreate("_mo1uslc",_mo_uslc)
   dbcreate(nameFile, _mo_uslc)
   dbcreate("not_usl",{{"shifr","C",10,0},{"spr_mu","N",1,0},{"s_price","N",1,0}})
   dbcreate("not_lev",{{"codem","C",6,0},{"shifr","C",10,0},{"usl_ok","N",1,0},{"level","C",5,0},{"depart","N",3,0}})
 
-  // use _mo1dep new alias DEP
   use (nameFileDep) new alias DEP
-  // use _mo1deppr new alias DP
   use (nameFileDepPr) new alias DP
-  // use _mo1subdiv new alias SD
   use (nameFileSubDiv) new alias SD
   //
   use not_usl new
@@ -1059,22 +1027,17 @@ Function work_uslc()
   use not_lev new
   index on codem+shifr+str(usl_ok,1)+level+str(depart,3) to not_lev
 
-  // use _mo1usl new alias LUSL
   use (nameFileUsl) new alias LUSL
   index on shifr to tmp_lusl
 
-  // use _mo1uslc new alias LUSLC
   use (nameFile) new alias LUSLC
 
-  // use _mo1prices new alias PRIC
   use (nameFilePrices) new alias PRIC
   index on shifr+str(vzros_reb,1)+level to tmp_prices
   
-  // use _mo1lvlpay new alias LP
   use (nameFileLvlPay) new alias LP
   index on codem+str(usl_ok,1)+level+str(depart,3) to tmp_lvlpay
 
-  // use _mo1moserv new alias SERV
   use (nameFileMoServ) new alias SERV
   go top
   do while !eof()
@@ -1257,8 +1220,6 @@ Function work_Shema()
 
   local nameFile := prefixFileName() + 'shema'
 
-  // dbcreate("_mo1shema",_mo_shema)
-  // use _mo1shema new alias SH
   dbcreate(nameFile, _mo_shema)
   use (nameFile) new alias SH
 
@@ -1281,7 +1242,7 @@ Function work_Shema()
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
         fl := .t.
-        if !empty(mDATEEND) .and. mDATEEND < stod(FIRST_DAY)  //0d20210101
+        if !empty(mDATEEND) .and. mDATEEND < stod(FIRST_DAY)
           fl := .f.
         endif
         if fl
@@ -1322,8 +1283,6 @@ Function work_SprSubDiv()
   }
   local nameFile := prefixFileName() + 'subdiv'
 
-  // dbcreate("_mo1subdiv",_mo_subdiv)
-  // use _mo1subdiv new alias SD
   dbcreate(nameFile, _mo_subdiv)
   use (nameFile) new alias SD
   nfile := "S_SubDiv.xml"
@@ -1345,11 +1304,11 @@ Function work_SprSubDiv()
             if "PLACE" == oNode2:title
               select SD
               append blank
-              sd->codem    :=         mo_read_xml_stroke(oXmlNode,"CODEM",)
-              sd->mcode    :=         mo_read_xml_stroke(oXmlNode,"MCODE",)
-              sd->code    :=      val(mo_read_xml_stroke(oNode2,"CODE",))
-              sd->NAME    :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
-              sd->flag    :=      val(mo_read_xml_stroke(oNode2,"FLAG",))
+              sd->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
+              sd->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
+              sd->code    := val(mo_read_xml_stroke(oNode2,"CODE",))
+              sd->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
+              sd->flag    := val(mo_read_xml_stroke(oNode2,"FLAG",))
               sd->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
               sd->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
             endif
@@ -1388,13 +1347,9 @@ Function work_SprDep()
 
   dbcreate(nameFileDep, _mo_dep)
   dbcreate(nameFileDepPr, _mo_deppr)
-  // dbcreate("_mo1dep",_mo_dep)
-  // dbcreate("_mo1deppr",_mo_deppr)
 
   use (nameFileDep) new alias DEP
   use (nameFileDepPr) new alias DP
-  // use _mo1dep new alias DEP
-  // use _mo1deppr new alias DP
 
   nfile := "S_Dep.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -1415,13 +1370,13 @@ Function work_SprDep()
             if "DEPARTMENT" == oNode2:title
               select DEP
               append blank
-              dep->codem    :=         mo_read_xml_stroke(oXmlNode,"CODEM",)
-              dep->mcode    :=         mo_read_xml_stroke(oXmlNode,"MCODE",)
-              dep->code    :=      val(mo_read_xml_stroke(oNode2,"CODE",))
-              dep->NAME    :=    ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
+              dep->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
+              dep->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
+              dep->code    := val(mo_read_xml_stroke(oNode2,"CODE",))
+              dep->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
               dep->NAME_SHORT := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_SHORT",))))
-              dep->usl_ok  :=      val(mo_read_xml_stroke(oNode2,"USL_OK",))
-              dep->vmp     :=      val(mo_read_xml_stroke(oNode2,"VMP",))
+              dep->usl_ok  := val(mo_read_xml_stroke(oNode2,"USL_OK",))
+              dep->vmp     := val(mo_read_xml_stroke(oNode2,"VMP",))
               dep->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
               dep->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
               if (oNode3 := oNode2:Find("PLACES")) != NIL
@@ -1474,11 +1429,6 @@ Function work_LvlPay()
   }
   local nameFile := prefixFileName() + 'lvlpay'
 
-  // dbcreate("_mo1subdiv",_mo_subdiv)
-  // use _mo1subdiv new alias SD
-
-  // dbcreate("_mo1lvlpay",_mo_lvlpay)
-  // use _mo1lvlpay new alias LP
   dbcreate(nameFile, _mo_lvlpay)
   use (nameFile) new alias LP
 
@@ -1494,7 +1444,6 @@ Function work_LvlPay()
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
-        // if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
           ? "Ошибка в чтении файла",nfile
           ? "Некорректное значение тега YEAR_REPORT",j1
@@ -1517,11 +1466,11 @@ Function work_LvlPay()
                         if "PAY_LEVEL" == oNode6:title
                           select LP
                           append blank
-                          lp->codem   :=          mo_read_xml_stroke(oXmlNode,"CODEM",)
-                          lp->mcode   :=          mo_read_xml_stroke(oXmlNode,"MCODE",)
-                          lp->usl_ok  :=      val(mo_read_xml_stroke(oNode2,"USL_OK",))
-                          lp->DEPART  :=      val(mo_read_xml_stroke(oNode4,"CODE",))
-                          lp->LEVEL   :=          mo_read_xml_stroke(oNode6,"VALUE",)
+                          lp->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
+                          lp->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
+                          lp->usl_ok  := val(mo_read_xml_stroke(oNode2,"USL_OK",))
+                          lp->DEPART  := val(mo_read_xml_stroke(oNode4,"CODE",))
+                          lp->LEVEL   := mo_read_xml_stroke(oNode6,"VALUE",)
                           lp->DATEBEG := xml2date(mo_read_xml_stroke(oNode6,"D_B",))
                           lp->DATEEND := xml2date(mo_read_xml_stroke(oNode6,"D_E",))
                           /*if j3 > 1
