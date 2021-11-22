@@ -349,11 +349,12 @@ Function work_mo_uslf()
   close databases
   return NIL
 
-***** 03.11.21
+***** 22.11.21
 Function work_t006()
   Static nfile := "T006.XML"
   Local oXmlDoc, oXmlNode, i, j, k, s, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
+  Local lshifr, lsy
 
   Local _mo_usl := {;
     {"SHIFR",      "C",     10,      0},;
@@ -503,6 +504,14 @@ Function work_t006()
               d6->DS1 := lDS1 := alltrim(mo_read_xml_stroke(oNode2,"DS1",))+" "
               d6->DS2 := lDS2 := alltrim(mo_read_xml_stroke(oNode2,"DS2",))+" "
               d6->SY   := mo_read_xml_stroke(oNode2,"SY",)
+
+              // для реабилитации после COVID-19            
+              lshifr := lower(alltrim(t6->SHIFR))
+              lsy     := mo_read_xml_stroke(oNode2,"SY",)
+              if (lshifr = 'st37.021' .or. lshifr = 'st37.022' .or. lshifr = 'st37.023' ) .and. empty(lDS) .and. empty(lsy)
+                d6->DS  := lDS  := 'U09.9'
+              endif
+
               d6->AGE  := mo_read_xml_stroke(oNode2,"AGE",)
               d6->SEX  := mo_read_xml_stroke(oNode2,"SEX",)
               d6->LOS  := alltrim(mo_read_xml_stroke(oNode2,"LOS",))
