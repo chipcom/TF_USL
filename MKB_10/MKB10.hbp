@@ -1,10 +1,10 @@
--L..\LIB
+-L..\..\LIB
 -lMyLib_HBT
 -lFunLib
 -lhbct
 -mt
 -inc
--i..\include
+-i..\..\include
 xhb.hbc
 
 -workdir=d:\_MO\TEMP\MKB10
