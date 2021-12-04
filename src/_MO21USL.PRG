@@ -13,6 +13,7 @@
    V024.xml     - для КСГ - Допкритерии
    V018.xml     - классификатор видов высокотехнологичной медицинской помощи (HVid)
    V019.xml     - классификатор методов высокотехнологичной медицинской помощи (HMet)
+   V025.xml     - Классификатор целей посещения (KPC)
 
 //  Что получаем на выходе - наши файлы
 
@@ -144,15 +145,6 @@ Local _mo_usl := {;
    {"DATEEND",    "D",      8,      0};  // дата конец действия - по умолчанию т.г
   }
 //
-// Local _mo_kslp := {;
-//    {"CODE",       "N",      2,      0},;
-//    {"NAME",       "C",     55,      0},;
-//    {"NAME_F",     "C",    255,      0},;
-//    {"COEFF",      "N",      4,      2},;
-//    {"DATEBEG",    "D",      8,      0},;
-//    {"DATEEND",    "D",      8,      0};
-//   }
-//
 Local _mo_uslc := {;
    {"CODEMO",     "C",      6,      0},;
    {"SHIFR",      "C",     10,      0},;
@@ -189,8 +181,8 @@ f_first()
 Public sys_date := date(), sys_year := year(date())
 
 // make_TO01()
-work_V002()//_mo_V002)
-work_V021() //_mo_V021)
+work_V002()
+work_V021()
 
 InitSpravFFOMS()
 //
@@ -214,6 +206,7 @@ work_V015()
 work_V018()
 work_V019()
 work_V022(_mo_V022)
+work_V025()
 make_Q015()
 make_Q016()
 make_Q017()
@@ -2496,7 +2489,7 @@ function getV002()
   return _v002
 
 ***** 16.02.21
-Function work_V021()  //_mo_V021)
+Function work_V021()
 
   local _mo_V021 := {;
     {"IDSPEC",     "N",      3,      0},;
@@ -2739,6 +2732,47 @@ Function work_V022(_mo_V022)
           V022->DATEBEG := mDATEBEG
           V022->DATEEND := mDATEEND
         endif
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 04.12.21
+Function work_V025()
+  local _mo_V025 := {;
+    {"IDPC",      "C",   3, 0},;  // Код цели посещения
+    {"N_PC",      "C", 254, 0},;  // Наименование цели посещения
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v025", _mo_V025)
+  use _mo_V025 new alias V025
+  // index on kod to tmp_shema
+  nfile := "V025.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V025.xml     - Классификатор целей посещения (KPC)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDPC := mo_read_xml_stroke(oXmlNode,"IDPC",)
+        mN_PC := mo_read_xml_stroke(oXmlNode,"N_PC",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V025
+        append blank
+        V025->IDPC := mIDPC
+        V025->N_PC := mN_PC
+        V025->DATEBEG := mDATEBEG
+        V025->DATEEND := mDATEEND
       endif
     NEXT j
   ENDIF
