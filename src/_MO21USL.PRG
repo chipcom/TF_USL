@@ -217,8 +217,8 @@ make_F014()
 make_O001()
 close databases
 //
-copy file t006_2.dbf to _mo1k006.dbf
-copy file t006_2.dbt to _mo1k006.dbt
+rename t006_2.dbf to _mo1k006.dbf
+rename t006_2.dbt to _mo1k006.dbt
 //
 dbcreate("_mo1it",{{"ds","C",5,0},{"it","N",1,0}})
 use _mo1it new alias IT
@@ -344,6 +344,11 @@ fclose(fp)
 close databases
 filedelete("tmp*.dbf")
 filedelete("tmp*.ntx")
+
+filedelete('t006_2.dbf')
+filedelete('t006_2.dbt')
+filedelete('t006_d.dbf')
+filedelete('t006_u.dbf')
 f_end()
 return
 
