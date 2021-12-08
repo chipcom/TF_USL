@@ -112,10 +112,8 @@ proc main()
   make_O001()
   close databases
   //
-  // copy file t006_2.dbf to _mo1k006.dbf
-  // copy file t006_2.dbt to _mo1k006.dbt
-  copy file t006_2.dbf to (k006dbf)
-  copy file t006_2.dbt to (k006dbt)
+  rename t006_2.dbf to (k006dbf)
+  rename file t006_2.dbt to (k006dbt)
 
   //
   // dbcreate("_mo1it",{{"ds","C",5,0},{"it","N",1,0}})
@@ -125,7 +123,6 @@ proc main()
   use (nameFileIt) new alias IT
   index on ds+str(it,1) to tmp_it
 
-  // use _mo1k006 new alias K6
   use (nameFileK006) new alias K6
   index on ds to tmp_k6 for lower(left(ad_cr,2)) == "it"
   go top
@@ -251,6 +248,11 @@ proc main()
   close databases
   filedelete("tmp*.dbf")
   filedelete("tmp*.ntx")
+  
+  filedelete('t006_2.dbf')
+  filedelete('t006_2.dbt')
+  filedelete('t006_d.dbf')
+  filedelete('t006_u.dbf')
   f_end()
   return
 
