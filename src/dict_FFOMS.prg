@@ -243,7 +243,7 @@ Function work_V019()
   use _mo_V019 new alias V019
   nfile := "V019.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
-  ? "V018.xml     - методы высокотехнологичной медицинской помощи (HMet)"
+  ? "V019.xml     - методы высокотехнологичной медицинской помощи (HMet)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
@@ -275,6 +275,46 @@ Function work_V019()
         V019->DATEBEG := mDATEBEG
         V019->DATEEND := mDATEEND
       
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 08.12.21
+Function work_V020()
+  local _mo_V020 := {;
+    {"IDK_PR",     "N",      3,      0},; // Код профиля койки
+    {"K_PRNAME",   "C",    254,      0},; // Наименование профиля койки
+    {"DATEBEG",    "D",      8,      0},; // Дата начала действия записи
+    {"DATEEND",    "D",      8,      0};  // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v020",_mo_V020)
+  use _mo_v020 new alias V020
+  nfile := "V020.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V020.xml     - Классификатор профиля койки (KoPr)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла " + nfile + " - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDK_PR := mo_read_xml_stroke(oXmlNode,"IDK_PR",)
+        mK_PRNAME := mo_read_xml_stroke(oXmlNode,"K_PRNAME",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V020
+        append blank
+        V020->IDK_PR := val(mIDK_PR)
+        V020->K_PRNAME := mK_PRNAME
+        V020->DATEBEG := mDATEBEG
+        V020->DATEEND := mDATEEND
       endif
     NEXT j
   ENDIF
