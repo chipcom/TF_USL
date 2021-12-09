@@ -160,6 +160,46 @@ Function work_V009()
   close databases
   return NIL
 
+***** 09.12.21
+Function work_V010()
+  local _mo_V010 := {;
+    {"IDSP",      "N",   2, 0},;  // Код способа оплаты медицинской помощи
+    {"SPNAME",    "C", 254, 0},;  // Наименование способа оплаты медицинской помощи
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v010", _mo_V010)
+  use _mo_v010 new alias V010
+  nfile := "V010.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V010.xml     - Классификатор способов оплаты медицинской помощи (Sposob)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDSP := mo_read_xml_stroke(oXmlNode,"IDSP",)
+        mSPNAME := mo_read_xml_stroke(oXmlNode,"SPNAME",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V010
+        append blank
+        V010->IDSP := val(mIDSP)
+        V010->SPNAME := mSPNAME
+        V010->DATEBEG := mDATEBEG
+        V010->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
 * 16.02.21 вернуть массив по справочнику ТФОМС V021.xml
 function getV021()
   // V021.xml - Классификатор медицинских специальностей (последний)
