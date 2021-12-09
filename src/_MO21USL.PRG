@@ -14,6 +14,7 @@
    V018.xml     - классификатор видов высокотехнологичной медицинской помощи (HVid)
    V019.xml     - классификатор методов высокотехнологичной медицинской помощи (HMet)
    V025.xml     - Классификатор целей посещения (KPC)
+   V009.xml     - Классификатор результатов обращения за медицинской помощью (Rezult)
 
 //  Что получаем на выходе - наши файлы
 
@@ -202,6 +203,7 @@ work_SprKiro()
 work_SprMU(_mo_prof, _mo_spec, _t2_v1)
 work_SprDS()
 work_t006(_mo_usl)
+work_V009()
 work_V015()
 work_V018()
 work_V019()
@@ -2493,6 +2495,49 @@ function getV002()
   (dbName)->(dbCloseArea())
 
   return _v002
+
+***** 09.12.21
+Function work_V009()
+  local _mo_V009 := {;
+    {"IDRMP",     "N",   3, 0},;  // Код результата обращения
+    {"RMPNAME",   "C", 254, 0},;  // Наименование результата обращения
+    {"DL_USLOV",  "N",   2, 0},;  // Соответствует условиям оказания медицинской помощи (V006)
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v009", _mo_V009)
+  use _mo_v009 new alias V009
+  nfile := "V009.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V009.xml     - Классификатор результатов обращения за медицинской помощью (Rezult)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDRMP := mo_read_xml_stroke(oXmlNode,"IDRMP",)
+        mRMPNAME := mo_read_xml_stroke(oXmlNode,"RMPNAME",)
+        mDL_USLOV := mo_read_xml_stroke(oXmlNode,"DL_USLOV",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V009
+        append blank
+        V009->IDRMP := val(mIDRMP)
+        V009->RMPNAME := mRMPNAME
+        V009->DL_USLOV := val(mDL_USLOV)
+        V009->DATEBEG := mDATEBEG
+        V009->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
 
 ***** 16.02.21
 Function work_V021()
