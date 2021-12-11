@@ -200,6 +200,49 @@ Function work_V010()
   close databases
   return NIL
 
+***** 11.12.21
+Function work_V012()
+  local _mo_V012 := {;
+    {"IDIZ",      "N",   3, 0},;  // Код исхода заболевания
+    {"IZNAME",    "C", 254, 0},;  // Наименование исхода заболевания
+    {"DL_USLOV",  "N",   2, 0},;  // Соответствует условиям оказания МП (V006)
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v012", _mo_V012)
+  use _mo_v012 new alias V012
+  nfile := "V012.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V012.xml     - Классификатор исходов заболевания (Ishod)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDIZ := mo_read_xml_stroke(oXmlNode,"IDIZ",)
+        mIZNAME := mo_read_xml_stroke(oXmlNode,"IZNAME",)
+        mDL_USLOV := mo_read_xml_stroke(oXmlNode,"DL_USLOV",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V012
+        append blank
+        V012->IDIZ := val(mIDIZ)
+        V012->IZNAME := mIZNAME
+        V012->DL_USLOV := val(mDL_USLOV)
+        V012->DATEBEG := mDATEBEG
+        V012->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
 * 16.02.21 вернуть массив по справочнику ТФОМС V021.xml
 function getV021()
   // V021.xml - Классификатор медицинских специальностей (последний)
