@@ -17,7 +17,8 @@
    V009.xml     - Классификатор результатов обращения за медицинской помощью (Rezult)
    V010.xml     - Классификатор способов оплаты медицинской помощи (Sposob)
    V012.xml     - Классификатор исходов заболевания (Ishod)
-
+   V016.xml     - Классификатор типов диспансеризации (DispT)
+   
 //  Что получаем на выходе - наши файлы
 
    _mo1usl    - _mo_usl  - справочник наименований всех услуг
@@ -207,6 +208,7 @@ work_V009()
 work_V010()
 work_V012()
 work_V015()
+work_V016()
 work_V018()
 work_V019()
 work_V020()
@@ -2622,6 +2624,59 @@ Function work_V012()
         V012->DL_USLOV := val(mDL_USLOV)
         V012->DATEBEG := mDATEBEG
         V012->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 11.12.21
+Function work_V016()
+  local _mo_V016 := {;
+    {"IDDT",      "C",   3, 0},;  // Код типа диспансеризации
+    {"DTNAME",    "C", 254, 0},;  // Наименование типа диспансеризации
+    {"RULE",      "C",  40, 0},;  // Значение результата диспансеризации (список) (V017)
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+  local mRULE := ''
+
+  dbcreate("_mo_v016", _mo_V016)
+  use _mo_v016 new alias V016
+  nfile := "V016.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V016.xml     - Классификатор типов диспансеризации (DispT)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDDT := mo_read_xml_stroke(oXmlNode,"IDDT",)
+        mDTNAME := mo_read_xml_stroke(oXmlNode,"DTNAME",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        mRULE := ''
+        if (oNode1 := oXmlNode:Find("DTRULE")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "RULE" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+              mRULE := mRULE + iif(empty(mRULE), '', ',') + alltrim(oNode2:aItems[1])
+            endif
+          next
+        endif
+
+        select V016
+        append blank
+        V016->IDDT := mIDDT
+        V016->DTNAME := mDTNAME
+        V016->RULE := mRULE
+        V016->DATEBEG := mDATEBEG
+        V016->DATEEND := mDATEEND
       endif
     NEXT j
   ENDIF
