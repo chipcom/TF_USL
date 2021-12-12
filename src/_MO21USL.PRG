@@ -18,6 +18,7 @@
    V010.xml     - Классификатор способов оплаты медицинской помощи (Sposob)
    V012.xml     - Классификатор исходов заболевания (Ishod)
    V016.xml     - Классификатор типов диспансеризации (DispT)
+   V017.xml     - Классификатор результатов диспансеризации (DispR)
    
 //  Что получаем на выходе - наши файлы
 
@@ -209,6 +210,7 @@ work_V010()
 work_V012()
 work_V015()
 work_V016()
+work_V017()
 work_V018()
 work_V019()
 work_V020()
@@ -2677,6 +2679,47 @@ Function work_V016()
         V016->RULE := mRULE
         V016->DATEBEG := mDATEBEG
         V016->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 12.12.21
+Function work_V017()
+  local _mo_V017 := {;
+    {"IDDR",      "N",   2, 0},;  // Код результата диспансеризации
+    {"DRNAME",    "C", 254, 0},;  // Наименование результата диспансеризации
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v017", _mo_V017)
+  use _mo_v017 new alias V017
+  nfile := "V017.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V017.xml     - Классификатор результатов диспансеризации (DispR)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mIDDR := mo_read_xml_stroke(oXmlNode,"IDDR",)
+        mDRNAME := mo_read_xml_stroke(oXmlNode,"DRNAME",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+
+        select V017
+        append blank
+        V017->IDDR := val(mIDDR)
+        V017->DRNAME := mDRNAME
+        V017->DATEBEG := mDATEBEG
+        V017->DATEEND := mDATEEND
       endif
     NEXT j
   ENDIF
