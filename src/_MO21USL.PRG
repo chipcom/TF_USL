@@ -37,15 +37,6 @@
 external errorsys
 
 proc main()
-Local _mo_subdiv := {;
-   {"CODEM",      "C",      6,      0},;
-   {"MCODE",      "C",      6,      0},;
-   {"CODE",       "N",      3,      0},;
-   {"NAME",       "C",     60,      0},;
-   {"flag",       "N",      1,      0},;
-   {"DATEBEG",    "D",      8,      0},;
-   {"DATEEND",    "D",      8,      0};
-  }
 Local _mo_dep := {;
    {"CODEM",      "C",      6,      0},;
    {"MCODE",      "C",      6,      0},;
@@ -66,39 +57,6 @@ Local _mo_deppr := {;
    {"pr_berth",   "N",      3,      0},;
    {"pr_mp",      "N",      3,      0};
   }
-Local _mo_lvlpay := {;
-   {"CODEM",      "C",      6,      0},;
-   {"MCODE",      "C",      6,      0},;
-   {"usl_ok",     "N",      1,      0},;
-   {"DEPART",     "N",      3,      0},;
-   {"LEVEL",      "C",      5,      0},;
-   {"DATEBEG",    "D",      8,      0},;
-   {"DATEEND",    "D",      8,      0};
-  }
-Local _mo_moserv := {;
-   {"CODEM",      "C",      6,      0},;
-   {"MCODE",      "C",      6,      0},;
-   {"SHIFR",      "C",     10,      0},;
-   {"DATEBEG",    "D",      8,      0},;
-   {"DATEEND",    "D",      8,      0};
-  }
-Local _mo_prices := {;
-   {"SHIFR",      "C",     10,      0},;
-   {"VZROS_REB",  "N",      1,      0},;
-   {"LEVEL",      "C",      5,      0},;
-   {"CENA",       "N",     10,      2},;
-   {"DATEBEG",    "D",      8,      0},;
-   {"DATEEND",    "D",      8,      0};
-  }
-Local _mo_unit := {;
-   {"CODE",       "N",      3,      0},;
-   {"pz",         "N",      2,      0},;
-   {"ii",         "N",      2,      0},;
-   {"c_t",        "N",      1,      0},;
-   {"NAME",       "C",     60,      0},;
-   {"DATEBEG",    "D",      8,      0},;
-   {"DATEEND",    "D",      8,      0};
-  }
 Local _mo_prof := {;
    {"SHIFR",      "C",     20,      0},;
    {"VZROS_REB",  "N",      1,      0},;
@@ -109,21 +67,6 @@ Local _mo_spec := {;
    {"VZROS_REB",  "N",      1,      0},;
    {"PRVS",       "N",      6,      0},;
    {"PRVS_NEW",   "N",      4,      0};
-  }
-Local _mo_uslf := {;
-   {"SHIFR",      "C",     20,      0},;
-   {"NAME",       "C",    255,      0},;
-   {"TIP",        "N",      1,      0},; // 1-есть ещё в стоматологии,2-только в стоматологии
-   {"GRP",        "N",      1,      0},; // код группы стоматологических услуг
-   {"TELEMED",    "N",      1,      0},; // 1-услуга телемедицины
-   {"ONKO_NAPR",  "N",      1,      0},; // тип диагн.услуги для дообследования в направлении ЗНО
-   {"ONKO_KSG",   "N",      1,      0},; // тип лечения ОНКО - привязка к КСГ
-   {"UETV",       "N",      5,      2},;
-   {"UETD",       "N",      5,      2},;
-   {"ZF",         "N",      1,      0},; // 1-обязателен ввод зубной формулы
-   {"PAR_ORG",    "C",     40,      0},; // операция на парных органах (список)
-   {"DATEBEG",    "D",      8,      0},;
-   {"DATEEND",    "D",      8,      0};
   }
 Local _mo_usl := {;
    {"SHIFR",      "C",     10,      0},;
@@ -159,23 +102,10 @@ Local _mo_uslc := {;
    {"DATEBEG",    "D",      8,      0},;
    {"DATEEND",    "D",      8,      0};
   }
-Local _mo_shema := {;
-   {"KOD",        "C",     10,      0},;
-   {"NAME",       "C",    255,      0},;
-   {"DATEBEG",    "D",      8,      0},;
-   {"DATEEND",    "D",      8,      0};
-  }
 
 local _t2_v1 := {;
   {"SHIFR",        "C",     10,      0},;
   {"SHIFR_MZ",     "C",     20,      0};
-}
-
-local _mo_V022 := {;
-  {"IDMPAC",     "N",      5,      0},;
-  {"MPACNAME",   "C",   1250,      0},;
-  {"DATEBEG",    "D",      8,      0},;
-  {"DATEEND",    "D",      8,      0};
 }
 
 Local arr_err := {}
@@ -192,14 +122,14 @@ InitSpravFFOMS()
 read_spr_N00X()
 //
 dbcreate("_mo1usl",_mo_usl)
-work_Shema(_mo_shema)
-work_SprSubDiv(_mo_subdiv)
+work_Shema()
+work_SprSubDiv()
 work_SprDep(_mo_dep,_mo_deppr)
-work_LvlPay(_mo_lvlpay)
-work_MOServ(_mo_moserv)
-work_Prices(_mo_prices)
-work_mo_uslf(_mo_uslf)
-work_SprUnit(_mo_unit)
+work_LvlPay()
+work_MOServ()
+work_Prices()
+work_mo_uslf()
+work_SprUnit()
 work_SprKslp()
 work_SprKiro()
 work_SprMU(_mo_prof, _mo_spec, _t2_v1)
@@ -214,7 +144,7 @@ work_V017()
 work_V018()
 work_V019()
 work_V020()
-work_V022(_mo_V022)
+work_V022()
 work_V025()
 make_Q015()
 make_Q016()
@@ -560,58 +490,74 @@ enddo
 close databases
 return NIL
 
-***** 13.02.21
-Function work_Shema(_mo_shema)
-dbcreate("_mo1shema",_mo_shema)
-use _mo1shema new alias SH
-index on kod to tmp_shema
-nfile := "V024.xml"
-oXmlDoc := HXMLDoc():Read(nfile)
-? "V024.xml     - для КСГ - Допкритерии"
-IF Empty( oXmlDoc:aItems )
-  ? "Ошибка в чтении файла",nfile
-  wait
-else
-  ? "Обработка файла "+nfile+" - "
-  k := Len( oXmlDoc:aItems[1]:aItems )
-  FOR j := 1 TO k
-    oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-    if "ZAP" == upper(oXmlNode:title)
-      @ row(),30 say str(j/k*100,6,2)+"%"
-      mkod := mo_read_xml_stroke(oXmlNode,"IDDKK",)
-      mNAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"DKKNAME",))))
-      mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
-      mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-      fl := .t.
-      if !empty(mDATEEND) .and. mDATEEND < 0d20210101
-        fl := .f.
-      endif
-      if fl
-        select SH
-        find (mkod)
-        if found()
-          if mDATEBEG > sh->DATEBEG
+***** 13.12.21
+Function work_Shema()
+  Local _mo_shema := {;
+    {"KOD",        "C",     10,      0},;
+    {"NAME",       "C",    255,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+
+  dbcreate("_mo1shema",_mo_shema)
+  use _mo1shema new alias SH
+  index on kod to tmp_shema
+  nfile := "V024.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V024.xml     - для КСГ - Допкритерии"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mkod := mo_read_xml_stroke(oXmlNode,"IDDKK",)
+        mNAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"DKKNAME",))))
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        fl := .t.
+        if !empty(mDATEEND) .and. mDATEEND < 0d20210101
+          fl := .f.
+        endif
+        if fl
+          select SH
+          find (mkod)
+          if found()
+            if mDATEBEG > sh->DATEBEG
+              sh->NAME := mname
+              sh->DATEBEG := mDATEBEG
+              sh->DATEEND := mDATEEND
+            endif
+          else
+            append blank
+            sh->kod := mkod
             sh->NAME := mname
             sh->DATEBEG := mDATEBEG
             sh->DATEEND := mDATEEND
           endif
-        else
-          append blank
-          sh->kod := mkod
-          sh->NAME := mname
-          sh->DATEBEG := mDATEBEG
-          sh->DATEEND := mDATEEND
         endif
       endif
-    endif
-  NEXT j
-ENDIF
-close databases
-return NIL
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
 
 ***** 29.10.21
 // S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
-Function work_SprSubDiv(_mo_subdiv)
+Function work_SprSubDiv()
+  Local _mo_subdiv := {;
+    {"CODEM",      "C",      6,      0},;
+    {"MCODE",      "C",      6,      0},;
+    {"CODE",       "N",      3,      0},;
+    {"NAME",       "C",     60,      0},;
+    {"flag",       "N",      1,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
 
   dbcreate("_mo1subdiv",_mo_subdiv)
   use _mo1subdiv new alias SD
@@ -721,283 +667,317 @@ ENDIF
 close databases
 return NIL
 
-***** 11.01.21
-Function work_LvlPay(_mo_lvlpay)
-/*Local _mo_lvlpay := {;
-   {"CODEM",      "C",      6,      0},;
-   {"MCODE",      "C",      6,      0},;
-   {"DEPART",     "N",      3,      0},;
-   {"usl_ok",     "N",      1,      0},;
-   {"LEVEL",      "C",      5,      0},;
-   {"DATEBEG",    "D",      8,      0},;
-   {"DATEEND",    "D",      8,      0};
-  }*/
-dbcreate("_mo1lvlpay",_mo_lvlpay)
-use _mo1lvlpay new alias LP
-nfile := "S_LvlPay.xml"
-oXmlDoc := HXMLDoc():Read(nfile)
-? "S_LvlPay.xml - код МО и уровень услуг"
-IF Empty( oXmlDoc:aItems )
-  ? "Ошибка в чтении файла",nfile
-  wait
-else
-  ? "Обработка файла "+nfile+" - "
-  k := Len( oXmlDoc:aItems[1]:aItems )
-  FOR j := 1 TO k
-    oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-    if "ZGLV" == oXmlNode:title
-      if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
-        ? "Ошибка в чтении файла",nfile
-        ? "Некорректное значение тега YEAR_REPORT",j1
-        wait
-        exit
-      endif
-    elseif "MO_LEVELS" == oXmlNode:title
-      @ row(),30 say str(j/k*100,6,2)+"%"
-      if (oNode1 := oXmlNode:Find("USL_LEVELS")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "USL_LEVEL" == oNode2:title
-            if (oNode3 := oNode2:Find("DEPARTMENTS")) != NIL
-              for j2 := 1 TO Len( oNode3:aItems )
-                oNode4 := oNode3:aItems[j2]
-                if "DEPARTMENT" == oNode4:title
-                  if (oNode5 := oNode4:Find("PAY_LEVELS")) != NIL
-                    for j3 := 1 TO Len( oNode5:aItems )
-                      oNode6 := oNode5:aItems[j3]
-                      if "PAY_LEVEL" == oNode6:title
-                        select LP
-                        append blank
-                        lp->codem   :=          mo_read_xml_stroke(oXmlNode,"CODEM",)
-                        lp->mcode   :=          mo_read_xml_stroke(oXmlNode,"MCODE",)
-                        lp->usl_ok  :=      val(mo_read_xml_stroke(oNode2,"USL_OK",))
-                        lp->DEPART  :=      val(mo_read_xml_stroke(oNode4,"CODE",))
-                        lp->LEVEL   :=          mo_read_xml_stroke(oNode6,"VALUE",)
-                        lp->DATEBEG := xml2date(mo_read_xml_stroke(oNode6,"D_B",))
-                        lp->DATEEND := xml2date(mo_read_xml_stroke(oNode6,"D_E",))
-                        /*if j3 > 1
-                          ? "Ошибка в чтении файла - более одного тега PAY_LEVEL",nfile
-                          ? " в учреждении",lp->codem, "в отделении",lstr(lp->DEPART)
-                          wait
-                        endif*/
-                      endif
-                    next j3
-                  endif
-                endif
-              next j2
-            endif
-          endif
-        next j1
-      endif
-    endif
-  NEXT j
-ENDIF
-close databases
-return NIL
+***** 13.12.21
+Function work_LvlPay()
+  Local _mo_lvlpay := {;
+    {"CODEM",      "C",      6,      0},;
+    {"MCODE",      "C",      6,      0},;
+    {"usl_ok",     "N",      1,      0},;
+    {"DEPART",     "N",      3,      0},;
+    {"LEVEL",      "C",      5,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
 
-***** 13.01.19
-Function work_MOServ(_mo_moserv)
-dbcreate("_mo1moserv",_mo_moserv)
-use _mo1moserv new alias MS
-nfile := "S_MOServ.xml"
-oXmlDoc := HXMLDoc():Read(nfile)
-? "S_MOServ.xml - даты действия услуги вообще"
-IF Empty( oXmlDoc:aItems )
-  ? "Ошибка в чтении файла",nfile
-  wait
-else
-  ? "Обработка файла "+nfile+" - "
-  k := Len( oXmlDoc:aItems[1]:aItems )
-  FOR j := 1 TO k
-    oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-    if "ZGLV" == oXmlNode:title
-      if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
-        ? "Ошибка в чтении файла",nfile
-        ? "Некорректное значение тега YEAR_REPORT",j1
-        wait
-        exit
-      endif
-    elseif "MO_SERVICES" == oXmlNode:title
-      @ row(),30 say str(j/k*100,6,2)+"%"
-      if (oNode1 := oXmlNode:Find("SERVICES")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "SERVICE" == oNode2:title
-            if (oNode3 := oNode2:Find("PERIODS")) != NIL
-              for j2 := 1 TO Len( oNode3:aItems )
-                oNode4 := oNode3:aItems[j2]
-                if "PERIOD" == oNode4:title
-                  if j2 > 1
-                    ? "Ошибка в чтении файла - более одного тега PERIOD",nfile
-                    ? " в учреждении",ms->codem," в услуге",ms->shifr
-                    wait
-                  endif
-                  select MS
-                  append blank
-                  ms->codem   :=          mo_read_xml_stroke(oXmlNode,"CODEM",)
-                  ms->mcode   :=          mo_read_xml_stroke(oXmlNode,"MCOD",)
-                  ms->shifr   :=          mo_read_xml_stroke(oNode2,"CODE",)
-                  ms->DATEBEG := xml2date(mo_read_xml_stroke(oNode4,"D_B",))
-                  ms->DATEEND := xml2date(mo_read_xml_stroke(oNode4,"D_E",))
-                endif
-              next j2
-            endif
-          endif
-        next j1
-      endif
-    endif
-  NEXT j
-ENDIF
-close databases
-return NIL
-
-***** 16.04.18
-Function work_Prices(_mo_prices)
-dbcreate("_mo1prices",_mo_prices)
-use _mo1prices new alias MP
-nfile := "S_Prices.xml"
-oXmlDoc := HXMLDoc():Read(nfile)
-? "S_Prices.xml - цена и дата действия по уровню"
-IF Empty( oXmlDoc:aItems )
-  ? "Ошибка в чтении файла",nfile
-  wait
-else
-  ? "Обработка файла "+nfile+" - "
-  k := Len( oXmlDoc:aItems[1]:aItems )
-  FOR j := 1 TO k
-    oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-    if "ZGLV" == oXmlNode:title
-      if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
-        ? "Ошибка в чтении файла",nfile
-        ? "Некорректное значение тега YEAR_REPORT",j1
-        wait
-        exit
-      endif
-    elseif "AGE_PRICES" == oXmlNode:title
-      @ row(),30 say str(j/k*100,6,2)+"%"
-      s := mo_read_xml_stroke(oXmlNode,"AGE",)
-      lvzros_reb := iif(alltrim(s)=="В", 0, 1)
-      if (oNode1 := oXmlNode:Find("PRICES")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "CODE_PRICE" == oNode2:title
-            lshifr := mo_read_xml_stroke(oNode2,"CODE",)
-            if (oNode3 := oNode2:Find("LEVELS")) != NIL
-              for j2 := 1 TO Len( oNode3:aItems )
-                oNode4 := oNode3:aItems[j2]
-                if "LEVEL" == oNode4:title
-                  lLEVEL := mo_read_xml_stroke(oNode4,"VALUE",)
-                  if empty(lLEVEL)
-                    ? "Пустое значение тега VALUE/LEVEL",lLEVEL + " " + lshifr
-                    lLEVEL := '0'
-                  elseif len(alltrim(lLEVEL)) > 5
-                    ? "Некорректное значение тега VALUE/LEVEL",lLEVEL + " " + lshifr
-                    wait
-                  endif
-                  if (oNode5 := oNode4:Find("TARIFS")) != NIL
-                    for j3 := 1 TO Len( oNode5:aItems )
-                      oNode6 := oNode5:aItems[j3]
-                      if "TARIF" == oNode6:title
-                        select MP
-                        append blank
-                        mp->shifr     := lshifr
-                        mp->vzros_reb := lvzros_reb
-                        mp->LEVEL     := lLEVEL
-                        mp->cena      :=      val(mo_read_xml_stroke(oNode6,"COST",))
-                        mp->DATEBEG   := xml2date(mo_read_xml_stroke(oNode6,"D_B",))
-                        mp->DATEEND   := xml2date(mo_read_xml_stroke(oNode6,"D_E",))
-                      endif
-                    next j3
-                  endif
-                endif
-              next j2
-            endif
-          endif
-        next j1
-      endif
-    endif
-  NEXT j
-ENDIF
-close databases
-return NIL
-
-***** 20.01.19
-Function work_mo_uslf(_mo_uslf)
-Local i := 0
-? "index..."
-dbcreate("_mo1uslf",_mo_uslf)
-use _mo1uslf new alias LUSL
-index on shifr to tmp_usl
-use onko_napr new alias ON
-index on kod to tmp_on
-use onko_ksg new alias OK
-index on kod to tmp_ok
-use telemed new alias TEL
-index on kod to tmp_tel
-use par_org new alias PO
-index on kod to tmp_po
-use v001 new
-index on IDRB to tmp1
-@ row(),0 say "Обработка файла V001.DBF - "
-go top
-do while !eof()
-  @ row(),30 say str(++i/lastrec()*100,6,2)+"%"
-  if !empty(v001->DATEEND) .and. year(v001->DATEEND) < 2022 // 2021
-    //
+  dbcreate("_mo1lvlpay",_mo_lvlpay)
+  use _mo1lvlpay new alias LP
+  nfile := "S_LvlPay.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "S_LvlPay.xml - код МО и уровень услуг"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
   else
-    select LUSL
-    find (padr(v001->IDRB,20))
-    if found()
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZGLV" == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
+          ? "Ошибка в чтении файла",nfile
+          ? "Некорректное значение тега YEAR_REPORT",j1
+          wait
+          exit
+        endif
+      elseif "MO_LEVELS" == oXmlNode:title
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        if (oNode1 := oXmlNode:Find("USL_LEVELS")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "USL_LEVEL" == oNode2:title
+              if (oNode3 := oNode2:Find("DEPARTMENTS")) != NIL
+                for j2 := 1 TO Len( oNode3:aItems )
+                  oNode4 := oNode3:aItems[j2]
+                  if "DEPARTMENT" == oNode4:title
+                    if (oNode5 := oNode4:Find("PAY_LEVELS")) != NIL
+                      for j3 := 1 TO Len( oNode5:aItems )
+                        oNode6 := oNode5:aItems[j3]
+                        if "PAY_LEVEL" == oNode6:title
+                          select LP
+                          append blank
+                          lp->codem   :=          mo_read_xml_stroke(oXmlNode,"CODEM",)
+                          lp->mcode   :=          mo_read_xml_stroke(oXmlNode,"MCODE",)
+                          lp->usl_ok  :=      val(mo_read_xml_stroke(oNode2,"USL_OK",))
+                          lp->DEPART  :=      val(mo_read_xml_stroke(oNode4,"CODE",))
+                          lp->LEVEL   :=          mo_read_xml_stroke(oNode6,"VALUE",)
+                          lp->DATEBEG := xml2date(mo_read_xml_stroke(oNode6,"D_B",))
+                          lp->DATEEND := xml2date(mo_read_xml_stroke(oNode6,"D_E",))
+                          /*if j3 > 1
+                            ? "Ошибка в чтении файла - более одного тега PAY_LEVEL",nfile
+                            ? " в учреждении",lp->codem, "в отделении",lstr(lp->DEPART)
+                            wait
+                          endif*/
+                        endif
+                      next j3
+                    endif
+                  endif
+                next j2
+              endif
+            endif
+          next j1
+        endif
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 13.12.21
+Function work_MOServ()
+  Local _mo_moserv := {;
+    {"CODEM",      "C",      6,      0},;
+    {"MCODE",      "C",      6,      0},;
+    {"SHIFR",      "C",     10,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+
+  dbcreate("_mo1moserv",_mo_moserv)
+  use _mo1moserv new alias MS
+  nfile := "S_MOServ.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "S_MOServ.xml - даты действия услуги вообще"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZGLV" == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
+          ? "Ошибка в чтении файла",nfile
+          ? "Некорректное значение тега YEAR_REPORT",j1
+          wait
+          exit
+        endif
+      elseif "MO_SERVICES" == oXmlNode:title
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        if (oNode1 := oXmlNode:Find("SERVICES")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "SERVICE" == oNode2:title
+              if (oNode3 := oNode2:Find("PERIODS")) != NIL
+                for j2 := 1 TO Len( oNode3:aItems )
+                  oNode4 := oNode3:aItems[j2]
+                  if "PERIOD" == oNode4:title
+                    if j2 > 1
+                      ? "Ошибка в чтении файла - более одного тега PERIOD",nfile
+                      ? " в учреждении",ms->codem," в услуге",ms->shifr
+                      wait
+                    endif
+                    select MS
+                    append blank
+                    ms->codem   :=          mo_read_xml_stroke(oXmlNode,"CODEM",)
+                    ms->mcode   :=          mo_read_xml_stroke(oXmlNode,"MCOD",)
+                    ms->shifr   :=          mo_read_xml_stroke(oNode2,"CODE",)
+                    ms->DATEBEG := xml2date(mo_read_xml_stroke(oNode4,"D_B",))
+                    ms->DATEEND := xml2date(mo_read_xml_stroke(oNode4,"D_E",))
+                  endif
+                next j2
+              endif
+            endif
+          next j1
+        endif
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 13.12.21
+Function work_Prices()
+  Local _mo_prices := {;
+    {"SHIFR",      "C",     10,      0},;
+    {"VZROS_REB",  "N",      1,      0},;
+    {"LEVEL",      "C",      5,      0},;
+    {"CENA",       "N",     10,      2},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+
+  dbcreate("_mo1prices",_mo_prices)
+  use _mo1prices new alias MP
+  nfile := "S_Prices.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "S_Prices.xml - цена и дата действия по уровню"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZGLV" == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
+          ? "Ошибка в чтении файла",nfile
+          ? "Некорректное значение тега YEAR_REPORT",j1
+          wait
+          exit
+        endif
+      elseif "AGE_PRICES" == oXmlNode:title
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        s := mo_read_xml_stroke(oXmlNode,"AGE",)
+        lvzros_reb := iif(alltrim(s)=="В", 0, 1)
+        if (oNode1 := oXmlNode:Find("PRICES")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "CODE_PRICE" == oNode2:title
+              lshifr := mo_read_xml_stroke(oNode2,"CODE",)
+              if (oNode3 := oNode2:Find("LEVELS")) != NIL
+                for j2 := 1 TO Len( oNode3:aItems )
+                  oNode4 := oNode3:aItems[j2]
+                  if "LEVEL" == oNode4:title
+                    lLEVEL := mo_read_xml_stroke(oNode4,"VALUE",)
+                    if empty(lLEVEL)
+                      ? "Пустое значение тега VALUE/LEVEL",lLEVEL + " " + lshifr
+                      lLEVEL := '0'
+                    elseif len(alltrim(lLEVEL)) > 5
+                      ? "Некорректное значение тега VALUE/LEVEL",lLEVEL + " " + lshifr
+                      wait
+                    endif
+                    if (oNode5 := oNode4:Find("TARIFS")) != NIL
+                      for j3 := 1 TO Len( oNode5:aItems )
+                        oNode6 := oNode5:aItems[j3]
+                        if "TARIF" == oNode6:title
+                          select MP
+                          append blank
+                          mp->shifr     := lshifr
+                          mp->vzros_reb := lvzros_reb
+                          mp->LEVEL     := lLEVEL
+                          mp->cena      :=      val(mo_read_xml_stroke(oNode6,"COST",))
+                          mp->DATEBEG   := xml2date(mo_read_xml_stroke(oNode6,"D_B",))
+                          mp->DATEEND   := xml2date(mo_read_xml_stroke(oNode6,"D_E",))
+                        endif
+                      next j3
+                    endif
+                  endif
+                next j2
+              endif
+            endif
+          next j1
+        endif
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 13.12.21
+Function work_mo_uslf()
+  Local _mo_uslf := {;
+    {"SHIFR",      "C",     20,      0},;
+    {"NAME",       "C",    255,      0},;
+    {"TIP",        "N",      1,      0},; // 1-есть ещё в стоматологии,2-только в стоматологии
+    {"GRP",        "N",      1,      0},; // код группы стоматологических услуг
+    {"TELEMED",    "N",      1,      0},; // 1-услуга телемедицины
+    {"ONKO_NAPR",  "N",      1,      0},; // тип диагн.услуги для дообследования в направлении ЗНО
+    {"ONKO_KSG",   "N",      1,      0},; // тип лечения ОНКО - привязка к КСГ
+    {"UETV",       "N",      5,      2},;
+    {"UETD",       "N",      5,      2},;
+    {"ZF",         "N",      1,      0},; // 1-обязателен ввод зубной формулы
+    {"PAR_ORG",    "C",     40,      0},; // операция на парных органах (список)
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+  Local i := 0
+
+  ? "index..."
+  dbcreate("_mo1uslf",_mo_uslf)
+  use _mo1uslf new alias LUSL
+  index on shifr to tmp_usl
+  use onko_napr new alias ON
+  index on kod to tmp_on
+  use onko_ksg new alias OK
+  index on kod to tmp_ok
+  use telemed new alias TEL
+  index on kod to tmp_tel
+  use par_org new alias PO
+  index on kod to tmp_po
+  use v001 new
+  index on IDRB to tmp1
+  @ row(),0 say "Обработка файла V001.DBF - "
+  go top
+  do while !eof()
+    @ row(),30 say str(++i/lastrec()*100,6,2)+"%"
+    if !empty(v001->DATEEND) .and. year(v001->DATEEND) < 2022 // 2021
+      //
     else
-      append blank
-      lusl->SHIFR   := v001->IDRB
-      lusl->NAME    := ltrim(charrem(eos,charone(" ",v001->RBNAME)))
-      lusl->DATEBEG := v001->DATEBEG
-      lusl->DATEEND := v001->DATEEND
-      select TEL
-      find (left(lusl->SHIFR,15))
+      select LUSL
+      find (padr(v001->IDRB,20))
       if found()
-        lusl->telemed := 1
-      endif
-      select PO
-      find (left(lusl->SHIFR,15))
-      if found()
-        lusl->par_org := po->organ
-      endif
-      select ON
-      find (left(lusl->SHIFR,15))
-      if found()
-        lusl->onko_napr := on->id_tlech
-      endif
-      select OK
-      find (left(lusl->SHIFR,15))
-      if found()
-        lusl->onko_ksg := iif(empty(ok->id_tlech), 6, ok->id_tlech)
-      endif
-      if empty(lusl->onko_ksg) .and. left(lusl->SHIFR,4) == "A16."
-        lusl->onko_ksg := 1 // хирургическое лечение
+      else
+        append blank
+        lusl->SHIFR   := v001->IDRB
+        lusl->NAME    := ltrim(charrem(eos,charone(" ",v001->RBNAME)))
+        lusl->DATEBEG := v001->DATEBEG
+        lusl->DATEEND := v001->DATEEND
+        select TEL
+        find (left(lusl->SHIFR,15))
+        if found()
+          lusl->telemed := 1
+        endif
+        select PO
+        find (left(lusl->SHIFR,15))
+        if found()
+          lusl->par_org := po->organ
+        endif
+        select ON
+        find (left(lusl->SHIFR,15))
+        if found()
+          lusl->onko_napr := on->id_tlech
+        endif
+        select OK
+        find (left(lusl->SHIFR,15))
+        if found()
+          lusl->onko_ksg := iif(empty(ok->id_tlech), 6, ok->id_tlech)
+        endif
+        if empty(lusl->onko_ksg) .and. left(lusl->SHIFR,4) == "A16."
+          lusl->onko_ksg := 1 // хирургическое лечение
+        endif
       endif
     endif
-  endif
-  select V001
-  skip
-enddo
-select PO
-go top
-do while !eof()
-  select LUSL
-  find (padr(po->kod,20))
-  if !found()
-  endif
-  select V001
-  find (padr(po->kod,15))
-  if !found()
-  endif
+    select V001
+    skip
+  enddo
   select PO
-  skip
-enddo
-close databases
-return NIL
+  go top
+  do while !eof()
+    select LUSL
+    find (padr(po->kod,20))
+    if !found()
+    endif
+    select V001
+    find (padr(po->kod,15))
+    if !found()
+    endif
+    select PO
+    skip
+  enddo
+  close databases
+  return NIL
 
 ***** 22.11.21
 Function work_t006(_mo_usl)
@@ -1595,49 +1575,59 @@ Function work_SprKiro()
   close databases
   return NIL
 
-***** 30.12.18
-Function work_SprUnit(_mo_unit)
-dbcreate("_mo1unit",_mo_unit)
-use _mo1unit new alias UN
-nfile := "SprUnit.xml"
-oXmlDoc := HXMLDoc():Read(nfile)
-? "SPRUNIT.xml  - справочник видов помощи /план-заказ"
-IF Empty( oXmlDoc:aItems )
-  ? "Ошибка в чтении файла",nfile
-  wait
-else
-  ? "Обработка файла "+nfile+" - "
-  k := Len( oXmlDoc:aItems[1]:aItems )
-  FOR j := 1 TO k
-    oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-    if "ZGLV" == oXmlNode:title
-      if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
-        ? "Ошибка в чтении файла",nfile
-        ? "Некорректное значение тега YEAR_REPORT",j1
-        wait
-        exit
+***** 13.12.21
+Function work_SprUnit()
+  Local _mo_unit := {;
+    {"CODE",       "N",      3,      0},;
+    {"pz",         "N",      2,      0},;
+    {"ii",         "N",      2,      0},;
+    {"c_t",        "N",      1,      0},;
+    {"NAME",       "C",     60,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+
+  dbcreate("_mo1unit",_mo_unit)
+  use _mo1unit new alias UN
+  nfile := "SprUnit.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "SPRUNIT.xml  - справочник видов помощи /план-заказ"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZGLV" == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == '2021')
+          ? "Ошибка в чтении файла",nfile
+          ? "Некорректное значение тега YEAR_REPORT",j1
+          wait
+          exit
+        endif
+      elseif "ZAP" == oXmlNode:title
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        select UN
+        append blank
+        un->code := val(mo_read_xml_stroke(oXmlNode,"CODE",))
+        un->NAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
+        un->c_t  := val(mo_read_xml_stroke(oXmlNode,"C_T",))
+        if (oNode1 := oXmlNode:Find("PERIODS")) != NIL
+          for j1 := 1 TO Len( oNode1:aItems )
+            oNode2 := oNode1:aItems[j1]
+            if "PERIOD" == oNode2:title
+              un->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"DATEBEG",))
+              un->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"DATEEND",))
+            endif
+          next j1
+        endif
       endif
-    elseif "ZAP" == oXmlNode:title
-      @ row(),30 say str(j/k*100,6,2)+"%"
-      select UN
-      append blank
-      un->code := val(mo_read_xml_stroke(oXmlNode,"CODE",))
-      un->NAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
-      un->c_t  := val(mo_read_xml_stroke(oXmlNode,"C_T",))
-      if (oNode1 := oXmlNode:Find("PERIODS")) != NIL
-        for j1 := 1 TO Len( oNode1:aItems )
-          oNode2 := oNode1:aItems[j1]
-          if "PERIOD" == oNode2:title
-            un->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"DATEBEG",))
-            un->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"DATEEND",))
-          endif
-        next j1
-      endif
-    endif
-  NEXT j
-ENDIF
-close databases
-return NIL
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
 
 ***** строка даты для XML-файла
 Function date2xml(mdate)
@@ -2982,7 +2972,14 @@ Function work_V020()
   return NIL
 
 ***** 11.02.21
-Function work_V022(_mo_V022)
+Function work_V022()
+  local _mo_V022 := {;
+    {"IDMPAC",     "N",      5,      0},;
+    {"MPACNAME",   "C",   1250,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+
   dbcreate("_mo_v022",_mo_V022)
   use _mo_V022 new alias V022
   nfile := "V022.xml"
@@ -3372,78 +3369,51 @@ Function make_F011()
   close databases
   return NIL
 
-***** 09.03.21
-Function make_TO01()
+// ***** 09.03.21
+// Function make_TO01()
 
-  local _mo_T001 := {;
-    { 'MCOD',       'C',    6,      0 },;
-    { 'CODEM',      'C',    6,      0 },;
-    { 'NAMEF',      'M',    10,     0 },;
-    { 'NAMES',      'C',    80,     0 },;
-    { 'ADRES',      'M',    10,     0 },;
-    { 'MAIN',       'C',    1,      0 },;
-    { 'PFA',        'C',    1,      0 },;
-    { 'PFS',        'C',    1,      0 },;
-    { 'DATEBEG',    'D',    8,      0 },;
-    { 'DATEEND',    'D',    8,      0 };
-  }
-  local dbName := '_mo_t001'
-  local dbSource := 'T001'
-  local mName := '', mArr
+//   local _mo_T001 := {;
+//     { 'MCOD',       'C',    6,      0 },;
+//     { 'CODEM',      'C',    6,      0 },;
+//     { 'NAMEF',      'M',    10,     0 },;
+//     { 'NAMES',      'C',    80,     0 },;
+//     { 'ADRES',      'M',    10,     0 },;
+//     { 'MAIN',       'C',    1,      0 },;
+//     { 'PFA',        'C',    1,      0 },;
+//     { 'PFS',        'C',    1,      0 },;
+//     { 'DATEBEG',    'D',    8,      0 },;
+//     { 'DATEEND',    'D',    8,      0 };
+//   }
+//   local dbName := '_mo_t001'
+//   local dbSource := 'T001'
+//   local mName := '', mArr
 
-  ? 'Т001.dbf     - Справочник МО и обособленных подразделений, финансируемых самостоятельно'
-  dbcreate('_mo_t001', _mo_T001)
-  dbUseArea( .t.,, dbName, dbName, .t., .f. )
-  // use _mo_t001 new alias T001
+//   ? 'Т001.dbf     - Справочник МО и обособленных подразделений, финансируемых самостоятельно'
+//   dbcreate('_mo_t001', _mo_T001)
+//   dbUseArea( .t.,, dbName, dbName, .t., .f. )
 
-  dbUseArea( .t.,, dbSource, dbSource, .f., .f. )
-  (dbSource)->(dbGoTop())
-  do while !(dbSource)->(EOF())
-    if (dbSource)->(DATEEND) > 0d20210101
-      (dbName)->(dbAppend())
-      (dbName)->MCOD := (dbSource)->MCOD
-      (dbName)->CODEM := (dbSource)->CODEM
-      (dbName)->NAMEF := (dbSource)->NAMEF
-      (dbName)->NAMES := (dbSource)->NAMES
-      (dbName)->ADRES := (dbSource)->ADRES_M
-      (dbName)->MAIN := (dbSource)->MAIN
-      (dbName)->PFA := (dbSource)->PFA
-      (dbName)->PFS := (dbSource)->PFS
-      (dbName)->DATEBEG := (dbSource)->DATEBEG
-      (dbName)->DATEEND := (dbSource)->DATEEND
-    endif
-      // aadd(_v002, { (dbName)->PRNAME, (dbName)->IDPR, (dbName)->DATEBEG, (dbName)->DATEEND })
-    (dbSource)->(dbSkip())
-  enddo
-  (dbSource)->(dbCloseArea())
-  (dbName)->(dbCloseArea())
+//   dbUseArea( .t.,, dbSource, dbSource, .f., .f. )
+//   (dbSource)->(dbGoTop())
+//   do while !(dbSource)->(EOF())
+//     if (dbSource)->(DATEEND) > 0d20210101
+//       (dbName)->(dbAppend())
+//       (dbName)->MCOD := (dbSource)->MCOD
+//       (dbName)->CODEM := (dbSource)->CODEM
+//       (dbName)->NAMEF := (dbSource)->NAMEF
+//       (dbName)->NAMES := (dbSource)->NAMES
+//       (dbName)->ADRES := (dbSource)->ADRES_M
+//       (dbName)->MAIN := (dbSource)->MAIN
+//       (dbName)->PFA := (dbSource)->PFA
+//       (dbName)->PFS := (dbSource)->PFS
+//       (dbName)->DATEBEG := (dbSource)->DATEBEG
+//       (dbName)->DATEEND := (dbSource)->DATEEND
+//     endif
+//     (dbSource)->(dbSkip())
+//   enddo
+//   (dbSource)->(dbCloseArea())
+//   (dbName)->(dbCloseArea())
 
-  // nfile := 'F011.xml'
-  // oXmlDoc := HXMLDoc():Read(nfile)
-  // ? 'F011.xml     - Классификатор типов документов, удостоверяющих личность (Tipdoc)'
-  // IF Empty( oXmlDoc:aItems )
-  //   ? "Ошибка в чтении файла",nfile
-    // wait
-  // else
-  //   ? "Обработка файла "+nfile+" - "
-  //   k := Len( oXmlDoc:aItems[1]:aItems )
-  //   FOR j := 1 TO k
-  //     oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-  //     if "ZAP" == upper(oXmlNode:title)
-  //       @ row(),30 say str(j/k*100,6,2)+"%"
-  //       select F011
-  //       append blank
-  //       F011->IDDOC := val(mo_read_xml_stroke(oXmlNode, 'IDDOC',))
-  //       F011->DOCNAME := mo_read_xml_stroke(oXmlNode, 'DOCNAME',)
-  //       F011->DOCSER := mo_read_xml_stroke(oXmlNode, 'DOCSER',)
-  //       F011->DOCNUM := mo_read_xml_stroke(oXmlNode, 'DOCNUM',)
-  //       F011->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
-  //       F011->DATEEND := ctod(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
-  //     endif
-  //   NEXT j
-  // ENDIF
-  // close databases
-  return NIL
+//   return NIL
 
 ***** 12.08.21
 Function make_F014()
