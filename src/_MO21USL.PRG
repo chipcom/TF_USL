@@ -113,6 +113,7 @@ delete file ttt.ttt
 f_first()
 Public sys_date := date(), sys_year := year(date())
 
+create_version_DB()
 // make_TO01()
 work_V002()
 work_V021()
@@ -3457,3 +3458,16 @@ Function make_F014()
   close databases
   return NIL
 
+***** 14.12.21
+function create_version_DB()
+  local versionDB := {;
+    {'TYPE',    'C',     10,      0},;    // Тип содержимого файла
+    {'VERSION', 'C',      3,      0},;    // Версия структуры файла
+    {'DATE_V',  'D',      8,      0};     // Дата создания файла
+  }
+  local sbase := "_versionDB"
+
+  if hb_FileExists(sbase + '.dbf')
+    dbcreate(sbase, versionDB)
+  endif
+  return nil
