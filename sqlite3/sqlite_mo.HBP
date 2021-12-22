@@ -14,9 +14,9 @@ hbsqlit3.hbc
 xmlparse.c
 hxmldoc.prg
 main.prg
-catalog_f.prg
-catalog_o.prg
-catalog_q.prg
+#catalog_f.prg
+#catalog_o.prg
+#catalog_q.prg
 catalog_v.prg
 
 
