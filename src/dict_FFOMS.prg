@@ -843,7 +843,7 @@ Function work_V034()
 Function work_V035()
   local _mo_V035 := {;
     {"METHCODE",  "N",   4, 0},;  // 
-    {"METHNAM",   "C",  50, 0},;  //
+    {"METHNAME",  "C",  50, 0},;  //
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
@@ -864,13 +864,13 @@ Function work_V035()
       if "ZAP" == upper(oXmlNode:title)
         @ row(),30 say str(j/k*100,6,2)+"%"
         mMethCode := mo_read_xml_stroke(oXmlNode,"MethCode",)
-        mMethNam := mo_read_xml_stroke(oXmlNode,"MethNam",)
+        mMethName := mo_read_xml_stroke(oXmlNode,"MethNam",)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
         select V035
         append blank
         V035->METHCODE := val(mMethCode)
-        V035->METHNAM := mMethNam
+        V035->METHNAME := mMethName
         V035->DATEBEG := mDATEBEG
         V035->DATEEND := mDATEEND
       endif
