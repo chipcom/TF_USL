@@ -147,6 +147,13 @@ work_V019()
 work_V020()
 work_V022()
 work_V025()
+work_V030()
+work_V031()
+work_V032()
+work_V033()
+work_V034()
+work_V035()
+work_V036()
 make_Q015()
 make_Q016()
 make_Q017()
@@ -3049,6 +3056,307 @@ Function work_V025()
         V025->N_PC := mN_PC
         V025->DATEBEG := mDATEBEG
         V025->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 29.12.21
+Function work_V030()
+  local _mo_V030 := {;
+    {"SCHEMCOD",  "C",   3, 0},;  // 
+    {"SCHEME",    "C",  10, 0},;  //
+    {"DEGREE",    "N",   2, 0},;  //
+    {"COMMENT",   "M",  10, 0},;  //
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v030", _mo_V030)
+  use _mo_V030 new alias V030
+  nfile := "V030.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V030.xml     - Схемы лечения заболевания COVID-19 (TreatReg)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mSchemCod := mo_read_xml_stroke(oXmlNode,"SchemCode",)
+        mScheme := mo_read_xml_stroke(oXmlNode,"Scheme",)
+        mDegree := mo_read_xml_stroke(oXmlNode,"DegreeSeverity",)
+        mComment := mo_read_xml_stroke(oXmlNode,"COMMENT",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V030
+        append blank
+        V030->SCHEMCOD := mSchemCod
+        V030->SCHEME := mScheme
+        V030->DEGREE := val(mDegree)
+        V030->COMMENT := mComment
+        V030->DATEBEG := mDATEBEG
+        V030->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 29.12.21
+Function work_V031()
+  local _mo_V031 := {;
+    {"DRUGCODE",  "N",   2, 0},;  // 
+    {"DRUGGRUP",  "C",  50, 0},;  //
+    {"INDMNN",    "N",   2, 0},;  //
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v031", _mo_V031)
+  use _mo_V031 new alias V031
+  nfile := "V031.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V031.xml     - Группы препаратов для лечения заболевания COVID-19 (GroupDrugs)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mDrugCode := mo_read_xml_stroke(oXmlNode,"DrugGroupCode",)
+        mDrugGrup := mo_read_xml_stroke(oXmlNode,"DrugGroup",)
+        mIndMNN := mo_read_xml_stroke(oXmlNode,"ManIndMNN",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V031
+        append blank
+        V031->DRUGCODE := val(mDrugCode)
+        V031->DRUGGRUP := mDrugGrup
+        V031->INDMNN := val(mIndMNN)
+        V031->DATEBEG := mDATEBEG
+        V031->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 29.12.21
+Function work_V032()
+  local _mo_V032 := {;
+    {"SCHEDRUG",  "C",   5, 0},;  // 
+    {"NAME",      "C", 100, 0},;  //
+    {"SCHEMCOD",  "C",   3, 0},;  //
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v032", _mo_V032)
+  use _mo_V032 new alias V032
+  nfile := "V032.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V032.xml     - Сочетание схемы лечения и группы препаратов (CombTreat)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mScheDrug := mo_read_xml_stroke(oXmlNode,"ScheDrugGrCd",)
+        mName := mo_read_xml_stroke(oXmlNode,"Name",)
+        mSchemCod := mo_read_xml_stroke(oXmlNode,"SchemCode",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V032
+        append blank
+        V032->SCHEDRUG := mScheDrug
+        V032->NAME := mName
+        V032->SCHEMCOD := mSchemCod
+        V032->DATEBEG := mDATEBEG
+        V032->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 29.12.21
+Function work_V033()
+  local _mo_V033 := {;
+    {"SCHEDRUG",  "C",   5, 0},;  // 
+    {"DRUGCODE",  "C",   6, 0},;  //
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v033", _mo_V033)
+  use _mo_V033 new alias V033
+  nfile := "V033.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V033.xml     - Соответствие кода препарата схеме лечения (DgTreatReg)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mScheDrug := mo_read_xml_stroke(oXmlNode,"ScheDrugGrCd",)
+        mDrugCode := mo_read_xml_stroke(oXmlNode,"DrugCode",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V033
+        append blank
+        V033->SCHEDRUG := mScheDrug
+        V033->DRUGCODE := mDrugCode
+        V033->DATEBEG := mDATEBEG
+        V033->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 29.12.21
+Function work_V034()
+  local _mo_V034 := {;
+    {"UNITCODE",  "N",   4, 0},;  // 
+    {"UNITMEAS",  "C",  50, 0},;  //
+    {"SHORTTIT",  "C",  15, 0},;  //
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v034", _mo_V034)
+  use _mo_V034 new alias V034
+  nfile := "V034.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V034.xml     - Единицы измерения (UnitMeas)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mUnitCode := mo_read_xml_stroke(oXmlNode,"UnitCode",)
+        mUnitMeas := mo_read_xml_stroke(oXmlNode,"UnitMeasur",)
+        mShortTit := mo_read_xml_stroke(oXmlNode,"ShortTitle",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V034
+        append blank
+        V034->UNITCODE := val(mUnitCode)
+        V034->UNITMEAS := mUnitMeas
+        V034->SHORTTIT := mShortTit
+        V034->DATEBEG := mDATEBEG
+        V034->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 29.12.21
+Function work_V035()
+  local _mo_V035 := {;
+    {"METHCODE",  "N",   4, 0},;  // 
+    {"METHNAM",   "C",  50, 0},;  //
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v035", _mo_V035)
+  use _mo_V035 new alias V035
+  nfile := "V035.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V035.xml     - Способы введения (MethIntro)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mMethCode := mo_read_xml_stroke(oXmlNode,"MethCode",)
+        mMethNam := mo_read_xml_stroke(oXmlNode,"MethNam",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V035
+        append blank
+        V035->METHCODE := val(mMethCode)
+        V035->METHNAM := mMethNam
+        V035->DATEBEG := mDATEBEG
+        V035->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 29.12.21
+Function work_V036()
+  local _mo_V036 := {;
+    {"S_CODE",    "C",  16, 0},;  // 
+    {"NAME",      "C", 150, 0},;  //
+    {"PARAM",     "N",   1, 0},;  //
+    {"COMMENT",   "C",  20, 0},;  //
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v036", _mo_V036)
+  use _mo_V036 new alias V036
+  nfile := "V036.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V036.xml     - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mS_Code := mo_read_xml_stroke(oXmlNode,"S_CODE",)
+        mName := mo_read_xml_stroke(oXmlNode,"NAME",)
+        mParam := mo_read_xml_stroke(oXmlNode,"Parameter",)
+        mComment := mo_read_xml_stroke(oXmlNode,"COMMENT",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V036
+        append blank
+        V036->S_CODE := mS_Code
+        V036->NAME := mName
+        V036->PARAM := val(mParam)
+        V036->COMMENT := mComment
+        V036->DATEBEG := mDATEBEG
+        V036->DATEEND := mDATEEND
       endif
     NEXT j
   ENDIF
