@@ -28,6 +28,8 @@
    V035.xml     - Способы введения (MethIntro)
    V036.xml     - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)
 
+   OID 1.2.643.5.1.13.13.11.1079 - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями
+
 //  Что получаем на выходе - наши файлы
 
    _mo1usl    - _mo_usl  - справочник наименований всех услуг
@@ -170,6 +172,9 @@ make_F010()
 make_F011()
 make_F014()
 make_O001()
+
+make_implant()
+
 close databases
 //
 rename t006_2.dbf to _mo1k006.dbf
@@ -3365,6 +3370,55 @@ Function work_V036()
         V036->COMMENT := mComment
         V036->DATEBEG := mDATEBEG
         V036->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 30.12.21
+function make_implant()
+
+  local _mo_impl := {;
+    {"ID",    "C",  16, 0},;  // Код , уникальный идентификатор записи
+    {"RZN",      "C", 150, 0},;  // код изделия согласно Номенклатурному классификатору Росздравнадзора
+    {"PARENT",     "N",   1, 0},;  // Код родительского элемента
+    {"NAME",   "C",  20, 0},;  // Наименование , наименование вида изделия
+    {"LOCAL",   "C",  20, 0},;  // Локализация , анатомическая область, к которой относится локализация и/или действие изделия
+    {"MATERIAL",   "C",  20, 0},;  // Материал , тип материала, из которого изготовлено изделие
+    {"METAL",   "C",  20, 0},;  // Металл , признак наличия металла в изделии
+    {"ORDER",   "C",  20, 0};  // Порядок сортировки
+  }
+
+  dbcreate("_mo_impl", _mo_impl)
+  use _mo_impl new alias IMPL
+  nfile := "1.2.643.5.1.13.13.11.1079_2.2.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "1.2.643.5.1.13.13.11.1079_2.2.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ENTRY" == upper(oXmlNode:title)
+        @ row(), 30 say str(j / k * 100, 6, 2) + "%"
+    //     mS_Code := mo_read_xml_stroke(oXmlNode,"S_CODE",)
+    //     mName := mo_read_xml_stroke(oXmlNode,"NAME",)
+    //     mParam := mo_read_xml_stroke(oXmlNode,"Parameter",)
+    //     mComment := mo_read_xml_stroke(oXmlNode,"COMMENT",)
+    //     mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+    //     mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+    //     select V036
+    //     append blank
+    //     V036->S_CODE := mS_Code
+    //     V036->NAME := mName
+    //     V036->PARAM := val(mParam)
+    //     V036->COMMENT := mComment
+    //     V036->DATEBEG := mDATEBEG
+    //     V036->DATEEND := mDATEEND
       endif
     NEXT j
   ENDIF
