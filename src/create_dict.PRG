@@ -19,7 +19,16 @@
    V012.xml     - Классификатор исходов заболевания (Ishod)
    V016.xml     - Классификатор типов диспансеризации (DispT)
    V017.xml     - Классификатор результатов диспансеризации (DispR)
+   
+   V030.xml     - Схемы лечения заболевания COVID-19 (TreatReg)
+   V031.xml     - Группы препаратов для лечения заболевания COVID-19 (GroupDrugs)
+   V032.xml     - Сочетание схемы лечения и группы препаратов (CombTreat)
+   V033.xml     - Соответствие кода препарата схеме лечения (DgTreatReg)
+   V034.xml     - Единицы измерения (UnitMeas)
+   V035.xml     - Способы введения (MethIntro)
+   V036.xml     - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)
 
+   OID 1.2.643.5.1.13.13.11.1079 - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями
 
 //  Что получаем на выходе - наши файлы
 
@@ -81,6 +90,9 @@ proc main()
   Public sys_date := date(), sys_year := year(date())
 
   // make_TO01()
+
+  make_implant()
+
   work_V002()
   work_V021()
 
@@ -286,39 +298,48 @@ Function xml2date(s)
   return stod(charrem("-",s))
 
 ***** проверить наличие в XML-файле тэга и вернуть его значение
-Function mo_read_xml_stroke(_node,_title,_aerr,_binding)
+Function mo_read_xml_stroke(_node, _title, _aerr, _binding, _codepage)
   // _node - указатель на узел
   // _title - наименование тэга
   // _aerr - массив сообщений об ошибках
   // _binding - обязателен ли атрибут (по-умолчанию .T.)
+  // _codepage - кодировка переданной строки
   Local ret := "", oNode, yes_err := (valtype(_aerr) == "A"),;
-        s_msg := 'Отсутствует значение обязательного тэга "'+_title+'"'
-  
+      s_msg := 'Отсутствует значение обязательного тэга "'+_title+'"'
+
   DEFAULT _binding TO .t., _aerr TO {}
+
+  DEFAULT _codepage TO 'WIN1251'
   // ищем необходимый "_title" тэг в узле "_node"
   oNode := _node:Find(_title)
   if oNode == NIL .and. _binding .and. yes_err
     aadd(_aerr,s_msg)
   endif
   if oNode != NIL
-    ret := mo_read_xml_tag(oNode,_aerr,_binding)
+    ret := mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
   endif
   return ret
 
 ***** вернуть значение тэга
-Function mo_read_xml_tag(oNode,_aerr,_binding)
+Function mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
   // oNode - указатель на узел
   // _aerr - массив сообщений об ошибках
   // _binding - обязателен ли атрибут (по-умолчанию .T.)
+  // _codepage - кодировка переданной строки
   Local ret := "", c, yes_err := (valtype(_aerr) == "A"),;
-        s_msg := 'Отсутствует значение обязательного тэга "'+oNode:title+'"'
+      s_msg := 'Отсутствует значение обязательного тэга "'+oNode:title+'"'
+  local codepage := upper(_codepage)
 
   if empty(oNode:aItems)
     if _binding .and. yes_err
       aadd(_aerr,s_msg)
     endif
   elseif (c := valtype(oNode:aItems[1])) == "C"
-    ret := hb_AnsiToOem(alltrim(oNode:aItems[1]))
+    if codepage == 'WIN1251'
+      ret := hb_AnsiToOem(alltrim(oNode:aItems[1]))
+    elseif codepage == 'UTF8'
+      ret := hb_Utf8ToStr( alltrim(oNode:aItems[1]), 'RU866' )	
+    endif
   elseif yes_err
     aadd(_aerr,'Неверный тип данных у тэга "'+oNode:title+'": "'+c+'"')
   endif

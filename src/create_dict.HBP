@@ -11,6 +11,7 @@
 xmlparse.c
 hxmldoc.prg
 create_dict.prg
+dict_MZDRV.prg
 dict_FFOMS.prg
 dict_TFOMS.prg
 _mo21n00.prg

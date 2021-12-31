@@ -125,6 +125,9 @@ Public sys_date := date(), sys_year := year(date())
 
 // create_version_DB()
 // make_TO01()
+
+make_implant()
+
 work_V002()
 work_V021()
 
@@ -173,7 +176,6 @@ make_F011()
 make_F014()
 make_O001()
 
-make_implant()
 
 close databases
 //
@@ -1652,50 +1654,61 @@ Function work_SprUnit()
 
 ***** строка даты для XML-файла
 Function date2xml(mdate)
-return strzero(year(mdate),4)+'-'+;
+  return strzero(year(mdate),4)+'-'+;
        strzero(month(mdate),2)+'-'+;
        strzero(day(mdate),2)
 
 ***** пребразовать дату из "2002-02-01" в тип "DATE"
 Function xml2date(s)
-return stod(charrem("-",s))
+  return stod(charrem("-",s))
 
 ***** проверить наличие в XML-файле тэга и вернуть его значение
-Function mo_read_xml_stroke(_node,_title,_aerr,_binding)
-// _node - указатель на узел
-// _title - наименование тэга
-// _aerr - массив сообщений об ошибках
-// _binding - обязателен ли атрибут (по-умолчанию .T.)
-Local ret := "", oNode, yes_err := (valtype(_aerr) == "A"),;
+Function mo_read_xml_stroke(_node, _title, _aerr, _binding, _codepage)
+  // _node - указатель на узел
+  // _title - наименование тэга
+  // _aerr - массив сообщений об ошибках
+  // _binding - обязателен ли атрибут (по-умолчанию .T.)
+  // _codepage - кодировка переданной строки
+  Local ret := "", oNode, yes_err := (valtype(_aerr) == "A"),;
       s_msg := 'Отсутствует значение обязательного тэга "'+_title+'"'
-DEFAULT _binding TO .t., _aerr TO {}
-// ищем необходимый "_title" тэг в узле "_node"
-oNode := _node:Find(_title)
-if oNode == NIL .and. _binding .and. yes_err
-  aadd(_aerr,s_msg)
-endif
-if oNode != NIL
-  ret := mo_read_xml_tag(oNode,_aerr,_binding)
-endif
-return ret
 
-***** вернуть значение тэга
-Function mo_read_xml_tag(oNode,_aerr,_binding)
-// oNode - указатель на узел
-// _aerr - массив сообщений об ошибках
-// _binding - обязателен ли атрибут (по-умолчанию .T.)
-Local ret := "", c, yes_err := (valtype(_aerr) == "A"),;
-      s_msg := 'Отсутствует значение обязательного тэга "'+oNode:title+'"'
-if empty(oNode:aItems)
-  if _binding .and. yes_err
+  DEFAULT _binding TO .t., _aerr TO {}
+
+  DEFAULT _codepage TO 'WIN1251'
+  // ищем необходимый "_title" тэг в узле "_node"
+  oNode := _node:Find(_title)
+  if oNode == NIL .and. _binding .and. yes_err
     aadd(_aerr,s_msg)
   endif
-elseif (c := valtype(oNode:aItems[1])) == "C"
-  ret := hb_AnsiToOem(alltrim(oNode:aItems[1]))
-elseif yes_err
-  aadd(_aerr,'Неверный тип данных у тэга "'+oNode:title+'": "'+c+'"')
-endif
-return ret
+  if oNode != NIL
+    ret := mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
+  endif
+  return ret
+
+***** вернуть значение тэга
+Function mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
+  // oNode - указатель на узел
+  // _aerr - массив сообщений об ошибках
+  // _binding - обязателен ли атрибут (по-умолчанию .T.)
+  // _codepage - кодировка переданной строки
+  Local ret := "", c, yes_err := (valtype(_aerr) == "A"),;
+      s_msg := 'Отсутствует значение обязательного тэга "'+oNode:title+'"'
+  local codepage := upper(_codepage)
+
+  if empty(oNode:aItems)
+    if _binding .and. yes_err
+      aadd(_aerr,s_msg)
+    endif
+  elseif (c := valtype(oNode:aItems[1])) == "C"
+    if codepage == 'WIN1251'
+      ret := hb_AnsiToOem(alltrim(oNode:aItems[1]))
+    elseif codepage == 'UTF8'
+      ret := hb_Utf8ToStr( alltrim(oNode:aItems[1]), 'RU866' )	
+    endif
+  elseif yes_err
+    aadd(_aerr,'Неверный тип данных у тэга "'+oNode:title+'": "'+c+'"')
+  endif
+  return ret
 
 ***** попадает ли date1 (диапазон date1-date2) в диапазон _begin_date-_end_date
 Function between_date(_begin_date,_end_date,date1,date2)
@@ -3376,25 +3389,25 @@ Function work_V036()
   close databases
   return NIL
 
-***** 30.12.21
+***** 31.12.21
 function make_implant()
 
   local _mo_impl := {;
-    {"ID",    "C",  16, 0},;  // Код , уникальный идентификатор записи
-    {"RZN",      "C", 150, 0},;  // код изделия согласно Номенклатурному классификатору Росздравнадзора
-    {"PARENT",     "N",   1, 0},;  // Код родительского элемента
-    {"NAME",   "C",  20, 0},;  // Наименование , наименование вида изделия
-    {"LOCAL",   "C",  20, 0},;  // Локализация , анатомическая область, к которой относится локализация и/или действие изделия
-    {"MATERIAL",   "C",  20, 0},;  // Материал , тип материала, из которого изготовлено изделие
-    {"METAL",   "C",  20, 0},;  // Металл , признак наличия металла в изделии
-    {"ORDER",   "C",  20, 0};  // Порядок сортировки
+    {"ID",      "N",  5, 0},;  // Код , уникальный идентификатор записи
+    {"RZN",     "N",  6, 0},;  // код изделия согласно Номенклатурному классификатору Росздравнадзора
+    {"PARENT",  "N",  5, 0},;  // Код родительского элемента
+    {"NAME",    "C", 120, 0},;  // Наименование , наименование вида изделия
+    {"LOCAL",   "C",  80, 0},;  // Локализация , анатомическая область, к которой относится локализация и/или действие изделия
+    {"MATERIAL","C",  20, 0},;  // Материал , тип материала, из которого изготовлено изделие
+    {"METAL",   "L",   1, 0},;  // Металл , признак наличия металла в изделии
+    {"ORDER",   "N",   4, 0};  // Порядок сортировки
   }
 
   dbcreate("_mo_impl", _mo_impl)
   use _mo_impl new alias IMPL
-  nfile := "1.2.643.5.1.13.13.11.1079_2.2.xml"
+  nfile := "1.2.643.5.1.13.13.11.1079_2.2.xml"  // может меняться из-за версий
   oXmlDoc := HXMLDoc():Read(nfile)
-  ? "1.2.643.5.1.13.13.11.1079_2.2.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями"
+  ? "1.2.643.5.1.13.13.11.1079.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
@@ -3403,22 +3416,33 @@ function make_implant()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ENTRY" == upper(oXmlNode:title)
-        @ row(), 30 say str(j / k * 100, 6, 2) + "%"
-    //     mS_Code := mo_read_xml_stroke(oXmlNode,"S_CODE",)
-    //     mName := mo_read_xml_stroke(oXmlNode,"NAME",)
-    //     mParam := mo_read_xml_stroke(oXmlNode,"Parameter",)
-    //     mComment := mo_read_xml_stroke(oXmlNode,"COMMENT",)
-    //     mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
-    //     mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-    //     select V036
-    //     append blank
-    //     V036->S_CODE := mS_Code
-    //     V036->NAME := mName
-    //     V036->PARAM := val(mParam)
-    //     V036->COMMENT := mComment
-    //     V036->DATEBEG := mDATEBEG
-    //     V036->DATEEND := mDATEEND
+      if "ENTRIES" == upper(oXmlNode:title)
+        k1 := len(oXmlNode:aItems)
+        for j1 := 1 to k1
+          oNode1 := oXmlNode:aItems[j1]
+          klll := upper(oNode1:title)
+          if "ENTRY" == upper(oNode1:title)
+            @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+            mRZN := mo_read_xml_stroke(oNode1, 'RZN', , , 'utf8')
+            mParent := mo_read_xml_stroke(oNode1, 'PARENT', , , 'utf8')
+            mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
+            mLocal := mo_read_xml_stroke(oNode1, 'LOCALIZATION', , , 'utf8')
+            mMaterial := mo_read_xml_stroke(oNode1, 'MATERIAL', , , 'utf8')
+            mMetal := mo_read_xml_stroke(oNode1, 'METAL', , , 'utf8')
+            mOrder := mo_read_xml_stroke(oNode1, 'ORDER', , , 'utf8')
+            select IMPL
+            append blank
+            IMPL->ID := val(mID)
+            IMPL->RZN := val(mRZN)
+            IMPL->PARENT := val(mParent)
+            IMPL->NAME := mName
+            IMPL->LOCAL := mLocal
+            IMPL->MATERIAL := mMaterial
+            IMPL->METAL := iif(upper(mMetal) == 'ДА', .t., .f.)
+            IMPL->ORDER := val(mOrder)
+          endif
+        next j1
       endif
     NEXT j
   ENDIF
