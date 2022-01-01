@@ -144,7 +144,7 @@ proc main()
   close databases
   //
   rename t006_2.dbf to (k006dbf)
-  rename file t006_2.dbt to (k006dbt)
+  rename t006_2.dbt to (k006dbt)
 
   //
   // dbcreate("_mo1it",{{"ds","C",5,0},{"it","N",1,0}})
