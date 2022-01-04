@@ -92,6 +92,7 @@ proc main()
   // make_TO01()
 
   make_implant()
+  make_severity()
 
   work_V002()
   work_V021()

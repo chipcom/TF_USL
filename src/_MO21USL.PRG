@@ -29,6 +29,7 @@
    V036.xml     - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)
 
    OID 1.2.643.5.1.13.13.11.1079 - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями
+   OID 1.2.643.5.1.13.13.11.10069 - Степень тяжести состояния пациента
 
 //  Что получаем на выходе - наши файлы
 
@@ -127,6 +128,7 @@ Public sys_date := date(), sys_year := year(date())
 // make_TO01()
 
 make_implant()
+make_severity()
 
 work_V002()
 work_V021()
@@ -3383,6 +3385,57 @@ Function work_V036()
         V036->COMMENT := mComment
         V036->DATEBEG := mDATEBEG
         V036->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
+***** 04.01.22
+function make_severity()
+
+  local _mo_severity := {;
+    {"ID",      "N",  5, 0},;  // Целочисленный, уникальный идентификатор, возможные значения ? целые числа от 1 до 6
+    {"NAME",    "C", 40, 0},;  // Полное название, Строчный, обязательное поле, текстовый формат;
+    {"SYN",     "C", 40, 0},;  // Синонимы, Строчный, синонимы терминов справочника, текстовый формат;
+    {"SCTID",   "N", 10, 0},;  // Код SNOMED CT , Строчный, соответствующий код номенклатуры;
+    {"SORT",    "N",  2, 0};  // Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
+  }
+
+  dbcreate("_mo_severity", _mo_severity)
+  use _mo_severity new alias SEV
+  nfile := "1.2.643.5.1.13.13.11.1006_2.3.xml"  // может меняться из-за версий
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ENTRIES" == upper(oXmlNode:title)
+        k1 := len(oXmlNode:aItems)
+        for j1 := 1 to k1
+          oNode1 := oXmlNode:aItems[j1]
+          klll := upper(oNode1:title)
+          if "ENTRY" == upper(oNode1:title)
+            @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+            mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
+            mSYN := mo_read_xml_stroke(oNode1, 'SYN', , , 'utf8')
+            mSCTID := mo_read_xml_stroke(oNode1, 'SCTID', , , 'utf8')
+            mSort := mo_read_xml_stroke(oNode1, 'SORT', , , 'utf8')
+            select SEV
+            append blank
+            SEV->ID := val(mID)
+            SEV->NAME := mName
+            SEV->SYN := mSYN
+            SEV->SCTID := val(mSCTID)
+            SEV->SORT := val(mSort)
+          endif
+        next j1
       endif
     NEXT j
   ENDIF
