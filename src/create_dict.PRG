@@ -87,8 +87,9 @@ proc main()
 
   delete file ttt.ttt
   f_first()
-  Public sys_date := date(), sys_year := year(date())
-
+  Public sys_date := ctod('31/12/2021') //date()
+  Public sys_year := 2021 // year(date())
+  
   // make_TO01()
 
   make_implant()

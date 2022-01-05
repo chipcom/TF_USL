@@ -3137,12 +3137,12 @@ Function work_V030()
   close databases
   return NIL
 
-***** 29.12.21
+***** 05.01.22
 Function work_V031()
   local _mo_V031 := {;
     {"DRUGCODE",  "N",   2, 0},;  // 
     {"DRUGGRUP",  "C",  50, 0},;  //
-    {"INDMNN",    "N",   2, 0},;  //
+    {"INDMNN",    "N",   2, 0},;  // Признак обязательности указания МНН (1-да, 0-нет)
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
@@ -3180,10 +3180,10 @@ Function work_V031()
   close databases
   return NIL
 
-***** 29.12.21
+***** 05.01.22
 Function work_V032()
   local _mo_V032 := {;
-    {"SCHEDRUG",  "C",   5, 0},;  // 
+    {"SCHEDRUG",  "C",  10, 0},;  // Сочетание схемы лечения и группы препаратов
     {"NAME",      "C", 100, 0},;  //
     {"SCHEMCOD",  "C",   3, 0},;  //
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
@@ -3263,10 +3263,10 @@ Function work_V033()
   close databases
   return NIL
 
-***** 29.12.21
+***** 05.02.22
 Function work_V034()
   local _mo_V034 := {;
-    {"UNITCODE",  "N",   4, 0},;  // 
+    {"UNITCODE",  "N",   3, 0},;  // код единицы измерения дозы
     {"UNITMEAS",  "C",  50, 0},;  //
     {"SHORTTIT",  "C",  15, 0},;  //
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
@@ -3306,10 +3306,10 @@ Function work_V034()
   close databases
   return NIL
 
-***** 29.12.21
+***** 05.01.22
 Function work_V035()
   local _mo_V035 := {;
-    {"METHCODE",  "N",   4, 0},;  // 
+    {"METHCODE",  "N",   3, 0},;  // 
     {"METHNAME",   "C",  50, 0},;  //
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
