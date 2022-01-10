@@ -27,6 +27,7 @@
 *.xlsx
 *.s3db
 /build
+/TFOMS_21
 /TFOMS
 /FFOMS
 /MZDRAV
