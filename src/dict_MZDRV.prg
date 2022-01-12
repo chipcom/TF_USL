@@ -114,3 +114,53 @@ function make_implant()
   ENDIF
   close databases
   return NIL
+
+***** 12.01.22
+Function make_method_inj()
+  local _mo_method_inj := {;
+    {"ID",        "N",   3, 0},;  // уникальный идентификатор, обязательное поле, целое число
+    {"NAME_RUS",  "C",  50, 0},;  // Путь введения на русском языке
+    {"NAME_ENG",  "C",  50, 0},;  // Путь введения на английском языке
+    {"PARENT",    "N",   3, 0};   // родительский узел иерархического справочника, целое число
+  }
+  // {"CODE_EEC",  "C",  10, 0},;   // код справочника реестра НСИ ЕАЭК
+  // {"CODE_EEC",  "C",  10, 0};   // код элемента справочника реестра НСИ ЕАЭК
+
+  dbcreate("_mo_method_inj", _mo_method_inj)
+  use _mo_method_inj new alias INJ
+  nfile := "1.2.643.5.1.13.13.11.1468_2.1.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "1.2.643.5.1.13.13.11.1468_2.1.xml     - Способы введения (MethIntro)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ENTRIES" == upper(oXmlNode:title)
+        k1 := len(oXmlNode:aItems)
+        for j1 := 1 to k1
+          oNode1 := oXmlNode:aItems[j1]
+          klll := upper(oNode1:title)
+          if "ENTRY" == upper(oNode1:title)
+            @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+            mNameRus := mo_read_xml_stroke(oNode1, 'NAME_RUS', , , 'utf8')
+            mNameEng := mo_read_xml_stroke(oNode1, 'NAME_ENG', , , 'utf8')
+            mParent := mo_read_xml_stroke(oNode1, 'PARENT', , , 'utf8')
+            select INJ
+            append blank
+            INJ->ID := val(mID)
+            INJ->NAME_RUS := mNameRus
+            INJ->NAME_ENG := mNameEng
+            INJ->PARENT := val(mParent)
+          endif
+        next j1
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
