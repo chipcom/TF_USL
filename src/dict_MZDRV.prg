@@ -119,9 +119,10 @@ function make_implant()
 Function make_method_inj()
   local _mo_method_inj := {;
     {"ID",        "N",   3, 0},;  // уникальный идентификатор, обязательное поле, целое число
-    {"NAME_RUS",  "C",  50, 0},;  // Путь введения на русском языке
-    {"NAME_ENG",  "C",  50, 0},;  // Путь введения на английском языке
-    {"PARENT",    "N",   3, 0};   // родительский узел иерархического справочника, целое число
+    {"NAME_RUS",  "C",  30, 0},;  // Путь введения на русском языке
+    {"NAME_ENG",  "C",  30, 0},;  // Путь введения на английском языке
+    {"PARENT",    "N",   3, 0},;  // родительский узел иерархического справочника, целое число
+    {"TYPE",      "C",   1, 0};   // тип записи: 'O' корневой узел, 'U' узел, 'L' конечный элемент
   }
   // {"CODE_EEC",  "C",  10, 0},;   // код справочника реестра НСИ ЕАЭК
   // {"CODE_EEC",  "C",  10, 0};   // код элемента справочника реестра НСИ ЕАЭК
@@ -156,11 +157,41 @@ Function make_method_inj()
             INJ->NAME_RUS := mNameRus
             INJ->NAME_ENG := mNameEng
             INJ->PARENT := val(mParent)
+            if val(mParent) == 0
+              INJ->TYPE := 'O'
+            endif
           endif
         next j1
       endif
     NEXT j
   ENDIF
+
+  INJ->(dbGoTop())
+  do while ! INJ->(eof())
+    fl_parent := .f.
+    if INJ->PARENT == 0
+      INJ->(dbSkip())
+      continue
+    endif
+
+    rec_n := INJ->(recno())
+    id_t := INJ->ID
+    INJ->(dbGoTop())
+    do while ! INJ->(eof())
+      if INJ->PARENT == id_t
+        fl_parent := .t.
+        exit
+      endif
+      INJ->(dbSkip())
+    enddo
+    INJ->(dbGoto(rec_n))
+    if fl_parent
+      iNJ->TYPE := 'U'
+    else
+      iNJ->TYPE := 'L'
+    endif
+    INJ->(dbSkip())
+  enddo
   close databases
   return NIL
 
