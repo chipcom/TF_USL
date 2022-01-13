@@ -30,7 +30,7 @@
 
    OID 1.2.643.5.1.13.13.11.1079 - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями
    OID 1.2.643.5.1.13.13.11.10069 - Степень тяжести состояния пациента
-   OID 1.2.643.5.1.13.13.11.1468_2.1.xml
+   OID 1.2.643.5.1.13.13.11.1468_2.1.xml - Пути введения лекарственных препаратов
 
 //  Что получаем на выходе - наши файлы
 
@@ -3509,12 +3509,14 @@ function make_implant()
 Function make_method_inj()
   local _mo_method_inj := {;
     {"ID",        "N",   3, 0},;  // уникальный идентификатор, обязательное поле, целое число
-    {"NAME_RUS",  "C",  50, 0},;  // Путь введения на русском языке
-    {"NAME_ENG",  "C",  50, 0},;  // Путь введения на английском языке
-    {"PARENT",    "N",   3, 0};   // родительский узел иерархического справочника, целое число
+    {"NAME_RUS",  "C",  30, 0},;  // Путь введения на русском языке
+    {"NAME_ENG",  "C",  30, 0},;  // Путь введения на английском языке
+    {"PARENT",    "N",   3, 0},;  // родительский узел иерархического справочника, целое число
+    {"TYPE",      "C",   1, 0};   // тип записи: 'O' корневой узел, 'U' узел, 'L' конечный элемент
   }
   // {"CODE_EEC",  "C",  10, 0},;   // код справочника реестра НСИ ЕАЭК
   // {"CODE_EEC",  "C",  10, 0};   // код элемента справочника реестра НСИ ЕАЭК
+  local rec_n, id_t, fl_parent := .f.
 
   dbcreate("_mo_method_inj", _mo_method_inj)
   use _mo_method_inj new alias INJ
@@ -3546,11 +3548,41 @@ Function make_method_inj()
             INJ->NAME_RUS := mNameRus
             INJ->NAME_ENG := mNameEng
             INJ->PARENT := val(mParent)
+            if val(mParent) == 0
+              INJ->TYPE := 'O'
+            endif
           endif
         next j1
       endif
     NEXT j
   ENDIF
+
+  INJ->(dbGoTop())
+  do while ! INJ->(eof())
+    fl_parent := .f.
+    if INJ->PARENT == 0
+      INJ->(dbSkip())
+      continue
+    endif
+
+    rec_n := INJ->(recno())
+    id_t := INJ->ID
+    INJ->(dbGoTop())
+    do while ! INJ->(eof())
+      if INJ->PARENT == id_t
+        fl_parent := .t.
+        exit
+      endif
+      INJ->(dbSkip())
+    enddo
+    INJ->(dbGoto(rec_n))
+    if fl_parent
+      iNJ->TYPE := 'U'
+    else
+      iNJ->TYPE := 'L'
+    endif
+    INJ->(dbSkip())
+  enddo
   close databases
   return NIL
 
