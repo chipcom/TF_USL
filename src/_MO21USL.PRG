@@ -32,6 +32,7 @@
    OID 1.2.643.5.1.13.13.11.1079 - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями
    OID 1.2.643.5.1.13.13.11.10069 - Степень тяжести состояния пациента
    OID 1.2.643.5.1.13.13.11.1468_2.1.xml - Пути введения лекарственных препаратов
+   OID 1.2.643.5.1.13.13.11.1358.xml - Единицы измерения
 
 //  Что получаем на выходе - наши файлы
 
@@ -133,6 +134,7 @@ Public sys_year := 2021 // year(date())
 make_implant()
 make_severity()
 make_method_inj()
+make_ed_izm()
 
 work_V002()
 work_V021()
@@ -3631,6 +3633,74 @@ Function make_method_inj()
     endif
     INJ->(dbSkip())
   enddo
+  close databases
+  return NIL
+
+***** 18.01.22
+Function make_ed_izm()
+  local _mo_ed_izm := {;
+    {"ID",        "N",   3, 0},;  // Уникальный идентификатор единицы измерения лабораторного теста, целое число
+    {"FULLNAME",  "C",  40, 0},;  // Полное наименование, Строчный
+    {"SHOTNAME",  "C",  25, 0},;  // Краткое наименование, Строчный;
+    {"PRNNAME",   "C",  25, 0},;  // Наименование для печати, Строчный;
+    {"MEASUR",    "C",  45, 0},;  // Размерность, Строчный;
+    {"UCUM",      "C",  15, 0},;  // Код UCUM, Строчный;
+    {"COEF",      "C",  15, 0},;  // Коэффициент пересчета, Строчный, Коэффициент пересчета в рамках одной размерности.;
+    {"CONV_ID",   "N",   3, 0},;  // Код единицы измерения для пересчета, Целочисленный, Код единицы измерения, в которую осуществляется пересчет.;
+    {"CONV_NAM",  "C",  25, 0},;  // Единица измерения для пересчета, Строчный, Краткое наименование единицы измерения, в которую осуществляется пересчет.;
+    {"OKEI_COD",  "N",   4, 0};    // Код ОКЕИ, Строчный, Соответствующий код Общероссийского классификатора единиц измерений.;
+  }
+  // {"NSI_EEC",  "C",  10, 0},;   // Код справочника ЕАЭК, Строчный, необязательное поле ? код справочника реестра НСИ ЕАЭК;
+  // {"NSI_EL_EEC",  "C",  10, 0};   // Код элемента справочника ЕАЭК, Строчный, необязательное поле ? код элемента справочника реестра НСИ ЕАЭК;
+  local rec_n, id_t, fl_parent := .f.
+
+  dbcreate("_mo_ed_izm", _mo_ed_izm)
+  use _mo_ed_izm new alias EDI
+  nfile := "1.2.643.5.1.13.13.11.1358_3.3.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "1.2.643.5.1.13.13.11.1358_3.3.xml     - Единицы измерения (OID)"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ENTRIES" == upper(oXmlNode:title)
+        k1 := len(oXmlNode:aItems)
+        for j1 := 1 to k1
+          oNode1 := oXmlNode:aItems[j1]
+          if "ENTRY" == upper(oNode1:title)
+            @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+            mFullName := mo_read_xml_stroke(oNode1, 'FULLNAME', , , 'utf8')
+            mShortName := mo_read_xml_stroke(oNode1, 'SHORTNAME', , , 'utf8')
+            mPrintName := mo_read_xml_stroke(oNode1, 'PRINTNAME', , , 'utf8')
+            mMeasure := mo_read_xml_stroke(oNode1, 'MEASUREMENT', , , 'utf8')
+            mUCUM := mo_read_xml_stroke(oNode1, 'UCUM', , , 'utf8')
+            mCoef := mo_read_xml_stroke(oNode1, 'COEFFICIENT', , , 'utf8')
+            mConvID := mo_read_xml_stroke(oNode1, 'CONVERSION_ID', , , 'utf8')
+            mConvName := mo_read_xml_stroke(oNode1, 'CONVERSION_NAME', , , 'utf8')
+            mOKEI := mo_read_xml_stroke(oNode1, 'OKEI_CODE', , , 'utf8')
+
+            select EDI
+            append blank
+            EDI->ID := val(mID)
+            EDI->FULLNAME := mFullName
+            EDI->SHOTNAME := mShortName
+            EDI->PRNNAME := mPrintName
+            EDI->MEASUR := mMeasure
+            EDI->UCUM := mUCUM
+            EDI->COEF := mCoef
+            EDI->CONV_ID := val(mConvID)
+            EDI->CONV_NAM := mConvName
+            EDI->OKEI_COD := val(mOKEI)
+          endif
+        next j1
+      endif
+    NEXT j
+  ENDIF
   close databases
   return NIL
 
