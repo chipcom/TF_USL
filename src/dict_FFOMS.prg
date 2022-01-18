@@ -925,6 +925,52 @@ Function work_V036()
   close databases
   return NIL
 
+***** 18.01.22
+Function work_V037()
+  local _mo_V037 := {;
+    {"CODE",      "N",   5, 0},;  // 
+    {"NAME",      "C", 150, 0},;  //
+    {"PARAM",     "N",   1, 0},;  //
+    {"COMMENT",   "C",  20, 0},;  //
+    {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
+    {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
+  }
+
+  dbcreate("_mo_v037", _mo_V037)
+  use _mo_V037 new alias V037
+  nfile := "V037.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "V037.xml     - Перечень методов ВМП, требующих имплантацию медицинских изделий"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        @ row(),30 say str(j/k*100,6,2)+"%"
+        mCode := mo_read_xml_stroke(oXmlNode,"CODE",)
+        mName := mo_read_xml_stroke(oXmlNode,"NAME",)
+        mParam := mo_read_xml_stroke(oXmlNode,"Parameter",)
+        mComment := mo_read_xml_stroke(oXmlNode,"COMMENT",)
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        select V037
+        append blank
+        V037->CODE := val(mCode)
+        V037->NAME := mName
+        V037->PARAM := val(mParam)
+        V037->COMMENT := mComment
+        V037->DATEBEG := mDATEBEG
+        V037->DATEEND := mDATEEND
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return NIL
+
 ***** 21.02.21
 Function make_Q015()
 
