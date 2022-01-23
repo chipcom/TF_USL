@@ -26,6 +26,8 @@
 *.ttt
 *.xlsx
 *.s3db
+*.db
+/src_sqlite3/*.db
 /build
 /TFOMS_21
 /TFOMS
