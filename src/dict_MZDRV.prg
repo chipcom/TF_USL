@@ -55,7 +55,7 @@ function make_severity()
   close databases
   return NIL
 
-***** 31.12.21
+***** 23.01.22
 function make_implant()
 
   local _mo_impl := {;
@@ -66,8 +66,10 @@ function make_implant()
     {"LOCAL",   "C",  80, 0},;  // Локализация , анатомическая область, к которой относится локализация и/или действие изделия
     {"MATERIAL","C",  20, 0},;  // Материал , тип материала, из которого изготовлено изделие
     {"METAL",   "L",   1, 0},;  // Металл , признак наличия металла в изделии
-    {"ORDER",   "N",   4, 0};  // Порядок сортировки
+    {"ORDER",   "N",   4, 0},;  // Порядок сортировки
+    {"TYPE",    "C",   1, 0};   // тип записи: 'O' корневой узел, 'U' узел, 'L' конечный элемент
   }
+  local fl_parent, rec_n, id_t
 
   dbcreate("_mo_impl", _mo_impl)
   use _mo_impl new alias IMPL
@@ -107,11 +109,41 @@ function make_implant()
             IMPL->MATERIAL := mMaterial
             IMPL->METAL := iif(upper(mMetal) == 'ДА', .t., .f.)
             IMPL->ORDER := val(mOrder)
+            if val(mRZN) == 0
+              IMPL->TYPE := 'O'
+            endif
           endif
         next j1
       endif
     NEXT j
   ENDIF
+
+  IMPL->(dbGoTop())
+  do while ! IMPL->(eof())
+    fl_parent := .f.
+    if IMPL->RZN == 0
+      IMPL->(dbSkip())
+      continue
+    endif
+
+    rec_n := IMPL->(recno())
+    id_t := IMPL->ID
+    IMPL->(dbGoTop())
+    do while ! IMPL->(eof())
+      if IMPL->PARENT == id_t
+        fl_parent := .t.
+        exit
+      endif
+      IMPL->(dbSkip())
+    enddo
+    IMPL->(dbGoto(rec_n))
+    if fl_parent
+      IMPL->TYPE := 'U'
+    else
+      IMPL->TYPE := 'L'
+    endif
+    IMPL->(dbSkip())
+  enddo
   close databases
   return NIL
 
