@@ -105,7 +105,7 @@ function make_severity(db)
     ? 'Ошибка в чтении файла', nfile
     wait 'Press any key'
   else
-    ? "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента"
+    ? "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента (OID)"
     // stmt := sqlite3_prepare( db, "INSERT INTO Severity ( id, name, syn, sctid, sort ) VALUES( :id, :name, :syn, :sctid, :sort )" )
     stmt := sqlite3_prepare( db, "INSERT INTO Severity ( id, name ) VALUES( :id, :name )" )
     if ! Empty( stmt )
@@ -147,6 +147,101 @@ function make_severity(db)
 
   endif
   return NIL
+
+***** 25.01.22
+function make_method_inj(db)
+  LOCAL stmt
+  local k, j, k1, j1
+  local table_sql
+  local oXmlNode, oNode1
+  local mID, mNameRus, mNameEng, mParent
+
+  table_sql := "CREATE TABLE method_inj( id INTEGER, name_rus TEXT(30), name_eng TEXT(30), parent INTEGER, type TEXT(1) )"
+  //   {"ID",        "N",   3, 0},;  // уникальный идентификатор, обязательное поле, целое число
+  //   {"NAME_RUS",  "C",  30, 0},;  // Путь введения на русском языке
+  //   {"NAME_ENG",  "C",  30, 0},;  // Путь введения на английском языке
+  //   {"PARENT",    "N",   3, 0},;  // родительский узел иерархического справочника, целое число
+  //   {"TYPE",      "C",   1, 0};   // тип записи: 'O' корневой узел, 'U' узел, 'L' конечный элемент
+  sqlite3_exec( db, "DROP TABLE method_inj" )
+     
+  IF sqlite3_exec( db, table_sql ) == SQLITE_OK
+     ? "CREATE TABLE method_inj - Ok"
+  ENDIF
+
+  nfile := "1.2.643.5.1.13.13.11.1468_2.1.xml"
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    ? 'Ошибка в чтении файла', nfile
+    wait 'Press any key'
+  else
+    ? "1.2.643.5.1.13.13.11.1468_2.1.xml      - Способы введения (OID)"
+    stmt := sqlite3_prepare( db, "INSERT INTO method_inj ( id, name_rus, name_eng, parent, type ) VALUES( :id, :name_rus, :name_eng, :parent, :type )" )
+    if ! Empty( stmt )
+      ? "Обработка файла " + nfile + " - "
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if "ENTRIES" == upper(oXmlNode:title)
+          k1 := len(oXmlNode:aItems)
+          for j1 := 1 to k1
+            oNode1 := oXmlNode:aItems[j1]
+            if "ENTRY" == upper(oNode1:title)
+              @ row(), 52 say str(j1 / k1 * 100, 6, 2) + "%"
+              mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+              mNameRus := mo_read_xml_stroke(oNode1, 'NAME_RUS', , , 'utf8')
+              mNameEng := mo_read_xml_stroke(oNode1, 'NAME_ENG', , , 'utf8')
+              mParent := mo_read_xml_stroke(oNode1, 'PARENT', , , 'utf8')
+  
+              if sqlite3_bind_text( stmt, 1, mID ) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text( stmt, 2, hb_StrToUTF8(mNameRus, 'UTF8') ) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text( stmt, 3, hb_StrToUTF8(mNameEng, 'UTF8') ) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text( stmt, 4, mParent ) == SQLITE_OK  .AND. ;
+                      sqlite3_bind_text( stmt, 5, hb_StrToUTF8('O', 'UTF8') ) == SQLITE_OK
+                if sqlite3_step( stmt ) != SQLITE_DONE
+                  ? 'Ошибка при загрузки строки - ', j
+                endif
+              endif
+              sqlite3_reset( stmt )
+            endif
+          next j1
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings( stmt )
+    sqlite3_finalize( stmt )
+
+    print_status_insert(db)
+  endif
+
+
+  // INJ->(dbGoTop())
+  // do while ! INJ->(eof())
+  //   fl_parent := .f.
+  //   if INJ->PARENT == 0
+  //     INJ->(dbSkip())
+  //     continue
+  //   endif
+
+  //   rec_n := INJ->(recno())
+  //   id_t := INJ->ID
+  //   INJ->(dbGoTop())
+  //   do while ! INJ->(eof())
+  //     if INJ->PARENT == id_t
+  //       fl_parent := .t.
+  //       exit
+  //     endif
+  //     INJ->(dbSkip())
+  //   enddo
+  //   INJ->(dbGoto(rec_n))
+  //   if fl_parent
+  //     iNJ->TYPE := 'U'
+  //   else
+  //     iNJ->TYPE := 'L'
+  //   endif
+  //   INJ->(dbSkip())
+  // enddo
+  // close databases
+  return nil
 
 function print_status_insert(db)
   ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )

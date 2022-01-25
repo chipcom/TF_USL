@@ -36,7 +36,7 @@ procedure main()
     // справочники группы Минестерства здравоохранения
     make_ed_izm( db )
     make_severity( db )
-
+    make_method_inj( db )
   endif
   return
 
