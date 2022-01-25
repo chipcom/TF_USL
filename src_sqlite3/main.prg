@@ -17,7 +17,8 @@ procedure main()
   REQUEST HB_LANG_RU866
   HB_LANGSELECT("RU866")
   
-  ? sqlite3_libversion()
+  ? 'Версия SQLite: '
+  ?? sqlite3_libversion()
   // sqlite3_sleep( 3000 )
 
   IF sqlite3_libversion_number() < 3005001
@@ -37,6 +38,7 @@ procedure main()
     make_ed_izm( db )
     make_severity( db )
     make_method_inj( db )
+    make_implant( db )
   endif
   return
 
