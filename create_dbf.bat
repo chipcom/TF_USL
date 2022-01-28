@@ -1,5 +1,5 @@
-_mo21usl
-rem create_dict
+rem _mo21usl
+create_dict
 copy *.dbf d:\_mo\_arc\
 copy *.dbt d:\_mo\_arc\
 rem copy *.txt d:\_mo\_arc\

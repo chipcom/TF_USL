@@ -36,8 +36,8 @@
 
 //  Что получаем на выходе - наши файлы
 
-   _mo1usl    - _mo_usl  - справочник наименований всех услуг
-   _mo1uslc   - _mo_uslc - справочник услуг с ценами для конкретных МО
+   _mo2usl    - _mo_usl  - справочник наименований всех услуг
+   _mo2uslc   - _mo_uslc - справочник услуг с ценами для конкретных МО
                            без КСГ
 
   _mo_t2_v1   - справочник соответсвия услуг ТФОМС услугам МЗ РФ
@@ -53,7 +53,7 @@ external errorsys
 // 01.11.21
 // вернуть префикс справочного файла для года
 function prefixFileName()
-  return '_mo' + substr(CURENT_YEAR,4,1)
+  return '_mo' + substr(CURENT_YEAR, 4, 1)
 
 proc main()
   Local _mo_usl := {;
@@ -91,8 +91,8 @@ proc main()
 
   delete file ttt.ttt
   f_first()
-  Public sys_date := ctod('31/12/2021') //date()
-  Public sys_year := 2021 // year(date())
+  Public sys_date := date() // ctod('31/12/2021') //date()
+  Public sys_year := year(date()) // 2021 // year(date())
   
   // make_TO01()
 
@@ -102,6 +102,7 @@ proc main()
   make_ed_izm()
 
   work_V002()
+  work_V015()
   work_V021()
 
   InitSpravFFOMS()
@@ -126,7 +127,6 @@ proc main()
   work_V009()
   work_V010()
   work_V012()
-  work_V015()
   work_V016()
   work_V017()
   work_V018()
