@@ -4,6 +4,60 @@
 #include 'function.ch'
 #include 'settings.ch'
 
+***** 02.02.22
+function make_uslugi_mz()
+  local _uslugi_mz := {;
+    {"ID",      "N",  5, 0},;  // Целочисленный, уникальный идентификатор, возможные значения ? целые числа от 1 до 6
+    {"IDRB",    "C", 16, 0},;  // Строчный, уникальный код услуги согласно Приказу Минздравсоцразвития России от 27.12.2011 N 1664н ?Об утверждении номенклатуры медицинских услуг?,текстовый формат, обязательное поле
+    {"RBNAME",  "C",255, 0},;  // Полное название , Строчный, текстовый формат, обязательное поле
+    {"REL",     "N",  1, 0},;  // Признак актуальности , Целочисленный, числовой формат, один символ (если =1 ? запись актуальна, если 0 ? запись упразднена в соответствии с новыми нормативно-правовыми актами)
+    {"DATEBEG", "D",  8, 0},;
+    {"DATEEND", "D",  8, 0};
+  }
+  local mID, mS_code, mName, mRel, mDateOut
+  local mDateBeg := 0d20110101
+
+  dbcreate("_usl_mz", _uslugi_mz)
+  use _usl_mz new alias MZUSL
+  nfile := "1.2.643.5.1.13.13.11.1070_2.10.xml"  // может меняться из-за версий
+  oXmlDoc := HXMLDoc():Read(nfile)
+  ? "1.2.643.5.1.13.13.11.1070.xml - Номенклатура медицинских услуг"
+  IF Empty( oXmlDoc:aItems )
+    ? "Ошибка в чтении файла",nfile
+    wait
+  else
+    ? "Обработка файла "+nfile+" - "
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ENTRIES" == upper(oXmlNode:title)
+        k1 := len(oXmlNode:aItems)
+        for j1 := 1 to k1
+          oNode1 := oXmlNode:aItems[j1]
+          klll := upper(oNode1:title)
+          if "ENTRY" == upper(oNode1:title)
+            @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+            mS_code := mo_read_xml_stroke(oNode1, 'S_CODE', , , 'utf8')
+            mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
+            mRel := mo_read_xml_stroke(oNode1, 'REL', , , 'utf8')
+            mDateOut := CToD(mo_read_xml_stroke(oNode1, 'DATEOUT', , , 'utf8')) //xml2date(mo_read_xml_stroke(oNode1,"DATEOUT",))
+            select MZUSL
+            append blank
+            MZUSL->ID := val(mID)
+            MZUSL->IDRB := mS_code
+            MZUSL->RBNAME := mName
+            MZUSL->REL := val(mRel)
+            MZUSL->DATEBEG := mDateBeg
+            MZUSL->DATEEND := mDateOut
+          endif
+        next j1
+      endif
+    NEXT j
+  ENDIF
+  close databases
+  return nil
+
 ***** 04.01.22
 function make_severity()
 

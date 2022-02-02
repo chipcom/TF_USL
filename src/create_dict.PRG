@@ -29,6 +29,7 @@
    V036.xml     - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)
    V037.xml     - Перечень методов ВМП, требующих имплантацию медицинских изделий
 
+   OID 1.2.643.5.1.13.13.11.1070 - Номенклатура медицинских услуг (используется в других справочниках)
    OID 1.2.643.5.1.13.13.11.1079 - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями
    OID 1.2.643.5.1.13.13.11.10069 - Степень тяжести состояния пациента
    OID 1.2.643.5.1.13.13.11.1468_2.1.xml - Пути введения лекарственных препаратов
@@ -55,6 +56,7 @@ external errorsys
 function prefixFileName()
   return '_mo' + substr(CURENT_YEAR, 4, 1)
 
+******* 02.02.22
 proc main()
   Local _mo_usl := {;
     {"SHIFR",      "C",     10,      0},;
@@ -95,13 +97,19 @@ proc main()
   Public sys_year := year(date()) // 2021 // year(date())
   
   // make_TO01()
-  // Справочнии минздрава
+  // Справочники минздрава
+  ? '***********************'
+  ? "Обработка справочников министерства здравоохранения!"
+  ? '***********************'
   make_implant()
   make_severity()
   make_method_inj()
   make_ed_izm()
 
-  // Спраовчники ФФОМС
+  ? '***********************'
+  ? "Обработка справочников ФФОМС!"
+  ? '***********************'
+  // Справочники ФФОМС
   work_V002()
   work_V009()
   work_V010()
@@ -136,7 +144,11 @@ proc main()
   //
   read_spr_N00X()
   //
-  // Спраовчники ТФОМС
+  ? '***********************'
+  ? "Обработка справочников ТФОМС!"
+  ? '***********************'
+  make_uslugi_mz()  // Справочник минздрава для формирования файлов ТФОМС
+  // Справочники ТФОМС
   dbcreate(nameFileUsl, _mo_usl)
   work_Shema()
   work_SprSubDiv()
@@ -157,10 +169,8 @@ proc main()
   rename t006_2.dbt to (k006dbt)
 
   //
-  // dbcreate("_mo1it",{{"ds","C",5,0},{"it","N",1,0}})
   dbcreate(nameFileIt, { {"ds","C",5,0}, {"it","N",1,0} } )
 
-  // use _mo1it new alias IT
   use (nameFileIt) new alias IT
   index on ds+str(it,1) to tmp_it
 
@@ -180,8 +190,7 @@ proc main()
   enddo
   close databases
 
-  // добавим наименования КСГ за 2021 год
-  // use _mo1usl new alias LUSL
+  // добавим наименования КСГ за 2022 год
   use (nameFileUsl) new alias LUSL
   index on shifr to tmp_lusl
 
@@ -222,7 +231,6 @@ proc main()
   //
   work_uslc()
   //
-  // use _mo1uslc new alias LUSLC
   use (nameFileUslC) new alias LUSLC
   go top
   do while !eof()
@@ -294,6 +302,9 @@ proc main()
   filedelete('t006_2.dbt')
   filedelete('t006_d.dbf')
   filedelete('t006_u.dbf')
+
+  filedelete("_usl_mz.dbf")
+
   f_end()
   return
 

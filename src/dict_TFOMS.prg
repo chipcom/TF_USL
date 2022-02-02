@@ -285,12 +285,14 @@ Function work_mo_uslf()
   index on kod to tmp_tel
   use par_org new alias PO
   index on kod to tmp_po
-  use v001 new
+  // use v001 new
+  use _usl_mz new alias v001
   index on IDRB to tmp1
-  @ row(),0 say "Обработка файла V001.DBF - "
+  // @ row(),0 say "Обработка файла V001.DBF - "
+  @ row(),0 say "Обработка файла _usl_mz.dbf - "
   go top
   do while !eof()
-    @ row(),30 say str(++i/lastrec()*100,6,2)+"%"
+    @ row(),30 say str(++i/lastrec()*100, 6, 2) + "%"
     // if !empty(v001->DATEEND) .and. year(v001->DATEEND) < 2022 // 2021
     if !empty(v001->DATEEND) .and. year(v001->DATEEND) < val(CURENT_YEAR) // 2022 // 2021
       //
