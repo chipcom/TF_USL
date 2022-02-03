@@ -45,6 +45,7 @@
   _mo_V018    - классификатор видов высокотехнологичной медицинской помощи (HVid)
 */
 
+#include 'inkey.ch'
 #include 'fileio.ch'
 #include 'edit_spr.ch'
 #include 'function.ch'
@@ -149,7 +150,7 @@ proc main()
   ? '***********************'
   ? "Обработка справочников ТФОМС!"
   ? '***********************'
-  make_uslugi_mz()  // Справочник минздрава для формирования файлов ТФОМС
+  // make_uslugi_mz()  // Справочник минздрава для формирования файлов ТФОМС
   // Справочники ТФОМС
   dbcreate(nameFileUsl, _mo_usl)
   work_Shema()
@@ -320,9 +321,21 @@ proc main()
   filedelete('t006_d.dbf')
   filedelete('t006_u.dbf')
 
-  filedelete("_usl_mz.dbf")
+  // filedelete("_usl_mz.dbf")
 
-  f_end()
+  ? ''
+  wait 'Конвертация закончена! Нажмите любую клавишу.'
+
+  // f_end()
+  CLOSE DATABASES
+  hard_err("delete")
+  SET KEY K_ALT_F4 TO
+  SET KEY K_ALT_F3 TO
+  SET KEY K_ALT_F2 TO
+  SET KEY K_ALT_X TO
+  SET COLOR TO
+  SET CURSOR ON
+
   return
 
 ***** строка даты для XML-файла

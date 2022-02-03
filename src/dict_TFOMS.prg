@@ -285,8 +285,8 @@ Function work_mo_uslf()
   index on kod to tmp_tel
   use par_org new alias PO
   index on kod to tmp_po
-  // use v001 new
-  use _usl_mz new alias v001
+  use v001 new
+  // use _usl_mz new alias v001
   index on IDRB to tmp1
   // @ row(),0 say "Обработка файла V001.DBF - "
   @ row(),0 say "Обработка файла _usl_mz.dbf - "
