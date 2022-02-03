@@ -45,6 +45,7 @@
   _mo_V018    - классификатор видов высокотехнологичной медицинской помощи (HVid)
 */
 
+#include 'fileio.ch'
 #include 'edit_spr.ch'
 #include 'function.ch'
 #include 'settings.ch'
@@ -88,6 +89,7 @@ proc main()
 
   local k006dbf := nameFileK006 + '.dbf'
   local k006dbt := nameFileK006 + '.dbt'
+  local nResult
 
   Local arr_err := {}
 
@@ -165,8 +167,23 @@ proc main()
   work_t006(_mo_usl)
   close databases
   //
-  rename t006_2.dbf to (k006dbf)
-  rename t006_2.dbt to (k006dbt)
+  // rename t006_2.dbf to (k006dbf)
+  // rename t006_2.dbt to (k006dbt)
+  filedelete(k006dbf)
+  nResult := FRename('t006_2.dbf', k006dbf)
+  if nResult != 0
+    ? '------------------'
+    ? 'Файл t006_2.dbf не переименван!'
+    ? '------------------'
+  endif
+
+  filedelete(k006dbt)
+  nResult := FRename('t006_2.dbt', k006dbt)
+  if nResult != 0
+    ? '------------------'
+    ? 'Файл t006_2.dbt не переименван!'
+    ? '------------------'
+  endif
 
   //
   dbcreate(nameFileIt, { {"ds","C",5,0}, {"it","N",1,0} } )
