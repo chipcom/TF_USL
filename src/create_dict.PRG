@@ -326,9 +326,6 @@ proc main()
   ? ''
   wait 'Конвертация закончена! Нажмите любую клавишу.'
 
-  // f_end()
-  CLOSE DATABASES
-  hard_err("delete")
   SET KEY K_ALT_F4 TO
   SET KEY K_ALT_F3 TO
   SET KEY K_ALT_F2 TO
