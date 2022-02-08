@@ -514,11 +514,11 @@ Function work_t006()
                 d6->DS  := lDS  := 'U09.9'
               endif
 
-              // if (lshifr = 'ds36.008' .or. lshifr = 'ds36.009' .or. lshifr = 'ds36.010' ;
-              //     .or. lshifr = 'st36.017' .or. lshifr = 'st36.018' .or. lshifr = 'st36.019' ) ;
-              //     .and. empty(lDS) .and. empty(lsy)
-              //   d6->DS  := lDS  := ''
-              // endif
+              if (lshifr = 'ds36.008' .or. lshifr = 'ds36.009' .or. lshifr = 'ds36.010' ;
+                  .or. lshifr = 'st36.017' .or. lshifr = 'st36.018' .or. lshifr = 'st36.019' ) ;
+                  .and. empty(lDS) .and. empty(lsy)
+                d6->DS  := lDS  := 'Z92.2'
+              endif
 
               d6->AGE  := mo_read_xml_stroke(oNode2,"AGE",)
               d6->SEX  := mo_read_xml_stroke(oNode2,"SEX",)
