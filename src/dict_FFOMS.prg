@@ -495,7 +495,9 @@ Function work_V019(source, destination)
         V019->DIAG := mDIAG
         V019->HVID := mHVID
         V019->HGR := val(mHGR)
-        V019->HMODP := mHMODP
+        if upper(alltrim(mHMODP)) != 'NULL'
+          V019->HMODP := mHMODP
+        endif
         V019->IDMODP := val(mIDMODP)
         // V019->DATEBEG := mDATEBEG
         V019->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
