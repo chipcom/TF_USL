@@ -4,8 +4,8 @@
 #include 'function.ch'
 #include 'settings.ch'
 
-***** 02.02.22
-function make_uslugi_mz()
+***** 10.02.22
+function make_uslugi_mz(source, destination)
   local _uslugi_mz := {;
     {"ID",      "N",  5, 0},;  // Целочисленный, уникальный идентификатор, возможные значения ? целые числа от 1 до 6
     {"IDRB",    "C", 16, 0},;  // Строчный, уникальный код услуги согласно Приказу Минздравсоцразвития России от 27.12.2011 N 1664н ?Об утверждении номенклатуры медицинских услуг?,текстовый формат, обязательное поле
@@ -16,17 +16,20 @@ function make_uslugi_mz()
   }
   local mID, mS_code, mName, mRel, mDateOut
   local mDateBeg := 0d20110101
+  local nCol
 
-  dbcreate("_usl_mz", _uslugi_mz)
-  use _usl_mz new alias MZUSL
-  nfile := "1.2.643.5.1.13.13.11.1070_2.10.xml"  // может меняться из-за версий
+  dbcreate(destination + "_usl_mz", _uslugi_mz)
+  use (destination + '_usl_mz') new alias MZUSL
+  nfile := source + "1.2.643.5.1.13.13.11.1070_2.10.xml"  // может меняться из-за версий
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "1.2.643.5.1.13.13.11.1070.xml - Номенклатура медицинских услуг"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -36,7 +39,8 @@ function make_uslugi_mz()
           oNode1 := oXmlNode:aItems[j1]
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
-            @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mS_code := mo_read_xml_stroke(oNode1, 'S_CODE', , , 'utf8')
             mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
@@ -58,8 +62,8 @@ function make_uslugi_mz()
   close databases
   return nil
 
-***** 04.01.22
-function make_severity()
+***** 10.01.22
+function make_severity(source, destination)
 
   local _mo_severity := {;
     {"ID",      "N",  5, 0},;  // Целочисленный, уникальный идентификатор, возможные значения ? целые числа от 1 до 6
@@ -68,17 +72,20 @@ function make_severity()
     {"SCTID",   "N", 10, 0},;  // Код SNOMED CT , Строчный, соответствующий код номенклатуры;
     {"SORT",    "N",  2, 0};  // Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
   }
+  local nCol
 
-  dbcreate("_mo_severity", _mo_severity)
-  use _mo_severity new alias SEV
-  nfile := "1.2.643.5.1.13.13.11.1006_2.3.xml"  // может меняться из-за версий
+  dbcreate(destination + "_mo_severity", _mo_severity)
+  use (destination + '_mo_severity') new alias SEV
+  nfile := source + "1.2.643.5.1.13.13.11.1006_2.3.xml"  // может меняться из-за версий
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -88,7 +95,8 @@ function make_severity()
           oNode1 := oXmlNode:aItems[j1]
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
-            @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
             mSYN := mo_read_xml_stroke(oNode1, 'SYN', , , 'utf8')
@@ -109,8 +117,8 @@ function make_severity()
   close databases
   return NIL
 
-***** 23.01.22
-function make_implant()
+***** 10.02.22
+function make_implant(source, destination)
 
   local _mo_impl := {;
     {"ID",      "N",  5, 0},;  // Код , уникальный идентификатор записи
@@ -124,17 +132,20 @@ function make_implant()
     {"TYPE",    "C",   1, 0};   // тип записи: 'O' корневой узел, 'U' узел, 'L' конечный элемент
   }
   local fl_parent, rec_n, id_t
+  local nCol
 
-  dbcreate("_mo_impl", _mo_impl)
-  use _mo_impl new alias IMPL
-  nfile := "1.2.643.5.1.13.13.11.1079_2.2.xml"  // может меняться из-за версий
+  dbcreate(destination + "_mo_impl", _mo_impl)
+  use (destination + '_mo_impl') new alias IMPL
+  nfile := source + "1.2.643.5.1.13.13.11.1079_2.2.xml"  // может меняться из-за версий
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "1.2.643.5.1.13.13.11.1079.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    @ row()+1, 1 say "Обработка файла " + nfile + " - "
+    nCol := Col()
+    // ? "Обработка файла "+nfile+" - "
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -144,7 +155,8 @@ function make_implant()
           oNode1 := oXmlNode:aItems[j1]
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
-            @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mRZN := mo_read_xml_stroke(oNode1, 'RZN', , , 'utf8')
             mParent := mo_read_xml_stroke(oNode1, 'PARENT', , , 'utf8')
@@ -201,8 +213,8 @@ function make_implant()
   close databases
   return NIL
 
-***** 12.01.22
-Function make_method_inj()
+***** 10.02.22
+Function make_method_inj(source, destination)
   local _mo_method_inj := {;
     {"ID",        "N",   3, 0},;  // уникальный идентификатор, обязательное поле, целое число
     {"NAME_RUS",  "C",  30, 0},;  // Путь введения на русском языке
@@ -212,17 +224,20 @@ Function make_method_inj()
   }
   // {"CODE_EEC",  "C",  10, 0},;   // код справочника реестра НСИ ЕАЭК
   // {"CODE_EEC",  "C",  10, 0};   // код элемента справочника реестра НСИ ЕАЭК
+  Local nCol
 
-  dbcreate("_mo_method_inj", _mo_method_inj)
-  use _mo_method_inj new alias INJ
-  nfile := "1.2.643.5.1.13.13.11.1468_2.1.xml"
+  dbcreate(destination + "_mo_method_inj", _mo_method_inj)
+  use (destination + '_mo_method_inj') new alias INJ
+  nfile := source + "1.2.643.5.1.13.13.11.1468_2.1.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "1.2.643.5.1.13.13.11.1468_2.1.xml     - Способы введения (MethIntro)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -232,7 +247,8 @@ Function make_method_inj()
           oNode1 := oXmlNode:aItems[j1]
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
-            @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mNameRus := mo_read_xml_stroke(oNode1, 'NAME_RUS', , , 'utf8')
             mNameEng := mo_read_xml_stroke(oNode1, 'NAME_ENG', , , 'utf8')
@@ -281,8 +297,8 @@ Function make_method_inj()
   close databases
   return NIL
 
-***** 18.01.22
-Function make_ed_izm()
+***** 10.02.22
+Function make_ed_izm(source, destination)
   local _mo_ed_izm := {;
     {"ID",        "N",   3, 0},;  // Уникальный идентификатор единицы измерения лабораторного теста, целое число
     {"FULLNAME",  "C",  40, 0},;  // Полное наименование, Строчный
@@ -298,17 +314,20 @@ Function make_ed_izm()
   // {"NSI_EEC",  "C",  10, 0},;   // Код справочника ЕАЭК, Строчный, необязательное поле ? код справочника реестра НСИ ЕАЭК;
   // {"NSI_EL_EEC",  "C",  10, 0};   // Код элемента справочника ЕАЭК, Строчный, необязательное поле ? код элемента справочника реестра НСИ ЕАЭК;
   local rec_n, id_t, fl_parent := .f.
+  local nCol
 
-  dbcreate("_mo_ed_izm", _mo_ed_izm)
-  use _mo_ed_izm new alias EDI
-  nfile := "1.2.643.5.1.13.13.11.1358_3.3.xml"
+  dbcreate(destination + "_mo_ed_izm", _mo_ed_izm)
+  use (destination + '_mo_ed_izm') new alias EDI
+  nfile := source + "1.2.643.5.1.13.13.11.1358_3.3.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "1.2.643.5.1.13.13.11.1358_3.3.xml     - Единицы измерения (OID)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -317,7 +336,8 @@ Function make_ed_izm()
         for j1 := 1 to k1
           oNode1 := oXmlNode:aItems[j1]
           if "ENTRY" == upper(oNode1:title)
-            @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
+            @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mFullName := mo_read_xml_stroke(oNode1, 'FULLNAME', , , 'utf8')
             mShortName := mo_read_xml_stroke(oNode1, 'SHORTNAME', , , 'utf8')

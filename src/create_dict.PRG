@@ -93,8 +93,14 @@ proc main()
   local nResult
 
   Local arr_err := {}
-  local source := ''
-  local destination := ''
+  local source := '.\'
+  local destination := '.\'
+  local lExists
+
+  // lExists := hb_vfDirExists( source )
+  // ? lExists
+  // lExists := hb_vfDirExists( destination )
+  // ? lExists
 
   delete file ttt.ttt
   f_first()
@@ -152,7 +158,7 @@ proc main()
   ? '***********************'
   ? "Обработка справочников ТФОМС!"
   ? '***********************'
-  // make_uslugi_mz()  // Справочник минздрава для формирования файлов ТФОМС
+  // make_uslugi_mz(source, destination)  // Справочник минздрава для формирования файлов ТФОМС
   // Справочники ТФОМС
   dbcreate(nameFileUsl, _mo_usl)
   work_Shema()

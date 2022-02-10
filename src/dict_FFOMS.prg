@@ -445,12 +445,12 @@ Function work_V018()
   close databases
   return NIL
   
-***** 31.03.21
-Function work_V019()
+***** 10.02.22
+Function work_V019(source, destination)
   local _mo_V019 := {;
     {"IDHM",       "N",      4,      0},; // Идентификатор метода высокотехнологичной медицинской помощи
     {"HMNAME",     "C",    254,      0},; // Наименование метода высокотехнологичной медицинской помощи
-    {"DIAG",       "C",    700,      0},; // Верхние уровни кодов диагноза по МКБ для данного метода; указываются через разделитель ";".
+    {"DIAG",       "M",     10,      0},; // Верхние уровни кодов диагноза по МКБ для данного метода; указываются через разделитель ";".
     {"HVID",       "C",     12,      0},; // Код вида высокотехнологичной медицинской помощи для данного метода
     {"HGR",        "N",      3,      0},; // Номер группы высокотехнологичной медицинской помощи для данного метода
     {"HMODP",      "C",    254,      0},; // Модель пациента для методов высокотехнологичной медицинской помощи с одинаковыми значениями поля "HMNAME". Не заполняется, начиная с версии 3.0
@@ -458,22 +458,27 @@ Function work_V019()
     {"DATEBEG",    "D",      8,      0},; // Дата начала действия записи
     {"DATEEND",    "D",      8,      0};  // Дата окончания действия записи
   }
+  // {"DIAG",       "C",    700,      0},; // Верхние уровни кодов диагноза по МКБ для данного метода; указываются через разделитель ";".
+  local nCol
 
-  dbcreate("_mo_v019",_mo_V019)
-  use _mo_V019 new alias V019
-  nfile := "V019.xml"
+  dbcreate(destination + "_mo_v019",_mo_V019)
+  use (destination + '_mo_V019') new alias V019
+  nfile := source + "V019.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V019.xml     - методы высокотехнологичной медицинской помощи (HMet)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        // @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mIDHM := mo_read_xml_stroke(oXmlNode,"IDHM",)
         mHMNAME := mo_read_xml_stroke(oXmlNode,"HMNAME",)
         mDIAG := mo_read_xml_stroke(oXmlNode,"DIAG",)
@@ -492,13 +497,13 @@ Function work_V019()
         V019->HGR := val(mHGR)
         V019->HMODP := mHMODP
         V019->IDMODP := val(mIDMODP)
-        V019->DATEBEG := mDATEBEG
-        V019->DATEEND := mDATEEND
-      
+        // V019->DATEBEG := mDATEBEG
+        V019->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        // V019->DATEEND := mDATEEND
+        V019->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
       endif
     NEXT j
   ENDIF
-  close databases
   return NIL
 
 ***** 08.12.21

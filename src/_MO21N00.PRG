@@ -2,7 +2,7 @@
 #include "edit_spr.ch"
 #include "function.ch"
 
-// **** 31.12.18
+// **** 10.02.22
 FUNCTION read_spr_N00X( source, destination )
 
    // N001 Классификатор противопоказаний и отказов (OnkPrOt)

@@ -1,2 +1,2 @@
-hbmk2.exe create_dict.hbp -b
+hbmk2.exe create_dict.hbp -b -comp=mingw
 copy create_dict.exe ..\
