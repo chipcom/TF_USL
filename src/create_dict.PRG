@@ -93,6 +93,8 @@ proc main()
   local nResult
 
   Local arr_err := {}
+  local source := ''
+  local destination := ''
 
   delete file ttt.ttt
   f_first()
@@ -104,48 +106,48 @@ proc main()
   ? '***********************'
   ? "Обработка справочников министерства здравоохранения!"
   ? '***********************'
-  make_implant()
-  make_severity()
-  make_method_inj()
-  make_ed_izm()
+  make_implant(source, destination)
+  make_severity(source, destination)
+  make_method_inj(source, destination)
+  make_ed_izm(source, destination)
 
   ? '***********************'
   ? "Обработка справочников ФФОМС!"
   ? '***********************'
   // Справочники ФФОМС
-  work_V002()
-  work_V009()
-  work_V010()
-  work_V012()
-  work_V015()
-  work_V016()
-  work_V017()
-  work_V018()
-  work_V019()
-  work_V020()
-  work_V021()
-  work_V022()
-  work_V025()
-  work_V030()
-  work_V031()
-  work_V032()
-  work_V033()
-  work_V034()
-  // work_V035()
-  work_V036()
-  work_V037()
-  make_Q015()
-  make_Q016()
-  make_Q017()
-  make_F006()
-  make_F010()
-  make_F011()
-  make_F014()
-  make_O001()
+  work_V002(source, destination)
+  work_V009(source, destination)
+  work_V010(source, destination)
+  work_V012(source, destination)
+  work_V015(source, destination)
+  work_V016(source, destination)
+  work_V017(source, destination)
+  work_V018(source, destination)
+  work_V019(source, destination)
+  work_V020(source, destination)
+  work_V021(source, destination)
+  work_V022(source, destination)
+  work_V025(source, destination)
+  work_V030(source, destination)
+  work_V031(source, destination)
+  work_V032(source, destination)
+  work_V033(source, destination)
+  work_V034(source, destination)
+  // work_V035(source, destination)
+  work_V036(source, destination)
+  work_V037(source, destination)
+  make_Q015(source, destination)
+  make_Q016(source, destination)
+  make_Q017(source, destination)
+  make_F006(source, destination)
+  make_F010(source, destination)
+  make_F011(source, destination)
+  make_F014(source, destination)
+  make_O001(source, destination)
 
   InitSpravFFOMS()
   //
-  read_spr_N00X()
+  read_spr_N00X(source, destination)
   //
   ? '***********************'
   ? "Обработка справочников ТФОМС!"
