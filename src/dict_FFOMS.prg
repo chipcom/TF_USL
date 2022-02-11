@@ -34,7 +34,7 @@ Function work_V002()  //_mo_V002)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
 
-        if !empty(mDATEEND) .and. mDATEEND < stod(FIRST_DAY)  //0d20210101
+        if !empty(mDATEEND) .and. mDATEEND < FIRST_DAY  //0d20210101
         else
           select V002
           append blank
@@ -357,13 +357,13 @@ function getV021()
 ***** 15.08.21
 Function work_V015()
   local _mo_V015 := {;
-    {"NAME",   "C",    254,      0},;
+    {"NAME",   "C",  254,      0},;
     {"CODE",   "N",    4,      0},;
     {"HIGH",   "C",    4,      0},;
     {"OKSO",   "C",    3,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0},;
-    {"RECID",     "N",     3,      0};
+    {"DATEBEG","D",    8,      0},;
+    {"DATEEND","D",    8,      0},;
+    {"RECID",  "N",    3,      0};
   }
 
   dbcreate("_mo_v015",_mo_V015)
@@ -548,35 +548,40 @@ Function work_V020()
   close databases
   return NIL
 
-***** 01.11.21
-Function work_V022()  //_mo_V022)
+***** 11.02.22
+Function work_V022(source, destination)  //_mo_V022)
   local _mo_V022 := {;
     {"IDMPAC",     "N",      5,      0},;
-    {"MPACNAME",   "C",   1250,      0},;
+    {"MPACNAME",   "M",     10,      0},;
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
+  // {"MPACNAME",   "C",   1250,      0},;
+  local nCol
   
-  dbcreate("_mo_v022",_mo_V022)
-  use _mo_V022 new alias V022
-  nfile := "V022.xml"
+  dbcreate(destination + "_mo_v022",_mo_V022)
+  use (destination + '_mo_V022') new alias V022
+  nfile := source + "V022.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V022.xml     - Классификатор моделей пациента при оказании высокотехнологичной медицинской помощи (ModPac)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    @ row()+1, 1 say "Обработка файла " + nfile + " - "
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        // @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j / k * 100, 6, 2) + "%"
         mIDMPAC := mo_read_xml_stroke(oXmlNode,"IDMPAC",)
         mMPACNAME := mo_read_xml_stroke(oXmlNode,"MPACNAME",)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-        if mDATEBEG >= stod(FIRST_DAY)  //0d20210101
+        if mDATEBEG >= FIRST_DAY .or. Empty(mDATEEND)  //0d20210101
           select V022
           append blank
           V022->IDMPAC := val(mIDMPAC)

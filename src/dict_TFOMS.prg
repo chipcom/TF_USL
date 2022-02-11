@@ -30,7 +30,7 @@ Function make_TO01()
   dbUseArea( .t.,, dbSource, dbSource, .f., .f. )
   (dbSource)->(dbGoTop())
   do while !(dbSource)->(EOF())
-    if (dbSource)->(DATEEND) > stod(FIRST_DAY)  //0d20210101
+    if (dbSource)->(DATEEND) > FIRST_DAY  //0d20210101
       (dbName)->(dbAppend())
       (dbName)->MCOD := (dbSource)->MCOD
       (dbName)->CODEM := (dbSource)->CODEM
@@ -417,10 +417,12 @@ Function work_t006()
   dbcreate(nameFileIt1,{;
     {"CODE",       "C",     10,      0},;
     {"USL_OK",     "N",      1,      0},;
-    {"DS",         "C",   2300,      0},;
+    {"DS",         "M",     10,      0},;
     {"DS1",        "C",    150,      0},;
     {"DS2",        "C",    250,      0};
   })
+  // {"DS",         "C",   2300,      0},;
+
   use (nameFileIt1) new alias it
   index on code+str(usl_ok,1)+ds+ds1+ds2 to tmp_it
   use t006_u new alias t6
@@ -665,8 +667,8 @@ Function work_SprMU()
         endif
         lusl->NAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NameMU",))))
         //Œ…Ÿ’œ
-        lusl->DATEBEG := stod(FIRST_DAY)
-        lusl->DATEEND := stod(LAST_DAY)
+        lusl->DATEBEG := FIRST_DAY
+        lusl->DATEEND := LAST_DAY
         lusl->USL_OK := 0 ; lusl->USL_OKS := ""
         if (oNode1 := oXmlNode:Find("USL_OKS")) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
@@ -1259,7 +1261,7 @@ Function work_Shema()
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
         mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
         fl := .t.
-        if !empty(mDATEEND) .and. mDATEEND < stod(FIRST_DAY)
+        if !empty(mDATEEND) .and. mDATEEND < FIRST_DAY
           fl := .f.
         endif
         if fl
