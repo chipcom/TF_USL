@@ -42,7 +42,7 @@ PROCEDURE Main()
   // wait 
 
   VMP->(dbGoTop())
-  VMP->(dbSkip())
+  // VMP->(dbSkip())
   while !empty((VMP->(fieldget(1)))) // != nil //(eof())
     MO2VMP->(dbAppend())
     MO2VMP->SHIFR := VMP->(fieldget(1))
