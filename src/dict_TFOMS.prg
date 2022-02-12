@@ -4,8 +4,8 @@
 #include 'function.ch'
 #include 'settings.ch'
 
-***** 09.03.21
-Function make_TO01()
+***** 12.02.22
+Function make_TO01(source, destination)
 
   local _mo_T001 := {;
     { 'MCOD',       'C',    6,      0 },;
@@ -50,7 +50,7 @@ Function make_TO01()
   return NIL
 
 ***** 01.11.21
-Function work_SprUnit()
+Function work_SprUnit(source, destination)
   Local _mo_unit := {;
     {"CODE",       "N",      3,      0},;
     {"pz",         "N",      2,      0},;
@@ -66,7 +66,7 @@ Function work_SprUnit()
   dbcreate(nameFile, _mo_unit)
   use (nameFile) new alias UN
 
-  nfile := "SprUnit.xml"
+  nfile := source + "SprUnit.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "SPRUNIT.xml  - справочник видов помощи /план-заказ"
   IF Empty( oXmlDoc:aItems )
@@ -107,7 +107,7 @@ Function work_SprUnit()
   return NIL
 
 ***** 01.11.21
-Function work_MOServ()
+Function work_MOServ(source, destination)
   Local _mo_moserv := {;
     {"CODEM",      "C",      6,      0},;
     {"MCODE",      "C",      6,      0},;
@@ -120,7 +120,7 @@ Function work_MOServ()
   dbcreate(nameFile, _mo_moserv)
   use (nameFile) new alias MS
 
-  nfile := "S_MOServ.xml"
+  nfile := source + "S_MOServ.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "S_MOServ.xml - даты действия услуги вообще"
   IF Empty( oXmlDoc:aItems )
@@ -173,7 +173,7 @@ Function work_MOServ()
   return NIL
 
 ***** 01.11.21
-Function work_Prices()
+Function work_Prices(source, destination)
   Local _mo_prices := {;
     {"SHIFR",      "C",     10,      0},;
     {"VZROS_REB",  "N",      1,      0},;
@@ -187,7 +187,7 @@ Function work_Prices()
   dbcreate(nameFile, _mo_prices)
   use (nameFile) new alias MP
 
-  nfile := "S_Prices.xml"
+  nfile := source + "S_Prices.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "S_Prices.xml - цена и дата действия по уровню"
   IF Empty( oXmlDoc:aItems )
@@ -254,7 +254,7 @@ Function work_Prices()
   return NIL
 
 ***** 02.11.21
-Function work_mo_uslf()
+Function work_mo_uslf(source, destination)
   Local _mo_uslf := {;
     {"SHIFR",      "C",     20,      0},;
     {"NAME",       "C",    255,      0},;
@@ -352,8 +352,8 @@ Function work_mo_uslf()
   return NIL
 
 ***** 22.11.21
-Function work_t006()
-  Static nfile := "T006.XML"
+Function work_t006(source, destination)
+  Static nfile    //:= source + "T006.XML"
   Local oXmlDoc, oXmlNode, i, j, k, s, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
   Local lshifr, lsy
@@ -381,8 +381,10 @@ Function work_t006()
     {"DATEEND",    "D",      8,      0};  // дата конец действия - по умолчанию т.г
   }
 
-  dbcreate("t006_u",_mo_usl)
-  dbcreate("t006_2",{;
+  nfile := source + "T006.XML"
+
+  dbcreate(destination + "t006_u",_mo_usl)
+  dbcreate(destination + "t006_2",{;
     {"SHIFR",      "C",     10,      0},;
     {"kz",         "N",      7,      3},;
     {"PROFIL",     "N",      2,      0},;
@@ -399,7 +401,7 @@ Function work_t006()
     {"DATEEND",    "D",      8,      0},;
     {"NS",         "N",      6,      0};
   })
-  dbcreate("t006_d",{;
+  dbcreate(destination + "t006_d",{;
     {"CODE",       "C",     10,      0},;
     {"DS",         "C",     20,      0},;
     {"DS1",        "C",     10,      0},;
@@ -414,7 +416,7 @@ Function work_t006()
     {"DATEEND",    "D",      8,      0},;
     {"NAME",       "C",    255,      0};
   })
-  dbcreate(nameFileIt1,{;
+  dbcreate(destination + nameFileIt1,{;
     {"CODE",       "C",     10,      0},;
     {"USL_OK",     "N",      1,      0},;
     {"DS",         "M",     10,      0},;
@@ -423,11 +425,11 @@ Function work_t006()
   })
   // {"DS",         "C",   2300,      0},;
 
-  use (nameFileIt1) new alias it
+  use (destination + nameFileIt1) new alias it
   index on code+str(usl_ok,1)+ds+ds1+ds2 to tmp_it
-  use t006_u new alias t6
-  use t006_2 new alias t62
-  use t006_d new alias d6
+  use (destination + 't006_u') new alias t6
+  use (destination + 't006_2') new alias t62
+  use (destination + 't006_d') new alias d6
   oXmlDoc := HXMLDoc():Read(nfile)
   kl := kl1 := kl2 := 0
   ? "T006.xml     - КСГ"
@@ -605,7 +607,7 @@ Function work_t006()
   return NIL
 
 ***** 02.11.21
-Function work_SprMU()
+Function work_SprMU(source, destination)
   local nameFileUnit := prefixFileName() + 'unit'
   local nameFileUsl := prefixFileName() + 'usl'
   Local _mo_prof := {;
@@ -638,7 +640,7 @@ Function work_SprMU()
 
   use (nameFileUnit) new alias UN
   index on str(code,3) to tmp_unit
-  nfile := "SprMU.xml"
+  nfile := source + "SprMU.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "SPRMU.xml    - справочник услуг /наименование, шифр услуги"
   IF Empty( oXmlDoc:aItems )
@@ -786,7 +788,7 @@ Function work_SprMU()
   return NIL
 
 ***** 02.11.21
-Function work_SprDS()
+Function work_SprDS(source, destination)
   Local fl := .f., lfp, s
   local nameFileUslF := prefixFileName() + 'uslf'
 
@@ -794,7 +796,7 @@ Function work_SprDS()
   use _mo_spec new alias SPEC
   use (nameFileUslF) new alias LUSL
   index on shifr to tmp_lusl
-  nfile := "SprDS.xml"
+  nfile := source + "SprDS.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "SPRDS.xml    - федеральный справочник услуг"
   IF Empty( oXmlDoc:aItems )
@@ -893,7 +895,7 @@ Function work_SprDS()
   return NIL
 
 ***** 23.04.21
-Function work_SprKslp()
+Function work_SprKslp(source, destination)
   Local _mo_kslp := {;
     {"CODE",       "N",      2,      0},;
     {"NAME",       "C",     55,      0},;
@@ -908,7 +910,7 @@ Function work_SprKslp()
   dbcreate(nameFile, _mo_kslp)
   use (nameFile) new alias KS
 
-  nfile := "SprKslp.xml"
+  nfile := source + "SprKslp.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "SPRKSLP.xml  - для КСГ - КСЛП"
   IF Empty( oXmlDoc:aItems )
@@ -950,7 +952,7 @@ Function work_SprKslp()
   return NIL
 
 ***** 23.04.21
-Function work_SprKiro()
+Function work_SprKiro(source, destination)
   Local _mo_kiro := {;
     {"CODE",       "N",      2,      0},;
     {"NAME",       "C",     55,      0},;
@@ -965,7 +967,7 @@ Function work_SprKiro()
   dbcreate(nameFile, _mo_kiro)
   use (nameFile) new alias KS
 
-  nfile := "S_KIRO.xml"
+  nfile := source + "S_KIRO.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "S_kiro.xml   - для КСГ - КИРО"
   IF Empty( oXmlDoc:aItems )
@@ -1007,7 +1009,7 @@ Function work_SprKiro()
   return NIL
 
 ***** 01.11.21
-Function work_uslc()
+Function work_uslc(source, destination)
   Local _mo_uslc := {;
     {"CODEMO",     "C",      6,      0},;
     {"SHIFR",      "C",     10,      0},;
@@ -1229,7 +1231,7 @@ Function work_uslc()
   return NIL
 
 ***** 01.11.21
-Function work_Shema()
+Function work_Shema(source, destination)
   Local _mo_shema := {;
     {"KOD",        "C",     10,      0},;
     {"NAME",       "C",    255,      0},;
@@ -1243,7 +1245,7 @@ Function work_Shema()
   use (nameFile) new alias SH
 
   index on kod to tmp_shema
-  nfile := "V024.xml"
+  nfile := source + "V024.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V024.xml     - для КСГ - Допкритерии"
   IF Empty( oXmlDoc:aItems )
@@ -1289,7 +1291,7 @@ Function work_Shema()
 
 ***** 01.11.21
 // S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
-Function work_SprSubDiv()
+Function work_SprSubDiv(source, destination)
 
   Local _mo_subdiv := {;
     {"CODEM",      "C",      6,      0},;
@@ -1304,7 +1306,7 @@ Function work_SprSubDiv()
 
   dbcreate(nameFile, _mo_subdiv)
   use (nameFile) new alias SD
-  nfile := "S_SubDiv.xml"
+  nfile := source + "S_SubDiv.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты"
   IF Empty( oXmlDoc:aItems )
@@ -1340,7 +1342,7 @@ Function work_SprSubDiv()
   return NIL
 
 ***** 01.11.21
-Function work_SprDep()
+Function work_SprDep(source, destination)
   Local _mo_dep := {;
     {"CODEM",      "C",      6,      0},;
     {"MCODE",      "C",      6,      0},;
@@ -1370,7 +1372,7 @@ Function work_SprDep()
   use (nameFileDep) new alias DEP
   use (nameFileDepPr) new alias DP
 
-  nfile := "S_Dep.xml"
+  nfile := source + "S_Dep.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "S_Dep.xml    - список отделений по 11-й стационарам с разными уровнями оплаты"
   IF Empty( oXmlDoc:aItems )
@@ -1436,7 +1438,7 @@ Function work_SprDep()
   return NIL
 
 ***** 01.11.21
-Function work_LvlPay()
+Function work_LvlPay(source, destination)
   Local _mo_lvlpay := {;
     {"CODEM",      "C",      6,      0},;
     {"MCODE",      "C",      6,      0},;
@@ -1451,7 +1453,7 @@ Function work_LvlPay()
   dbcreate(nameFile, _mo_lvlpay)
   use (nameFile) new alias LP
 
-  nfile := "S_LvlPay.xml"
+  nfile := source + "S_LvlPay.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "S_LvlPay.xml - код МО и уровень услуг"
   IF Empty( oXmlDoc:aItems )

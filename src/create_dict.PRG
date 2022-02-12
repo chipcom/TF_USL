@@ -160,20 +160,21 @@ proc main()
   ? '***********************'
   // make_uslugi_mz(source, destination)  // Справочник минздрава для формирования файлов ТФОМС
   // Справочники ТФОМС
-  dbcreate(nameFileUsl, _mo_usl)
-  work_Shema()
-  work_SprSubDiv()
-  work_SprDep()
-  work_LvlPay()
-  work_MOServ()
-  work_Prices()
-  work_mo_uslf()
-  work_SprUnit()
-  work_SprKslp()
-  work_SprKiro()
-  work_SprMU()
-  work_SprDS()
-  work_t006(_mo_usl)
+  dbcreate(destination + nameFileUsl, _mo_usl)
+  work_Shema(source, destination)
+  work_SprSubDiv(source, destination)
+  work_SprDep(source, destination)
+  work_LvlPay(source, destination)
+  work_MOServ(source, destination)
+  work_Prices(source, destination)
+  work_mo_uslf(source, destination)
+  work_SprUnit(source, destination)
+  work_SprKslp(source, destination)
+  work_SprKiro(source, destination)
+  work_SprMU(source, destination)
+  work_SprDS(source, destination)
+  // work_t006(_mo_usl, source, destination)
+  work_t006(source, destination)
   close databases
   //
   // rename t006_2.dbf to (k006dbf)
@@ -505,3 +506,9 @@ Function usl2arr(sh_u,/*@*/j)
     endif
   endif
   return arr
+
+****** 11.02.22
+function obrabotka(nfile)
+
+  @ row() + 1, 1 say "Обработка файла " + nfile + " -"
+  return Col()

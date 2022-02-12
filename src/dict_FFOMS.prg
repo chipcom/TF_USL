@@ -4,30 +4,33 @@
 #include 'function.ch'
 #include 'settings.ch'
 
-***** 09.03.21
-Function work_V002()  //_mo_V002)
+***** 11.02.22
+Function work_V002(source, destination)
   local _mo_V002 := {;
     {"IDPR",       "N",      3,      0},;
     {"PRNAME",     "C",    250,      0},;
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
+  local nCol
 
-  dbcreate("_mo_v002",_mo_V002)
-  use _mo_V002 new alias V002
-  nfile := "V002.xml"
+  dbcreate(destination + "_mo_v002", _mo_V002)
+  use (destination + '_mo_V002') new alias V002
+  nfile := source + "V002.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V002.xml     - Классификатор профилей оказанной медицинской помощи (ProfOt)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    @ row() + 1, 1 say "Обработка файла " + nfile + " -"
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j / k * 100, 6, 2 ) + "%"
         mDATEEND := CToD('  /  /    ')
         mIDPR := mo_read_xml_stroke(oXmlNode,"IDPR",)
         mPRNAME := mo_read_xml_stroke(oXmlNode,"PRNAME",)
@@ -49,8 +52,8 @@ Function work_V002()  //_mo_V002)
   close databases
   return NIL
 
-***** 11.12.21
-Function work_V016()
+***** 11.02.22
+Function work_V016(source, destination)
   local _mo_V016 := {;
     {"IDDT",      "C",   3, 0},;  // Код типа диспансеризации
     {"DTNAME",    "C", 254, 0},;  // Наименование типа диспансеризации
@@ -59,22 +62,25 @@ Function work_V016()
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
   local mRULE := ''
+  local nCol
 
-  dbcreate("_mo_v016", _mo_V016)
-  use _mo_v016 new alias V016
-  nfile := "V016.xml"
+  dbcreate(destination + "_mo_v016", _mo_V016)
+  use (destination + '_mo_v016') new alias V016
+  nfile := source + "V016.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V016.xml     - Классификатор типов диспансеризации (DispT)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    @ row() + 1, 1 say "Обработка файла " + nfile + " -"
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mIDDT := mo_read_xml_stroke(oXmlNode,"IDDT",)
         mDTNAME := mo_read_xml_stroke(oXmlNode,"DTNAME",)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
@@ -102,25 +108,28 @@ Function work_V016()
   close databases
   return NIL
 
-***** 12.12.21
-Function work_V017()
+***** 11.02.22
+Function work_V017(source, destination)
   local _mo_V017 := {;
     {"IDDR",      "N",   2, 0},;  // Код результата диспансеризации
     {"DRNAME",    "C", 254, 0},;  // Наименование результата диспансеризации
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v017", _mo_V017)
-  use _mo_v017 new alias V017
-  nfile := "V017.xml"
+  dbcreate(destination + "_mo_v017", _mo_V017)
+  use (destination + '_mo_v017') new alias V017
+  nfile := source + "V017.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V017.xml     - Классификатор результатов диспансеризации (DispR)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    @ row()+ 1, 1 say "Обработка файла " + nfile + " -"
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -143,8 +152,8 @@ Function work_V017()
   close databases
   return NIL
 
-***** 16.02.21
-Function work_V021()  //_mo_V021)
+***** 11.02.22
+Function work_V021(source, destination)
 
   local _mo_V021 := {;
     {"IDSPEC",     "N",      3,      0},;
@@ -154,22 +163,25 @@ Function work_V021()  //_mo_V021)
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
+  local nCol
 
-  dbcreate("_mo_v021",_mo_V021)
-  use _mo_V021 new alias V021
-  nfile := "V021.xml"
+  dbcreate(destination + "_mo_v021", _mo_V021)
+  use (destination + '_mo_V021') new alias V021
+  nfile := source + "V021.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V021.xml     - Классификатор медицинских специальностей (должностей) (MedSpec)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    obrabotka(nfile)
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mIDSPEC := mo_read_xml_stroke(oXmlNode,"IDSPEC",)
         mSPECNAME := mo_read_xml_stroke(oXmlNode,"SPECNAME",)
         mPOSTNAME := mo_read_xml_stroke(oXmlNode,"POSTNAME",)
@@ -211,8 +223,8 @@ function getV002()
 
   return _v002
 
-***** 09.12.21
-Function work_V009()
+***** 11.02.22
+Function work_V009(source, destination)
   local _mo_V009 := {;
     {"IDRMP",     "N",   3, 0},;  // Код результата обращения
     {"RMPNAME",   "C", 254, 0},;  // Наименование результата обращения
@@ -220,22 +232,25 @@ Function work_V009()
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v009", _mo_V009)
-  use _mo_v009 new alias V009
-  nfile := "V009.xml"
+  dbcreate(destination + "_mo_v009", _mo_V009)
+  use (destination + '_mo_v009') new alias V009
+  nfile := source + "V009.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V009.xml     - Классификатор результатов обращения за медицинской помощью (Rezult)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    obrabotka(nfile)
+    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mIDRMP := mo_read_xml_stroke(oXmlNode,"IDRMP",)
         mRMPNAME := mo_read_xml_stroke(oXmlNode,"RMPNAME",)
         mDL_USLOV := mo_read_xml_stroke(oXmlNode,"DL_USLOV",)
@@ -254,30 +269,32 @@ Function work_V009()
   close databases
   return NIL
 
-***** 09.12.21
-Function work_V010()
+***** 11.02.22
+Function work_V010(source, destination)
   local _mo_V010 := {;
     {"IDSP",      "N",   2, 0},;  // Код способа оплаты медицинской помощи
     {"SPNAME",    "C", 254, 0},;  // Наименование способа оплаты медицинской помощи
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v010", _mo_V010)
-  use _mo_v010 new alias V010
-  nfile := "V010.xml"
+  dbcreate(destination + "_mo_v010", _mo_V010)
+  use (destination + '_mo_v010') new alias V010
+  nfile := source + "V010.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V010.xml     - Классификатор способов оплаты медицинской помощи (Sposob)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mIDSP := mo_read_xml_stroke(oXmlNode,"IDSP",)
         mSPNAME := mo_read_xml_stroke(oXmlNode,"SPNAME",)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
@@ -294,8 +311,8 @@ Function work_V010()
   close databases
   return NIL
 
-***** 11.12.21
-Function work_V012()
+***** 11.02.22
+Function work_V012(source, destination)
   local _mo_V012 := {;
     {"IDIZ",      "N",   3, 0},;  // Код исхода заболевания
     {"IZNAME",    "C", 254, 0},;  // Наименование исхода заболевания
@@ -303,22 +320,24 @@ Function work_V012()
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v012", _mo_V012)
-  use _mo_v012 new alias V012
-  nfile := "V012.xml"
+  dbcreate(destination + "_mo_v012", _mo_V012)
+  use (destination + '_mo_v012') new alias V012
+  nfile := source + "V012.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V012.xml     - Классификатор исходов заболевания (Ishod)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mIDIZ := mo_read_xml_stroke(oXmlNode,"IDIZ",)
         mIZNAME := mo_read_xml_stroke(oXmlNode,"IZNAME",)
         mDL_USLOV := mo_read_xml_stroke(oXmlNode,"DL_USLOV",)
@@ -354,8 +373,8 @@ function getV021()
 
   return _v021
 
-***** 15.08.21
-Function work_V015()
+***** 12.02.22
+Function work_V015(source, destination)
   local _mo_V015 := {;
     {"NAME",   "C",  254,      0},;
     {"CODE",   "N",    4,      0},;
@@ -365,22 +384,24 @@ Function work_V015()
     {"DATEEND","D",    8,      0},;
     {"RECID",  "N",    3,      0};
   }
+  local nCol
 
-  dbcreate("_mo_v015",_mo_V015)
-  use _mo_V015 new alias V015
-  nfile := "V015.xml"
+  dbcreate(destination + "_mo_v015", _mo_V015)
+  use (destination + '_mo_V015') new alias V015
+  nfile := source + "V015.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V015.xml     - Классификатор медицинских специальностей (Medspec)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mRECID := mo_read_xml_stroke(oXmlNode,"RECID",)
         mCODE := mo_read_xml_stroke(oXmlNode,"CODE",)
         mNAME := mo_read_xml_stroke(oXmlNode,"NAME",)
@@ -403,8 +424,8 @@ Function work_V015()
   close databases
   return NIL
   
-***** 31.03.21
-Function work_V018()
+***** 12.02.22
+Function work_V018(source, destination)
   local _mo_V018 := {;
     {"IDHVID",     "C",     12,      0},;
     {"HVIDNAME",   "C",    254,      0},;
@@ -412,23 +433,25 @@ Function work_V018()
     {"DATEEND",    "D",      8,      0};
   }
   // {"HVIDNAME",   "M",     10,      0},;
+  local nCol
 
-  dbcreate("_mo_v018",_mo_V018)
-  use _mo_V018 new alias V018
+  dbcreate(destination + "_mo_v018", _mo_V018)
+  use (destination + '_mo_V018') new alias V018
   // index on kod to tmp_shema
-  nfile := "V018.xml"
+  nfile := source + "V018.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V018.xml     - виды высокотехнологичной медицинской помощи (HVid)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mIDHVID := mo_read_xml_stroke(oXmlNode,"IDHVID",)
         mHVIDNAME := mo_read_xml_stroke(oXmlNode,"HVIDNAME",)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
@@ -471,8 +494,7 @@ Function work_V019(source, destination)
     wait
   else
     // ? "Обработка файла "+nfile+" - "
-    @ row()+1, 1 say "Обработка файла "+nfile+" - "
-    nCol := Col()
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -508,30 +530,32 @@ Function work_V019(source, destination)
   ENDIF
   return NIL
 
-***** 08.12.21
-Function work_V020()
+***** 12.02.22
+Function work_V020(source, destination)
   local _mo_V020 := {;
     {"IDK_PR",     "N",      3,      0},; // Код профиля койки
     {"K_PRNAME",   "C",    254,      0},; // Наименование профиля койки
     {"DATEBEG",    "D",      8,      0},; // Дата начала действия записи
     {"DATEEND",    "D",      8,      0};  // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v020",_mo_V020)
-  use _mo_v020 new alias V020
-  nfile := "V020.xml"
+  dbcreate(destination + "_mo_v020", _mo_V020)
+  use (destination + '_mo_v020') new alias V020
+  nfile := source + "V020.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V020.xml     - Классификатор профиля койки (KoPr)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла " + nfile + " - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mIDK_PR := mo_read_xml_stroke(oXmlNode,"IDK_PR",)
         mK_PRNAME := mo_read_xml_stroke(oXmlNode,"K_PRNAME",)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
@@ -549,7 +573,7 @@ Function work_V020()
   return NIL
 
 ***** 11.02.22
-Function work_V022(source, destination)  //_mo_V022)
+Function work_V022(source, destination)
   local _mo_V022 := {;
     {"IDMPAC",     "N",      5,      0},;
     {"MPACNAME",   "M",     10,      0},;
@@ -569,8 +593,7 @@ Function work_V022(source, destination)  //_mo_V022)
     wait
   else
     // ? "Обработка файла "+nfile+" - "
-    @ row()+1, 1 say "Обработка файла " + nfile + " - "
-    nCol := Col()
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -595,31 +618,33 @@ Function work_V022(source, destination)  //_mo_V022)
   close databases
   return NIL
 
-***** 04.12.21
-Function work_V025()
+***** 12.02.22
+Function work_V025(source, destination)
   local _mo_V025 := {;
     {"IDPC",      "C",   3, 0},;  // Код цели посещения
     {"N_PC",      "C", 254, 0},;  // Наименование цели посещения
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v025", _mo_V025)
-  use _mo_V025 new alias V025
+  dbcreate(destination + "_mo_v025", _mo_V025)
+  use (destination + '_mo_V025') new alias V025
   // index on kod to tmp_shema
-  nfile := "V025.xml"
+  nfile := source + "V025.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V025.xml     - Классификатор целей посещения (KPC)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mIDPC := mo_read_xml_stroke(oXmlNode,"IDPC",)
         mN_PC := mo_read_xml_stroke(oXmlNode,"N_PC",)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
@@ -636,8 +661,8 @@ Function work_V025()
   close databases
   return NIL
 
-***** 29.12.21
-Function work_V030()
+***** 12.02.22
+Function work_V030(source, destination)
   local _mo_V030 := {;
     {"SCHEMCOD",  "C",   3, 0},;  // 
     {"SCHEME",    "C",  10, 0},;  //
@@ -646,22 +671,24 @@ Function work_V030()
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v030", _mo_V030)
-  use _mo_V030 new alias V030
-  nfile := "V030.xml"
+  dbcreate(destination + "_mo_v030", _mo_V030)
+  use (destination + '_mo_V030') new alias V030
+  nfile := source + "V030.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V030.xml     - Схемы лечения заболевания COVID-19 (TreatReg)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mSchemCod := mo_read_xml_stroke(oXmlNode,"SchemCode",)
         mScheme := mo_read_xml_stroke(oXmlNode,"Scheme",)
         mDegree := mo_read_xml_stroke(oXmlNode,"DegreeSeverity",)
@@ -682,8 +709,8 @@ Function work_V030()
   close databases
   return NIL
 
-***** 05.01.22
-Function work_V031()
+***** 12.02.22
+Function work_V031(source, destination)
   local _mo_V031 := {;
     {"DRUGCODE",  "N",   2, 0},;  // 
     {"DRUGGRUP",  "C",  50, 0},;  //
@@ -691,22 +718,24 @@ Function work_V031()
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v031", _mo_V031)
-  use _mo_V031 new alias V031
-  nfile := "V031.xml"
+  dbcreate(destination + "_mo_v031", _mo_V031)
+  use (destination + '_mo_V031') new alias V031
+  nfile := source + "V031.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V031.xml     - Группы препаратов для лечения заболевания COVID-19 (GroupDrugs)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mDrugCode := mo_read_xml_stroke(oXmlNode,"DrugGroupCode",)
         mDrugGrup := mo_read_xml_stroke(oXmlNode,"DrugGroup",)
         mIndMNN := mo_read_xml_stroke(oXmlNode,"ManIndMNN",)
@@ -725,8 +754,8 @@ Function work_V031()
   close databases
   return NIL
 
-***** 05.01.22
-Function work_V032()
+***** 12.02.22
+Function work_V032(source, destination)
   local _mo_V032 := {;
     {"SCHEDRUG",  "C",  10, 0},;  // Сочетание схемы лечения и группы препаратов
     {"NAME",      "C", 100, 0},;  //
@@ -734,22 +763,24 @@ Function work_V032()
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v032", _mo_V032)
-  use _mo_V032 new alias V032
-  nfile := "V032.xml"
+  dbcreate(destination + "_mo_v032", _mo_V032)
+  use (destination + '_mo_V032') new alias V032
+  nfile := source + "V032.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V032.xml     - Сочетание схемы лечения и группы препаратов (CombTreat)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mScheDrug := mo_read_xml_stroke(oXmlNode,"ScheDrugGrCd",)
         mName := mo_read_xml_stroke(oXmlNode,"Name",)
         mSchemCod := mo_read_xml_stroke(oXmlNode,"SchemCode",)
@@ -768,30 +799,32 @@ Function work_V032()
   close databases
   return NIL
 
-***** 29.12.21
-Function work_V033()
+***** 12.02.22
+Function work_V033(source, destination)
   local _mo_V033 := {;
     {"SCHEDRUG",  "C",   5, 0},;  // 
     {"DRUGCODE",  "C",   6, 0},;  //
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v033", _mo_V033)
-  use _mo_V033 new alias V033
-  nfile := "V033.xml"
+  dbcreate(destination + "_mo_v033", _mo_V033)
+  use (destination + '_mo_V033') new alias V033
+  nfile := source + "V033.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V033.xml     - Соответствие кода препарата схеме лечения (DgTreatReg)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mScheDrug := mo_read_xml_stroke(oXmlNode,"ScheDrugGrCd",)
         mDrugCode := mo_read_xml_stroke(oXmlNode,"DrugCode",)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
@@ -808,8 +841,8 @@ Function work_V033()
   close databases
   return NIL
 
-***** 05.01.22
-Function work_V034()
+***** 12.02.22
+Function work_V034(source, destination)
   local _mo_V034 := {;
     {"UNITCODE",  "N",   3, 0},;  // код единицы измерения дозы
     {"UNITMEAS",  "C",  50, 0},;  //
@@ -817,22 +850,24 @@ Function work_V034()
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v034", _mo_V034)
-  use _mo_V034 new alias V034
-  nfile := "V034.xml"
+  dbcreate(destination + "_mo_v034", _mo_V034)
+  use (destination + '_mo_V034') new alias V034
+  nfile := source + "V034.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V034.xml     - Единицы измерения (UnitMeas)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mUnitCode := mo_read_xml_stroke(oXmlNode,"UnitCode",)
         mUnitMeas := mo_read_xml_stroke(oXmlNode,"UnitMeasur",)
         mShortTit := mo_read_xml_stroke(oXmlNode,"ShortTitle",)
@@ -851,30 +886,32 @@ Function work_V034()
   close databases
   return NIL
 
-***** 05.01.22
-Function work_V035()
+***** 12.02.22
+Function work_V035(source, destination)
   local _mo_V035 := {;
     {"METHCODE",  "N",   3, 0},;  // 
     {"METHNAME",   "C",  50, 0},;  //
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v035", _mo_V035)
-  use _mo_V035 new alias V035
-  nfile := "V035.xml"
+  dbcreate(destination + "_mo_v035", _mo_V035)
+  use (destination + '_mo_V035') new alias V035
+  nfile := source + "V035.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V035.xml     - Способы введения (MethIntro)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mMethCode := mo_read_xml_stroke(oXmlNode,"MethCode",)
         mMethName := mo_read_xml_stroke(oXmlNode,"MethNam",)
         mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
@@ -891,8 +928,8 @@ Function work_V035()
   close databases
   return NIL
 
-***** 29.12.21
-Function work_V036()
+***** 12.02.22
+Function work_V036(source, destination)
   local _mo_V036 := {;
     {"S_CODE",    "C",  16, 0},;  // 
     {"NAME",      "C", 150, 0},;  //
@@ -901,22 +938,24 @@ Function work_V036()
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v036", _mo_V036)
-  use _mo_V036 new alias V036
-  nfile := "V036.xml"
+  dbcreate(destination + "_mo_v036", _mo_V036)
+  use (destination + '_mo_V036') new alias V036
+  nfile := source + "V036.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V036.xml     - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mS_Code := mo_read_xml_stroke(oXmlNode,"S_CODE",)
         mName := mo_read_xml_stroke(oXmlNode,"NAME",)
         mParam := mo_read_xml_stroke(oXmlNode,"Parameter",)
@@ -937,8 +976,8 @@ Function work_V036()
   close databases
   return NIL
 
-***** 18.01.22
-Function work_V037()
+***** 12.02.22
+Function work_V037(source, destination)
   local _mo_V037 := {;
     {"CODE",      "N",   5, 0},;  // 
     {"NAME",      "C", 150, 0},;  //
@@ -947,22 +986,24 @@ Function work_V037()
     {"DATEBEG",   "D",   8, 0},;  // Дата начала действия записи
     {"DATEEND",   "D",   8, 0};   // Дата окончания действия записи
   }
+  local nCol
 
-  dbcreate("_mo_v037", _mo_V037)
-  use _mo_V037 new alias V037
-  nfile := "V037.xml"
+  dbcreate(destination + "_mo_v037", _mo_V037)
+  use (destination + '_mo_V037') new alias V037
+  nfile := source + "V037.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "V037.xml     - Перечень методов ВМП, требующих имплантацию медицинских изделий"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         mCode := mo_read_xml_stroke(oXmlNode,"CODE",)
         mName := mo_read_xml_stroke(oXmlNode,"NAME",)
         mParam := mo_read_xml_stroke(oXmlNode,"Parameter",)
@@ -983,8 +1024,8 @@ Function work_V037()
   close databases
   return NIL
 
-***** 21.02.21
-Function make_Q015()
+***** 12.02.22
+Function make_Q015(source, destination)
 
   local _mo_Q015 := {;
     {"KOD",       "C",     12,      0},;
@@ -997,22 +1038,24 @@ Function make_Q015()
     {"DATEBEG",   "D",      8,      0},;
     {"DATEEND",   "D",      8,      0};
   }
+  local nCol
 
-  dbcreate("_mo_q015",_mo_Q015)
-  use _mo_Q015 new alias Q015
-  nfile := "Q015.xml"
+  dbcreate(destination + "_mo_q015", _mo_Q015)
+  use (destination + '_mo_Q015') new alias Q015
+  nfile := source + "Q015.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "Q015.xml     - Перечень технологических правил реализации ФЛК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (FLK_MPF)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         select Q015
         append blank
         Q015->KOD := mo_read_xml_stroke(oXmlNode,"ID_TEST",)
@@ -1032,8 +1075,8 @@ Function make_Q015()
   close databases
   return NIL
 
-***** 21.05.21
-Function make_Q016()
+***** 12.02.22
+Function make_Q016(source, destination)
 
   local _mo_Q016 := {;
     {"KOD",       "C",     12,      0},;
@@ -1046,22 +1089,24 @@ Function make_Q016()
     {"DATEBEG",   "D",      8,      0},;
     {"DATEEND",   "D",      8,      0};
   }
+  local nCol
 
-  dbcreate("_mo_q016",_mo_Q016)
-  use _mo_Q016 new alias Q016
-  nfile := "Q016.xml"
+  dbcreate(destination + "_mo_q016", _mo_Q016)
+  use (destination + '_mo_Q016') new alias Q016
+  nfile := source + "Q016.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "Q016.xml     - Перечень проверок автоматизированной поддержки МЭК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (MEK_MPF)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         select Q016
         append blank
         Q016->KOD := mo_read_xml_stroke(oXmlNode,"ID_TEST",)
@@ -1081,9 +1126,8 @@ Function make_Q016()
   close databases
   return NIL
 
-***** 21.02.21
-Function make_Q017()
-  // Function work_Q017(_mo_Q017)
+***** 12.02.22
+Function make_Q017(source, destination)
 
   local _mo_Q017 := {;
     {"ID_KTEST",   "C",      4,      0},;
@@ -1092,22 +1136,24 @@ Function make_Q017()
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
+  local nCol
 
-  dbcreate("_mo_q017",_mo_Q017)
-  use _mo_Q017 new alias Q017
-  nfile := "Q017.xml"
+  dbcreate(destination + "_mo_q017", _mo_Q017)
+  use (destination + '_mo_Q017') new alias Q017
+  nfile := source + "Q017.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "Q017.xml     - Перечень категорий проверок ФЛК и МЭК (TEST_K)"
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         select Q017
         append blank
         Q017->ID_KTEST := mo_read_xml_stroke(oXmlNode,"ID_KTEST",)
@@ -1122,8 +1168,8 @@ Function make_Q017()
   close databases
   return NIL
 
-***** 21.02.21
-Function make_O001()
+***** 12.02.22
+Function make_O001(source, destination)
 
     //  1 - NAME11(C)  2 - KOD(C)  3 - DATEBEG(D)  4 - DATEEND(D)  5 - ALFA2(C)  6 - ALFA3(C)
     local _mo_O001 := {;
@@ -1135,23 +1181,24 @@ Function make_O001()
     {"DATEBEG", "D",    8,      0},;
     {"DATEEND", "D",    8,      0};
   }
-  local mName := '', mArr
+  local mName := '', mArr, nCol
 
-  dbcreate("_mo_o001",_mo_O001)
-  use _mo_O001 new alias O001
-  nfile := "O001.xml"
+  dbcreate(destination + "_mo_o001", _mo_O001)
+  use (destination + '_mo_O001') new alias O001
+  nfile := source + "O001.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "O001.xml     - Общероссийский классификатор стран мира (OKSM) "
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         select O001
         append blank
         mArr := hb_ATokens( mo_read_xml_stroke(oXmlNode,"NAME11",), '^' )
@@ -1173,8 +1220,8 @@ Function make_O001()
   close databases
   return NIL
 
-***** 04.03.21
-Function make_F006()
+***** 12.02.22
+Function make_F006(source, destination)
 
   //  1 - VIDNAME(C)  2 - IDVID(N)  3 - DATEBEG(D)  4 - DATEEND(D)
   local _mo_F006 := {;
@@ -1183,23 +1230,24 @@ Function make_F006()
     { 'DATEBEG',    'D',    8,      0 },;
     { 'DATEEND',    'D',    8,      0 };
   }
-  local mName := '', mArr
+  local mName := '', mArr, nCol
 
-  dbcreate('_mo_f006',_mo_F006)
-  use _mo_f006 new alias F006
-  nfile := 'F006.xml'
+  dbcreate(destination + '_mo_f006', _mo_F006)
+  use (destination + '_mo_f006') new alias F006
+  nfile := source + 'F006.xml'
   oXmlDoc := HXMLDoc():Read(nfile)
   ? 'F006.xml     - Классификатор видов контроля (VidExp)'
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         select F006
         append blank
         F006->IDVID := val(mo_read_xml_stroke(oXmlNode, 'IDVID',))
@@ -1212,8 +1260,8 @@ Function make_F006()
   close databases
   return NIL
 
-***** 01.03.21
-Function make_F010()
+***** 12.02.22
+Function make_F010(source, destination)
 
   //  1 - SUBNAME(C) 2 - KOD_TF(N)  3 - OKRUG(N)  4 - KOD_OKATO(C)  5 - DATEBEG(D)  6 - DATEEND(D)
   local _mo_F010 := {;
@@ -1224,23 +1272,24 @@ Function make_F010()
     { 'DATEBEG',    'D',    8,      0 },;
     { 'DATEEND',    'D',    8,      0 };
   }
-  local mName := '', mArr
+  local mName := '', mArr, nCol
 
-  dbcreate('_mo_f010',_mo_F010)
-  use _mo_F010 new alias F010
-  nfile := 'F010.xml'
+  dbcreate(destination + '_mo_f010', _mo_F010)
+  use (destination + '_mo_F010') new alias F010
+  nfile := source + 'F010.xml'
   oXmlDoc := HXMLDoc():Read(nfile)
   ? 'F010.xml     - Классификатор субъектов Российской Федерации (Subekti)'
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         select F010
         append blank
         F010->KOD_TF := mo_read_xml_stroke(oXmlNode, 'KOD_TF',)
@@ -1255,8 +1304,8 @@ Function make_F010()
   close databases
   return NIL
 
-***** 04.03.21
-Function make_F011()
+***** 12.02.22
+Function make_F011(source, destination)
 
   //  1 - DOCNAME(C)  2 - IDDOC(N) 3 - DOCSER(C) 4 - DOCNUM(C) 5 - DATEBEG(D)  6 - DATEEND(D)
   local _mo_F011 := {;
@@ -1267,23 +1316,24 @@ Function make_F011()
     { 'DATEBEG',    'D',    8,      0 },;
     { 'DATEEND',    'D',    8,      0 };
   }
-  local mName := '', mArr
+  local mName := '', mArr, nCol
 
-  dbcreate('_mo_f011',_mo_F011)
-  use _mo_f011 new alias F011
-  nfile := 'F011.xml'
+  dbcreate(destination + '_mo_f011', _mo_F011)
+  use (destination + '_mo_f011') new alias F011
+  nfile := source + 'F011.xml'
   oXmlDoc := HXMLDoc():Read(nfile)
   ? 'F011.xml     - Классификатор типов документов, удостоверяющих личность (Tipdoc)'
   IF Empty( oXmlDoc:aItems )
     ? "Ошибка в чтении файла",nfile
     wait
   else
-    ? "Обработка файла "+nfile+" - "
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
+        @ row(), nCol say str(j/k*100,6,2)+"%"
         select F011
         append blank
         F011->IDDOC := val(mo_read_xml_stroke(oXmlNode, 'IDDOC',))
@@ -1298,8 +1348,8 @@ Function make_F011()
   close databases
   return NIL
 
-***** 12.08.21
-Function make_F014()
+***** 12.02.22
+Function make_F014(source, destination)
 
   local _mo_F014 := {;
     {'KOD',     'N',      4,      0},;
@@ -1309,22 +1359,24 @@ Function make_F014()
     {'DATEEND', 'D',      8,      0},;
     {'OSN',     'C',     20,      0};
   }
+  local nCol
 
-  dbcreate("_mo_f014",_mo_F014)
-  use _mo_F014 new alias F014
-  nfile := "F014.xml"
+  dbcreate(destination + "_mo_f014",_mo_F014)
+  use (destination + '_mo_F014') new alias F014
+  nfile := source + "F014.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? 'F014.xml     - Классификатор причин отказа в оплате медицинской помощи (OplOtk)'
   IF Empty( oXmlDoc:aItems )
     ? 'Ошибка в чтении файла', nfile
     wait
   else
-    ? 'Обработка файла ' + nfile + ' - '
+    // ? "Обработка файла "+nfile+" - "
+    nCol := obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if 'ZAP' == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2) + '%'
+        @ row(), nCol say str(j/k*100,6,2) + '%'
         select F014
         append blank
         F014->KOD := val( mo_read_xml_stroke(oXmlNode, 'KOD',) )
