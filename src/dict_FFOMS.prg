@@ -206,14 +206,14 @@ Function work_V021(source, destination)
   close databases
   return NIL
 
-* 15.02.21 вернуть массив по справочнику регионов ТФОМС V002.xml
-function getV002()
+* 12.02.22 вернуть массив по справочнику регионов ТФОМС V002.xml
+function getV002(destination)
   // V002.xml - 
   //  1 - PRNAME(C)  2 - IDPR(N)  3 - DATEBEG(D)  4 - DATEEND(D)
   local dbName := "_mo_V002"
   local _v002 := {}
 
-  dbUseArea( .t.,, exe_dir + dbName, dbName, .f., .f. )
+  dbUseArea( .t.,, destination + dbName, dbName, .f., .f. )
   (dbName)->(dbGoTop())
   do while !(dbName)->(EOF())
       aadd(_v002, { (dbName)->PRNAME, (dbName)->IDPR, (dbName)->DATEBEG, (dbName)->DATEEND })
@@ -356,14 +356,14 @@ Function work_V012(source, destination)
   close databases
   return NIL
 
-* 16.02.21 вернуть массив по справочнику ТФОМС V021.xml
-function getV021()
+* 12.02.22 вернуть массив по справочнику ТФОМС V021.xml
+function getV021(destination)
   // V021.xml - Классификатор медицинских специальностей (последний)
   //  1 - SPECNAME(C)  2 - IDSPEC(N)  3 - DATEBEG(D)  4 - DATEEND(D)
   local dbName := "_mo_V021"
   local _v021 := {}
 
-  dbUseArea( .t.,, exe_dir + dbName, dbName, .f., .f. )
+  dbUseArea( .t.,, destination + dbName, dbName, .f., .f. )
   (dbName)->(dbGoTop())
   do while !(dbName)->(EOF())
       aadd(_v021, { (dbName)->SPECNAME, (dbName)->IDSPEC, (dbName)->DATEBEG, (dbName)->DATEEND })
@@ -1393,15 +1393,15 @@ Function make_F014(source, destination)
   return NIL
 
 *****
-Function InitSpravFFOMS()
+Function InitSpravFFOMS(source, destination)
 
   // V002.dbf - Классификатор профилей оказанной медицинской помощи
   //  1 - PRNAME(C)  2 - IDPR(N)  3 - DATEBEG(D)  4 - DATEEND(D)
-  Public glob_V002 := getV002() //{}
+  Public glob_V002 := getV002(destination)
   
   // V021.xml - Классификатор медицинских специальностей (последний)
   //  1 - SPECNAME(C)  2 - IDSPEC(N)  3 - DATEBEG(D)  4 - DATEEND(D)
-  Public glob_V021 := getV021() 
+  Public glob_V021 := getV021(destination)
   return NIL
   
   

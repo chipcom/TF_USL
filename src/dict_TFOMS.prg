@@ -63,8 +63,8 @@ Function work_SprUnit(source, destination)
 
   local nameFile := prefixFileName() + 'unit'
 
-  dbcreate(nameFile, _mo_unit)
-  use (nameFile) new alias UN
+  dbcreate(destination + nameFile, _mo_unit)
+  use (destination + nameFile) new alias UN
 
   nfile := source + "SprUnit.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -106,7 +106,7 @@ Function work_SprUnit(source, destination)
   close databases
   return NIL
 
-***** 01.11.21
+***** 12.02.22
 Function work_MOServ(source, destination)
   Local _mo_moserv := {;
     {"CODEM",      "C",      6,      0},;
@@ -117,8 +117,8 @@ Function work_MOServ(source, destination)
   }
   local nameFile := prefixFileName() + 'moserv'
 
-  dbcreate(nameFile, _mo_moserv)
-  use (nameFile) new alias MS
+  dbcreate(destination + nameFile, _mo_moserv)
+  use (destination + nameFile) new alias MS
 
   nfile := source + "S_MOServ.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -172,7 +172,7 @@ Function work_MOServ(source, destination)
   close databases
   return NIL
 
-***** 01.11.21
+***** 12.02.22
 Function work_Prices(source, destination)
   Local _mo_prices := {;
     {"SHIFR",      "C",     10,      0},;
@@ -184,8 +184,8 @@ Function work_Prices(source, destination)
   }
   local nameFile := prefixFileName() + 'prices'
 
-  dbcreate(nameFile, _mo_prices)
-  use (nameFile) new alias MP
+  dbcreate(destination + nameFile, _mo_prices)
+  use (destination + nameFile) new alias MP
 
   nfile := source + "S_Prices.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -253,7 +253,7 @@ Function work_Prices(source, destination)
   close databases
   return NIL
 
-***** 02.11.21
+***** 12.02.22
 Function work_mo_uslf(source, destination)
   Local _mo_uslf := {;
     {"SHIFR",      "C",     20,      0},;
@@ -273,19 +273,19 @@ Function work_mo_uslf(source, destination)
   local nameFileUslF := prefixFileName() + 'uslf'
   Local i := 0
 
-  dbcreate(nameFileUslF,_mo_uslf)
-  use (nameFileUslF) new alias LUSL
+  dbcreate(destination + nameFileUslF,_mo_uslf)
+  use (destination + nameFileUslF) new alias LUSL
   ? "index..."
   index on shifr to tmp_usl
-  use onko_napr new alias ON
+  use (source + 'onko_napr') new alias ON
   index on kod to tmp_on
-  use onko_ksg new alias OK
+  use (source + 'onko_ksg') new alias OK
   index on kod to tmp_ok
-  use telemed new alias TEL
+  use (source + 'telemed') new alias TEL
   index on kod to tmp_tel
-  use par_org new alias PO
+  use (source + 'par_org') new alias PO
   index on kod to tmp_po
-  use v001 new
+  use (source + 'v001') new
   // use _usl_mz new alias v001
   index on IDRB to tmp1
   // @ row(),0 say "Обработка файла V001.DBF - "
@@ -351,7 +351,7 @@ Function work_mo_uslf(source, destination)
   close databases
   return NIL
 
-***** 22.11.21
+***** 12.02.22
 Function work_t006(source, destination)
   Static nfile    //:= source + "T006.XML"
   Local oXmlDoc, oXmlNode, i, j, k, s, af := {}
@@ -606,7 +606,7 @@ Function work_t006(source, destination)
   close databases
   return NIL
 
-***** 02.11.21
+***** 12.02.22
 Function work_SprMU(source, destination)
   local nameFileUnit := prefixFileName() + 'unit'
   local nameFileUsl := prefixFileName() + 'usl'
@@ -627,18 +627,18 @@ Function work_SprMU(source, destination)
   }
 
 
-  dbcreate( "_mo_t2_v1", _t2_v1)
-  use _mo_t2_v1 new alias T2V1
+  dbcreate( destination + "_mo_t2_v1", _t2_v1)
+  use (destination + '_mo_t2_v1') new alias T2V1
 
-  dbcreate("_mo_prof",_mo_prof)
-  use _mo_prof new alias PROF
-  dbcreate("_mo_spec",_mo_spec)
-  use _mo_spec new alias SPEC
+  dbcreate(destination + "_mo_prof",_mo_prof)
+  use (destination + '_mo_prof') new alias PROF
+  dbcreate(destination + "_mo_spec",_mo_spec)
+  use (destination + '_mo_spec') new alias SPEC
 
-  use (nameFileUsl) new alias LUSL
+  use (destination + nameFileUsl) new alias LUSL
   index on shifr to tmp_lusl
 
-  use (nameFileUnit) new alias UN
+  use (destination + nameFileUnit) new alias UN
   index on str(code,3) to tmp_unit
   nfile := source + "SprMU.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -787,14 +787,14 @@ Function work_SprMU(source, destination)
   close databases
   return NIL
 
-***** 02.11.21
+***** 12.02.22
 Function work_SprDS(source, destination)
   Local fl := .f., lfp, s
   local nameFileUslF := prefixFileName() + 'uslf'
 
-  use _mo_prof new alias PROF
-  use _mo_spec new alias SPEC
-  use (nameFileUslF) new alias LUSL
+  use (destination + '_mo_prof') new alias PROF
+  use (destination + '_mo_spec') new alias SPEC
+  use (destination + nameFileUslF) new alias LUSL
   index on shifr to tmp_lusl
   nfile := source + "SprDS.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -894,7 +894,7 @@ Function work_SprDS(source, destination)
   close databases
   return NIL
 
-***** 23.04.21
+***** 12.02.22
 Function work_SprKslp(source, destination)
   Local _mo_kslp := {;
     {"CODE",       "N",      2,      0},;
@@ -907,8 +907,8 @@ Function work_SprKslp(source, destination)
 
   local nameFile := prefixFileName() + 'kslp'
 
-  dbcreate(nameFile, _mo_kslp)
-  use (nameFile) new alias KS
+  dbcreate(destination + nameFile, _mo_kslp)
+  use (destination + nameFile) new alias KS
 
   nfile := source + "SprKslp.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -951,7 +951,7 @@ Function work_SprKslp(source, destination)
   close databases
   return NIL
 
-***** 23.04.21
+***** 12.02.22
 Function work_SprKiro(source, destination)
   Local _mo_kiro := {;
     {"CODE",       "N",      2,      0},;
@@ -964,8 +964,8 @@ Function work_SprKiro(source, destination)
 
   local nameFile := prefixFileName() + 'kiro'
 
-  dbcreate(nameFile, _mo_kiro)
-  use (nameFile) new alias KS
+  dbcreate(destination + nameFile, _mo_kiro)
+  use (destination + nameFile) new alias KS
 
   nfile := source + "S_KIRO.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -1008,7 +1008,7 @@ Function work_SprKiro(source, destination)
   close databases
   return NIL
 
-***** 01.11.21
+***** 12.02.22
 Function work_uslc(source, destination)
   Local _mo_uslc := {;
     {"CODEMO",     "C",      6,      0},;
@@ -1035,31 +1035,31 @@ Function work_uslc(source, destination)
   //Local nul_level := padr('1',5)
 
   ? "Создание файла " + nameFile + ".dbf - "
-  dbcreate(nameFile, _mo_uslc)
-  dbcreate("not_usl",{{"shifr","C",10,0},{"spr_mu","N",1,0},{"s_price","N",1,0}})
-  dbcreate("not_lev",{{"codem","C",6,0},{"shifr","C",10,0},{"usl_ok","N",1,0},{"level","C",5,0},{"depart","N",3,0}})
+  dbcreate(destination + nameFile, _mo_uslc)
+  dbcreate(destination + "not_usl",{{"shifr","C",10,0},{"spr_mu","N",1,0},{"s_price","N",1,0}})
+  dbcreate(destination + "not_lev",{{"codem","C",6,0},{"shifr","C",10,0},{"usl_ok","N",1,0},{"level","C",5,0},{"depart","N",3,0}})
 
-  use (nameFileDep) new alias DEP
-  use (nameFileDepPr) new alias DP
-  use (nameFileSubDiv) new alias SD
+  use (destination + nameFileDep) new alias DEP
+  use (destination + nameFileDepPr) new alias DP
+  use (destination + nameFileSubDiv) new alias SD
   //
-  use not_usl new
+  use (destination + 'not_usl') new
   index on shifr to not_usl
-  use not_lev new
+  use (destination + 'not_lev') new
   index on codem+shifr+str(usl_ok,1)+level+str(depart,3) to not_lev
 
-  use (nameFileUsl) new alias LUSL
+  use (destination + nameFileUsl) new alias LUSL
   index on shifr to tmp_lusl
 
-  use (nameFile) new alias LUSLC
+  use (destination + nameFile) new alias LUSLC
 
-  use (nameFilePrices) new alias PRIC
+  use (destination + nameFilePrices) new alias PRIC
   index on shifr+str(vzros_reb,1)+level to tmp_prices
   
-  use (nameFileLvlPay) new alias LP
+  use (destination + nameFileLvlPay) new alias LP
   index on codem+str(usl_ok,1)+level+str(depart,3) to tmp_lvlpay
 
-  use (nameFileMoServ) new alias SERV
+  use (destination + nameFileMoServ) new alias SERV
   go top
   do while !eof()
     @ row(),30 say str(recno()/lastrec()*100,6,2)+"%"
@@ -1230,7 +1230,7 @@ Function work_uslc(source, destination)
   close databases
   return NIL
 
-***** 01.11.21
+***** 12.02.22
 Function work_Shema(source, destination)
   Local _mo_shema := {;
     {"KOD",        "C",     10,      0},;
@@ -1241,8 +1241,8 @@ Function work_Shema(source, destination)
 
   local nameFile := prefixFileName() + 'shema'
 
-  dbcreate(nameFile, _mo_shema)
-  use (nameFile) new alias SH
+  dbcreate(destination + nameFile, _mo_shema)
+  use (destination + nameFile) new alias SH
 
   index on kod to tmp_shema
   nfile := source + "V024.xml"
@@ -1289,7 +1289,7 @@ Function work_Shema(source, destination)
   close databases
   return NIL
 
-***** 01.11.21
+***** 12.02.22
 // S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
 Function work_SprSubDiv(source, destination)
 
@@ -1304,8 +1304,8 @@ Function work_SprSubDiv(source, destination)
   }
   local nameFile := prefixFileName() + 'subdiv'
 
-  dbcreate(nameFile, _mo_subdiv)
-  use (nameFile) new alias SD
+  dbcreate(destination + nameFile, _mo_subdiv)
+  use (destination + nameFile) new alias SD
   nfile := source + "S_SubDiv.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   ? "S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты"
@@ -1341,7 +1341,7 @@ Function work_SprSubDiv(source, destination)
   close databases
   return NIL
 
-***** 01.11.21
+***** 12.02.22
 Function work_SprDep(source, destination)
   Local _mo_dep := {;
     {"CODEM",      "C",      6,      0},;
@@ -1366,11 +1366,11 @@ Function work_SprDep(source, destination)
   local nameFileDep := prefixFileName() + 'dep'
   local nameFileDepPr := prefixFileName() + 'deppr'
 
-  dbcreate(nameFileDep, _mo_dep)
-  dbcreate(nameFileDepPr, _mo_deppr)
+  dbcreate(destination + nameFileDep, _mo_dep)
+  dbcreate(destination + nameFileDepPr, _mo_deppr)
 
-  use (nameFileDep) new alias DEP
-  use (nameFileDepPr) new alias DP
+  use (destination + nameFileDep) new alias DEP
+  use (destination + nameFileDepPr) new alias DP
 
   nfile := source + "S_Dep.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -1437,7 +1437,7 @@ Function work_SprDep(source, destination)
   close databases
   return NIL
 
-***** 01.11.21
+***** 12.02.22
 Function work_LvlPay(source, destination)
   Local _mo_lvlpay := {;
     {"CODEM",      "C",      6,      0},;
@@ -1450,8 +1450,8 @@ Function work_LvlPay(source, destination)
   }
   local nameFile := prefixFileName() + 'lvlpay'
 
-  dbcreate(nameFile, _mo_lvlpay)
-  use (nameFile) new alias LP
+  dbcreate(destination + nameFile, _mo_lvlpay)
+  use (destination + nameFile) new alias LP
 
   nfile := source + "S_LvlPay.xml"
   oXmlDoc := HXMLDoc():Read(nfile)

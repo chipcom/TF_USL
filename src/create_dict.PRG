@@ -51,6 +51,8 @@
 #include 'function.ch'
 #include 'settings.ch'
 
+#define I_( x )                 hb_UTF8ToStr( hb_i18n_gettext( x ) )
+
 external errorsys
 
 // 01.11.21
@@ -58,8 +60,8 @@ external errorsys
 function prefixFileName()
   return '_mo' + substr(CURENT_YEAR, 4, 1)
 
-******* 02.02.22
-proc main()
+******* 12.02.22
+proc main( ... )
   Local _mo_usl := {;
     {"SHIFR",      "C",     10,      0},;
     {"NAME",       "C",    255,      0},;
@@ -83,6 +85,7 @@ proc main()
     {"DATEEND",    "D",      8,      0};  // дата конец действия - по умолчанию т.г
   }
 
+  local aParams
   local nameFileUsl := prefixFileName() + 'usl'
   local nameFileUslC := prefixFileName() + 'uslc'
   local nameFileIt := prefixFileName() + 'it'
@@ -97,16 +100,48 @@ proc main()
   local destination := '.\'
   local lExists
 
-  // lExists := hb_vfDirExists( source )
-  // ? lExists
-  // lExists := hb_vfDirExists( destination )
-  // ? lExists
+  Public sys_date := date() // ctod('31/12/2021') //date()
+  Public sys_year := year(date()) // 2021 // year(date())
+
+  aParams := hb_AParams()
 
   delete file ttt.ttt
   f_first()
-  Public sys_date := date() // ctod('31/12/2021') //date()
-  Public sys_year := year(date()) // 2021 // year(date())
-  
+
+  // IF Empty( aParams ) // .OR. Left( cFileName := ATail( aParams ), 1 ) $ "@-"
+  //   About()
+  //   RETURN
+  // ENDIF
+
+  // FOR EACH cParam IN aParams
+  //   IF hb_LeftEq( cParam, "-" )
+  //      IF SubStr( cParam, Len( "-" ) + 1 ) == "r"
+  //         lRecursive := .T.
+  //         cParam := "#"
+  //         EXIT
+  //      ENDIF
+  //   ENDIF
+  // NEXT
+
+  if right(source, 1) != '\' 
+    source += '\'
+  endif
+  if right(destination, 1) != '\' 
+    destination += '\'
+  endif
+
+  if !(lExists := hb_vfDirExists( source ))
+    ? 'Каталог исходных данных "' + source + '" не существует. Продолжение работы не возможно!'
+    wait 'Нажмите любую клавишу...'
+    quit
+  endi
+
+  if !(lExists := hb_vfDirExists( destination ))
+    ? 'Каталог для выходных данных "' + destination + '" не существует. Продолжение работы не возможно!'
+    wait 'Нажмите любую клавишу...'
+    quit
+  endi
+
   // make_TO01()
   // Справочники минздрава
   ? '***********************'
@@ -151,7 +186,7 @@ proc main()
   make_F014(source, destination)
   make_O001(source, destination)
 
-  InitSpravFFOMS()
+  InitSpravFFOMS(source, destination)
   //
   read_spr_N00X(source, destination)
   //
@@ -179,29 +214,35 @@ proc main()
   //
   // rename t006_2.dbf to (k006dbf)
   // rename t006_2.dbt to (k006dbt)
-  filedelete(k006dbf)
-  nResult := FRename('t006_2.dbf', k006dbf)
+  filedelete(destination + k006dbf)
+  nResult := FRename(destination + 't006_2.dbf', destination + k006dbf)
   if nResult != 0
     ? '------------------'
     ? 'Файл t006_2.dbf не переименван!'
     ? '------------------'
   endif
 
-  filedelete(k006dbt)
-  nResult := FRename('t006_2.dbt', k006dbt)
+  filedelete(destination + k006dbt)
+  nResult := FRename(destination + 't006_2.dbt', destination + k006dbt)
   if nResult != 0
     ? '------------------'
     ? 'Файл t006_2.dbt не переименван!'
     ? '------------------'
   endif
+  if upper(source) != upper(destination)
+    filecopy(source + 'onko_napr' + '.dbf', destination + 'onko_napr' + '.dbf')
+    filecopy(source + 'onko_ksg' + '.dbf', destination + 'onko_ksg' + '.dbf')
+    filecopy(source + 'telemed' + '.dbf', destination + 'telemed' + '.dbf')
+    filecopy(source + 'par_org' + '.dbf', destination + 'par_org' + '.dbf')
+  endif
 
   //
-  dbcreate(nameFileIt, { {"ds","C",5,0}, {"it","N",1,0} } )
+  dbcreate(destination + nameFileIt, { {"ds","C",5,0}, {"it","N",1,0} } )
 
-  use (nameFileIt) new alias IT
+  use (destination + nameFileIt) new alias IT
   index on ds+str(it,1) to tmp_it
 
-  use (nameFileK006) new alias K6
+  use (destination + nameFileK006) new alias K6
   index on ds to tmp_k6 for lower(left(ad_cr,2)) == "it"
   go top
   do while !eof()
@@ -218,10 +259,10 @@ proc main()
   close databases
 
   // добавим наименования КСГ за 2022 год
-  use (nameFileUsl) new alias LUSL
+  use (destination + nameFileUsl) new alias LUSL
   index on shifr to tmp_lusl
 
-  use t006_u new alias T006
+  use (destination + 't006_u') new alias T006
   index on fsort_usl(shifr) to tmp6
   go top
   do while !eof()
@@ -256,9 +297,9 @@ proc main()
   enddo
   close databases
   //
-  work_uslc()
+  work_uslc(source, destination)
   //
-  use (nameFileUslC) new alias LUSLC
+  use (destination + nameFileUslC) new alias LUSLC
   go top
   do while !eof()
     if luslc->DATEEND == 0d20191231
@@ -269,7 +310,7 @@ proc main()
   close databases
   //
   aup := {}
-  use _mo_prof new alias PROF
+  use (destination + '_mo_prof') new alias PROF
   index on fsort_usl(shifr) to tmp_prof
   go top
   do while !eof()
@@ -296,7 +337,7 @@ proc main()
   fclose(fp)
   //
   aup := {}
-  use _mo_spec new alias SPEC
+  use (destination + '_mo_spec') new alias SPEC
   index on fsort_usl(shifr) to tmp_spec
   go top
   do while !eof()
@@ -324,11 +365,13 @@ proc main()
   close databases
   filedelete("tmp*.dbf")
   filedelete("tmp*.ntx")
+  filedelete("not_lev.ntx")
+  filedelete("not_usl.ntx")
   
-  filedelete('t006_2.dbf')
-  filedelete('t006_2.dbt')
-  filedelete('t006_d.dbf')
-  filedelete('t006_u.dbf')
+  filedelete(destination + 't006_2.dbf')
+  filedelete(destination + 't006_2.dbt')
+  filedelete(destination + 't006_d.dbf')
+  filedelete(destination + 't006_u.dbf')
 
   // filedelete("_usl_mz.dbf")
 
@@ -507,6 +550,18 @@ Function usl2arr(sh_u,/*@*/j)
   endif
   return arr
 
+STATIC PROCEDURE About()
+
+  OutStd( ;
+    "Конвертер справочников обязательного медицинского страхования" + hb_eol() + ;
+      "Copyright (c) 2022, Vladimir G.Baykin" + hb_eol() + ;
+    hb_eol() )
+ 
+  OutStd( ;
+    I_( "Syntax:  create_dict [options] [@config] <file[s]>" ) + hb_eol() + ;
+      hb_eol() )
+  RETURN
+ 
 ****** 11.02.22
 function obrabotka(nfile)
 
