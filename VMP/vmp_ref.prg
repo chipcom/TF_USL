@@ -49,7 +49,7 @@ PROCEDURE Main()
     // if VMP->(fieldget(7)) != nil
     if VMP->(fieldget(6)) != nil
       // MO2VMP->HVID := hb_ValToStr(VMP->(fieldget(7)))
-      MO2VMP->HVID := hb_ValToStr(VMP->(fieldget(6)))
+      MO2VMP->HVID := alltrim(Str(VMP->(fieldget(6)), 12))
     endif
     // MO2VMP->HMETHOD := VMP->(fieldget(9))
     MO2VMP->HMETHOD := VMP->(fieldget(8))
