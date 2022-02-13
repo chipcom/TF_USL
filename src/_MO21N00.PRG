@@ -174,11 +174,18 @@ FUNCTION read_spr_N00X( source, destination )
    FOR i := 1 TO 21
       USE ( destination + "_mo_n" + StrZero( i, 3 ) ) NEW ALIAS SD
       nfile := source + 'N' + StrZero( i, 3 ) + '.xml'
+      if ! hb_vfExists( nfile )
+         out_error(FILE_NOT_EXIST, nfile)
+         CLOSE databases
+         loop
+      endif
       oXmlDoc := HXMLDoc():Read( nfile )
       IF Empty( oXmlDoc:aItems )
          // ? "Ошибка в чтении файла", nfile
          // WAIT
          out_error(FILE_READ_ERROR, nfile)
+         CLOSE databases
+         loop
       ELSE
          // ? "Обработка файла " + nfile + " - "
          out_obrabotka(nfile)         

@@ -102,7 +102,7 @@ proc main( ... )
 
   Local arr_err := {}
   local source := '.\'
-  local destination := '.\2'
+  local destination := '.\'
   local lExists
 
   Public sys_date := date() // ctod('31/12/2021') //date()
@@ -595,7 +595,7 @@ function out_error(nError, nfile)
   DO CASE
   CASE nError == 1
     OutErr( ;
-    "Файл " + nfile + " отсутствует" + hb_eol() )
+    "Файл " + nfile + " не существует" + hb_eol() )
     RETURN
   CASE nError == FILE_READ_ERROR
     OutErr( ;
