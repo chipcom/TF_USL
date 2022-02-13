@@ -1,4 +1,5 @@
 /// ‘¯à ¢®ç­¨ª¨ ””ŽŒ‘
+#include "dict_error.ch"
 
 #include 'edit_spr.ch'
 #include 'function.ch'

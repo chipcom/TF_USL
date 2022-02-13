@@ -1,0 +1,2 @@
+#define FILE_NOT_EXIST 1
+#define FILE_READ_ERROR 2

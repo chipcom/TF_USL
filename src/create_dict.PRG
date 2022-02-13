@@ -45,6 +45,8 @@
   _mo_V018    - классификатор видов высокотехнологичной медицинской помощи (HVid)
 */
 
+#include "dict_error.ch"
+
 #include 'inkey.ch'
 #include 'fileio.ch'
 #include 'edit_spr.ch'
@@ -85,7 +87,10 @@ proc main( ... )
     {"DATEEND",    "D",      8,      0};  // дата конец действия - по умолчанию т.г
   }
 
+  local cParam, cParamL
+  local tmp
   local aParams
+
   local nameFileUsl := prefixFileName() + 'usl'
   local nameFileUslC := prefixFileName() + 'uslc'
   local nameFileIt := prefixFileName() + 'it'
@@ -97,7 +102,7 @@ proc main( ... )
 
   Local arr_err := {}
   local source := '.\'
-  local destination := '.\'
+  local destination := '.\2'
   local lExists
 
   Public sys_date := date() // ctod('31/12/2021') //date()
@@ -113,15 +118,22 @@ proc main( ... )
   //   RETURN
   // ENDIF
 
-  // FOR EACH cParam IN aParams
-  //   IF hb_LeftEq( cParam, "-" )
-  //      IF SubStr( cParam, Len( "-" ) + 1 ) == "r"
-  //         lRecursive := .T.
-  //         cParam := "#"
-  //         EXIT
-  //      ENDIF
-  //   ENDIF
-  // NEXT
+  FOR EACH cParam IN aParams
+    cParamL := Lower( cParam )
+    DO CASE
+      CASE cParamL == "-help"
+        About()
+        RETURN
+      CASE cParamL == "-quiet"
+        // ? 'quiet'
+      CASE hb_LeftEq( cParamL, "-in=" )
+        tmp := SubStr( cParam, 4 + 1 )
+        // ? tmp
+      CASE hb_LeftEq( cParamL, "-out=" )
+        tmp := SubStr( cParam, 5 + 1 )
+        // ? tmp
+    endcase
+  next
 
   if right(source, 1) != '\' 
     source += '\'
@@ -560,6 +572,8 @@ STATIC PROCEDURE About()
   OutStd( ;
     I_( "Syntax:  create_dict [options] [@config] <file[s]>" ) + hb_eol() + ;
       hb_eol() )
+  
+  // OutErr( iif( nLine == 1, PadR( cPrefix, nWidth ), Space( nWidth ) ) + tmp + _OUT_EOL )
   RETURN
  
 ****** 11.02.22
@@ -567,3 +581,26 @@ function obrabotka(nfile)
 
   @ row() + 1, 1 say "Обработка файла " + nfile + " -"
   return Col()
+
+****** 13.02.22
+function out_obrabotka(nfile)
+
+  OutStd( ;
+    "Обработка файла " + nfile + hb_eol() )
+  return nil
+
+****** 13.02.22
+function out_error(nError, nfile)
+
+  DO CASE
+  CASE nError == 1
+    OutErr( ;
+    "Файл " + nfile + " отсутствует" + hb_eol() )
+    RETURN
+  CASE nError == FILE_READ_ERROR
+    OutErr( ;
+    "Ошибка в загрузке файла " + nfile + hb_eol() )
+    RETURN
+  end case
+
+  return nil

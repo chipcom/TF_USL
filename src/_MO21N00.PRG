@@ -1,4 +1,5 @@
 // программа конвертации справочников ФОМС N00...XML в DBF-файлы
+#include "dict_error.ch"
 #include "edit_spr.ch"
 #include "function.ch"
 
@@ -175,10 +176,12 @@ FUNCTION read_spr_N00X( source, destination )
       nfile := source + 'N' + StrZero( i, 3 ) + '.xml'
       oXmlDoc := HXMLDoc():Read( nfile )
       IF Empty( oXmlDoc:aItems )
-         ? "Ошибка в чтении файла", nfile
-         WAIT
+         // ? "Ошибка в чтении файла", nfile
+         // WAIT
+         out_error(FILE_READ_ERROR, nfile)
       ELSE
-         ? "Обработка файла " + nfile + " - "
+         // ? "Обработка файла " + nfile + " - "
+         out_obrabotka(nfile)         
          k := Len( oXmlDoc:aItems[ 1 ]:aItems )
          FOR j := 1 TO k
             oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]

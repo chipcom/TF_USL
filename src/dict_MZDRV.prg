@@ -1,5 +1,7 @@
 /// Справочники Минестерства здравоохранения РФ
 
+#include "dict_error.ch"
+
 #include 'edit_spr.ch'
 #include 'function.ch'
 #include 'settings.ch'
