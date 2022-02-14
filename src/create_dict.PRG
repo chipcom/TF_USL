@@ -104,12 +104,13 @@ proc main( ... )
   local source
   local destination
   local lExists
+  local os_sep := hb_osPathSeparator()
 
   Public sys_date := date() // ctod('31/12/2021') //date()
   Public sys_year := year(date()) // 2021 // year(date())
 
-  source := upper(beforatnum('\', exename())) + '\'
-  destination := upper(beforatnum('\', exename())) + '\'
+  source := upper(beforatnum(os_sep, exename())) + os_sep
+  destination := upper(beforatnum(os_sep, exename())) + os_sep
 
   aParams := hb_AParams()
 
@@ -138,22 +139,20 @@ proc main( ... )
     endcase
   next
 
-  if right(source, 1) != '\' 
-    source += '\'
+  if right(source, 1) != os_sep
+    source += os_sep
   endif
-  if right(destination, 1) != '\' 
-    destination += '\'
+  if right(destination, 1) != os_sep
+    destination += os_sep
   endif
-
+  
   if !(lExists := hb_vfDirExists( source ))
-    ? 'Каталог исходных данных "' + source + '" не существует. Продолжение работы не возможно!'
-    wait 'Нажмите любую клавишу...'
+    out_error(DIR_IN_NOT_EXIST, source)
     quit
   endi
 
   if !(lExists := hb_vfDirExists( destination ))
-    ? 'Каталог для выходных данных "' + destination + '" не существует. Продолжение работы не возможно!'
-    wait 'Нажмите любую клавишу...'
+    out_error(DIR_OUT_NOT_EXIST, destination)
     quit
   endi
 
@@ -610,15 +609,23 @@ function out_error(nError, nfile)
   DO CASE
   CASE nError == FILE_NOT_EXIST
     OutErr( ;
-    "Файл " + nfile + " не существует" + hb_eol() )
+      "Файл " + nfile + " не существует" + hb_eol() )
     RETURN
   CASE nError == FILE_READ_ERROR
     OutErr( ;
-    "Ошибка в загрузке файла " + nfile + hb_eol() )
+      "Ошибка в загрузке файла " + nfile + hb_eol() )
     RETURN
   CASE nError == FILE_RENAME_ERROR
     OutErr( ;
-    "Ошибка переименования файла " + nfile + hb_eol() )
+      "Ошибка переименования файла " + nfile + hb_eol() )
+    RETURN
+  CASE nError == DIR_IN_NOT_EXIST
+    OutErr( ;
+      'Каталог исходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
+    RETURN
+  CASE nError == DIR_OUT_NOT_EXIST
+    OutErr( ;
+      'Каталог для выходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
     RETURN
   end case
 

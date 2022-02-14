@@ -1,3 +1,5 @@
 #define FILE_NOT_EXIST 1
 #define FILE_READ_ERROR 2
 #define FILE_RENAME_ERROR 3
+#define DIR_IN_NOT_EXIST 4
+#define DIR_OUT_NOT_EXIST 5
