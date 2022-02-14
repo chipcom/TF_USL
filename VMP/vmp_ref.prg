@@ -59,7 +59,7 @@ PROCEDURE Main()
       MO2VMP->MODEL := VMP->(fieldget(11))
     endif
     // MO2VMP->DIAGNOZIS := VMP->(fieldget(12))
-    MO2VMP->DIAGNOZIS := StrTran(VMP->(fieldget(10)), ',', ';')
+    MO2VMP->DIAGNOZIS := StrTran(VMP->(fieldget(10)), ', ', ';')
     MO2VMP->DATEBEG := VMP->(fieldget(13))
     MO2VMP->DATEEND := VMP->(fieldget(14))
 
