@@ -193,7 +193,8 @@ FUNCTION read_spr_N00X( source, destination )
          FOR j := 1 TO k
             oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
             IF "ZAP" == Upper( oXmlNode:title )
-               @ Row(), 30 SAY Str( j / k * 100, 6, 2 ) + "%"
+               // @ Row(), 30 SAY Str( j / k * 100, 6, 2 ) + "%"
+               out_obrabotka_count(j, k)
                mDATEEND := CToD( mo_read_xml_stroke( oXmlNode, "DATEEND", ) )
                IF !Empty( mDATEEND ) .AND. Year( mDATEEND ) < 2019
                   LOOP
@@ -293,6 +294,7 @@ FUNCTION read_spr_N00X( source, destination )
             ENDIF
          NEXT j
       ENDIF
+      out_obrabotka_eol()
       CLOSE databases
    NEXT i
 

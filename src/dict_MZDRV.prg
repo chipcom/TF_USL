@@ -23,14 +23,24 @@ function make_uslugi_mz(source, destination)
   dbcreate(destination + "_usl_mz", _uslugi_mz)
   use (destination + '_usl_mz') new alias MZUSL
   nfile := source + "1.2.643.5.1.13.13.11.1070_2.10.xml"  // может меняться из-за версий
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    CLOSE databases
+    return nil
+  endif
   oXmlDoc := HXMLDoc():Read(nfile)
-  ? "1.2.643.5.1.13.13.11.1070.xml - Номенклатура медицинских услуг"
+  // ? "1.2.643.5.1.13.13.11.1070.xml - Номенклатура медицинских услуг"
+  OutStd( "1.2.643.5.1.13.13.11.1070.xml - Номенклатура медицинских услуг" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    ? "Ошибка в чтении файла",nfile
-    wait
+    // ? "Ошибка в чтении файла",nfile
+    // wait
+    out_error(FILE_READ_ERROR, nfile)
+    CLOSE databases
+    return nil
   else
     // ? "Обработка файла "+nfile+" - "
-    @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    // @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    out_obrabotka(nfile)         
     nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
@@ -42,7 +52,8 @@ function make_uslugi_mz(source, destination)
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
             // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
-            @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+            // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+            out_obrabotka_count(j1, k1)
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mS_code := mo_read_xml_stroke(oNode1, 'S_CODE', , , 'utf8')
             mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
@@ -61,6 +72,7 @@ function make_uslugi_mz(source, destination)
       endif
     NEXT j
   ENDIF
+  out_obrabotka_eol()
   close databases
   return nil
 
@@ -79,14 +91,24 @@ function make_severity(source, destination)
   dbcreate(destination + "_mo_severity", _mo_severity)
   use (destination + '_mo_severity') new alias SEV
   nfile := source + "1.2.643.5.1.13.13.11.1006_2.3.xml"  // может меняться из-за версий
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    CLOSE databases
+    return nil
+  endif
   oXmlDoc := HXMLDoc():Read(nfile)
-  ? "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента"
+  // ? "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента"
+  OutStd( "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    ? "Ошибка в чтении файла",nfile
-    wait
+    // ? "Ошибка в чтении файла",nfile
+    // wait
+    out_error(FILE_READ_ERROR, nfile)
+    CLOSE databases
+    return nil
   else
     // ? "Обработка файла "+nfile+" - "
-    @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    // @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    out_obrabotka(nfile)         
     nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
@@ -98,7 +120,8 @@ function make_severity(source, destination)
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
             // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
-            @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+            // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+            out_obrabotka_count(j1, k1)
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
             mSYN := mo_read_xml_stroke(oNode1, 'SYN', , , 'utf8')
@@ -116,6 +139,7 @@ function make_severity(source, destination)
       endif
     NEXT j
   ENDIF
+  out_obrabotka_eol()
   close databases
   return NIL
 
@@ -139,13 +163,23 @@ function make_implant(source, destination)
   dbcreate(destination + "_mo_impl", _mo_impl)
   use (destination + '_mo_impl') new alias IMPL
   nfile := source + "1.2.643.5.1.13.13.11.1079_2.2.xml"  // может меняться из-за версий
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    CLOSE databases
+    return nil
+  endif
   oXmlDoc := HXMLDoc():Read(nfile)
-  ? "1.2.643.5.1.13.13.11.1079.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями"
+  // ? "1.2.643.5.1.13.13.11.1079.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями"
+  OutStd( "1.2.643.5.1.13.13.11.1079.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    ? "Ошибка в чтении файла",nfile
-    wait
+    // ? "Ошибка в чтении файла",nfile
+    // wait
+    out_error(FILE_READ_ERROR, nfile)
+    CLOSE databases
+    return nil
   else
-    @ row()+1, 1 say "Обработка файла " + nfile + " - "
+    // @ row()+1, 1 say "Обработка файла " + nfile + " - "
+    out_obrabotka(nfile)         
     nCol := Col()
     // ? "Обработка файла "+nfile+" - "
     k := Len( oXmlDoc:aItems[1]:aItems )
@@ -158,7 +192,8 @@ function make_implant(source, destination)
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
             // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
-            @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+            // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+            out_obrabotka_count(j1, k1)
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mRZN := mo_read_xml_stroke(oNode1, 'RZN', , , 'utf8')
             mParent := mo_read_xml_stroke(oNode1, 'PARENT', , , 'utf8')
@@ -212,6 +247,7 @@ function make_implant(source, destination)
     endif
     IMPL->(dbSkip())
   enddo
+  out_obrabotka_eol()
   close databases
   return NIL
 
@@ -231,14 +267,24 @@ Function make_method_inj(source, destination)
   dbcreate(destination + "_mo_method_inj", _mo_method_inj)
   use (destination + '_mo_method_inj') new alias INJ
   nfile := source + "1.2.643.5.1.13.13.11.1468_2.1.xml"
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    CLOSE databases
+    return nil
+  endif
   oXmlDoc := HXMLDoc():Read(nfile)
-  ? "1.2.643.5.1.13.13.11.1468_2.1.xml     - Способы введения (MethIntro)"
+  // ? "1.2.643.5.1.13.13.11.1468_2.1.xml     - Способы введения (MethIntro)"
+  OutStd( "1.2.643.5.1.13.13.11.1468_2.1.xml     - Способы введения (MethIntro)" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    ? "Ошибка в чтении файла",nfile
-    wait
+    // ? "Ошибка в чтении файла",nfile
+    // wait
+    out_error(FILE_READ_ERROR, nfile)
+    CLOSE databases
+    return nil
   else
     // ? "Обработка файла "+nfile+" - "
-    @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    // @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    out_obrabotka(nfile)         
     nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
@@ -250,7 +296,8 @@ Function make_method_inj(source, destination)
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
             // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
-            @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+            // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+            out_obrabotka_count(j1, k1)
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mNameRus := mo_read_xml_stroke(oNode1, 'NAME_RUS', , , 'utf8')
             mNameEng := mo_read_xml_stroke(oNode1, 'NAME_ENG', , , 'utf8')
@@ -296,6 +343,7 @@ Function make_method_inj(source, destination)
     endif
     INJ->(dbSkip())
   enddo
+  out_obrabotka_eol()
   close databases
   return NIL
 
@@ -321,14 +369,24 @@ Function make_ed_izm(source, destination)
   dbcreate(destination + "_mo_ed_izm", _mo_ed_izm)
   use (destination + '_mo_ed_izm') new alias EDI
   nfile := source + "1.2.643.5.1.13.13.11.1358_3.3.xml"
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    CLOSE databases
+    return nil
+  endif
   oXmlDoc := HXMLDoc():Read(nfile)
-  ? "1.2.643.5.1.13.13.11.1358_3.3.xml     - Единицы измерения (OID)"
+  // ? "1.2.643.5.1.13.13.11.1358_3.3.xml     - Единицы измерения (OID)"
+  OutStd( "1.2.643.5.1.13.13.11.1358_3.3.xml     - Единицы измерения (OID)" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    ? "Ошибка в чтении файла",nfile
-    wait
+    // ? "Ошибка в чтении файла",nfile
+    // wait
+    out_error(FILE_READ_ERROR, nfile)
+    CLOSE databases
+    return nil
   else
     // ? "Обработка файла "+nfile+" - "
-    @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    // @ row()+1, 1 say "Обработка файла "+nfile+" - "
+    out_obrabotka(nfile)         
     nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
@@ -339,7 +397,8 @@ Function make_ed_izm(source, destination)
           oNode1 := oXmlNode:aItems[j1]
           if "ENTRY" == upper(oNode1:title)
             // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
-            @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+            // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+            out_obrabotka_count(j1, k1)
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mFullName := mo_read_xml_stroke(oNode1, 'FULLNAME', , , 'utf8')
             mShortName := mo_read_xml_stroke(oNode1, 'SHORTNAME', , , 'utf8')
@@ -368,5 +427,6 @@ Function make_ed_izm(source, destination)
       endif
     NEXT j
   ENDIF
+  out_obrabotka_eol()
   close databases
   return NIL

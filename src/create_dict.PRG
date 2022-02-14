@@ -101,12 +101,15 @@ proc main( ... )
   local nResult
 
   Local arr_err := {}
-  local source := '.\'
-  local destination := '.\'
+  local source
+  local destination
   local lExists
 
   Public sys_date := date() // ctod('31/12/2021') //date()
   Public sys_year := year(date()) // 2021 // year(date())
+
+  source := upper(beforatnum('\', exename())) + '\'   // '.\'
+  destination := '.\'
 
   aParams := hb_AParams()
 
@@ -156,9 +159,13 @@ proc main( ... )
 
   // make_TO01()
   // Справочники минздрава
-  ? '***********************'
-  ? "Обработка справочников министерства здравоохранения!"
-  ? '***********************'
+  // ? '***********************'
+  // ? "Обработка справочников министерства здравоохранения!"
+  // ? '***********************'
+  OutStd( '***********************' + hb_eol() )
+  OutStd( 'Обработка справочников министерства здравоохранения!' + hb_eol() )
+  OutStd( '***********************' + hb_eol() )
+
   make_implant(source, destination)
   make_severity(source, destination)
   make_method_inj(source, destination)
@@ -586,7 +593,21 @@ function obrabotka(nfile)
 function out_obrabotka(nfile)
 
   OutStd( ;
-    "Обработка файла " + nfile + hb_eol() )
+    "Обработка файла " + nfile )  //hb_eol() )
+  return nil
+
+****** 14.02.22
+function out_obrabotka_eol()
+
+  OutStd( hb_eol() )
+  return nil
+
+  @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+
+****** 14.02.22
+function out_obrabotka_count(j, k)
+
+  // OutStd( str(j / k * 100, 6, 2) + "%" )
   return nil
 
 ****** 13.02.22
