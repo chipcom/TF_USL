@@ -108,8 +108,8 @@ proc main( ... )
   Public sys_date := date() // ctod('31/12/2021') //date()
   Public sys_year := year(date()) // 2021 // year(date())
 
-  source := upper(beforatnum('\', exename())) + '\'   // '.\'
-  destination := '.\'
+  source := upper(beforatnum('\', exename())) + '\'
+  destination := upper(beforatnum('\', exename())) + '\'
 
   aParams := hb_AParams()
 
@@ -159,11 +159,8 @@ proc main( ... )
 
   // make_TO01()
   // Справочники минздрава
-  // ? '***********************'
-  // ? "Обработка справочников министерства здравоохранения!"
-  // ? '***********************'
   OutStd( '***********************' + hb_eol() )
-  OutStd( 'Обработка справочников министерства здравоохранения!' + hb_eol() )
+  OutStd( 'Справочники министерства здравоохранения.' + hb_eol() )
   OutStd( '***********************' + hb_eol() )
 
   make_implant(source, destination)
@@ -171,9 +168,9 @@ proc main( ... )
   make_method_inj(source, destination)
   make_ed_izm(source, destination)
 
-  ? '***********************'
-  ? "Обработка справочников ФФОМС!"
-  ? '***********************'
+  OutStd( '***********************' + hb_eol() )
+  OutStd( 'Справочники ФФОМС.' + hb_eol() )
+  OutStd( '***********************' + hb_eol() )
   // Справочники ФФОМС
   work_V002(source, destination)
   work_V009(source, destination)
@@ -209,9 +206,10 @@ proc main( ... )
   //
   read_spr_N00X(source, destination)
   //
-  ? '***********************'
-  ? "Обработка справочников ТФОМС!"
-  ? '***********************'
+  OutStd( '***********************' + hb_eol() )
+  OutStd( 'Справочники ТФОМС.' + hb_eol() )
+  OutStd( '***********************' + hb_eol() )
+
   // make_uslugi_mz(source, destination)  // Справочник минздрава для формирования файлов ТФОМС
   // Справочники ТФОМС
   dbcreate(destination + nameFileUsl, _mo_usl)
@@ -236,17 +234,13 @@ proc main( ... )
   filedelete(destination + k006dbf)
   nResult := FRename(destination + 't006_2.dbf', destination + k006dbf)
   if nResult != 0
-    ? '------------------'
-    ? 'Файл t006_2.dbf не переименван!'
-    ? '------------------'
+    out_error(FILE_RENAME_ERROR, 't006_2.dbf')
   endif
 
   filedelete(destination + k006dbt)
   nResult := FRename(destination + 't006_2.dbt', destination + k006dbt)
   if nResult != 0
-    ? '------------------'
-    ? 'Файл t006_2.dbt не переименван!'
-    ? '------------------'
+    out_error(FILE_RENAME_ERROR, 't006_2.dbt')
   endif
   if upper(source) != upper(destination)
     filecopy(source + 'onko_napr' + '.dbf', destination + 'onko_napr' + '.dbf')
@@ -602,7 +596,7 @@ function out_obrabotka_eol()
   OutStd( hb_eol() )
   return nil
 
-  @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
+  // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
 
 ****** 14.02.22
 function out_obrabotka_count(j, k)
@@ -614,13 +608,17 @@ function out_obrabotka_count(j, k)
 function out_error(nError, nfile)
 
   DO CASE
-  CASE nError == 1
+  CASE nError == FILE_NOT_EXIST
     OutErr( ;
     "Файл " + nfile + " не существует" + hb_eol() )
     RETURN
   CASE nError == FILE_READ_ERROR
     OutErr( ;
     "Ошибка в загрузке файла " + nfile + hb_eol() )
+    RETURN
+  CASE nError == FILE_RENAME_ERROR
+    OutErr( ;
+    "Ошибка переименования файла " + nfile + hb_eol() )
     RETURN
   end case
 

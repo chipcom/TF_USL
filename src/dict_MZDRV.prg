@@ -18,16 +18,17 @@ function make_uslugi_mz(source, destination)
   }
   local mID, mS_code, mName, mRel, mDateOut
   local mDateBeg := 0d20110101
+  local nfile
   local nCol
 
-  dbcreate(destination + "_usl_mz", _uslugi_mz)
-  use (destination + '_usl_mz') new alias MZUSL
   nfile := source + "1.2.643.5.1.13.13.11.1070_2.10.xml"  // может меняться из-за версий
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
     return nil
   endif
+  dbcreate(destination + "_usl_mz", _uslugi_mz)
+  use (destination + '_usl_mz') new alias MZUSL
   oXmlDoc := HXMLDoc():Read(nfile)
   // ? "1.2.643.5.1.13.13.11.1070.xml - Номенклатура медицинских услуг"
   OutStd( "1.2.643.5.1.13.13.11.1070.xml - Номенклатура медицинских услуг" + hb_eol() )
@@ -86,16 +87,17 @@ function make_severity(source, destination)
     {"SCTID",   "N", 10, 0},;  // Код SNOMED CT , Строчный, соответствующий код номенклатуры;
     {"SORT",    "N",  2, 0};  // Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
   }
+  local nfile
   local nCol
 
-  dbcreate(destination + "_mo_severity", _mo_severity)
-  use (destination + '_mo_severity') new alias SEV
   nfile := source + "1.2.643.5.1.13.13.11.1006_2.3.xml"  // может меняться из-за версий
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
     return nil
   endif
+  dbcreate(destination + "_mo_severity", _mo_severity)
+  use (destination + '_mo_severity') new alias SEV
   oXmlDoc := HXMLDoc():Read(nfile)
   // ? "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента"
   OutStd( "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента" + hb_eol() )
@@ -158,16 +160,17 @@ function make_implant(source, destination)
     {"TYPE",    "C",   1, 0};   // тип записи: 'O' корневой узел, 'U' узел, 'L' конечный элемент
   }
   local fl_parent, rec_n, id_t
+  local nfile
   local nCol
 
-  dbcreate(destination + "_mo_impl", _mo_impl)
-  use (destination + '_mo_impl') new alias IMPL
   nfile := source + "1.2.643.5.1.13.13.11.1079_2.2.xml"  // может меняться из-за версий
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
     return nil
   endif
+  dbcreate(destination + "_mo_impl", _mo_impl)
+  use (destination + '_mo_impl') new alias IMPL
   oXmlDoc := HXMLDoc():Read(nfile)
   // ? "1.2.643.5.1.13.13.11.1079.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями"
   OutStd( "1.2.643.5.1.13.13.11.1079.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями" + hb_eol() )
@@ -262,16 +265,17 @@ Function make_method_inj(source, destination)
   }
   // {"CODE_EEC",  "C",  10, 0},;   // код справочника реестра НСИ ЕАЭК
   // {"CODE_EEC",  "C",  10, 0};   // код элемента справочника реестра НСИ ЕАЭК
+  local nfile
   Local nCol
 
-  dbcreate(destination + "_mo_method_inj", _mo_method_inj)
-  use (destination + '_mo_method_inj') new alias INJ
   nfile := source + "1.2.643.5.1.13.13.11.1468_2.1.xml"
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
     return nil
   endif
+  dbcreate(destination + "_mo_method_inj", _mo_method_inj)
+  use (destination + '_mo_method_inj') new alias INJ
   oXmlDoc := HXMLDoc():Read(nfile)
   // ? "1.2.643.5.1.13.13.11.1468_2.1.xml     - Способы введения (MethIntro)"
   OutStd( "1.2.643.5.1.13.13.11.1468_2.1.xml     - Способы введения (MethIntro)" + hb_eol() )
@@ -364,16 +368,17 @@ Function make_ed_izm(source, destination)
   // {"NSI_EEC",  "C",  10, 0},;   // Код справочника ЕАЭК, Строчный, необязательное поле ? код справочника реестра НСИ ЕАЭК;
   // {"NSI_EL_EEC",  "C",  10, 0};   // Код элемента справочника ЕАЭК, Строчный, необязательное поле ? код элемента справочника реестра НСИ ЕАЭК;
   local rec_n, id_t, fl_parent := .f.
+  local nfile
   local nCol
 
-  dbcreate(destination + "_mo_ed_izm", _mo_ed_izm)
-  use (destination + '_mo_ed_izm') new alias EDI
   nfile := source + "1.2.643.5.1.13.13.11.1358_3.3.xml"
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
     return nil
   endif
+  dbcreate(destination + "_mo_ed_izm", _mo_ed_izm)
+  use (destination + '_mo_ed_izm') new alias EDI
   oXmlDoc := HXMLDoc():Read(nfile)
   // ? "1.2.643.5.1.13.13.11.1358_3.3.xml     - Единицы измерения (OID)"
   OutStd( "1.2.643.5.1.13.13.11.1358_3.3.xml     - Единицы измерения (OID)" + hb_eol() )
@@ -386,7 +391,7 @@ Function make_ed_izm(source, destination)
   else
     // ? "Обработка файла "+nfile+" - "
     // @ row()+1, 1 say "Обработка файла "+nfile+" - "
-    out_obrabotka(nfile)         
+    out_obrabotka(nfile)
     nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
