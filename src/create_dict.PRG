@@ -387,8 +387,8 @@ proc main( ... )
 
   // filedelete("_usl_mz.dbf")
 
-  ? ''
-  wait 'Конвертация закончена! Нажмите любую клавишу.'
+  // ? ''
+  // wait 'Конвертация закончена! Нажмите любую клавишу.'
 
   SET KEY K_ALT_F4 TO
   SET KEY K_ALT_F3 TO
@@ -586,7 +586,14 @@ function obrabotka(nfile)
 function out_obrabotka(nfile)
 
   OutStd( ;
-    "Обработка файла " + nfile )  //hb_eol() )
+    "===== Обработка файла " + nfile )
+  return nil
+
+****** 15.02.22
+function out_create_file(nfile)
+
+  OutStd( ;
+    "Создание файла " + nfile )
   return nil
 
 ****** 14.02.22
@@ -603,8 +610,8 @@ function out_obrabotka_count(j, k)
   // OutStd( str(j / k * 100, 6, 2) + "%" )
   return nil
 
-****** 13.02.22
-function out_error(nError, nfile)
+****** 15.02.22
+function out_error(nError, nfile, j, k)
 
   DO CASE
   CASE nError == FILE_NOT_EXIST
@@ -627,6 +634,26 @@ function out_error(nError, nfile)
     OutErr( ;
       'Каталог для выходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
     RETURN
+  CASE nError == TAG_YEAR_REPORT
+      OutErr( ;
+        'Ошибка при чтении файла "' + nfile + '". Некорректное значение тега YEAR_REPORT ' + j + hb_eol() )
+      RETURN
+  CASE nError == TAG_PLACE_ERROR
+      OutErr( ;
+        'Ошибка при чтении файла "' + nfile + '" - более одного тега PLACE в отделении: ' + alltrim(j) + hb_eol() )
+      RETURN
+  CASE nError == TAG_PERIOD_ERROR
+      OutErr( ;
+        'Ошибка при чтении файла "' + nfile + '" - более одного тега PERIOD в учреждении: ' + j + " в услуге " + k + hb_eol() )
+      RETURN
+  CASE nError == TAG_VALUE_EMPTY
+      OutErr( ;
+        'Замечание при чтении файла "' + nfile + '" - пустое значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
+      RETURN
+  CASE nError == TAG_VALUE_INVALID
+      OutErr( ;
+        'Замечание при чтении файла "' + nfile + '" - некорректное значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
+      RETURN
   end case
 
   return nil

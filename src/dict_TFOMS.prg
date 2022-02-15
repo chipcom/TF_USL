@@ -162,9 +162,10 @@ Function work_SprUnit(source, destination)
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-            ? "Ошибка в чтении файла",nfile
-          ? "Некорректное значение тега YEAR_REPORT",j1
-          wait
+          // ? "Ошибка в чтении файла",nfile
+          // ? "Некорректное значение тега YEAR_REPORT",j1
+          // wait
+          out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "ZAP" == oXmlNode:title
@@ -228,9 +229,10 @@ Function work_MOServ(source, destination)
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          ? "Ошибка в чтении файла",nfile
-          ? "Некорректное значение тега YEAR_REPORT",j1
-          wait
+          // ? "Ошибка в чтении файла",nfile
+          // ? "Некорректное значение тега YEAR_REPORT",j1
+          // wait
+          out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "MO_SERVICES" == oXmlNode:title
@@ -245,9 +247,10 @@ Function work_MOServ(source, destination)
                   oNode4 := oNode3:aItems[j2]
                   if "PERIOD" == oNode4:title
                     if j2 > 1
-                      ? "Ошибка в чтении файла - более одного тега PERIOD",nfile
-                      ? " в учреждении",ms->codem," в услуге",ms->shifr
-                      wait
+                      // ? "Ошибка в чтении файла - более одного тега PERIOD",nfile
+                      // ? " в учреждении",ms->codem," в услуге",ms->shifr
+                      // wait
+                      out_error(TAG_PERIOD_ERROR, nfile, ms->codem, ms->shifr)
                     endif
                     select MS
                     append blank
@@ -307,9 +310,10 @@ Function work_Prices(source, destination)
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          ? "Ошибка в чтении файла",nfile
-          ? "Некорректное значение тега YEAR_REPORT",j1
-          wait
+          // ? "Ошибка в чтении файла",nfile
+          // ? "Некорректное значение тега YEAR_REPORT",j1
+          // wait
+          out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "AGE_PRICES" == oXmlNode:title
@@ -328,11 +332,13 @@ Function work_Prices(source, destination)
                   if "LEVEL" == oNode4:title
                     lLEVEL := mo_read_xml_stroke(oNode4,"VALUE",)
                     if empty(lLEVEL)
-                      ? "Пустое значение тега VALUE/LEVEL",lLEVEL + " " + lshifr
+                      // ? "Пустое значение тега VALUE/LEVEL",lLEVEL + " " + lshifr
+                      out_error(TAG_VALUE_EMPTY, nfile, lLEVEL, lshifr)
                       lLEVEL := '0'
                     elseif len(alltrim(lLEVEL)) > 5
-                      ? "Некорректное значение тега VALUE/LEVEL",lLEVEL + " " + lshifr
-                      wait
+                      // ? "Некорректное значение тега VALUE/LEVEL",lLEVEL + " " + lshifr
+                      // wait
+                      out_error(TAG_VALUE_INVALID, nfile, lLEVEL, lshifr)
                     endif
                     if (oNode5 := oNode4:Find("TARIFS")) != NIL
                       for j3 := 1 TO Len( oNode5:aItems )
@@ -385,7 +391,7 @@ Function work_mo_uslf(source, destination)
 
   dbcreate(destination + nameFileUslF,_mo_uslf)
   use (destination + nameFileUslF) new alias LUSL
-  ? "index..."
+
   index on shifr to tmp_usl
   use (source + 'onko_napr') new alias ON
   index on kod to tmp_on
@@ -399,7 +405,8 @@ Function work_mo_uslf(source, destination)
   // use _usl_mz new alias v001
   index on IDRB to tmp1
   // @ row(),0 say "Обработка файла V001.DBF - "
-  @ row(),0 say "Обработка файла _usl_mz.dbf - "
+  // @ row(),0 say "Обработка файла _usl_mz.dbf - "
+  out_obrabotka('_usl_mz.dbf')
   go top
   do while !eof()
     // @ row(),30 say str(++i/lastrec()*100, 6, 2) + "%"
@@ -565,9 +572,10 @@ Function work_t006(source, destination)
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          ? "Ошибка в чтении файла",nfile
-          ? "Некорректное значение тега YEAR_REPORT",j1
-          wait
+          // ? "Ошибка в чтении файла",nfile
+          // ? "Некорректное значение тега YEAR_REPORT",j1
+          // wait
+          out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "KSG" == oXmlNode:title
@@ -786,9 +794,10 @@ Function work_SprMU(source, destination)
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          ? "Ошибка в чтении файла",nfile
-          ? "Некорректное значение тега YEAR_REPORT",j1
-          wait
+          // ? "Ошибка в чтении файла",nfile
+          // ? "Некорректное значение тега YEAR_REPORT",j1
+          // wait
+          out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "ZAP" == oXmlNode:title
@@ -1079,9 +1088,10 @@ Function work_SprKslp(source, destination)
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          ? "Ошибка в чтении файла",nfile
-          ? "Некорректное значение тега YEAR_REPORT",j1
-          wait
+          // ? "Ошибка в чтении файла",nfile
+          // ? "Некорректное значение тега YEAR_REPORT",j1
+          // wait
+          out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "ZAP" == oXmlNode:title
@@ -1147,9 +1157,10 @@ Function work_SprKiro(source, destination)
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          ? "Ошибка в чтении файла",nfile
-          ? "Некорректное значение тега YEAR_REPORT",j1
-          wait
+          // ? "Ошибка в чтении файла",nfile
+          // ? "Некорректное значение тега YEAR_REPORT",j1
+          // wait
+          out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "ZAP" == oXmlNode:title
@@ -1203,7 +1214,8 @@ Function work_uslc(source, destination)
   Local nul_level := padr('0',5)
   //Local nul_level := padr('1',5)
 
-  ? "Создание файла " + nameFile + ".dbf - "
+  // ? "Создание файла " + nameFile + ".dbf - "
+  out_create_file(nameFile + ".dbf")
   dbcreate(destination + nameFile, _mo_uslc)
   dbcreate(destination + "not_usl",{{"shifr","C",10,0},{"spr_mu","N",1,0},{"s_price","N",1,0}})
   dbcreate(destination + "not_lev",{{"codem","C",6,0},{"shifr","C",10,0},{"usl_ok","N",1,0},{"level","C",5,0},{"depart","N",3,0}})
@@ -1540,9 +1552,10 @@ Function work_SprDep(source, destination)
                   oNode4 := oNode3:aItems[j2]
                   if "PLACE" == oNode4:title .and. !empty(oNode4:aItems) .and. valtype(oNode4:aItems[1])=="C"
                     if j2 > 1
-                      ? "Ошибка в чтении файла - более одного тега PLACE",nfile
-                      ? " в отделении",alltrim(dep->NAME)
-                      wait
+                      // ? "Ошибка в чтении файла - более одного тега PLACE",nfile
+                      // ? " в отделении",alltrim(dep->NAME)
+                      // wait
+                      out_error(TAG_PLACE_ERROR, nfile, dep->NAME)
                     endif
                     dep->place := int(val(hb_AnsiToOem(alltrim(oNode4:aItems[1]))))
                   endif
@@ -1612,9 +1625,10 @@ Function work_LvlPay(source, destination)
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          ? "Ошибка в чтении файла",nfile
-          ? "Некорректное значение тега YEAR_REPORT",j1
-          wait
+          // ? "Ошибка в чтении файла",nfile
+          // ? "Некорректное значение тега YEAR_REPORT",j1
+          // wait
+          out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "MO_LEVELS" == oXmlNode:title
