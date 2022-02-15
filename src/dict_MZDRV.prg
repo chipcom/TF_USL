@@ -163,7 +163,7 @@ function make_implant(source, destination)
   local nfile
   local nCol
 
-  nfile := source + "1.2.643.5.1.13.13.11.1079_2.2.xml"  // может меняться из-за версий
+  nfile := source + "1.2.643.5.1.13.13.11.1079_2.3.xml"  // может меняться из-за версий
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
