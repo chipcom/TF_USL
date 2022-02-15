@@ -5,7 +5,77 @@
 #include 'function.ch'
 #include 'settings.ch'
 
-***** 12.02.22
+***** 15.02.22
+Function work_Shema(source, destination)
+  Local _mo_shema := {;
+    {"KOD",        "C",     10,      0},;
+    {"NAME",       "C",    255,      0},;
+    {"DATEBEG",    "D",      8,      0},;
+    {"DATEEND",    "D",      8,      0};
+  }
+  local nfile, j, k
+  local nameFile := prefixFileName() + 'shema'
+
+  nfile := source + "V024.xml"
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  dbcreate(destination + nameFile, _mo_shema)
+  use (destination + nameFile) new alias SH
+  index on kod to tmp_shema
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  // ? "V024.xml - для КСГ - Допкритерии"
+  OutStd( "V024.xml - для КСГ - Допкритерии" + hb_eol() )
+  IF Empty( oXmlDoc:aItems )
+    // ? "Ошибка в чтении файла",nfile
+    // wait
+    out_error(FILE_READ_ERROR, nfile)
+    CLOSE databases
+    return nil
+  else
+    // ? "Обработка файла "+nfile+" - "
+    out_obrabotka(nfile)
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if "ZAP" == upper(oXmlNode:title)
+        // @ row(),30 say str(j/k*100,6,2)+"%"
+        out_obrabotka_count(j, k)
+        mkod := mo_read_xml_stroke(oXmlNode,"IDDKK",)
+        mNAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"DKKNAME",))))
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        fl := .t.
+        if !empty(mDATEEND) .and. mDATEEND < FIRST_DAY
+          fl := .f.
+        endif
+        if fl
+          select SH
+          find (mkod)
+          if found()
+            if mDATEBEG > sh->DATEBEG
+              sh->NAME := mname
+              sh->DATEBEG := mDATEBEG
+              sh->DATEEND := mDATEEND
+            endif
+          else
+            append blank
+            sh->kod := mkod
+            sh->NAME := mname
+            sh->DATEBEG := mDATEBEG
+            sh->DATEEND := mDATEEND
+          endif
+        endif
+      endif
+    NEXT j
+  ENDIF
+  out_obrabotka_eol()
+  close databases
+  return NIL
+
+***** 15.02.22
 Function make_TO01(source, destination)
 
   local _mo_T001 := {;
@@ -24,11 +94,12 @@ Function make_TO01(source, destination)
   local dbSource := 'T001'
   local mName := '', mArr
 
-  ? 'Т001.dbf     - Справочник МО и обособленных подразделений, финансируемых самостоятельно'
-  dbcreate('_mo_t001', _mo_T001)
-  dbUseArea( .t.,, dbName, dbName, .t., .f. )
+  // ? 'Т001.dbf     - Справочник МО и обособленных подразделений, финансируемых самостоятельно'
+  OutStd( 'Т001.dbf - Справочник МО и обособленных подразделений, финансируемых самостоятельно' + hb_eol() )
+  dbcreate(destination + '_mo_t001', _mo_T001)
+  dbUseArea( .t.,, destination + dbName, dbName, .t., .f. )
 
-  dbUseArea( .t.,, dbSource, dbSource, .f., .f. )
+  dbUseArea( .t.,, source + dbSource, dbSource, .f., .f. )
   (dbSource)->(dbGoTop())
   do while !(dbSource)->(EOF())
     if (dbSource)->(DATEEND) > FIRST_DAY  //0d20210101
@@ -46,6 +117,7 @@ Function make_TO01(source, destination)
     endif
     (dbSource)->(dbSkip())
   enddo
+  out_obrabotka_eol()
   (dbSource)->(dbCloseArea())
   (dbName)->(dbCloseArea())
   return NIL
@@ -1228,65 +1300,6 @@ Function work_uslc(source, destination)
     select SERV
     skip
   enddo
-  close databases
-  return NIL
-
-***** 12.02.22
-Function work_Shema(source, destination)
-  Local _mo_shema := {;
-    {"KOD",        "C",     10,      0},;
-    {"NAME",       "C",    255,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
-  }
-
-  local nameFile := prefixFileName() + 'shema'
-
-  dbcreate(destination + nameFile, _mo_shema)
-  use (destination + nameFile) new alias SH
-
-  index on kod to tmp_shema
-  nfile := source + "V024.xml"
-  oXmlDoc := HXMLDoc():Read(nfile)
-  ? "V024.xml     - для КСГ - Допкритерии"
-  IF Empty( oXmlDoc:aItems )
-    ? "Ошибка в чтении файла",nfile
-    wait
-  else
-    ? "Обработка файла "+nfile+" - "
-    k := Len( oXmlDoc:aItems[1]:aItems )
-    FOR j := 1 TO k
-      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZAP" == upper(oXmlNode:title)
-        @ row(),30 say str(j/k*100,6,2)+"%"
-        mkod := mo_read_xml_stroke(oXmlNode,"IDDKK",)
-        mNAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"DKKNAME",))))
-        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
-        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-        fl := .t.
-        if !empty(mDATEEND) .and. mDATEEND < FIRST_DAY
-          fl := .f.
-        endif
-        if fl
-          select SH
-          find (mkod)
-          if found()
-            if mDATEBEG > sh->DATEBEG
-              sh->NAME := mname
-              sh->DATEBEG := mDATEBEG
-              sh->DATEEND := mDATEEND
-            endif
-          else
-            append blank
-            sh->kod := mkod
-            sh->NAME := mname
-            sh->DATEBEG := mDATEBEG
-            sh->DATEEND := mDATEEND
-          endif
-        endif
-      endif
-    NEXT j
-  ENDIF
   close databases
   return NIL
 
