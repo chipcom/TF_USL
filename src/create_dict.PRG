@@ -117,11 +117,6 @@ proc main( ... )
   delete file ttt.ttt
   f_first()
 
-  // IF Empty( aParams ) // .OR. Left( cFileName := ATail( aParams ), 1 ) $ "@-"
-  //   About()
-  //   RETURN
-  // ENDIF
-
   FOR EACH cParam IN aParams
     cParamL := Lower( cParam )
     DO CASE
@@ -224,12 +219,9 @@ proc main( ... )
   work_SprKiro(source, destination)
   work_SprMU(source, destination)
   work_SprDS(source, destination)
-  // work_t006(_mo_usl, source, destination)
   work_t006(source, destination)
   close databases
   //
-  // rename t006_2.dbf to (k006dbf)
-  // rename t006_2.dbt to (k006dbt)
   filedelete(destination + k006dbf)
   nResult := FRename(destination + 't006_2.dbf', destination + k006dbf)
   if nResult != 0
@@ -384,11 +376,6 @@ proc main( ... )
   filedelete(destination + 't006_2.dbt')
   filedelete(destination + 't006_d.dbf')
   filedelete(destination + 't006_u.dbf')
-
-  // filedelete("_usl_mz.dbf")
-
-  // ? ''
-  // wait 'Конвертация закончена! Нажмите любую клавишу.'
 
   SET KEY K_ALT_F4 TO
   SET KEY K_ALT_F3 TO
@@ -573,7 +560,6 @@ STATIC PROCEDURE About()
     I_( "Syntax:  create_dict [options] [@config] <file[s]>" ) + hb_eol() + ;
       hb_eol() )
   
-  // OutErr( iif( nLine == 1, PadR( cPrefix, nWidth ), Space( nWidth ) ) + tmp + _OUT_EOL )
   RETURN
  
 ****** 11.02.22
@@ -602,8 +588,6 @@ function out_obrabotka_eol()
   OutStd( hb_eol() )
   return nil
 
-  // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
-
 ****** 14.02.22
 function out_obrabotka_count(j, k)
 
@@ -617,43 +601,33 @@ function out_error(nError, nfile, j, k)
   CASE nError == FILE_NOT_EXIST
     OutErr( ;
       "Файл " + nfile + " не существует" + hb_eol() )
-    RETURN
   CASE nError == FILE_READ_ERROR
     OutErr( ;
       "Ошибка в загрузке файла " + nfile + hb_eol() )
-    RETURN
   CASE nError == FILE_RENAME_ERROR
     OutErr( ;
       "Ошибка переименования файла " + nfile + hb_eol() )
-    RETURN
   CASE nError == DIR_IN_NOT_EXIST
     OutErr( ;
       'Каталог исходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
-    RETURN
   CASE nError == DIR_OUT_NOT_EXIST
     OutErr( ;
       'Каталог для выходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
-    RETURN
   CASE nError == TAG_YEAR_REPORT
       OutErr( ;
         'Ошибка при чтении файла "' + nfile + '". Некорректное значение тега YEAR_REPORT ' + j + hb_eol() )
-      RETURN
   CASE nError == TAG_PLACE_ERROR
       OutErr( ;
         'Ошибка при чтении файла "' + nfile + '" - более одного тега PLACE в отделении: ' + alltrim(j) + hb_eol() )
-      RETURN
   CASE nError == TAG_PERIOD_ERROR
       OutErr( ;
         'Ошибка при чтении файла "' + nfile + '" - более одного тега PERIOD в учреждении: ' + j + " в услуге " + k + hb_eol() )
-      RETURN
   CASE nError == TAG_VALUE_EMPTY
       OutErr( ;
         'Замечание при чтении файла "' + nfile + '" - пустое значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
-      RETURN
   CASE nError == TAG_VALUE_INVALID
       OutErr( ;
         'Замечание при чтении файла "' + nfile + '" - некорректное значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
-      RETURN
   end case
 
   return nil

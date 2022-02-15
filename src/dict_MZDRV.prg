@@ -18,10 +18,10 @@ function make_uslugi_mz(source, destination)
   }
   local mID, mS_code, mName, mRel, mDateOut
   local mDateBeg := 0d20110101
-  local nfile
-  local nCol
-
-  nfile := source + "1.2.643.5.1.13.13.11.1070_2.10.xml"  // может меняться из-за версий
+  local nfile, nameRef
+  
+  nameRef := "1.2.643.5.1.13.13.11.1070_2.10.xml"  // может меняться из-за версий
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
@@ -30,19 +30,13 @@ function make_uslugi_mz(source, destination)
   dbcreate(destination + "_usl_mz", _uslugi_mz)
   use (destination + '_usl_mz') new alias MZUSL
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "1.2.643.5.1.13.13.11.1070.xml - Номенклатура медицинских услуг"
-  OutStd( "1.2.643.5.1.13.13.11.1070.xml - Номенклатура медицинских услуг" + hb_eol() )
+  OutStd( nameRef + " - Номенклатура медицинских услуг" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
-    // @ row()+1, 1 say "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)         
-    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -52,8 +46,6 @@ function make_uslugi_mz(source, destination)
           oNode1 := oXmlNode:aItems[j1]
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
-            // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
-            // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
             out_obrabotka_count(j1, k1)
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mS_code := mo_read_xml_stroke(oNode1, 'S_CODE', , , 'utf8')
@@ -87,10 +79,10 @@ function make_severity(source, destination)
     {"SCTID",   "N", 10, 0},;  // Код SNOMED CT , Строчный, соответствующий код номенклатуры;
     {"SORT",    "N",  2, 0};  // Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
   }
-  local nfile
-  local nCol
+  local nfile, nameRef
 
-  nfile := source + "1.2.643.5.1.13.13.11.1006_2.3.xml"  // может меняться из-за версий
+  nameRef := "1.2.643.5.1.13.13.11.1006_2.3.xml"  // может меняться из-за версий
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
@@ -99,19 +91,13 @@ function make_severity(source, destination)
   dbcreate(destination + "_mo_severity", _mo_severity)
   use (destination + '_mo_severity') new alias SEV
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента"
-  OutStd( "1.2.643.5.1.13.13.11.1006.xml - Степень тяжести состояния пациента" + hb_eol() )
+  OutStd( nameRef + " - Степень тяжести состояния пациента" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
-    // @ row()+1, 1 say "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)         
-    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -121,8 +107,6 @@ function make_severity(source, destination)
           oNode1 := oXmlNode:aItems[j1]
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
-            // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
-            // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
             out_obrabotka_count(j1, k1)
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
@@ -160,10 +144,10 @@ function make_implant(source, destination)
     {"TYPE",    "C",   1, 0};   // тип записи: 'O' корневой узел, 'U' узел, 'L' конечный элемент
   }
   local fl_parent, rec_n, id_t
-  local nfile
-  local nCol
+  local nfile, nameRef
 
-  nfile := source + "1.2.643.5.1.13.13.11.1079_2.3.xml"  // может меняться из-за версий
+  nameRef := "1.2.643.5.1.13.13.11.1079_2.3.xml"  // может меняться из-за версий
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
@@ -172,19 +156,13 @@ function make_implant(source, destination)
   dbcreate(destination + "_mo_impl", _mo_impl)
   use (destination + '_mo_impl') new alias IMPL
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "1.2.643.5.1.13.13.11.1079.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями"
-  OutStd( "1.2.643.5.1.13.13.11.1079.xml - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями" + hb_eol() )
+  OutStd( nameRef + " - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // @ row()+1, 1 say "Обработка файла " + nfile + " - "
     out_obrabotka(nfile)         
-    nCol := Col()
-    // ? "Обработка файла "+nfile+" - "
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -194,8 +172,6 @@ function make_implant(source, destination)
           oNode1 := oXmlNode:aItems[j1]
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
-            // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
-            // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
             out_obrabotka_count(j1, k1)
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mRZN := mo_read_xml_stroke(oNode1, 'RZN', , , 'utf8')
@@ -265,10 +241,10 @@ Function make_method_inj(source, destination)
   }
   // {"CODE_EEC",  "C",  10, 0},;   // код справочника реестра НСИ ЕАЭК
   // {"CODE_EEC",  "C",  10, 0};   // код элемента справочника реестра НСИ ЕАЭК
-  local nfile
-  Local nCol
+  local nfile, nameRef
 
-  nfile := source + "1.2.643.5.1.13.13.11.1468_2.1.xml"
+  nameRef := "1.2.643.5.1.13.13.11.1468_2.1.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
@@ -277,19 +253,13 @@ Function make_method_inj(source, destination)
   dbcreate(destination + "_mo_method_inj", _mo_method_inj)
   use (destination + '_mo_method_inj') new alias INJ
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "1.2.643.5.1.13.13.11.1468_2.1.xml     - Способы введения (MethIntro)"
-  OutStd( "1.2.643.5.1.13.13.11.1468_2.1.xml     - Способы введения (MethIntro)" + hb_eol() )
+  OutStd( nameRef + " - Способы введения (MethIntro)" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
-    // @ row()+1, 1 say "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)         
-    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -299,8 +269,6 @@ Function make_method_inj(source, destination)
           oNode1 := oXmlNode:aItems[j1]
           klll := upper(oNode1:title)
           if "ENTRY" == upper(oNode1:title)
-            // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
-            // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
             out_obrabotka_count(j1, k1)
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mNameRus := mo_read_xml_stroke(oNode1, 'NAME_RUS', , , 'utf8')
@@ -368,10 +336,10 @@ Function make_ed_izm(source, destination)
   // {"NSI_EEC",  "C",  10, 0},;   // Код справочника ЕАЭК, Строчный, необязательное поле ? код справочника реестра НСИ ЕАЭК;
   // {"NSI_EL_EEC",  "C",  10, 0};   // Код элемента справочника ЕАЭК, Строчный, необязательное поле ? код элемента справочника реестра НСИ ЕАЭК;
   local rec_n, id_t, fl_parent := .f.
-  local nfile
-  local nCol
+  local nfile, nameRef
 
-  nfile := source + "1.2.643.5.1.13.13.11.1358_3.3.xml"
+  nameRef := "1.2.643.5.1.13.13.11.1358_3.3.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     CLOSE databases
@@ -380,19 +348,13 @@ Function make_ed_izm(source, destination)
   dbcreate(destination + "_mo_ed_izm", _mo_ed_izm)
   use (destination + '_mo_ed_izm') new alias EDI
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "1.2.643.5.1.13.13.11.1358_3.3.xml     - Единицы измерения (OID)"
-  OutStd( "1.2.643.5.1.13.13.11.1358_3.3.xml     - Единицы измерения (OID)" + hb_eol() )
+  OutStd( nameRef + " - Единицы измерения (OID)" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
-    // @ row()+1, 1 say "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
-    nCol := Col()
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
@@ -401,8 +363,6 @@ Function make_ed_izm(source, destination)
         for j1 := 1 to k1
           oNode1 := oXmlNode:aItems[j1]
           if "ENTRY" == upper(oNode1:title)
-            // @ row(), 50 say str(j1 / k1 * 100, 6, 2) + "%"
-            // @ row(), nCol say str(j1 / k1 * 100, 6, 2) + "%"
             out_obrabotka_count(j1, k1)
             mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
             mFullName := mo_read_xml_stroke(oNode1, 'FULLNAME', , , 'utf8')
