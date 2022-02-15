@@ -381,6 +381,7 @@ Function work_mo_uslf(source, destination)
   }
   local nameFileUslF := prefixFileName() + 'uslf'
   Local i := 0
+  local j, k
 
   dbcreate(destination + nameFileUslF,_mo_uslf)
   use (destination + nameFileUslF) new alias LUSL
@@ -402,7 +403,7 @@ Function work_mo_uslf(source, destination)
   go top
   do while !eof()
     // @ row(),30 say str(++i/lastrec()*100, 6, 2) + "%"
-    out_obrabotka_count(j, k)
+    out_obrabotka_count(++i, lastrec())
     // if !empty(v001->DATEEND) .and. year(v001->DATEEND) < 2022 // 2021
     if !empty(v001->DATEEND) .and. year(v001->DATEEND) < val(CURENT_YEAR) // 2022 // 2021
       //
@@ -464,7 +465,7 @@ Function work_mo_uslf(source, destination)
 
 ***** 12.02.22
 Function work_t006(source, destination)
-  Local oXmlDoc, oXmlNode, i, j, k, s, af := {}
+  Local oXmlDoc, oXmlNode, i, s, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
   Local lshifr, lsy
 
