@@ -88,7 +88,6 @@ proc main( ... )
   }
 
   local cParam, cParamL
-  local tmp
   local aParams
 
   local nameFileUsl := prefixFileName() + 'usl'
@@ -126,11 +125,9 @@ proc main( ... )
       CASE cParamL == "-quiet"
         // ? 'quiet'
       CASE hb_LeftEq( cParamL, "-in=" )
-        tmp := SubStr( cParam, 4 + 1 )
-        // ? tmp
+        source := SubStr( cParam, 4 + 1 )
       CASE hb_LeftEq( cParamL, "-out=" )
-        tmp := SubStr( cParam, 5 + 1 )
-        // ? tmp
+        destination := SubStr( cParam, 5 + 1 )
     endcase
   next
 
