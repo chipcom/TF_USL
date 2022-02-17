@@ -328,7 +328,7 @@ proc main( ... )
     s := aup[j,1]+iif(aup[j,2] == 0, "взр", "реб")+".{"
     asort(aup[j,3])
     for i := 1 to len(aup[j,3])
-      s += lstr(aup[j,3,i])+"-"+inieditspr(A__MENUVERT,glob_V002,aup[j,3,i])
+      s += lstr(aup[j,3,i])+"-" + alltrim(inieditspr(A__MENUVERT,glob_V002,aup[j,3,i]))
       if i < len(aup[j,3])
         s += ","
       endif
@@ -355,7 +355,7 @@ proc main( ... )
     s := aup[j,1]+iif(aup[j,2] == 0, "взр", "реб")+".{"
     asort(aup[j,3])
     for i := 1 to len(aup[j,3])
-      s += lstr(aup[j,3,i])+"-"+inieditspr(A__MENUVERT,glob_V021,aup[j,3,i])
+      s += lstr(aup[j,3,i])+"-"+ alltrim(inieditspr(A__MENUVERT,glob_V021,aup[j,3,i]))
       if i < len(aup[j,3])
         s += ","
       endif

@@ -13,10 +13,11 @@ Function work_Shema(source, destination)
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
-  local nfile, j, k
+  local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'shema'
 
-  nfile := source + "V024.xml"
+  nameRef := "V024.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -26,22 +27,17 @@ Function work_Shema(source, destination)
   index on kod to tmp_shema
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "V024.xml - для КСГ - Допкритерии"
-  OutStd( "V024.xml - для КСГ - Допкритерии" + hb_eol() )
+  OutStd( nameRef + " - для КСГ - Допкритерии" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZAP" == upper(oXmlNode:title)
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         mkod := mo_read_xml_stroke(oXmlNode,"IDDKK",)
         mNAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"DKKNAME",))))
@@ -134,10 +130,11 @@ Function work_SprUnit(source, destination)
     {"DATEEND",    "D",      8,      0};
   }
 
-  local nfile, j, k
+  local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'unit'
 
-  nfile := source + "SprUnit.xml"
+  nameRef := "SprUnit.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -146,30 +143,22 @@ Function work_SprUnit(source, destination)
   use (destination + nameFile) new alias UN
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "SPRUNIT.xml  - справочник видов помощи /план-заказ"
-  OutStd( "SPRUNIT.xml - справочник видов помощи /план-заказ" + hb_eol() )
+  OutStd( nameRef + " - справочник видов помощи /план-заказ" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          // ? "Ошибка в чтении файла",nfile
-          // ? "Некорректное значение тега YEAR_REPORT",j1
-          // wait
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "ZAP" == oXmlNode:title
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         select UN
         append blank
@@ -201,10 +190,11 @@ Function work_MOServ(source, destination)
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
-  local nfile, j, k
+  local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'moserv'
 
-  nfile := source + "S_MOServ.xml"
+  nameRef := "S_MOServ.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -213,30 +203,22 @@ Function work_MOServ(source, destination)
   use (destination + nameFile) new alias MS
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "S_MOServ.xml - даты действия услуги вообще"
-  OutStd( "S_MOServ.xml - даты действия услуги вообще" + hb_eol() )
+  OutStd( nameRef + " - даты действия услуги вообще" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          // ? "Ошибка в чтении файла",nfile
-          // ? "Некорректное значение тега YEAR_REPORT",j1
-          // wait
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "MO_SERVICES" == oXmlNode:title
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         if (oNode1 := oXmlNode:Find("SERVICES")) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
@@ -247,9 +229,6 @@ Function work_MOServ(source, destination)
                   oNode4 := oNode3:aItems[j2]
                   if "PERIOD" == oNode4:title
                     if j2 > 1
-                      // ? "Ошибка в чтении файла - более одного тега PERIOD",nfile
-                      // ? " в учреждении",ms->codem," в услуге",ms->shifr
-                      // wait
                       out_error(TAG_PERIOD_ERROR, nfile, ms->codem, ms->shifr)
                     endif
                     select MS
@@ -282,10 +261,11 @@ Function work_Prices(source, destination)
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
-  local nfile, j, k
+  local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'prices'
 
-  nfile := source + "S_Prices.xml"
+  nameRef := "S_Prices.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -294,30 +274,22 @@ Function work_Prices(source, destination)
   use (destination + nameFile) new alias MP
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "S_Prices.xml - цена и дата действия по уровню"
-  OutStd( "S_Prices.xml - цена и дата действия по уровню" + hb_eol() )
+  OutStd( nameRef + " - цена и дата действия по уровню" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          // ? "Ошибка в чтении файла",nfile
-          // ? "Некорректное значение тега YEAR_REPORT",j1
-          // wait
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "AGE_PRICES" == oXmlNode:title
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         s := mo_read_xml_stroke(oXmlNode,"AGE",)
         lvzros_reb := iif(alltrim(s)=="В", 0, 1)
@@ -332,12 +304,9 @@ Function work_Prices(source, destination)
                   if "LEVEL" == oNode4:title
                     lLEVEL := mo_read_xml_stroke(oNode4,"VALUE",)
                     if empty(lLEVEL)
-                      // ? "Пустое значение тега VALUE/LEVEL",lLEVEL + " " + lshifr
                       out_error(TAG_VALUE_EMPTY, nfile, lLEVEL, lshifr)
                       lLEVEL := '0'
                     elseif len(alltrim(lLEVEL)) > 5
-                      // ? "Некорректное значение тега VALUE/LEVEL",lLEVEL + " " + lshifr
-                      // wait
                       out_error(TAG_VALUE_INVALID, nfile, lLEVEL, lshifr)
                     endif
                     if (oNode5 := oNode4:Find("TARIFS")) != NIL
@@ -499,9 +468,10 @@ Function work_t006(source, destination)
     {"DATEEND",    "D",      8,      0};  // дата конец действия - по умолчанию т.г
   }
   // Static nfile    //:= source + "T006.XML"
-  local nfile, j, k
+  local nfile, nameRef, j, k
 
-  nfile := source + "T006.XML"
+  nameRef := "T006.XML"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -556,30 +526,22 @@ Function work_t006(source, destination)
   use (destination + 't006_d') new alias d6
   oXmlDoc := HXMLDoc():Read(nfile)
   kl := kl1 := kl2 := 0
-  // ? "T006.xml     - КСГ"
-  OutStd( "T006.xml - КСГ" + hb_eol() )
+  OutStd( nameRef + " - КСГ" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          // ? "Ошибка в чтении файла",nfile
-          // ? "Некорректное значение тега YEAR_REPORT",j1
-          // wait
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "KSG" == oXmlNode:title
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         select T6
         append blank
@@ -757,9 +719,10 @@ Function work_SprMU(source, destination)
     {"SHIFR",        "C",     10,      0},;
     {"SHIFR_MZ",     "C",     20,      0};
   }
-  local nfile, j, k
+  local nfile, nameRef, j, k
 
-  nfile := source + "SprMU.xml"
+  nameRef := "SprMU.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -778,30 +741,22 @@ Function work_SprMU(source, destination)
   use (destination + nameFileUnit) new alias UN
   index on str(code,3) to tmp_unit
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "SPRMU.xml    - справочник услуг /наименование, шифр услуги"
-  OutStd( "SPRMU.xml - справочник услуг /наименование, шифр услуги" + hb_eol() )
+  OutStd( nameRef + " - справочник услуг /наименование, шифр услуги" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          // ? "Ошибка в чтении файла",nfile
-          // ? "Некорректное значение тега YEAR_REPORT",j1
-          // wait
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "ZAP" == oXmlNode:title
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         lshifr := mo_read_xml_stroke(oXmlNode,"CodeMU",)
         select LUSL
@@ -935,9 +890,10 @@ Function work_SprMU(source, destination)
 Function work_SprDS(source, destination)
   Local fl := .f., lfp, s
   local nameFileUslF := prefixFileName() + 'uslf'
-  local nfile, j, k
+  local nfile, nameRef, j, k
 
-  nfile := source + "SprDS.xml"
+  nameRef := "SprDS.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -947,20 +903,15 @@ Function work_SprDS(source, destination)
   use (destination + nameFileUslF) new alias LUSL
   index on shifr to tmp_lusl
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "SPRDS.xml    - федеральный справочник услуг"
-  OutStd( "SPRDS.xml - федеральный справочник услуг" + hb_eol() )
+  OutStd( nameRef + " - федеральный справочник услуг" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
-      // @ row(),30 say str(j/k*100,6,2)+"%"
       out_obrabotka_count(j, k)
       o1 := oXmlDoc:aItems[1]:aItems[j]
       if "GRP" == o1:title
@@ -1060,10 +1011,11 @@ Function work_SprKslp(source, destination)
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
-  local nfile, j, k
+  local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'kslp'
 
-  nfile := source + "SprKslp.xml"
+  nameRef := "SprKslp.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -1072,30 +1024,22 @@ Function work_SprKslp(source, destination)
   use (destination + nameFile) new alias KS
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "SPRKSLP.xml  - для КСГ - КСЛП"
-  OutStd( "SPRKSLP.xml - для КСГ - КСЛП" + hb_eol() )
+  OutStd( nameRef + " - для КСГ - КСЛП" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          // ? "Ошибка в чтении файла",nfile
-          // ? "Некорректное значение тега YEAR_REPORT",j1
-          // wait
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "ZAP" == oXmlNode:title
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         if (oNode1 := oXmlNode:Find("COEFF")) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
@@ -1129,10 +1073,11 @@ Function work_SprKiro(source, destination)
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
-  local nfile, j, k
+  local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'kiro'
 
-  nfile := source + "S_KIRO.xml"
+  nameRef := "S_KIRO.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -1141,30 +1086,22 @@ Function work_SprKiro(source, destination)
   use (destination + nameFile) new alias KS
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "S_kiro.xml   - для КСГ - КИРО"
-  OutStd( "S_kiro.xml - для КСГ - КИРО" + hb_eol() )
+  OutStd( nameRef + " - для КСГ - КИРО" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          // ? "Ошибка в чтении файла",nfile
-          // ? "Некорректное значение тега YEAR_REPORT",j1
-          // wait
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "ZAP" == oXmlNode:title
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         if (oNode1 := oXmlNode:Find("COEFF")) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
@@ -1426,10 +1363,11 @@ Function work_SprSubDiv(source, destination)
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
-  local nfile, j, k
+  local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'subdiv'
 
-  nfile := source + "S_SubDiv.xml"
+  nameRef := "S_SubDiv.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -1437,22 +1375,17 @@ Function work_SprSubDiv(source, destination)
   dbcreate(destination + nameFile, _mo_subdiv)
   use (destination + nameFile) new alias SD
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты"
-  OutStd( "S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты" + hb_eol() )
+  OutStd( nameRef + " - список 11 учреждений с разными уровнями оплаты" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "MO_PLACES" == oXmlNode:title
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         if (oNode1 := oXmlNode:Find("PLACES")) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
@@ -1499,11 +1432,12 @@ Function work_SprDep(source, destination)
     {"pr_berth",   "N",      3,      0},;
     {"pr_mp",      "N",      3,      0};
   }
-  local nfile, j, k
+  local nfile, nameRef, j, k
   local nameFileDep := prefixFileName() + 'dep'
   local nameFileDepPr := prefixFileName() + 'deppr'
 
-  nfile := source + "S_Dep.xml"
+  nameRef := source + "S_Dep.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -1515,22 +1449,17 @@ Function work_SprDep(source, destination)
   use (destination + nameFileDepPr) new alias DP
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "S_Dep.xml    - список отделений по 11-й стационарам с разными уровнями оплаты"
-  OutStd( "S_Dep.xml - список отделений по 11-й стационарам с разными уровнями оплаты" + hb_eol() )
+  OutStd( nameRef + " - список отделений по 11-й стационарам с разными уровнями оплаты" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "MO_DEPARTMENTS" == oXmlNode:title
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         if (oNode1 := oXmlNode:Find("DEPARTMENTS")) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
@@ -1552,9 +1481,6 @@ Function work_SprDep(source, destination)
                   oNode4 := oNode3:aItems[j2]
                   if "PLACE" == oNode4:title .and. !empty(oNode4:aItems) .and. valtype(oNode4:aItems[1])=="C"
                     if j2 > 1
-                      // ? "Ошибка в чтении файла - более одного тега PLACE",nfile
-                      // ? " в отделении",alltrim(dep->NAME)
-                      // wait
                       out_error(TAG_PLACE_ERROR, nfile, dep->NAME)
                     endif
                     dep->place := int(val(hb_AnsiToOem(alltrim(oNode4:aItems[1]))))
@@ -1597,10 +1523,11 @@ Function work_LvlPay(source, destination)
     {"DATEBEG",    "D",      8,      0},;
     {"DATEEND",    "D",      8,      0};
   }
-  local nfile, j, k
+  local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'lvlpay'
 
-  nfile := source + "S_LvlPay.xml"
+  nameRef := "S_LvlPay.xml"
+  nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
@@ -1609,30 +1536,22 @@ Function work_LvlPay(source, destination)
   use (destination + nameFile) new alias LP
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  // ? "S_LvlPay.xml - код МО и уровень услуг"
-  OutStd( "S_LvlPay.xml - код МО и уровень услуг" + hb_eol() )
+  OutStd( nameRef + " - код МО и уровень услуг" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    // ? "Ошибка в чтении файла",nfile
-    // wait
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
     return nil
   else
-    // ? "Обработка файла "+nfile+" - "
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
       if "ZGLV" == oXmlNode:title
         if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
-          // ? "Ошибка в чтении файла",nfile
-          // ? "Некорректное значение тега YEAR_REPORT",j1
-          // wait
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
       elseif "MO_LEVELS" == oXmlNode:title
-        // @ row(),30 say str(j/k*100,6,2)+"%"
         out_obrabotka_count(j, k)
         if (oNode1 := oXmlNode:Find("USL_LEVELS")) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
