@@ -49,7 +49,8 @@
 
 #include 'inkey.ch'
 #include 'fileio.ch'
-#include 'edit_spr.ch'
+#include 'directry.ch'
+// #include 'edit_spr.ch'
 #include 'function.ch'
 #include 'settings.ch'
 
@@ -104,6 +105,8 @@ proc main( ... )
   local destination
   local lExists
   local os_sep := hb_osPathSeparator()
+  local fp, i, s
+  LOCAL aFiles, aFile
 
   Public sys_date := date() // ctod('31/12/2021') //date()
   Public sys_year := year(date()) // 2021 // year(date())
@@ -147,6 +150,18 @@ proc main( ... )
     out_error(DIR_OUT_NOT_EXIST, destination)
     quit
   endi
+
+  fp := fcreate(source + 'hide.txt', 'FC_HIDEN')
+  IF ! Empty( aFiles := hb_vfDirectory( source + '*.xml' ) )
+    s := ''
+    FOR EACH aFile IN aFiles
+      s := aFile[ F_NAME ] + ', ' + hb_MD5File( source + aFile[ F_NAME ] ) + hb_eol()
+      FWrite( fp, s)
+    NEXT
+  endif
+  fclose(fp)
+  wait
+  quit
 
   // make_TO01()
   // Справочники минздрава
