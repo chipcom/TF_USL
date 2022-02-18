@@ -50,7 +50,7 @@
 #include 'inkey.ch'
 #include 'fileio.ch'
 #include 'directry.ch'
-// #include 'edit_spr.ch'
+#include 'edit_spr.ch'
 #include 'function.ch'
 #include 'settings.ch'
 
@@ -106,10 +106,12 @@ proc main( ... )
   local lExists
   local os_sep := hb_osPathSeparator()
   local fp, i, s
-  LOCAL aFiles, aFile
+  // local hash_files
+
 
   Public sys_date := date() // ctod('31/12/2021') //date()
   Public sys_year := year(date()) // 2021 // year(date())
+  Public hash_files
 
   source := upper(beforatnum(os_sep, exename())) + os_sep
   destination := upper(beforatnum(os_sep, exename())) + os_sep
@@ -151,17 +153,9 @@ proc main( ... )
     quit
   endi
 
-  fp := fcreate(source + 'hide.txt', 'FC_HIDEN')
-  IF ! Empty( aFiles := hb_vfDirectory( source + '*.xml' ) )
-    s := ''
-    FOR EACH aFile IN aFiles
-      s := aFile[ F_NAME ] + ', ' + hb_MD5File( source + aFile[ F_NAME ] ) + hb_eol()
-      FWrite( fp, s)
-    NEXT
-  endif
-  fclose(fp)
-  wait
-  quit
+  // прочитаем массив md5-хэшев файлов
+  hash_files := hb_Hash()
+  hash_files := read_files_md5(source)
 
   // make_TO01()
   // Справочники минздрава
@@ -388,6 +382,9 @@ proc main( ... )
   filedelete(destination + 't006_2.dbt')
   filedelete(destination + 't006_d.dbf')
   filedelete(destination + 't006_u.dbf')
+
+  // запишем md5-хэши файлов источников
+  create_files_md5(source)
 
   SET KEY K_ALT_F4 TO
   SET KEY K_ALT_F3 TO
@@ -643,3 +640,56 @@ function out_error(nError, nfile, j, k)
   end case
 
   return nil
+
+function read_files_md5(source)
+  local fp, i, s
+  LOCAL aFiles, aFile
+  LOCAL cBuffer, nFileSize
+  local aStr, hash_files, tArr, row
+
+  hash_files := hb_Hash()
+
+  fp := HB_VFOPEN(source + 'hide.txt', FO_READ)
+  nFileSize := hb_vfSize( fp )
+  cBuffer := Space( nFileSize )
+  IF hb_vfRead( fp, @cBuffer, nFileSize ) != nFileSize
+  else
+    aStr := split(cBuffer, hb_eol())
+    for each row in aStr
+      tArr := split(row, ', ')
+      if len(tArr) == 2
+        hash_files[tArr[1]] := tArr[2]
+      endif
+    next
+  endif
+
+  hb_vfClose( fp )
+  return hash_files
+  
+function create_files_md5(source)
+  local fp, i, s
+  LOCAL aFiles, aFile
+
+  fp := fcreate(source + 'hide.txt', FC_HIDDEN)
+  IF ! Empty( aFiles := hb_vfDirectory( source + '*.xml' ) )
+    s := ''
+    FOR EACH aFile IN aFiles
+      s := upper(aFile[ F_NAME ]) + ', ' + hb_MD5File( source + aFile[ F_NAME ] ) + hb_eol()
+      FWrite( fp, s)
+    NEXT
+  endif
+  fclose(fp)
+  return nil
+
+function check_izm_file(nameRef, nfile)
+  local fl := .f.
+  local hashMD5File
+
+  nameRef := upper(nameRef)
+  if hb_HHasKey( hash_files, nameRef )
+    hashMD5File := hb_HGet(hash_files, nameRef)
+    if hashMD5file == hb_MD5File( nfile ) // файл не изменялся
+      fl := .t.
+    endif
+  endif
+  return fl

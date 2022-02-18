@@ -1,6 +1,12 @@
--L..\..\_mylib_hbt
+-L..\..\LIB
 -lMyLib_HBT
+-lFunLib
+
+#-L..\..\_mylib_hbt
+#-lMyLib_HBT
 -lhbct
+-lhbwin
+-lhbxpp
 -mt
 -inc
 

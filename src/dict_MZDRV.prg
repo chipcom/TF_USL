@@ -19,14 +19,19 @@ function make_uslugi_mz(source, destination)
   local mID, mS_code, mName, mRel, mDateOut
   local mDateBeg := 0d20110101
   local nfile, nameRef
-  
+  local hashMD5File
+
   nameRef := "1.2.643.5.1.13.13.11.1070_2.10.xml"  // может меняться из-за версий
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    CLOSE databases
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_usl_mz", _uslugi_mz)
   use (destination + '_usl_mz') new alias MZUSL
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -80,14 +85,19 @@ function make_severity(source, destination)
     {"SORT",    "N",  2, 0};  // Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
   }
   local nfile, nameRef
+  local hashMD5File
 
   nameRef := "1.2.643.5.1.13.13.11.1006_2.3.xml"  // может меняться из-за версий
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    CLOSE databases
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_mo_severity", _mo_severity)
   use (destination + '_mo_severity') new alias SEV
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -145,14 +155,19 @@ function make_implant(source, destination)
   }
   local fl_parent, rec_n, id_t
   local nfile, nameRef
+  local hashMD5File
 
   nameRef := "1.2.643.5.1.13.13.11.1079_2.3.xml"  // может меняться из-за версий
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    CLOSE databases
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_mo_impl", _mo_impl)
   use (destination + '_mo_impl') new alias IMPL
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -242,14 +257,19 @@ Function make_method_inj(source, destination)
   // {"CODE_EEC",  "C",  10, 0},;   // код справочника реестра НСИ ЕАЭК
   // {"CODE_EEC",  "C",  10, 0};   // код элемента справочника реестра НСИ ЕАЭК
   local nfile, nameRef
+  local hashMD5File
 
   nameRef := "1.2.643.5.1.13.13.11.1468_2.1.xml"
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    CLOSE databases
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_mo_method_inj", _mo_method_inj)
   use (destination + '_mo_method_inj') new alias INJ
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -337,6 +357,7 @@ Function make_ed_izm(source, destination)
   // {"NSI_EL_EEC",  "C",  10, 0};   // Код элемента справочника ЕАЭК, Строчный, необязательное поле ? код элемента справочника реестра НСИ ЕАЭК;
   local rec_n, id_t, fl_parent := .f.
   local nfile, nameRef
+  local hashMD5File
 
   nameRef := "1.2.643.5.1.13.13.11.1358_3.3.xml"
   nfile := source + nameRef
@@ -345,6 +366,11 @@ Function make_ed_izm(source, destination)
     CLOSE databases
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_mo_ed_izm", _mo_ed_izm)
   use (destination + '_mo_ed_izm') new alias EDI
   oXmlDoc := HXMLDoc():Read(nfile)

@@ -1,0 +1,1 @@
+create_dict -in=d:\_mo\tf_usl\in -out=d:\_mo\tf_usl\out 2>log.txt

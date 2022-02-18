@@ -21,6 +21,11 @@ Function work_V002(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_mo_v002", _mo_V002)
   use (destination + '_mo_V002') new alias V002
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -77,6 +82,11 @@ Function work_V016(source, destination)
     CLOSE databases
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_mo_v016", _mo_V016)
   use (destination + '_mo_v016') new alias V016
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -137,6 +147,11 @@ Function work_V017(source, destination)
     CLOSE databases
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_mo_v017", _mo_V017)
   use (destination + '_mo_v017') new alias V017
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -189,6 +204,11 @@ Function work_V021(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_mo_v021", _mo_V021)
   use (destination + '_mo_V021') new alias V021
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -263,6 +283,11 @@ Function work_V009(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_mo_v009", _mo_V009)
   use (destination + '_mo_v009') new alias V009
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -313,6 +338,11 @@ Function work_V010(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + "_mo_v010", _mo_V010)
   use (destination + '_mo_v010') new alias V010
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -360,6 +390,9 @@ Function work_V012(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + "_mo_v012", _mo_V012)
@@ -432,6 +465,9 @@ Function work_V015(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + "_mo_v015", _mo_V015)
   use (destination + '_mo_V015') new alias V015
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -487,6 +523,9 @@ Function work_V018(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + "_mo_v018", _mo_V018)
   use (destination + '_mo_V018') new alias V018
   // index on kod to tmp_shema
@@ -540,6 +579,9 @@ Function work_V019(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + "_mo_v019",_mo_V019)
@@ -604,6 +646,9 @@ Function work_V020(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + "_mo_v020", _mo_V020)
   use (destination + '_mo_v020') new alias V020
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -651,6 +696,9 @@ Function work_V022(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + "_mo_v022",_mo_V022)
@@ -703,6 +751,9 @@ Function work_V025(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + "_mo_v025", _mo_V025)
   use (destination + '_mo_V025') new alias V025
   // index on kod to tmp_shema
@@ -752,6 +803,9 @@ Function work_V030(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + "_mo_v030", _mo_V030)
@@ -807,6 +861,9 @@ Function work_V031(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + "_mo_v031", _mo_V031)
   use (destination + '_mo_V031') new alias V031
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -856,6 +913,9 @@ Function work_V032(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + "_mo_v032", _mo_V032)
@@ -908,6 +968,9 @@ Function work_V033(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + "_mo_v033", _mo_V033)
   use (destination + '_mo_V033') new alias V033
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -955,6 +1018,9 @@ Function work_V034(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + "_mo_v034", _mo_V034)
@@ -1007,6 +1073,9 @@ Function work_V035(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + "_mo_v035", _mo_V035)
   use (destination + '_mo_V035') new alias V035
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -1055,6 +1124,9 @@ Function work_V036(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + "_mo_v036", _mo_V036)
@@ -1109,6 +1181,9 @@ Function work_V037(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + "_mo_v037", _mo_V037)
@@ -1169,6 +1244,9 @@ Function make_Q015(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + "_mo_q015", _mo_Q015)
   use (destination + '_mo_Q015') new alias Q015
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -1226,6 +1304,9 @@ Function make_Q016(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + "_mo_q016", _mo_Q016)
   use (destination + '_mo_Q016') new alias Q016
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -1279,6 +1360,9 @@ Function make_Q017(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + "_mo_q017", _mo_Q017)
   use (destination + '_mo_Q017') new alias Q017
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -1329,6 +1413,9 @@ Function make_O001(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + "_mo_o001", _mo_O001)
@@ -1387,6 +1474,9 @@ Function make_F006(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + '_mo_f006', _mo_F006)
   use (destination + '_mo_f006') new alias F006
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -1434,6 +1524,9 @@ Function make_F010(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + '_mo_f010', _mo_F010)
@@ -1487,6 +1580,9 @@ Function make_F011(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
   dbcreate(destination + '_mo_f011', _mo_F011)
   use (destination + '_mo_f011') new alias F011
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -1534,6 +1630,9 @@ Function make_F014(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  if check_izm_file(nameRef, nfile)
     return nil
   endif
   dbcreate(destination + "_mo_f014",_mo_F014)
