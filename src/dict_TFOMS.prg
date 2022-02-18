@@ -1436,7 +1436,7 @@ Function work_SprDep(source, destination)
   local nameFileDep := prefixFileName() + 'dep'
   local nameFileDepPr := prefixFileName() + 'deppr'
 
-  nameRef := source + "S_Dep.xml"
+  nameRef := "S_Dep.xml"
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
