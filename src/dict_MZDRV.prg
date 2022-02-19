@@ -38,7 +38,6 @@ function make_uslugi_mz(source, destination)
   OutStd( nameRef + " - Номенклатура медицинских услуг" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
     return nil
   else
     out_obrabotka(nfile)         
@@ -104,7 +103,6 @@ function make_severity(source, destination)
   OutStd( nameRef + " - Степень тяжести состояния пациента" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
     return nil
   else
     out_obrabotka(nfile)         
@@ -174,7 +172,6 @@ function make_implant(source, destination)
   OutStd( nameRef + " - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
     return nil
   else
     out_obrabotka(nfile)         
@@ -276,7 +273,6 @@ Function make_method_inj(source, destination)
   OutStd( nameRef + " - Способы введения (MethIntro)" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
     return nil
   else
     out_obrabotka(nfile)         
@@ -363,7 +359,6 @@ Function make_ed_izm(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    CLOSE databases
     return nil
   endif
 

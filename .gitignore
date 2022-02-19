@@ -26,6 +26,7 @@
 *.ttt
 *.xlsx
 *.s3db
+*.hst
 *.db
 /src_sqlite3/*.db
 /build
@@ -33,5 +34,7 @@
 /TFOMS
 /FFOMS
 /MZDRAV
+/in
+/out
 # не обрабатывать файлы, имя которых заканчивается на .a
 *.a

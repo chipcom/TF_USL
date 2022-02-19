@@ -55,6 +55,7 @@
 #include 'settings.ch'
 
 #define I_( x )                 hb_UTF8ToStr( hb_i18n_gettext( x ) )
+#define FILE_HASH   'files.hst'   // имя файла для хэшев файлов
 
 external errorsys
 
@@ -63,7 +64,7 @@ external errorsys
 function prefixFileName()
   return '_mo' + substr(CURENT_YEAR, 4, 1)
 
-******* 12.02.22
+******* 19.02.22
 proc main( ... )
   Local _mo_usl := {;
     {"SHIFR",      "C",     10,      0},;
@@ -106,19 +107,21 @@ proc main( ... )
   local lExists
   local os_sep := hb_osPathSeparator()
   local fp, i, s
-  // local hash_files
+  local t1, t2
 
 
   Public sys_date := date() // ctod('31/12/2021') //date()
   Public sys_year := year(date()) // 2021 // year(date())
-  Public hash_files
+  Public hash_files   // переменная для хранения хэшев исходных файлов
+
+  t1 := seconds()
 
   source := upper(beforatnum(os_sep, exename())) + os_sep
   destination := upper(beforatnum(os_sep, exename())) + os_sep
 
   aParams := hb_AParams()
 
-  delete file ttt.ttt
+  // delete file ttt.ttt
   f_first()
 
   FOR EACH cParam IN aParams
@@ -129,6 +132,10 @@ proc main( ... )
         RETURN
       CASE cParamL == "-quiet"
         // ? 'quiet'
+      CASE cParamL == "-all"
+        if HB_VFEXISTS(source + FILE_HASH)
+          HB_VFERASE(source + FILE_HASH)
+        endif
       CASE hb_LeftEq( cParamL, "-in=" )
         source := SubStr( cParam, 4 + 1 )
       CASE hb_LeftEq( cParamL, "-out=" )
@@ -228,13 +235,13 @@ proc main( ... )
   work_t006(source, destination)
   close databases
   //
-  filedelete(destination + k006dbf)
+  HB_VFERASE(destination + k006dbf)
   nResult := FRename(destination + 't006_2.dbf', destination + k006dbf)
   if nResult != 0
     out_error(FILE_RENAME_ERROR, 't006_2.dbf')
   endif
 
-  filedelete(destination + k006dbt)
+  HB_VFERASE(destination + k006dbt)
   nResult := FRename(destination + 't006_2.dbt', destination + k006dbt)
   if nResult != 0
     out_error(FILE_RENAME_ERROR, 't006_2.dbt')
@@ -373,18 +380,27 @@ proc main( ... )
   next
   fclose(fp)
   close databases
-  filedelete("tmp*.dbf")
-  filedelete("tmp*.ntx")
-  filedelete("not_lev.ntx")
-  filedelete("not_usl.ntx")
+  HB_VFERASE("tmp*.dbf")
+  HB_VFERASE("tmp*.ntx")
+  HB_VFERASE("not_lev.ntx")
+  HB_VFERASE("not_usl.ntx")
   
-  filedelete(destination + 't006_2.dbf')
-  filedelete(destination + 't006_2.dbt')
-  filedelete(destination + 't006_d.dbf')
-  filedelete(destination + 't006_u.dbf')
+  HB_VFERASE(destination + 't006_2.dbf')
+  HB_VFERASE(destination + 't006_2.dbt')
+  HB_VFERASE(destination + 't006_d.dbf')
+  HB_VFERASE(destination + 't006_u.dbf')
 
   // запишем md5-хэши файлов источников
-  create_files_md5(source)
+  create_files_md5(source, '*.xml')
+
+  // запишем md5-хэши готовых файлов 
+  // create_files_md5(destination, '*.dbf')
+
+  t2 := seconds() - t1
+
+  if t2 > 0
+    OutStd( "Время конвертации - " + sectotime(t2) + hb_eol() )
+  endif
 
   SET KEY K_ALT_F4 TO
   SET KEY K_ALT_F3 TO
@@ -566,9 +582,16 @@ STATIC PROCEDURE About()
     hb_eol() )
  
   OutStd( ;
-    I_( "Syntax:  create_dict [options] [@config] <file[s]>" ) + hb_eol() + ;
+    I_( "Syntax:  create_dict [options] " ) + hb_eol() + ;
       hb_eol() )
-  
+  OutStd( ;
+    "Опции:" + hb_eol() + ;
+    "      -in=<source directory>" + hb_eol() + ;
+    "      -out=<destination directory>" + hb_eol() + ;
+    "      -all - конвертировать все" + hb_eol() + ;
+    "      -help - помощь" + hb_eol() ;
+  )
+    
   RETURN
  
 ****** 11.02.22
@@ -647,31 +670,35 @@ function read_files_md5(source)
   LOCAL cBuffer, nFileSize
   local aStr, hash_files, tArr, row
 
-  hash_files := hb_Hash()
+  if HB_VFEXISTS(source + FILE_HASH)
+    hash_files := hb_Hash()
 
-  fp := HB_VFOPEN(source + 'hide.txt', FO_READ)
-  nFileSize := hb_vfSize( fp )
-  cBuffer := Space( nFileSize )
-  IF hb_vfRead( fp, @cBuffer, nFileSize ) != nFileSize
-  else
-    aStr := split(cBuffer, hb_eol())
-    for each row in aStr
-      tArr := split(row, ', ')
-      if len(tArr) == 2
-        hash_files[tArr[1]] := tArr[2]
-      endif
-    next
+    fp := HB_VFOPEN(source + FILE_HASH, FO_READ)
+    nFileSize := hb_vfSize( fp )
+    cBuffer := Space( nFileSize )
+    IF hb_vfRead( fp, @cBuffer, nFileSize ) != nFileSize
+    else
+      aStr := split(cBuffer, hb_eol())
+      for each row in aStr
+        tArr := split(row, ', ')
+        if len(tArr) == 2
+          hash_files[tArr[1]] := tArr[2]
+        endif
+      next
+    endif
+
+    hb_vfClose( fp )
+    return hash_files
   endif
-
-  hb_vfClose( fp )
-  return hash_files
+  return nil
   
-function create_files_md5(source)
+function create_files_md5(source, ext)
   local fp, i, s
   LOCAL aFiles, aFile
 
-  fp := fcreate(source + 'hide.txt', FC_HIDDEN)
-  IF ! Empty( aFiles := hb_vfDirectory( source + '*.xml' ) )
+  fp := fcreate(source + FILE_HASH, FC_HIDDEN)
+  IF ! Empty( aFiles := hb_vfDirectory( source + ext ) )
+    // IF ! Empty( aFiles := hb_vfDirectory( source + '*.xml' ) )
     s := ''
     FOR EACH aFile IN aFiles
       s := upper(aFile[ F_NAME ]) + ', ' + hb_MD5File( source + aFile[ F_NAME ] ) + hb_eol()
@@ -685,11 +712,13 @@ function check_izm_file(nameRef, nfile)
   local fl := .f.
   local hashMD5File
 
-  nameRef := upper(nameRef)
-  if hb_HHasKey( hash_files, nameRef )
-    hashMD5File := hb_HGet(hash_files, nameRef)
-    if hashMD5file == hb_MD5File( nfile ) // файл не изменялся
-      fl := .t.
+  if hash_files != nil
+    nameRef := upper(nameRef)
+    if hb_HHasKey( hash_files, nameRef )
+      hashMD5File := hb_HGet(hash_files, nameRef)
+      if hashMD5file == hb_MD5File( nfile ) // файл не изменялся
+        fl := .t.
+      endif
     endif
   endif
   return fl

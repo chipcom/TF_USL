@@ -22,6 +22,11 @@ Function work_Shema(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + nameFile, _mo_shema)
   use (destination + nameFile) new alias SH
   index on kod to tmp_shema
@@ -139,6 +144,11 @@ Function work_SprUnit(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + nameFile, _mo_unit)
   use (destination + nameFile) new alias UN
 
@@ -199,6 +209,11 @@ Function work_MOServ(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + nameFile, _mo_moserv)
   use (destination + nameFile) new alias MS
 
@@ -270,6 +285,11 @@ Function work_Prices(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + nameFile, _mo_prices)
   use (destination + nameFile) new alias MP
 
@@ -727,6 +747,7 @@ Function work_SprMU(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
   dbcreate( destination + "_mo_t2_v1", _t2_v1)
   use (destination + '_mo_t2_v1') new alias T2V1
 
@@ -1020,6 +1041,11 @@ Function work_SprKslp(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + nameFile, _mo_kslp)
   use (destination + nameFile) new alias KS
 
@@ -1082,6 +1108,11 @@ Function work_SprKiro(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + nameFile, _mo_kiro)
   use (destination + nameFile) new alias KS
 
@@ -1372,6 +1403,11 @@ Function work_SprSubDiv(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + nameFile, _mo_subdiv)
   use (destination + nameFile) new alias SD
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -1442,6 +1478,11 @@ Function work_SprDep(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + nameFileDep, _mo_dep)
   dbcreate(destination + nameFileDepPr, _mo_deppr)
 
@@ -1532,6 +1573,11 @@ Function work_LvlPay(source, destination)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   dbcreate(destination + nameFile, _mo_lvlpay)
   use (destination + nameFile) new alias LP
 
