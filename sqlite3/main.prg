@@ -5,11 +5,21 @@
 // #define TRACE
 
 /*
- * 12.07.2021
+ * 21.02.2022
 */
-procedure main()
+procedure main( ... )
+  local cParam, cParamL
+  local aParams
+  local nResult
+
+  local source
+  local destination
+  local lExists
+  local os_sep := hb_osPathSeparator()
+  local fp, i, s
+
   LOCAL lCreateIfNotExist := .T.
-  LOCAL db := sqlite3_open( "chip_mo.s3db", lCreateIfNotExist )
+  LOCAL db
 
   REQUEST HB_CODEPAGE_RU866
   HB_CDPSELECT("RU866")
@@ -36,12 +46,54 @@ procedure main()
   // SETCLEARB(' ')
   // SET COLOR TO
   
+  source := upper(beforatnum(os_sep, exename())) + os_sep
+  destination := upper(beforatnum(os_sep, exename())) + os_sep
+
+  aParams := hb_AParams()
+  FOR EACH cParam IN aParams
+    cParamL := Lower( cParam )
+    DO CASE
+      CASE cParamL == "-help"
+        About()
+        RETURN
+      CASE cParamL == "-quiet"
+        // ? 'quiet'
+      CASE cParamL == "-all"
+        if HB_VFEXISTS(source + FILE_HASH)
+          HB_VFERASE(source + FILE_HASH)
+        endif
+      CASE hb_LeftEq( cParamL, "-in=" )
+        source := SubStr( cParam, 4 + 1 )
+      CASE hb_LeftEq( cParamL, "-out=" )
+        destination := SubStr( cParam, 5 + 1 )
+    endcase
+  next
+
+  if right(source, 1) != os_sep
+    source += os_sep
+  endif
+  if right(destination, 1) != os_sep
+    destination += os_sep
+  endif
+  
+  if !(lExists := hb_vfDirExists( source ))
+    out_error(DIR_IN_NOT_EXIST, source)
+    quit
+  endi
+
+  if !(lExists := hb_vfDirExists( destination ))
+    out_error(DIR_OUT_NOT_EXIST, destination)
+    quit
+  endi
+
   ? sqlite3_libversion()
   // sqlite3_sleep( 3000 )
 
   IF sqlite3_libversion_number() < 3005001
      RETURN
   ENDIF
+
+  db := sqlite3_open( destination + "chip_mo.s3db", lCreateIfNotExist )
 
   if ! Empty( db )
     #ifdef TRACE
@@ -53,46 +105,46 @@ procedure main()
     sqlite3_exec( db, "PRAGMA page_size=4096" )
 
     // справочники группы F___
-    // make_f005( db )
-    // make_f006( db )
-    // make_f007( db )
-    // make_f008( db )
-    // make_f009( db )
-    // make_f010( db )
-    // make_f011( db )
-    // make_f014( db )
-    // make_f015( db )
+    // make_f005( db, source )
+    // make_f006( db, source )
+    // make_f007( db, source )
+    // make_f008( db, source )
+    // make_f009( db, source )
+    // make_f010( db, source )
+    // make_f011( db, source )
+    // make_f014( db, source )
+    // make_f015( db, source )
     // // справочники группы O___
-    // make_o001( db )
+    // make_o001( db, source )
     // // справочники группы Q___
-    // make_q015( db )
-    // make_q016( db )
-    // make_q017( db )
+    // make_q015( db, source )
+    // make_q016( db, source )
+    // make_q017( db, source )
     // справочники группы V___
-    make_v002( db )
-    // make_v005( db )
-    // make_v006( db )
-    // make_v008( db )
-    make_v009( db )
-    make_v010( db )
-    make_v012( db )
-    // make_v013( db )
-    // make_v014( db )
-    make_v015( db )
-    make_v016( db )
-    make_v017( db )
-    make_v018( db )
-    make_v019( db )
-    make_v020( db )
-    make_v021( db )
-    make_v022( db )
-    // make_v023( db )
-    make_v024( db )
-    make_v025( db )
-    // make_v026( db )
-    // make_v027( db )
-    // make_v028( db )
-    // make_v029( db )
+    make_v002( db, source )
+    // make_v005( db, source )
+    // make_v006( db, source )
+    // make_v008( db, source )
+    make_v009( db, source )
+    make_v010( db, source )
+    make_v012( db, source )
+    // make_v013( db, source )
+    // make_v014( db, source )
+    make_v015( db, source )
+    make_v016( db, source )
+    make_v017( db, source )
+    make_v018( db, source )
+    make_v019( db, source )
+    make_v020( db, source )
+    make_v021( db, source )
+    make_v022( db, source )
+    // make_v023( db, source )
+    make_v024( db, source )
+    make_v025( db, source )
+    // make_v026( db, source )
+    // make_v027( db, source )
+    // make_v028( db, source )
+    // make_v029( db, source )
 
   endif
   return
@@ -144,3 +196,95 @@ Function mo_read_xml_tag1251(oNode,_aerr,_binding)
     aadd(_aerr,'Неверный тип данных у тэга "'+oNode:title+'": "'+c+'"')
   endif
   return ret
+
+PROCEDURE About()
+
+  OutStd( ;
+      "Конвертер справочников обязательного медицинского страхования" + hb_eol() + ;
+        "Copyright (c) 2022, Vladimir G.Baykin" + hb_eol() + ;
+      hb_eol() )
+   
+  OutStd( ;
+      "Syntax:  create_dict [options] " + hb_eol() + hb_eol() )
+  OutStd( ;
+      "Опции:" + hb_eol() + ;
+      "      -in=<source directory>" + hb_eol() + ;
+      "      -out=<destination directory>" + hb_eol() + ;
+      "      -all - конвертировать все" + hb_eol() + ;
+      "      -help - помощь" + hb_eol() ;
+  )
+      
+  RETURN
+   
+****** 11.02.22
+function obrabotka(nfile)
+
+  @ row() + 1, 1 say "Обработка файла " + nfile + " -"
+  return Col()
+
+****** 13.02.22
+function out_obrabotka(nfile)
+
+  OutStd( ;
+    "===== Обработка файла " + nfile )
+  return nil
+
+****** 15.02.22
+function out_create_file(nfile)
+
+  OutStd( ;
+    "Создание файла " + nfile )
+  return nil
+
+****** 14.02.22
+function out_obrabotka_eol()
+
+  OutStd( hb_eol() )
+  return nil
+
+****** 14.02.22
+function out_obrabotka_count(j, k)
+
+  // OutStd( str(j / k * 100, 6, 2) + "%" )
+  return nil
+
+****** 15.02.22
+function out_error(nError, nfile, j, k)
+
+  DO CASE
+  CASE nError == FILE_NOT_EXIST
+    OutErr( ;
+      "Файл " + nfile + " не существует" + hb_eol() )
+  CASE nError == FILE_READ_ERROR
+    OutErr( ;
+      "Ошибка в загрузке файла " + nfile + hb_eol() )
+  CASE nError == FILE_RENAME_ERROR
+    OutErr( ;
+      "Ошибка переименования файла " + nfile + hb_eol() )
+  CASE nError == DIR_IN_NOT_EXIST
+    OutErr( ;
+      'Каталог исходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
+  CASE nError == DIR_OUT_NOT_EXIST
+    OutErr( ;
+      'Каталог для выходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
+  CASE nError == TAG_YEAR_REPORT
+      OutErr( ;
+        'Ошибка при чтении файла "' + nfile + '". Некорректное значение тега YEAR_REPORT ' + j + hb_eol() )
+  CASE nError == TAG_PLACE_ERROR
+      OutErr( ;
+        'Ошибка при чтении файла "' + nfile + '" - более одного тега PLACE в отделении: ' + alltrim(j) + hb_eol() )
+  CASE nError == TAG_PERIOD_ERROR
+      OutErr( ;
+        'Ошибка при чтении файла "' + nfile + '" - более одного тега PERIOD в учреждении: ' + j + " в услуге " + k + hb_eol() )
+  CASE nError == TAG_VALUE_EMPTY
+      OutErr( ;
+        'Замечание при чтении файла "' + nfile + '" - пустое значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
+  CASE nError == TAG_VALUE_INVALID
+      OutErr( ;
+        'Замечание при чтении файла "' + nfile + '" - некорректное значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
+  CASE nError == TAG_ROW_INVALID
+      OutErr( ;
+      'Ошибка при загрузки строки - ' + j + ' из файла ' +nfile + hb_eol() )
+  end case
+
+  return nil

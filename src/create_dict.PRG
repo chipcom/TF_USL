@@ -54,7 +54,6 @@
 #include 'function.ch'
 #include 'settings.ch'
 
-#define I_( x )                 hb_UTF8ToStr( hb_i18n_gettext( x ) )
 #define FILE_HASH   'files.hst'   // имя файла для хэшев файлов
 
 external errorsys
@@ -101,7 +100,6 @@ proc main( ... )
   local k006dbt := nameFileK006 + '.dbt'
   local nResult
 
-  Local arr_err := {}
   local source
   local destination
   local lExists
@@ -574,7 +572,7 @@ Function usl2arr(sh_u,/*@*/j)
   endif
   return arr
 
-STATIC PROCEDURE About()
+PROCEDURE About()
 
   OutStd( ;
     "Конвертер справочников обязательного медицинского страхования" + hb_eol() + ;
@@ -582,8 +580,7 @@ STATIC PROCEDURE About()
     hb_eol() )
  
   OutStd( ;
-    I_( "Syntax:  create_dict [options] " ) + hb_eol() + ;
-      hb_eol() )
+    "Syntax:  create_dict [options] " + hb_eol() + hb_eol() )
   OutStd( ;
     "Опции:" + hb_eol() + ;
     "      -in=<source directory>" + hb_eol() + ;

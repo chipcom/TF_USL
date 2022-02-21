@@ -1,3 +1,4 @@
+#include "dict_error.ch"
 #include "function.ch"
 
 #require 'hbsqlit3'
@@ -5,9 +6,9 @@
 // static v_pom := { 'ст-р', 'дн.с', 'п-ка', 'вне МО' }
 
 /*
- * 12.07.2021
+ * 21.02.2022
 */
-PROCEDURE make_v002(db)
+PROCEDURE make_v002(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -15,20 +16,31 @@ PROCEDURE make_v002(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v002( idpr INTEGER, prname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
+
+  nameRef := "v002.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
 
   sqlite3_exec( db, "DROP TABLE v002" )
      
+  OutStd( nameRef + " - Классификатор профилей оказанной медицинской помощи (ProfOt)" + hb_eol() )
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v002 - Ok"
+    OutStd( "CREATE TABLE v002 - Ok" )
   ENDIF
 
-  nfile := "v002.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v002.xml - Классификатор профилей оказанной медицинской помощи (ProfOt)'
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v002 ( idpr, prname, datebeg, dateend ) VALUES( :idpr, :prname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -44,7 +56,7 @@ PROCEDURE make_v002(db)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(FILE_READ_ERROR, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -54,10 +66,10 @@ PROCEDURE make_v002(db)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v002" )
     // FOR nI := 1 TO Len( aTable )
@@ -74,7 +86,7 @@ PROCEDURE make_v002(db)
 /*
  * 12.07.2021
 */
-PROCEDURE make_v005(db)
+PROCEDURE make_v005(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -82,6 +94,7 @@ PROCEDURE make_v005(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v005( idpol INTEGER, polname TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v005" )
      
@@ -137,7 +150,7 @@ PROCEDURE make_v005(db)
 /*
  * 12.07.2021
 */
-PROCEDURE make_v006(db)
+PROCEDURE make_v006(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -145,6 +158,7 @@ PROCEDURE make_v006(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v006( idump INTEGER, umpname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v006" )
      
@@ -204,7 +218,7 @@ PROCEDURE make_v006(db)
 /*
  * 12.07.2021
 */
-PROCEDURE make_v008(db)
+PROCEDURE make_v008(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -212,6 +226,7 @@ PROCEDURE make_v008(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v008( idvmp INTEGER, vmpname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v008" )
      
@@ -271,7 +286,7 @@ PROCEDURE make_v008(db)
 /*
  * 12.07.2021
 */
-PROCEDURE make_v009(db)
+PROCEDURE make_v009(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -279,6 +294,7 @@ PROCEDURE make_v009(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v009( idrmp INTEGER, rmpname TEXT, dl_uslov INTEGER, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v009" )
      
@@ -342,7 +358,7 @@ PROCEDURE make_v009(db)
 /*
  * 12.07.2021
 */
-PROCEDURE make_v010(db)
+PROCEDURE make_v010(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -350,6 +366,7 @@ PROCEDURE make_v010(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v010( idsp INTEGER, spname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v010" )
      
@@ -409,7 +426,7 @@ PROCEDURE make_v010(db)
 /*
  * 12.07.2021
 */
-PROCEDURE make_v012(db)
+PROCEDURE make_v012(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -417,6 +434,7 @@ PROCEDURE make_v012(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v012( idiz INTEGER, izname TEXT, dl_uslov INTEGER, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v012" )
      
@@ -480,7 +498,7 @@ PROCEDURE make_v012(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v013(db)
+PROCEDURE make_v013(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -488,6 +506,7 @@ PROCEDURE make_v013(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v013( idkat INTEGER, katname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v013" )
      
@@ -547,7 +566,7 @@ PROCEDURE make_v013(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v014(db)
+PROCEDURE make_v014(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -555,6 +574,7 @@ PROCEDURE make_v014(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v014( idfrmmp INTEGER, frmmpname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v014" )
      
@@ -614,7 +634,7 @@ PROCEDURE make_v014(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v015(db)
+PROCEDURE make_v015(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -622,6 +642,7 @@ PROCEDURE make_v015(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v015( recid INTEGER, code INTEGER, name TEXT, high INTEGER, okso INTEGER, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v015" )
      
@@ -687,7 +708,7 @@ PROCEDURE make_v015(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v016(db)
+PROCEDURE make_v016(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -695,6 +716,7 @@ PROCEDURE make_v016(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v016( iddt TEXT, dtname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v016" )
      
@@ -754,7 +776,7 @@ PROCEDURE make_v016(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v017(db)
+PROCEDURE make_v017(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -762,6 +784,7 @@ PROCEDURE make_v017(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v017( iddr INTEGER, drname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v017" )
      
@@ -821,7 +844,7 @@ PROCEDURE make_v017(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v018(db)
+PROCEDURE make_v018(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -829,6 +852,7 @@ PROCEDURE make_v018(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v018( idhvid TEXT, hvidname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v018" )
      
@@ -888,7 +912,7 @@ PROCEDURE make_v018(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v019(db)
+PROCEDURE make_v019(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -896,6 +920,7 @@ PROCEDURE make_v019(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v019( idhm INTEGER, hmname TEXT, diag TEXT, hvid TEXT, hgr INTEGER, hmodp TEXT, idmodp INTEGER, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v019" )
      
@@ -965,7 +990,7 @@ PROCEDURE make_v019(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v020(db)
+PROCEDURE make_v020(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -973,6 +998,7 @@ PROCEDURE make_v020(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v020( idk_pr INTEGER, k_prname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v020" )
      
@@ -1032,7 +1058,7 @@ PROCEDURE make_v020(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v021(db)
+PROCEDURE make_v021(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -1040,6 +1066,7 @@ PROCEDURE make_v021(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v021( idspec INTEGER, specname TEXT, postname TEXT, idpost_mz TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v021" )
      
@@ -1103,7 +1130,7 @@ PROCEDURE make_v021(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v022(db)
+PROCEDURE make_v022(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -1111,6 +1138,7 @@ PROCEDURE make_v022(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v022( idmpac INTEGER, mpacname TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v022" )
      
@@ -1170,7 +1198,8 @@ PROCEDURE make_v022(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v023(db)
+PROCEDURE make_v023(db, source)
+  local nfile, nameRef
 
   ? ''
   ? 'Обработка файла v023.xml - Классификатор клинико-статистических групп (KSG)'
@@ -1182,7 +1211,8 @@ PROCEDURE make_v023(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v024(db)
+PROCEDURE make_v024(db, source)
+  local nfile, nameRef
 
   ? ''
   ? 'Обработка файла v024.xml - Классификатор классификационных критериев (DopKr)'
@@ -1194,7 +1224,7 @@ PROCEDURE make_v024(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v025(db)
+PROCEDURE make_v025(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -1202,6 +1232,7 @@ PROCEDURE make_v025(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v025( idpc TEXT, n_pc TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v025" )
      
@@ -1261,7 +1292,7 @@ PROCEDURE make_v025(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v026(db)
+PROCEDURE make_v026(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -1269,6 +1300,7 @@ PROCEDURE make_v026(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v026( idump INTEGER, k_kpg TEXT, n_kpg TEXT, koef_z REAL, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v026" )
      
@@ -1332,7 +1364,7 @@ PROCEDURE make_v026(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v027(db)
+PROCEDURE make_v027(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -1340,6 +1372,7 @@ PROCEDURE make_v027(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v027( idcz INTEGER, n_cz TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v027" )
      
@@ -1399,7 +1432,7 @@ PROCEDURE make_v027(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v028(db)
+PROCEDURE make_v028(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -1407,6 +1440,7 @@ PROCEDURE make_v028(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v028( idvn INTEGER, n_vn TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v028" )
      
@@ -1466,7 +1500,7 @@ PROCEDURE make_v028(db)
 /*
  * 13.07.2021
 */
-PROCEDURE make_v029(db)
+PROCEDURE make_v029(db, source)
 
   LOCAL stmt
   LOCAL nI, nJ
@@ -1474,6 +1508,7 @@ PROCEDURE make_v029(db)
   local k, j
   local ss1, d1, d2
   local table_sql := "CREATE TABLE v029( idmet INTEGER, n_met TEXT, datebeg TEXT, dateend TEXT )"
+  local nfile, nameRef
 
   sqlite3_exec( db, "DROP TABLE v029" )
      
