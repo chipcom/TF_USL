@@ -102,6 +102,7 @@ proc main( ... )
 
   local source
   local destination
+  local curent_dir
   local lExists
   local os_sep := hb_osPathSeparator()
   local fp, i, s
@@ -116,6 +117,7 @@ proc main( ... )
 
   source := upper(beforatnum(os_sep, exename())) + os_sep
   destination := upper(beforatnum(os_sep, exename())) + os_sep
+  curent_dir := upper(beforatnum(os_sep, exename())) + os_sep
 
   aParams := hb_AParams()
 
@@ -337,7 +339,7 @@ proc main( ... )
     endif
     skip
   enddo
-  fp := fcreate("_mo_prof.txt") ; n_list := 1 ; tek_stroke := 0
+  fp := fcreate(curent_dir + "_mo_prof.txt") ; n_list := 1 ; tek_stroke := 0
   for j := 1 to len(aup)
     s := aup[j,1]+iif(aup[j,2] == 0, "взр", "реб")+".{"
     asort(aup[j,3])
@@ -364,7 +366,7 @@ proc main( ... )
     endif
     skip
   enddo
-  fp := fcreate("_mo_spec.txt") ; n_list := 1 ; tek_stroke := 0
+  fp := fcreate(curent_dir + "_mo_spec.txt") ; n_list := 1 ; tek_stroke := 0
   for j := 1 to len(aup)
     s := aup[j,1]+iif(aup[j,2] == 0, "взр", "реб")+".{"
     asort(aup[j,3])
@@ -378,10 +380,26 @@ proc main( ... )
   next
   fclose(fp)
   close databases
-  HB_VFERASE("tmp*.dbf")
-  HB_VFERASE("tmp*.ntx")
-  HB_VFERASE("not_lev.ntx")
-  HB_VFERASE("not_usl.ntx")
+  HB_VFERASE(curent_dir + "tmp*.dbf")
+  HB_VFERASE(curent_dir + "tmp*.ntx")
+  HB_VFERASE(curent_dir + "tmp_it.ntx")
+  HB_VFERASE(curent_dir + "tmp_k6.ntx")
+  HB_VFERASE(curent_dir + "tmp_lusl.ntx")
+  HB_VFERASE(curent_dir + "tmp_lvlpay.ntx")
+  HB_VFERASE(curent_dir + "tmp_ok.ntx")
+  HB_VFERASE(curent_dir + "tmp_on.ntx")
+  HB_VFERASE(curent_dir + "tmp_po.ntx")
+  HB_VFERASE(curent_dir + "tmp_prices.ntx")
+  HB_VFERASE(curent_dir + "tmp_prof.ntx")
+  HB_VFERASE(curent_dir + "tmp_schema.ntx")
+  HB_VFERASE(curent_dir + "tmp_spec.ntx")
+  HB_VFERASE(curent_dir + "tmp_tel.ntx")
+  HB_VFERASE(curent_dir + "tmp_unit.ntx")
+  HB_VFERASE(curent_dir + "tmp_usl.ntx")
+  HB_VFERASE(curent_dir + "tmp1.ntx")
+  HB_VFERASE(curent_dir + "tmp6.ntx")
+  HB_VFERASE(curent_dir + "not_lev.ntx")
+  HB_VFERASE(curent_dir + "not_usl.ntx")
   
   HB_VFERASE(destination + 't006_2.dbf')
   HB_VFERASE(destination + 't006_2.dbt')
