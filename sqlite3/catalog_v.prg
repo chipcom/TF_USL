@@ -6,7 +6,7 @@
 // static v_pom := { 'ст-р', 'дн.с', 'п-ка', 'вне МО' }
 
 /*
- * 21.02.2022
+ * 21.02.22
 */
 PROCEDURE make_v002(db, source)
 
@@ -33,7 +33,7 @@ PROCEDURE make_v002(db, source)
      
   OutStd( nameRef + " - Классификатор профилей оказанной медицинской помощи (ProfOt)" + hb_eol() )
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-    OutStd( "CREATE TABLE v002 - Ok" )
+    OutStd( "CREATE TABLE v002 - Ok" + hb_eol() )
   ENDIF
 
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -41,6 +41,7 @@ PROCEDURE make_v002(db, source)
     out_error(FILE_READ_ERROR, nfile)
     return nil
   else
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v002 ( idpr, prname, datebeg, dateend ) VALUES( :idpr, :prname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -56,7 +57,7 @@ PROCEDURE make_v002(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              out_error(FILE_READ_ERROR, nfile, j)
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -74,9 +75,9 @@ PROCEDURE make_v002(db, source)
     // aTable := sqlite3_get_table( db, "SELECT * FROM v002" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -84,7 +85,7 @@ PROCEDURE make_v002(db, source)
   return
 
 /*
- * 12.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v005(db, source)
 
@@ -96,19 +97,32 @@ PROCEDURE make_v005(db, source)
   local table_sql := "CREATE TABLE v005( idpol INTEGER, polname TEXT )"
   local nfile, nameRef
 
+
+  nameRef := "v005.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
+  OutStd( nameRef + " - Классификатор пола застрахованного (Pol)" + hb_eol() )
+
   sqlite3_exec( db, "DROP TABLE v005" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v005 - Ok"
+     OutStd( "CREATE TABLE v005 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v005.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v005.xml - Классификатор пола застрахованного (Pol)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v005 ( idpol, polname ) VALUES( :idpol, :polname )" )
     IF ! Empty( stmt )
@@ -120,7 +134,7 @@ PROCEDURE make_v005(db, source)
           if sqlite3_bind_int( stmt, 1, val( s_idpol ) ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 2, s_polname ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -130,17 +144,17 @@ PROCEDURE make_v005(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v005" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866')
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -148,7 +162,7 @@ PROCEDURE make_v005(db, source)
   return
 
 /*
- * 12.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v006(db, source)
 
@@ -160,19 +174,30 @@ PROCEDURE make_v006(db, source)
   local table_sql := "CREATE TABLE v006( idump INTEGER, umpname TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v006.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
+  OutStd( nameRef + " - Классификатор условий оказания медицинской помощи (UslMp)" + hb_eol() )
   sqlite3_exec( db, "DROP TABLE v006" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v006 - Ok"
+    OutStd( "CREATE TABLE v006 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v006.xml"
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v006.xml - Классификатор условий оказания медицинской помощи (UslMp)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v006 ( idump, umpname, datebeg, dateend ) VALUES( :idump, :umpname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -188,7 +213,7 @@ PROCEDURE make_v006(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -198,17 +223,17 @@ PROCEDURE make_v006(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v006" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -216,7 +241,7 @@ PROCEDURE make_v006(db, source)
   return
 
 /*
- * 12.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v008(db, source)
 
@@ -228,19 +253,31 @@ PROCEDURE make_v008(db, source)
   local table_sql := "CREATE TABLE v008( idvmp INTEGER, vmpname TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v008.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v008" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v008 - Ok"
+    OutStd( "CREATE TABLE v008 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v008.xml"
+  OutStd( nameRef + " - Классификатор видов медицинской помощи (VidMp)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v008.xml - Классификатор видов медицинской помощи (VidMp)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v008 ( idvmp, vmpname, datebeg, dateend ) VALUES( :idvmp, :vmpname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -256,7 +293,7 @@ PROCEDURE make_v008(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -266,17 +303,17 @@ PROCEDURE make_v008(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v008" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -284,7 +321,7 @@ PROCEDURE make_v008(db, source)
   return
 
 /*
- * 12.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v009(db, source)
 
@@ -296,19 +333,30 @@ PROCEDURE make_v009(db, source)
   local table_sql := "CREATE TABLE v009( idrmp INTEGER, rmpname TEXT, dl_uslov INTEGER, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v009.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v009" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v009 - Ok"
+    OutStd( "CREATE TABLE v009 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v009.xml"
+  OutStd( nameRef + " - Классификатор результатов обращения за медицинской помощью (Rezult)" + hb_eol() )
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v009.xml - Классификатор результатов обращения за медицинской помощью (Rezult)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v009 ( idrmp, rmpname, dl_uslov, datebeg, dateend ) VALUES( :idrmp, :rmpname, :dl_uslov, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -328,7 +376,7 @@ PROCEDURE make_v009(db, source)
             sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -338,17 +386,17 @@ PROCEDURE make_v009(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v009" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -356,7 +404,7 @@ PROCEDURE make_v009(db, source)
   return
 
 /*
- * 12.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v010(db, source)
 
@@ -368,19 +416,30 @@ PROCEDURE make_v010(db, source)
   local table_sql := "CREATE TABLE v010( idsp INTEGER, spname TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v010.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v010" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v010 - Ok"
+    OutStd( "CREATE TABLE v010 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v010.xml"
+  OutStd( nameRef + " - Классификатор способов оплаты медицинской помощи (Sposob)" + hb_eol() )
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v010.xml - Классификатор способов оплаты медицинской помощи (Sposob)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v010 ( idsp, spname, datebeg, dateend ) VALUES( :idsp, :spname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -396,7 +455,7 @@ PROCEDURE make_v010(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -406,17 +465,17 @@ PROCEDURE make_v010(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v010" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -424,7 +483,7 @@ PROCEDURE make_v010(db, source)
   return
 
 /*
- * 12.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v012(db, source)
 
@@ -436,19 +495,30 @@ PROCEDURE make_v012(db, source)
   local table_sql := "CREATE TABLE v012( idiz INTEGER, izname TEXT, dl_uslov INTEGER, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v012.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v012" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v012 - Ok"
+    OutStd( "CREATE TABLE v012 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v012.xml"
+  OutStd( nameRef + " - Классификатор исходов заболевания (Ishod)" + hb_eol() )
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v012.xml - Классификатор исходов заболевания (Ishod)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v012 ( idiz, izname, dl_uslov, datebeg, dateend ) VALUES( :idiz, :izname, :dl_uslov, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -468,7 +538,7 @@ PROCEDURE make_v012(db, source)
             sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -478,17 +548,17 @@ PROCEDURE make_v012(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v012" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -496,7 +566,7 @@ PROCEDURE make_v012(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v013(db, source)
 
@@ -508,19 +578,31 @@ PROCEDURE make_v013(db, source)
   local table_sql := "CREATE TABLE v013( idkat INTEGER, katname TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v013.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v013" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v013 - Ok"
+    OutStd( "CREATE TABLE v013 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v013.xml"
+  OutStd( nameRef + " - Классификатор категорий застрахованного лица (KategZL)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v013.xml - Классификатор категорий застрахованного лица (KategZL)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v013 ( idkat, katname, datebeg, dateend ) VALUES( :idkat, :katname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -536,7 +618,7 @@ PROCEDURE make_v013(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -546,17 +628,17 @@ PROCEDURE make_v013(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v013" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -564,7 +646,7 @@ PROCEDURE make_v013(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v014(db, source)
 
@@ -576,19 +658,31 @@ PROCEDURE make_v014(db, source)
   local table_sql := "CREATE TABLE v014( idfrmmp INTEGER, frmmpname TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v014.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v014" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v014 - Ok"
+    OutStd( "CREATE TABLE v014 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v014.xml"
+  OutStd( nameRef + " - Классификатор форм оказания медицинской помощи (FRMMP)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v014.xml - Классификатор форм оказания медицинской помощи (FRMMP)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v014 ( idfrmmp, frmmpname, datebeg, dateend ) VALUES( :idfrmmp, :frmmpname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -604,7 +698,7 @@ PROCEDURE make_v014(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -614,17 +708,17 @@ PROCEDURE make_v014(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v014" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -632,7 +726,7 @@ PROCEDURE make_v014(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v015(db, source)
 
@@ -644,19 +738,31 @@ PROCEDURE make_v015(db, source)
   local table_sql := "CREATE TABLE v015( recid INTEGER, code INTEGER, name TEXT, high INTEGER, okso INTEGER, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v015.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v015" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v015 - Ok"
+    OutStd( "CREATE TABLE v015 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v015.xml"
+  OutStd( nameRef + " - Классификатор медицинских специальностей (Medspec)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v015.xml - Классификатор медицинских специальностей (Medspec)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v015 ( recid, code, name, high, okso, datebeg, dateend ) VALUES( :recid, :code, :name, :high, :okso, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -678,7 +784,7 @@ PROCEDURE make_v015(db, source)
             sqlite3_bind_text( stmt, 6, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 7, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -688,17 +794,17 @@ PROCEDURE make_v015(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v015" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 3 ], 'RU866'), "-", aTable[ nI ][ 4 ], "-", aTable[ nI ][ 6 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -706,7 +812,7 @@ PROCEDURE make_v015(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v016(db, source)
 
@@ -718,19 +824,31 @@ PROCEDURE make_v016(db, source)
   local table_sql := "CREATE TABLE v016( iddt TEXT, dtname TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v016.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v016" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v016 - Ok"
+    OutStd( "CREATE TABLE v016 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v016.xml"
+  OutStd( nameRef + " - Классификатор типов диспансеризации (DispT)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v016.xml - Классификатор типов диспансеризации (DispT)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v016 ( iddt, dtname, datebeg, dateend ) VALUES( :iddt, :dtname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -746,7 +864,7 @@ PROCEDURE make_v016(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -756,17 +874,17 @@ PROCEDURE make_v016(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v016" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? hb_UTF8ToStr( aTable[ nI ][ 1 ], 'RU866'), "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -774,7 +892,7 @@ PROCEDURE make_v016(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v017(db, source)
 
@@ -786,19 +904,31 @@ PROCEDURE make_v017(db, source)
   local table_sql := "CREATE TABLE v017( iddr INTEGER, drname TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v017.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v017" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v017 - Ok"
+    OutStd( "CREATE TABLE v017 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v017.xml"
+  OutStd( nameRef + " - Классификатор результатов диспансеризации (DispR)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v017.xml - Классификатор результатов диспансеризации (DispR)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v017 ( iddr, drname, datebeg, dateend ) VALUES( :iddr, :drname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -814,7 +944,7 @@ PROCEDURE make_v017(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -824,17 +954,17 @@ PROCEDURE make_v017(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v017" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -842,7 +972,7 @@ PROCEDURE make_v017(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v018(db, source)
 
@@ -854,19 +984,31 @@ PROCEDURE make_v018(db, source)
   local table_sql := "CREATE TABLE v018( idhvid TEXT, hvidname TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v018.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v018" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v018 - Ok"
+    OutStd( "CREATE TABLE v018 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v018.xml"
+  OutStd( nameRef + " - Классификатор видов высокотехнологичной медицинской помощи (HVid)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v018.xml - Классификатор видов высокотехнологичной медицинской помощи (HVid)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v018 ( idhvid, hvidname, datebeg, dateend ) VALUES( :idhvid, :hvidname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -882,7 +1024,7 @@ PROCEDURE make_v018(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -892,17 +1034,17 @@ PROCEDURE make_v018(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v018" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -910,7 +1052,7 @@ PROCEDURE make_v018(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v019(db, source)
 
@@ -922,19 +1064,31 @@ PROCEDURE make_v019(db, source)
   local table_sql := "CREATE TABLE v019( idhm INTEGER, hmname TEXT, diag TEXT, hvid TEXT, hgr INTEGER, hmodp TEXT, idmodp INTEGER, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v019.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v019" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v019 - Ok"
+    OutStd( "CREATE TABLE v019 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v019.xml"
+  OutStd( nameRef + " - Классификатор методов высокотехнологичной медицинской помощи (HMet)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v019.xml - Классификатор методов высокотехнологичной медицинской помощи (HMet)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v019 ( idhm, hmname, diag, hvid, hgr, hmodp, idmodp, datebeg, dateend ) VALUES( :idhm, :hmname, :diag, :hvid, :hgr, :hmodp, :idmodp, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -960,7 +1114,7 @@ PROCEDURE make_v019(db, source)
             sqlite3_bind_text( stmt, 8, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 9, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -970,17 +1124,17 @@ PROCEDURE make_v019(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v019" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 8 ], "-", aTable[ nI ][ 9 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -988,7 +1142,7 @@ PROCEDURE make_v019(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v020(db, source)
 
@@ -1000,19 +1154,31 @@ PROCEDURE make_v020(db, source)
   local table_sql := "CREATE TABLE v020( idk_pr INTEGER, k_prname TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v020.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v020" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v020 - Ok"
+    OutStd( "CREATE TABLE v020 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v020.xml"
+  OutStd( nameRef + " - Классификатор профиля койки (KoPr)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v020.xml - Классификатор профиля койки (KoPr)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v020 ( idk_pr, k_prname, datebeg, dateend ) VALUES( :idk_pr, :k_prname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -1028,7 +1194,7 @@ PROCEDURE make_v020(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -1038,17 +1204,17 @@ PROCEDURE make_v020(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v020" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -1056,7 +1222,7 @@ PROCEDURE make_v020(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v021(db, source)
 
@@ -1068,19 +1234,31 @@ PROCEDURE make_v021(db, source)
   local table_sql := "CREATE TABLE v021( idspec INTEGER, specname TEXT, postname TEXT, idpost_mz TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v021.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v021" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v021 - Ok"
+    OutStd( "CREATE TABLE v021 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v021.xml"
+  OutStd( nameRef + " - Классификатор медицинских специальностей (должностей) (MedSpec)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v021.xml - Классификатор медицинских специальностей (должностей) (MedSpec)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v021 ( idspec, specname, postname, idpost_mz, datebeg, dateend ) VALUES( :idspec, :specname, :postname, :idpost_mz, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -1100,7 +1278,7 @@ PROCEDURE make_v021(db, source)
             sqlite3_bind_text( stmt, 5, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 6, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -1110,17 +1288,17 @@ PROCEDURE make_v021(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v021" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 5 ], "-", aTable[ nI ][ 6 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -1128,7 +1306,7 @@ PROCEDURE make_v021(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v022(db, source)
 
@@ -1140,19 +1318,31 @@ PROCEDURE make_v022(db, source)
   local table_sql := "CREATE TABLE v022( idmpac INTEGER, mpacname TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v022.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v022" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v022 - Ok"
+    OutStd( "CREATE TABLE v022 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v022.xml"
+  OutStd( nameRef + " - Классификатор моделей пациента при оказании высокотехнологичной медицинской помощи (ModPac)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v022.xml - Классификатор моделей пациента при оказании высокотехнологичной медицинской помощи (ModPac)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v022 ( idmpac, mpacname, datebeg, dateend ) VALUES( :idmpac, :mpacname, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -1168,7 +1358,7 @@ PROCEDURE make_v022(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -1178,17 +1368,17 @@ PROCEDURE make_v022(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v022" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -1196,33 +1386,33 @@ PROCEDURE make_v022(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v023(db, source)
   local nfile, nameRef
 
-  ? ''
-  ? 'Обработка файла v023.xml - Классификатор клинико-статистических групп (KSG)'
-  ? 'Формируется ФОМС.'
-  ? ''
+  OutStd( '' + hb_eol() )
+  OutStd( 'Обработка файла v023.xml - Классификатор клинико-статистических групп (KSG)' + hb_eol() )
+  OutStd( 'Формируется ФОМС.' + hb_eol() )
+  OutStd( '' + hb_eol() )
 
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v024(db, source)
   local nfile, nameRef
 
-  ? ''
-  ? 'Обработка файла v024.xml - Классификатор классификационных критериев (DopKr)'
-  ? 'Формируется ФОМС.'
-  ? ''
+  OutStd( '' + hb_eol() )
+  OutStd( 'Обработка файла v024.xml - Классификатор классификационных критериев (DopKr)' + hb_eol() )
+  OutStd( 'Формируется ФОМС.' + hb_eol() )
+  OutStd( '' + hb_eol() )
 
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v025(db, source)
 
@@ -1234,19 +1424,31 @@ PROCEDURE make_v025(db, source)
   local table_sql := "CREATE TABLE v025( idpc TEXT, n_pc TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v025.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v025" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v025 - Ok"
+    OutStd( "CREATE TABLE v025 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v025.xml"
+  OutStd( nameRef + " - Классификатор целей посещения (KPC)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v025.xml - Классификатор целей посещения (KPC)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v025 ( idpc, n_pc, datebeg, dateend ) VALUES( :idpc, :n_pc, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -1262,7 +1464,7 @@ PROCEDURE make_v025(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -1272,17 +1474,17 @@ PROCEDURE make_v025(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v025" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -1290,7 +1492,7 @@ PROCEDURE make_v025(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v026(db, source)
 
@@ -1302,19 +1504,31 @@ PROCEDURE make_v026(db, source)
   local table_sql := "CREATE TABLE v026( idump INTEGER, k_kpg TEXT, n_kpg TEXT, koef_z REAL, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v026.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v026" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v026 - Ok"
+    OutStd( "CREATE TABLE v026 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v026.xml"
+  OutStd( nameRef + " - Классификатор клинико-профильных групп (KPG)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v026.xml - Классификатор клинико-профильных групп (KPG)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v026 ( idump, k_kpg, n_kpg, koef_z, datebeg, dateend ) VALUES( :idump, :k_kpg, :n_kpg, :koef_z, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -1334,7 +1548,7 @@ PROCEDURE make_v026(db, source)
             sqlite3_bind_text( stmt, 5, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 6, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -1344,17 +1558,17 @@ PROCEDURE make_v026(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v026" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 3 ], 'RU866'), "-", aTable[ nI ][ 4 ], "-", aTable[ nI ][ 5 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -1362,7 +1576,7 @@ PROCEDURE make_v026(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v027(db, source)
 
@@ -1374,19 +1588,31 @@ PROCEDURE make_v027(db, source)
   local table_sql := "CREATE TABLE v027( idcz INTEGER, n_cz TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v027.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v027" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v027 - Ok"
+    OutStd( "CREATE TABLE v027 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v027.xml"
+  OutStd( nameRef + " - Классификатор характера заболевания (C_ZAB)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v027.xml - Классификатор характера заболевания (C_ZAB)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v027 ( idcz, n_cz, datebeg, dateend ) VALUES( :idcz, :n_cz, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -1402,7 +1628,7 @@ PROCEDURE make_v027(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -1412,17 +1638,17 @@ PROCEDURE make_v027(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v027" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -1430,7 +1656,7 @@ PROCEDURE make_v027(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v028(db, source)
 
@@ -1442,19 +1668,31 @@ PROCEDURE make_v028(db, source)
   local table_sql := "CREATE TABLE v028( idvn INTEGER, n_vn TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v028.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v028" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v028 - Ok"
+    OutStd( "CREATE TABLE v028 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v028.xml"
+  OutStd( nameRef + " - Классификатор видов направления (NAPR_V)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v028.xml - Классификатор видов направления (NAPR_V)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v028 ( idvn, n_vn, datebeg, dateend ) VALUES( :idvn, :n_vn, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -1470,7 +1708,7 @@ PROCEDURE make_v028(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -1480,17 +1718,17 @@ PROCEDURE make_v028(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v028" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
@@ -1498,7 +1736,7 @@ PROCEDURE make_v028(db, source)
   return
 
 /*
- * 13.07.2021
+ * 21.02.22
 */
 PROCEDURE make_v029(db, source)
 
@@ -1510,19 +1748,31 @@ PROCEDURE make_v029(db, source)
   local table_sql := "CREATE TABLE v029( idmet INTEGER, n_met TEXT, datebeg TEXT, dateend TEXT )"
   local nfile, nameRef
 
+  nameRef := "v029.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  if check_izm_file(nameRef, nfile)
+    return nil
+  endif
+
   sqlite3_exec( db, "DROP TABLE v029" )
      
   IF sqlite3_exec( db, table_sql ) == SQLITE_OK
-     ? "CREATE TABLE v029 - Ok"
+    OutStd( "CREATE TABLE v029 - Ok" + hb_eol() )
   ENDIF
 
-  nfile := "v029.xml"
+  OutStd( nameRef + " - Классификатор методов диагностического исследования (MET_ISSL)" + hb_eol() )
+
   oXmlDoc := HXMLDoc():Read(nfile)
   IF Empty( oXmlDoc:aItems )
-    ? 'Ошибка в чтении файла', nfile
-    wait 'Press any key'
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
   else
-    ? 'Обработка файла v029.xml - Классификатор методов диагностического исследования (MET_ISSL)'
+    out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     stmt := sqlite3_prepare( db, "INSERT INTO v029 ( idmet, n_met, datebeg, dateend ) VALUES( :idmet, :n_met, :datebeg, :dateend )" )
     IF ! Empty( stmt )
@@ -1538,7 +1788,7 @@ PROCEDURE make_v029(db, source)
             sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
             IF sqlite3_step( stmt ) != SQLITE_DONE
-              ? 'Ошибка при загрузки строки - ', j
+              out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
           ENDIF
           sqlite3_reset( stmt )
@@ -1548,17 +1798,17 @@ PROCEDURE make_v029(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
 
-    ? "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) )
-    ? "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) )
-    ? "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) )
-    ? ""
+    // OutStd( "Количество измененных строк базы данных: " + hb_ntos( sqlite3_changes( db ) ) )
+    // OutStd( "Всего изменений: " + hb_ntos( sqlite3_total_changes( db ) ) )
+    // OutStd( "Последний _ROWID_: " + Str( sqlite3_last_insert_rowid( db ) ) )
+    // OutStd( "" )
 
     // aTable := sqlite3_get_table( db, "SELECT * FROM v029" )
     // FOR nI := 1 TO Len( aTable )
     //   // FOR nJ := 1 TO Len( aTable[ nI ] )
-    //   //   ?? aTable[ nI ][ nJ ], " "
+    //   //   OutStd( aTable[ nI ][ nJ ] + " " )
     //   // NEXT
-    //   ? aTable[ nI ][ 1 ], "-", hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866'), "-", aTable[ nI ][ 3 ], "-", aTable[ nI ][ 4 ]
+    //   OutStd( aTable[ nI ][ 1 ] + "-" + hb_UTF8ToStr( aTable[ nI ][ 2 ], 'RU866') + "-" + aTable[ nI ][ 3 ] + "-" + aTable[ nI ][ 4 ] + hb_eol())
     // NEXT
 
   endif
