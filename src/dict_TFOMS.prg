@@ -77,7 +77,7 @@ Function work_Shema(source, destination)
   return NIL
 
 ***** 15.02.22
-Function make_TO01(source, destination)
+Function make_T001(source, destination)
 
   local _mo_T001 := {;
     { 'MCOD',       'C',    6,      0 },;

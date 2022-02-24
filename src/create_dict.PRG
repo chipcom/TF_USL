@@ -164,7 +164,7 @@ proc main( ... )
   hash_files := hb_Hash()
   hash_files := read_files_md5(source)
 
-  // make_TO01()
+  // make_T001()
   // Справочники минздрава
   OutStd( '***********************' + hb_eol() )
   OutStd( 'Справочники министерства здравоохранения.' + hb_eol() )
