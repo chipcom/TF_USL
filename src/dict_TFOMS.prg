@@ -637,6 +637,11 @@ Function work_t006(source, destination)
                 d6->DS  := lDS  := 'Z92.2'
               endif
 
+              if (lshifr = 'ds37.015' .or. lshifr = 'ds37.016') ;
+                  .and. empty(lDS) .and. empty(lsy)
+                d6->DS  := lDS  := 'U09.9'
+              endif
+
               d6->AGE  := mo_read_xml_stroke(oNode2,"AGE",)
               d6->SEX  := mo_read_xml_stroke(oNode2,"SEX",)
               d6->LOS  := alltrim(mo_read_xml_stroke(oNode2,"LOS",))
