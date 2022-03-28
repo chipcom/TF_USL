@@ -637,7 +637,8 @@ Function work_t006(source, destination)
                 d6->DS  := lDS  := 'Z92.2'
               endif
 
-              if (lshifr = 'ds37.015' .or. lshifr = 'ds37.016') ;
+              if (lshifr = 'ds37.015' .or. lshifr = 'ds37.016' ;
+                  .or. lshifr = 'st37.021' .or. lshifr = 'st37.022' .or. lshifr = 'st37.023' ) ;
                   .and. empty(lDS) .and. empty(lsy)
                 d6->DS  := lDS  := 'U09.9'
               endif
