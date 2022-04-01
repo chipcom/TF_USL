@@ -137,7 +137,7 @@ function make_severity(source, destination)
   close databases
   return NIL
 
-***** 10.02.22
+***** 01.04.22
 function make_implant(source, destination)
 
   local _mo_impl := {;
@@ -155,7 +155,7 @@ function make_implant(source, destination)
   local nfile, nameRef
   local hashMD5File
 
-  nameRef := "1.2.643.5.1.13.13.11.1079_2.3.xml"  // может меняться из-за версий
+  nameRef := "1.2.643.5.1.13.13.11.1079.xml"  // может меняться из-за версий
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -355,7 +355,7 @@ Function make_ed_izm(source, destination)
   local nfile, nameRef
   local hashMD5File
 
-  nameRef := "1.2.643.5.1.13.13.11.1358_3.3.xml"
+  nameRef := "1.2.643.5.1.13.13.11.1358.xml"
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
