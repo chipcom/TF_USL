@@ -162,7 +162,7 @@ proc main( ... )
 
   // прочитаем массив md5-хэшев файлов
   hash_files := hb_Hash()
-  hash_files := read_files_md5(source)
+  // hash_files := read_files_md5(source)
 
   // make_T001()
   // Справочники минздрава
