@@ -6,7 +6,7 @@
 #include 'function.ch'
 #include 'settings.ch'
 
-***** 10.02.22
+***** 21.04.22
 function make_uslugi_mz(source, destination)
   local _uslugi_mz := {;
     {"ID",      "N",  5, 0},;  // Целочисленный, уникальный идентификатор, возможные значения ? целые числа от 1 до 6
@@ -21,7 +21,7 @@ function make_uslugi_mz(source, destination)
   local nfile, nameRef
   local hashMD5File
 
-  nameRef := "1.2.643.5.1.13.13.11.1070_2.10.xml"  // может меняться из-за версий
+  nameRef := "1.2.643.5.1.13.13.11.1070.xml"  // может меняться из-за версий
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -73,7 +73,7 @@ function make_uslugi_mz(source, destination)
   close databases
   return nil
 
-***** 10.01.22
+***** 21.04.22
 function make_severity(source, destination)
 
   local _mo_severity := {;
@@ -86,7 +86,7 @@ function make_severity(source, destination)
   local nfile, nameRef
   local hashMD5File
 
-  nameRef := "1.2.643.5.1.13.13.11.1006_2.3.xml"  // может меняться из-за версий
+  nameRef := "1.2.643.5.1.13.13.11.1006.xml"  // может меняться из-за версий
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -242,7 +242,7 @@ function make_implant(source, destination)
   close databases
   return NIL
 
-***** 10.02.22
+***** 21.04.22
 Function make_method_inj(source, destination)
   local _mo_method_inj := {;
     {"ID",        "N",   3, 0},;  // уникальный идентификатор, обязательное поле, целое число
@@ -256,7 +256,7 @@ Function make_method_inj(source, destination)
   local nfile, nameRef
   local hashMD5File
 
-  nameRef := "1.2.643.5.1.13.13.11.1468_2.1.xml"
+  nameRef := "1.2.643.5.1.13.13.11.1468.xml"
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
