@@ -3,6 +3,7 @@
 -lhbct
 
 hbsqlit3.hbc
+xhb.hbc
 
 -mt
 -inc
@@ -13,7 +14,10 @@ hbsqlit3.hbc
 
 xmlparse.c
 hxmldoc.prg
-main.prg
+
+main_utf.prg
+mzdrav_utf.prg
+
 #catalog_f.prg
 #catalog_o.prg
 #catalog_q.prg
