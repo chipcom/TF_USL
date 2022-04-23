@@ -1,0 +1,1 @@
+hbmk2 dict_sql.hbp -b

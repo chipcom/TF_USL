@@ -1,0 +1,32 @@
+1 24 WindowsXP.Manifest
+
+1 VERSIONINFO
+FILEVERSION 1,1,0,0
+PRODUCTVERSION 1,1,0,0
+FILEOS 0x4
+FILETYPE 0x1
+{
+BLOCK "StringFileInfo"
+{
+   BLOCK "040904b0"
+   {
+      VALUE "FileDescription", "Dictionary SQLite 3\0"
+      VALUE "FileVersion", "2.1.0.0\0"
+      VALUE "InternalName", "dict_sql\0"
+      VALUE "LegalCopyright", "×ÈÏ ïëþñ 2022\0"
+      VALUE "LegalTrademarks", "\0"
+      VALUE "OriginalFilename", "dict_sql.exe\0"
+      VALUE "CompanyName", "ÎÎÎ ×ÈÏ ïëþñ\0"
+      VALUE "ProductName", "dict_sql\0"
+      VALUE "ProductVersion", "2.1.0.0\0"
+      VALUE "Info", "smirnova@chipplus.ru\0"
+      VALUE "Comments", "\0"
+      VALUE "Toolset",  "Built with Harbour 3.4 & MinGW\0"
+   }
+}
+
+BLOCK "VarFileInfo"
+   {
+      VALUE "Translation", 0x0409, 0x40B
+   }
+}
