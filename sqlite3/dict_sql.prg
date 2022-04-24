@@ -300,6 +300,9 @@ function out_error(nError, nfile, j, k)
   CASE nError == TAG_ROW_INVALID
       OutErr( ;
       'Ошибка при загрузки строки - ' + j + ' из файла ' +nfile + hb_eol() )
-  end case
+  CASE nError == UPDATE_TABLE_ERROR
+      OutErr( ;
+      'Ошибка обновления записей в таблице - ' + nfile + hb_eol() )
+    end case
 
   return nil
