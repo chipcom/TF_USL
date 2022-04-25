@@ -9,8 +9,8 @@
 function make_mzdrav(db, source)
 
   make_implant(db, source)
-  // make_ed_izm(db, source)
-  // make_severity(db, source)
+  make_ed_izm(db, source)
+  make_severity(db, source)
 
   return nil
 
@@ -196,16 +196,15 @@ Function make_ed_izm(db, source)
   endif
   return nil
 
-***** 24.04.22
+***** 25.04.22
 function make_implant(db, source)
-  local stmt
-  local cmdText
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
   local k, j, k1, j1
   local nfile, nameRef
   local oXmlNode, oNode1
   local mID, mName, mRZN, mParent, mType, mLocal, mMaterial, mOrder
 
-  // cmdText := 'CREATE TABLE implantant( id INTEGER, rzn INTEGER, parent INTEGER, name TEXT(120), local TEXT(80), material TEXT(20), order INTEGER, type TEXT(1) )'
   cmdText := 'CREATE TABLE implantant( id INTEGER, rzn INTEGER, parent INTEGER, name TEXT(120), local TEXT(80), material TEXT(20), _order INTEGER, type TEXT(1) )'
   //   {"ID",      "N",  5, 0},;  // Код , уникальный идентификатор записи
   //   {"RZN",     "N",  6, 0},;  // код изделия согласно Номенклатурному классификатору Росздравнадзора
@@ -228,24 +227,10 @@ function make_implant(db, source)
     return nil
   endif
 
-//   cmdText := 'INSERT INTO implantant (id, rzn, parent) VALUES (1, 1, 0);' + ;
-//     'INSERT INTO implantant (id, rzn, parent) VALUES (2, 2, 1)'
-//   // sqlite3_exec(db, cmdText)
-//   sqlite3_exec(db, cmdText)
-
-
-//   cmdTextTMP := 'CREATE TABLE tmp( id INTEGER, parent INTEGER)'
-//   sqlite3_exec(db, 'DROP TABLE tmp')
-//   sqlite3_exec(db, cmdTextTMP)
-
-//   cmdTextTMP := 'INSERT INTO tmp (id, parent) VALUES (1, 0);' + ;
-//     'INSERT INTO tmp (id, parent) VALUES (2, 1)'
-//   // sqlite3_exec(db, cmdText)
-//   sqlite3_exec(db, cmdTextTMP)
-
-//   cmdText := "UPDATE implantant SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
-//   OutStd(hb_eol() + str(sqlite3_exec(db, cmdText)) + hb_eol())
-// return nil
+  // временная таблица для дальнейшего использования
+  cmdTextTMP := 'CREATE TABLE tmp( id INTEGER, parent INTEGER)'
+  sqlite3_exec(db, 'DROP TABLE tmp')
+  sqlite3_exec(db, cmdTextTMP)
 
   nameRef := '1.2.643.5.1.13.13.11.1079.xml'
   nfile := source + nameRef
@@ -260,6 +245,8 @@ function make_implant(db, source)
     out_error(FILE_READ_ERROR, nfile)
     return nil
   else
+    cmdTextTMP := 'INSERT INTO tmp(id, parent) VALUES (:id, :parent)'
+    stmtTMP := sqlite3_prepare(db, cmdTextTMP)
     cmdText := 'INSERT INTO implantant ( id, rzn, parent, name, local, material, _order, type ) VALUES( :id, :rzn, :parent, :name, :local, :material, :_order, :type )'
     stmt := sqlite3_prepare(db, cmdText)
     if ! Empty( stmt )
@@ -279,11 +266,6 @@ function make_implant(db, source)
               mLocal := mo_read_xml_stroke(oNode1, 'LOCALIZATION', , , 'utf8')
               mMaterial := mo_read_xml_stroke(oNode1, 'MATERIAL', , , 'utf8')
               mOrder := mo_read_xml_stroke(oNode1, 'ORDER', , , 'utf8')
-              // if val(mRZN) == 0
-              //   mType := 'O'
-              // else
-              //   mType := ' '
-              // endif
   
               if sqlite3_bind_int(stmt, 1, val(mID)) == SQLITE_OK .AND. ;
                       sqlite3_bind_int(stmt, 2, val(mRZN)) == SQLITE_OK .AND. ;
@@ -291,13 +273,19 @@ function make_implant(db, source)
                       sqlite3_bind_text(stmt, 4, mName) == SQLITE_OK .AND. ;
                       sqlite3_bind_text(stmt, 5, mLocal) == SQLITE_OK .AND. ;
                       sqlite3_bind_text(stmt, 6, mMaterial) == SQLITE_OK .AND. ;
-                      sqlite3_bind_int(stmt, 7, val(mOrder)) == SQLITE_OK //.AND. ;
-                      // sqlite3_bind_text(stmt, 8, mType) == SQLITE_OK
+                      sqlite3_bind_int(stmt, 7, val(mOrder)) == SQLITE_OK
                 if sqlite3_step(stmt) != SQLITE_DONE
                   out_error(TAG_ROW_INVALID, nfile, j)
                 endif
               endif
               sqlite3_reset(stmt)
+              if sqlite3_bind_int(stmtTMP, 1, val(mID)) == SQLITE_OK .AND. ;
+                sqlite3_bind_int(stmtTMP, 2, val(mParent)) == SQLITE_OK
+                if sqlite3_step(stmtTMP) != SQLITE_DONE
+                  out_error(TAG_ROW_INVALID, nfile, j)
+                endif
+                sqlite3_reset(stmtTMP)
+              endif
             endif
           next j1
         endif
@@ -305,60 +293,30 @@ function make_implant(db, source)
     endif
     sqlite3_clear_bindings(stmt)
     sqlite3_finalize(stmt)
+
+    sqlite3_clear_bindings(stmtTMP)
+    sqlite3_finalize(stmtTMP)
+
+    cmdText := "UPDATE implantant SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
+    if sqlite3_exec(db, cmdText) == SQLITE_OK
+      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+    else
+      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+    endif
+    cmdText := "UPDATE implantant SET type = 'L' WHERE NOT EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
+    if sqlite3_exec(db, cmdText) == SQLITE_OK
+      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+    else
+      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+    endif
+    cmdText := 'UPDATE implantant SET type = "O" WHERE rzn = 0'
+    if sqlite3_exec(db, cmdText) == SQLITE_OK
+      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+    else
+      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+    endif
+    sqlite3_exec(db, 'DROP TABLE tmp')
     // print_status_insert(db)
   endif
 
-  // cmdText := 'UPDATE implantant SET type = "L" WHERE NOT EXISTS (SELECT * FROM implantant WHERE id = parent)'
-  // cmdText := 'UPDATE implantant AS i1 SET i1.type = "L" WHERE NOT EXISTS (SELECT i2.id FROM implantant AS i2 WHERE i1.id = i2.parent)'
-
-  // cmdText := 'UPDATE implantant SET type = "O" WHERE rzn = 0'
-  // stmt := sqlite3_prepare(db, cmdText)
-  // if sqlite3_step(stmt) != SQLITE_DONE
-  //   OutStd(hb_eol() + 'ERROR UPDATE' + hb_eol())
-  //   // out_error(UPDATE_TABLE_ERROR, 'implantant')
-  // endif
-  // sqlite3_finalize(stmt)
-
-  // cmdText := 'UPDATE implantant AS i1 SET i1.type = "L" WHERE NOT EXISTS (SELECT i2.id FROM implantant AS i2 WHERE i1.id = i2.parent)'
-  cmdText := "UPDATE implantant AS i1 SET i1.type = 'U' WHERE EXISTS (SELECT 1 FROM implantant AS i2 WHERE i1.id = i2.parent)"
-  // if sqlite3_exec(db, cmdText) == SQLITE_OK
-  //   OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
-  // endif
-  OutStd(hb_eol() + str(sqlite3_exec(db, cmdText)) + hb_eol())
-
-  // cmdText := 'UPDATE implantant AS i1 SET i1.type = "U" WHERE EXISTS (SELECT i2.id, i2.parent FROM implantant AS i2 WHERE i1.id = i2.parent)'
-  // stmt := sqlite3_prepare(db, cmdText)
-  // if sqlite3_step(stmt) != SQLITE_DONE
-  //   OutStd(hb_eol() + 'ERROR UPDATE' + hb_eol())
-  //   // out_error(UPDATE_TABLE_ERROR, 'implantant')
-  // endif
-  // sqlite3_finalize(stmt)
-
-  // IMPL->(dbGoTop())
-  // do while ! IMPL->(eof())
-  //   fl_parent := .f.
-  //   if IMPL->RZN == 0
-  //     IMPL->(dbSkip())
-  //     continue
-  //   endif
-
-  //   rec_n := IMPL->(recno())
-  //   id_t := IMPL->ID
-  //   IMPL->(dbGoTop())
-  //   do while ! IMPL->(eof())
-  //     if IMPL->PARENT == id_t
-  //       fl_parent := .t.
-  //       exit
-  //     endif
-  //     IMPL->(dbSkip())
-  //   enddo
-  //   IMPL->(dbGoto(rec_n))
-  //   if fl_parent
-  //     IMPL->TYPE := 'U'
-  //   else
-  //     IMPL->TYPE := 'L'
-  //   endif
-  //   IMPL->(dbSkip())
-  // enddo
-  // close databases
-  return NIL
+  return nil

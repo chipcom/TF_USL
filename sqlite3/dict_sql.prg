@@ -3,7 +3,7 @@
 
 #require 'hbsqlit3'
 
-#define TRACE
+// #define TRACE
 
 /*
  * 25.04.2022
