@@ -3,10 +3,10 @@
 
 #require 'hbsqlit3'
 
-// #define TRACE
+#define TRACE
 
 /*
- * 22.04.2022
+ * 25.04.2022
 */
 procedure main( ... )
   local cParam, cParamL
@@ -51,21 +51,21 @@ procedure main( ... )
   destination := upper(beforatnum(os_sep, exename())) + os_sep
 
   aParams := hb_AParams()
-  FOR EACH cParam IN aParams
+  for each cParam in aParams
     cParamL := Lower( cParam )
-    DO CASE
-      CASE cParamL == "-help"
+    do case
+      case cParamL == "-help"
         About()
-        RETURN
-      CASE cParamL == "-quiet"
+        return
+      case cParamL == "-quiet"
         // ? 'quiet'
-      CASE cParamL == "-all"
+      case cParamL == "-all"
         if HB_VFEXISTS(source + FILE_HASH)
           HB_VFERASE(source + FILE_HASH)
         endif
-      CASE hb_LeftEq( cParamL, "-in=" )
+      case hb_LeftEq( cParamL, "-in=" )
         source := SubStr( cParam, 4 + 1 )
-      CASE hb_LeftEq( cParamL, "-out=" )
+      case hb_LeftEq( cParamL, "-out=" )
         destination := SubStr( cParam, 5 + 1 )
     endcase
   next
@@ -87,12 +87,11 @@ procedure main( ... )
     quit
   endi
 
-  ? sqlite3_libversion()
-  // sqlite3_sleep( 3000 )
+  OutStd(hb_eol() + 'Версия библиотеки SQLite3 - ' + sqlite3_libversion() + hb_eol())
 
-  IF sqlite3_libversion_number() < 3005001
-     RETURN
-  ENDIF
+  if sqlite3_libversion_number() < 3005001
+    return
+  endif
 
   // db := sqlite3_open( destination + "chip_mo.s3db", lCreateIfNotExist )
   db := sqlite3_open( destination + 'mzdrav.db', lCreateIfNotExist )
@@ -155,13 +154,13 @@ procedure main( ... )
 
 ***** строка даты для XML-файла
 Function date2xml(mdate)
-  return strzero(year(mdate),4)+'-'+;
-       strzero(month(mdate),2)+'-'+;
-       strzero(day(mdate),2)
+  return strzero(year(mdate), 4) + '-' + ;
+       strzero(month(mdate), 2) + '-' + ;
+       strzero(day(mdate), 2)
 
 ***** пребразовать дату из "2002-02-01" в тип "DATE"
 Function xml2date(s)
-  return stod(charrem("-",s))
+  return stod(charrem('-', s))
 
 ***** проверить наличие в XML-файле тэга и вернуть его значение
 Function mo_read_xml_stroke(_node, _title, _aerr, _binding, _codepage)
@@ -170,8 +169,8 @@ Function mo_read_xml_stroke(_node, _title, _aerr, _binding, _codepage)
   // _aerr - массив сообщений об ошибках
   // _binding - обязателен ли атрибут (по-умолчанию .T.)
   // _codepage - кодировка переданной строки
-  Local ret := "", oNode, yes_err := (valtype(_aerr) == "A"),;
-      s_msg := 'Отсутствует значение обязательного тэга "'+_title+'"'
+  Local ret := '', oNode, yes_err := (valtype(_aerr) == 'A'), ;
+      s_msg := 'Отсутствует значение обязательного тэга "' + _title + '"'
 
   DEFAULT _binding TO .t., _aerr TO {}
 
@@ -192,15 +191,15 @@ Function mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
   // _aerr - массив сообщений об ошибках
   // _binding - обязателен ли атрибут (по-умолчанию .T.)
   // _codepage - кодировка переданной строки
-  Local ret := "", c, yes_err := (valtype(_aerr) == "A"),;
-      s_msg := 'Отсутствует значение обязательного тэга "'+oNode:title+'"'
+  Local ret := '', c, yes_err := (valtype(_aerr) == 'A'),;
+      s_msg := 'Отсутствует значение обязательного тэга "' + oNode:title + '"'
   local codepage := upper(_codepage)
 
   if empty(oNode:aItems)
     if _binding .and. yes_err
-      aadd(_aerr,s_msg)
+      aadd(_aerr, s_msg)
     endif
-  elseif (c := valtype(oNode:aItems[1])) == "C"
+  elseif (c := valtype(oNode:aItems[1])) == 'C'
     if codepage == 'WIN1251'
       ret := hb_AnsiToOem(alltrim(oNode:aItems[1]))
     elseif codepage == 'UTF8'
@@ -208,28 +207,27 @@ Function mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
       ret := alltrim(oNode:aItems[1])
     endif
   elseif yes_err
-    aadd(_aerr,'Неверный тип данных у тэга "'+oNode:title+'": "'+c+'"')
+    aadd(_aerr, 'Неверный тип данных у тэга "' + oNode:title + '": "' + c + '"')
   endif
   return ret
 
-PROCEDURE About()
+procedure About()
 
   OutStd( ;
-      "Конвертер справочников обязательного медицинского страхования" + hb_eol() + ;
-        "Copyright (c) 2022, Vladimir G.Baykin" + hb_eol() + ;
-      hb_eol() )
+      'Конвертер справочников обязательного медицинского страхования' + hb_eol() + ;
+      'Copyright (c) 2022, Vladimir G.Baykin' + hb_eol() + hb_eol())
    
   OutStd( ;
-      "Syntax:  create_dict [options] " + hb_eol() + hb_eol() )
+      'Syntax:  create_dict [options] ' + hb_eol() + hb_eol())
   OutStd( ;
-      "Опции:" + hb_eol() + ;
-      "      -in=<source directory>" + hb_eol() + ;
-      "      -out=<destination directory>" + hb_eol() + ;
-      "      -all - конвертировать все" + hb_eol() + ;
-      "      -help - помощь" + hb_eol() ;
+      'Опции:' + hb_eol() + ;
+      '      -in=<source directory>' + hb_eol() + ;
+      '      -out=<destination directory>' + hb_eol() + ;
+      '      -all - конвертировать все' + hb_eol() + ;
+      '      -help - помощь' + hb_eol() ;
   )
       
-  RETURN
+  return
    
 ****** 11.02.22
 function obrabotka(nfile)
@@ -241,14 +239,14 @@ function obrabotka(nfile)
 function out_obrabotka(nfile)
 
   OutStd( ;
-    "===== Обработка файла " + nfile )
+    '===== Обработка файла ' + nfile )
   return nil
 
 ****** 15.02.22
 function out_create_file(nfile)
 
   OutStd( ;
-    "Создание файла " + nfile )
+    'Создание файла ' + nfile )
   return nil
 
 ****** 14.02.22
@@ -266,43 +264,43 @@ function out_obrabotka_count(j, k)
 ****** 15.02.22
 function out_error(nError, nfile, j, k)
 
-  DO CASE
-  CASE nError == FILE_NOT_EXIST
-    OutErr( ;
-      "Файл " + nfile + " не существует" + hb_eol() )
-  CASE nError == FILE_READ_ERROR
-    OutErr( ;
-      "Ошибка в загрузке файла " + nfile + hb_eol() )
-  CASE nError == FILE_RENAME_ERROR
-    OutErr( ;
-      "Ошибка переименования файла " + nfile + hb_eol() )
-  CASE nError == DIR_IN_NOT_EXIST
-    OutErr( ;
-      'Каталог исходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
-  CASE nError == DIR_OUT_NOT_EXIST
-    OutErr( ;
-      'Каталог для выходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
-  CASE nError == TAG_YEAR_REPORT
+  do case
+    case nError == FILE_NOT_EXIST
       OutErr( ;
-        'Ошибка при чтении файла "' + nfile + '". Некорректное значение тега YEAR_REPORT ' + j + hb_eol() )
-  CASE nError == TAG_PLACE_ERROR
+        'Файл ' + nfile + ' не существует' + hb_eol() )
+    case nError == FILE_READ_ERROR
       OutErr( ;
-        'Ошибка при чтении файла "' + nfile + '" - более одного тега PLACE в отделении: ' + alltrim(j) + hb_eol() )
-  CASE nError == TAG_PERIOD_ERROR
+        'Ошибка в загрузке файла ' + nfile + hb_eol() )
+    case nError == FILE_RENAME_ERROR
       OutErr( ;
-        'Ошибка при чтении файла "' + nfile + '" - более одного тега PERIOD в учреждении: ' + j + " в услуге " + k + hb_eol() )
-  CASE nError == TAG_VALUE_EMPTY
+        'Ошибка переименования файла ' + nfile + hb_eol() )
+    case nError == DIR_IN_NOT_EXIST
       OutErr( ;
-        'Замечание при чтении файла "' + nfile + '" - пустое значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
-  CASE nError == TAG_VALUE_INVALID
+        'Каталог исходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
+    case nError == DIR_OUT_NOT_EXIST
       OutErr( ;
-        'Замечание при чтении файла "' + nfile + '" - некорректное значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
-  CASE nError == TAG_ROW_INVALID
-      OutErr( ;
-      'Ошибка при загрузки строки - ' + j + ' из файла ' +nfile + hb_eol() )
-  CASE nError == UPDATE_TABLE_ERROR
-      OutErr( ;
-      'Ошибка обновления записей в таблице - ' + nfile + hb_eol() )
-    end case
+        'Каталог для выходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
+    case nError == TAG_YEAR_REPORT
+        OutErr( ;
+          'Ошибка при чтении файла "' + nfile + '". Некорректное значение тега YEAR_REPORT ' + j + hb_eol() )
+    case nError == TAG_PLACE_ERROR
+        OutErr( ;
+          'Ошибка при чтении файла "' + nfile + '" - более одного тега PLACE в отделении: ' + alltrim(j) + hb_eol() )
+    case nError == TAG_PERIOD_ERROR
+        OutErr( ;
+          'Ошибка при чтении файла "' + nfile + '" - более одного тега PERIOD в учреждении: ' + j + " в услуге " + k + hb_eol() )
+    case nError == TAG_VALUE_EMPTY
+        OutErr( ;
+          'Замечание при чтении файла "' + nfile + '" - пустое значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
+    case nError == TAG_VALUE_INVALID
+        OutErr( ;
+          'Замечание при чтении файла "' + nfile + '" - некорректное значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
+    case nError == TAG_ROW_INVALID
+        OutErr( ;
+          'Ошибка при загрузки строки - ' + j + ' из файла ' +nfile + hb_eol() )
+    case nError == UPDATE_TABLE_ERROR
+        OutErr( ;
+          'Ошибка обновления записей в таблице - ' + nfile + hb_eol() )
+  end case
 
   return nil

@@ -228,6 +228,25 @@ function make_implant(db, source)
     return nil
   endif
 
+//   cmdText := 'INSERT INTO implantant (id, rzn, parent) VALUES (1, 1, 0);' + ;
+//     'INSERT INTO implantant (id, rzn, parent) VALUES (2, 2, 1)'
+//   // sqlite3_exec(db, cmdText)
+//   sqlite3_exec(db, cmdText)
+
+
+//   cmdTextTMP := 'CREATE TABLE tmp( id INTEGER, parent INTEGER)'
+//   sqlite3_exec(db, 'DROP TABLE tmp')
+//   sqlite3_exec(db, cmdTextTMP)
+
+//   cmdTextTMP := 'INSERT INTO tmp (id, parent) VALUES (1, 0);' + ;
+//     'INSERT INTO tmp (id, parent) VALUES (2, 1)'
+//   // sqlite3_exec(db, cmdText)
+//   sqlite3_exec(db, cmdTextTMP)
+
+//   cmdText := "UPDATE implantant SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
+//   OutStd(hb_eol() + str(sqlite3_exec(db, cmdText)) + hb_eol())
+// return nil
+
   nameRef := '1.2.643.5.1.13.13.11.1079.xml'
   nfile := source + nameRef
   if ! hb_vfExists(nfile)
@@ -300,18 +319,20 @@ function make_implant(db, source)
   // endif
   // sqlite3_finalize(stmt)
 
-  cmdText := 'UPDATE implantant AS i1 SET i1.type = "L" WHERE NOT EXISTS (SELECT i2.id FROM implantant AS i2 WHERE i1.id = i2.parent)'
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
-  endif
+  // cmdText := 'UPDATE implantant AS i1 SET i1.type = "L" WHERE NOT EXISTS (SELECT i2.id FROM implantant AS i2 WHERE i1.id = i2.parent)'
+  cmdText := "UPDATE implantant AS i1 SET i1.type = 'U' WHERE EXISTS (SELECT 1 FROM implantant AS i2 WHERE i1.id = i2.parent)"
+  // if sqlite3_exec(db, cmdText) == SQLITE_OK
+  //   OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+  // endif
+  OutStd(hb_eol() + str(sqlite3_exec(db, cmdText)) + hb_eol())
 
+  // cmdText := 'UPDATE implantant AS i1 SET i1.type = "U" WHERE EXISTS (SELECT i2.id, i2.parent FROM implantant AS i2 WHERE i1.id = i2.parent)'
   // stmt := sqlite3_prepare(db, cmdText)
   // if sqlite3_step(stmt) != SQLITE_DONE
   //   OutStd(hb_eol() + 'ERROR UPDATE' + hb_eol())
   //   // out_error(UPDATE_TABLE_ERROR, 'implantant')
   // endif
   // sqlite3_finalize(stmt)
-// cmdText := 'UPDATE implantant AS i1 SET i1.type = "U" WHERE EXISTS (SELECT i2.id FROM implantant AS i2 WHERE i1.id = i2.parent)'
 
   // IMPL->(dbGoTop())
   // do while ! IMPL->(eof())
