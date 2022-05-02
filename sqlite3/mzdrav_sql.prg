@@ -8,10 +8,122 @@
 ***** 24.04.22
 function make_mzdrav(db, source)
 
-  make_implant(db, source)
-  make_ed_izm(db, source)
-  make_severity(db, source)
+  make_uslugi_mz(db, source)
+  // make_implant(db, source)
+  // make_ed_izm(db, source)
+  // make_severity(db, source)
 
+  return nil
+
+***** 02.05.22
+function make_uslugi_mz(db, source)
+  LOCAL stmt
+  local cmdText
+  local nfile, nameRef
+  local k, j, k1, j1
+  local oXmlNode, oNode1
+  local mID, mS_code, mName, mRel, mDateOut
+
+  cmdText := 'CREATE TABLE Mz_services( id INTEGER, s_code TEXT(16), name TEXT(2550), rel INTEGER,  dateout TEXT(10) )'
+    // 1) ID, Уникальный идентификатор , Целочисленный, числовой формат, обязательное поле;
+    // 2) S_CODE, Код услуги, Строчный, уникальный код услуги согласно Приказу Минздравсоцразвития России от 27.12.2011 N 1664н «Об утверждении номенклатуры медицинских услуг»,текстовый формат, обязательное поле;
+    // 3) NAME, Полное название , Строчный, текстовый формат, обязательное поле;
+    // 4) REL, Признак актуальности , Целочисленный, числовой формат, один символ (если =1 – запись актуальна, если 0 – запись упразднена в соответствии с новыми нормативно-правовыми актами);
+    // 5) DATEOUT, Дата упразднения , Дата, дата, после которой данная запись упраздняется согласно новым приказам;
+    
+
+  if sqlite3_exec(db, 'DROP TABLE IF EXISTS Mz_services') == SQLITE_OK
+    OutStd(hb_eol() + 'DROP TABLE Mz_services - Ok' + hb_eol())
+  endif
+    
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+     OutStd(hb_eol() + 'CREATE TABLE Mz_services - Ok' + hb_eol())
+  else
+     OutStd(hb_eol() + 'CREATE TABLE Mz_services - False' + hb_eol())
+    return nil
+  endif
+
+  nameRef := "1.2.643.5.1.13.13.11.1070.xml"  // может меняться из-за версий
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  OutStd(nameRef + ' - Номенклатура медицинских услуг (OID)' + hb_eol())
+  if Empty(oXmlDoc:aItems)
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := 'INSERT INTO Mz_services ( id, s_code, name, rel, dateout ) VALUES( :id, :s_code, :name, :rel, :dateout )'
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty( stmt )
+      out_obrabotka(nfile)
+      k := Len(oXmlDoc:aItems[1]:aItems)
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if "ENTRIES" == upper(oXmlNode:title)
+          k1 := len(oXmlNode:aItems)
+          for j1 := 1 to k1
+            oNode1 := oXmlNode:aItems[j1]
+            if "ENTRY" == upper(oNode1:title)
+              mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+              mS_code := mo_read_xml_stroke(oNode1, 'S_CODE', , , 'utf8')
+              mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
+              mRel := mo_read_xml_stroke(oNode1, 'REL', , , 'utf8')
+              mDateOut := CToD(mo_read_xml_stroke(oNode1, 'DATEOUT', , , 'utf8')) //xml2date(mo_read_xml_stroke(oNode1,"DATEOUT",))
+
+              if sqlite3_bind_int(stmt, 1, val(mID)) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text(stmt, 2, mS_code) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text(stmt, 3, mName) == SQLITE_OK .AND. ;
+                      sqlite3_bind_int(stmt, 4, val(mRel)) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text(stmt, 5, mDateOut) == SQLITE_OK
+                if sqlite3_step(stmt) != SQLITE_DONE
+                  out_error(TAG_ROW_INVALID, nfile, j)
+                endif
+              endif
+              sqlite3_reset(stmt)
+            endif
+          next j1
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+
+    
+  //   out_obrabotka(nfile)         
+  //   k := Len( oXmlDoc:aItems[1]:aItems )
+  //   FOR j := 1 TO k
+  //     oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+  //     if "ENTRIES" == upper(oXmlNode:title)
+  //       k1 := len(oXmlNode:aItems)
+  //       for j1 := 1 to k1
+  //         oNode1 := oXmlNode:aItems[j1]
+  //         klll := upper(oNode1:title)
+  //         if "ENTRY" == upper(oNode1:title)
+  //           out_obrabotka_count(j1, k1)
+  //           mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+  //           mS_code := mo_read_xml_stroke(oNode1, 'S_CODE', , , 'utf8')
+  //           mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
+  //           mRel := mo_read_xml_stroke(oNode1, 'REL', , , 'utf8')
+  //           mDateOut := CToD(mo_read_xml_stroke(oNode1, 'DATEOUT', , , 'utf8')) //xml2date(mo_read_xml_stroke(oNode1,"DATEOUT",))
+  //           select MZUSL
+  //           append blank
+  //           MZUSL->ID := val(mID)
+  //           MZUSL->IDRB := mS_code
+  //           MZUSL->RBNAME := mName
+  //           MZUSL->REL := val(mRel)
+  //           MZUSL->DATEBEG := mDateBeg
+  //           MZUSL->DATEEND := mDateOut
+  //         endif
+  //       next j1
+  //     endif
+  //   NEXT j
+  endif
+  // out_obrabotka_eol()
+  // close databases
   return nil
 
 ***** 23.04.22
