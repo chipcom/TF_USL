@@ -24,13 +24,12 @@ function make_uslugi_mz(db, source)
   local oXmlNode, oNode1
   local mID, mS_code, mName, mRel, mDateOut
 
+  // 1) ID, Уникальный идентификатор , Целочисленный, числовой формат, обязательное поле;
+  // 2) S_CODE, Код услуги, Строчный, уникальный код услуги согласно Приказу Минздравсоцразвития России от 27.12.2011 N 1664н «Об утверждении номенклатуры медицинских услуг»,текстовый формат, обязательное поле;
+  // 3) NAME, Полное название , Строчный, текстовый формат, обязательное поле;
+  // 4) REL, Признак актуальности , Целочисленный, числовой формат, один символ (если =1 – запись актуальна, если 0 – запись упразднена в соответствии с новыми нормативно-правовыми актами);
+  // 5) DATEOUT, Дата упразднения , Дата, дата, после которой данная запись упраздняется согласно новым приказам;
   cmdText := 'CREATE TABLE Mz_services( id INTEGER, s_code TEXT(16), name TEXT(2550), rel INTEGER,  dateout TEXT(10) )'
-    // 1) ID, Уникальный идентификатор , Целочисленный, числовой формат, обязательное поле;
-    // 2) S_CODE, Код услуги, Строчный, уникальный код услуги согласно Приказу Минздравсоцразвития России от 27.12.2011 N 1664н «Об утверждении номенклатуры медицинских услуг»,текстовый формат, обязательное поле;
-    // 3) NAME, Полное название , Строчный, текстовый формат, обязательное поле;
-    // 4) REL, Признак актуальности , Целочисленный, числовой формат, один символ (если =1 – запись актуальна, если 0 – запись упразднена в соответствии с новыми нормативно-правовыми актами);
-    // 5) DATEOUT, Дата упразднения , Дата, дата, после которой данная запись упраздняется согласно новым приказам;
-    
 
   if sqlite3_exec(db, 'DROP TABLE IF EXISTS Mz_services') == SQLITE_OK
     OutStd(hb_eol() + 'DROP TABLE Mz_services - Ok' + hb_eol())
@@ -91,42 +90,10 @@ function make_uslugi_mz(db, source)
     endif
     sqlite3_clear_bindings(stmt)
     sqlite3_finalize(stmt)
-
-    
-  //   out_obrabotka(nfile)         
-  //   k := Len( oXmlDoc:aItems[1]:aItems )
-  //   FOR j := 1 TO k
-  //     oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-  //     if "ENTRIES" == upper(oXmlNode:title)
-  //       k1 := len(oXmlNode:aItems)
-  //       for j1 := 1 to k1
-  //         oNode1 := oXmlNode:aItems[j1]
-  //         klll := upper(oNode1:title)
-  //         if "ENTRY" == upper(oNode1:title)
-  //           out_obrabotka_count(j1, k1)
-  //           mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
-  //           mS_code := mo_read_xml_stroke(oNode1, 'S_CODE', , , 'utf8')
-  //           mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
-  //           mRel := mo_read_xml_stroke(oNode1, 'REL', , , 'utf8')
-  //           mDateOut := CToD(mo_read_xml_stroke(oNode1, 'DATEOUT', , , 'utf8')) //xml2date(mo_read_xml_stroke(oNode1,"DATEOUT",))
-  //           select MZUSL
-  //           append blank
-  //           MZUSL->ID := val(mID)
-  //           MZUSL->IDRB := mS_code
-  //           MZUSL->RBNAME := mName
-  //           MZUSL->REL := val(mRel)
-  //           MZUSL->DATEBEG := mDateBeg
-  //           MZUSL->DATEEND := mDateOut
-  //         endif
-  //       next j1
-  //     endif
-  //   NEXT j
   endif
-  // out_obrabotka_eol()
-  // close databases
   return nil
 
-***** 23.04.22
+***** 02.05.22
 function make_severity(db, source)
   LOCAL stmt
   local cmdText
@@ -135,13 +102,14 @@ function make_severity(db, source)
   local oXmlNode, oNode1
   local mID, mName, mSYN, mSCTID, mSort
 
+  // 1) ID, Код , Целочисленный, уникальный идентификатор, возможные значения – целые числа от 1 до 6;
+  // 2) NAME, Полное название, Строчный, обязательное поле, текстовый формат;
+  // 3) SYN, Синонимы, Строчный, синонимы терминов справочника, текстовый формат;
+  // 4) SCTID, Код SNOMED CT , Строчный, соответствующий код номенклатуры;
+  // 5) SORT, Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов
+  //    справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
   cmdText := 'CREATE TABLE Severity( id INTEGER, name TEXT(40), syn TEXT(50), sctid TEXT(10), sort INTEGER )'
-  // {"ID",      "N",  5, 0},;  // Целочисленный, уникальный идентификатор, возможные значения ? целые числа от 1 до 6
-  // {"NAME",    "C", 40, 0},;  // Полное название, Строчный, обязательное поле, текстовый формат;
-  // {"SYN",     "C", 40, 0},;  // Синонимы, Строчный, синонимы терминов справочника, текстовый формат;
-  // {"SCTID",   "N", 10, 0},;  // Код SNOMED CT , Строчный, соответствующий код номенклатуры;
-  // {"SORT",    "N",  2, 0};  // Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
-
+  
   if sqlite3_exec(db, 'DROP TABLE IF EXISTS Severity') == SQLITE_OK
     OutStd(hb_eol() + 'DROP TABLE Severity - Ok' + hb_eol())
   endif
@@ -204,7 +172,7 @@ function make_severity(db, source)
   endif
   return nil
 
-***** 22.04.22
+***** 02.05.22
 Function make_ed_izm(db, source)
   local stmt
   local cmdText
@@ -214,23 +182,23 @@ Function make_ed_izm(db, source)
   local mID, mFullName, mShortName, mPrintName, mMeasure, mUCUM, mCoef, mConvID
   local mConvName, mOKEI
 
-
+  // 1) ID, Уникальный идентификатор, Целочисленный, Уникальный идентификатор единицы измерения лабораторного теста;
+  // 2) FULLNAME, Полное наименование, Строчный;
+  // 3) SHORTNAME, Краткое наименование, Строчный;
+  // 4) PRINTNAME, Наименование для печати, Строчный;
+  // 5) MEASUREMENT, Размерность, Строчный;
+  // 6) UCUM, Код UCUM, Строчный;
+  // 7) COEFFICIENT, Коэффициент пересчета, Строчный, Коэффициент пересчета в рамках одной размерности.;
+  // 8) FORMULA, Формула пересчета, Строчный, В настоящей версии справочника не используется.;
+  // 9) CONVERSION_ID, Код единицы измерения для пересчета, Целочисленный, Код единицы измерения, в которую осуществляется пересчет.;
+  // 10) CONVERSION_NAME, Единица измерения для пересчета, Строчный, Краткое наименование единицы измерения, в которую осуществляется пересчет.;
+  // 11) OKEI_CODE, Код ОКЕИ, Строчный, Соответствующий код Общероссийского классификатора единиц измерений.;
+  // // 12) NSI_CODE_EEC, Код справочника ЕАЭК, Строчный, необязательное поле – код справочника реестра НСИ ЕАЭК;
+  // // 13) NSI_ELEMENT_CODE_EEC, Код элемента справочника ЕАЭК, Строчный, необязательное поле – код элемента справочника реестра НСИ ЕАЭК;
   cmdText := 'CREATE TABLE UnitOfMeasurement( id INTEGER, fullname TEXT(40), ' + ;
     'shortname TEXT(25), prnname TEXT(25), measur TEXT(45), ucum TEXT(15), coef TEXT(15), ' + ;
     'conv_id INTEGER, conv_nam TEXT(25), okei_cod INTEGER )'
-//   {"ID",        "N",   3, 0},;  // Уникальный идентификатор единицы измерения лабораторного теста, целое число
-//   {"FULLNAME",  "C",  40, 0},;  // Полное наименование, Строчный
-//   {"SHOTNAME",  "C",  25, 0},;  // Краткое наименование, Строчный;
-//   {"PRNNAME",   "C",  25, 0},;  // Наименование для печати, Строчный;
-//   {"MEASUR",    "C",  45, 0},;  // Размерность, Строчный;
-//   {"UCUM",      "C",  15, 0},;  // Код UCUM, Строчный;
-//   {"COEF",      "C",  15, 0},;  // Коэффициент пересчета, Строчный, Коэффициент пересчета в рамках одной размерности.;
-//   {"CONV_ID",   "N",   3, 0},;  // Код единицы измерения для пересчета, Целочисленный, Код единицы измерения, в которую осуществляется пересчет.;
-//   {"CONV_NAM",  "C",  25, 0},;  // Единица измерения для пересчета, Строчный, Краткое наименование единицы измерения, в которую осуществляется пересчет.;
-//   {"OKEI_COD",  "N",   4, 0};    // Код ОКЕИ, Строчный, Соответствующий код Общероссийского классификатора единиц измерений.;
-// // {"NSI_EEC",  "C",  10, 0},;   // Код справочника ЕАЭК, Строчный, необязательное поле ? код справочника реестра НСИ ЕАЭК;
-// // {"NSI_EL_EEC",  "C",  10, 0};   // Код элемента справочника ЕАЭК, Строчный, необязательное поле ? код элемента справочника реестра НСИ ЕАЭК;
-
+    
   if sqlite3_exec(db, 'DROP TABLE IF EXISTS UnitOfMeasurement') == SQLITE_OK
     OutStd(hb_eol() + 'DROP TABLE UnitOfMeasurement - Ok' + hb_eol())
   endif
@@ -303,12 +271,11 @@ Function make_ed_izm(db, source)
     endif
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
-    // print_status_insert(db)
     out_obrabotka_eol()
   endif
   return nil
 
-***** 25.04.22
+***** 02.05.22
 function make_implant(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -317,17 +284,18 @@ function make_implant(db, source)
   local oXmlNode, oNode1
   local mID, mName, mRZN, mParent, mType, mLocal, mMaterial, mOrder
 
+  // 1)ID, Код , уникальный идентификатор записи;
+  // 2)RZN, Росздравнадзор , код изделия согласно Номенклатурному классификатору Росздравнадзора;
+  // 3)PARENT, Код родительского элемента;
+  // 4)NAME, Наименование , наименование вида изделия;
+  // // 5)LOCALIZATION, Локализация , анатомическая область, к которой относится локализация и/или действие изделия;
+  // // 6)MATERIAL, Материал , тип материала, из которого изготовлено изделие;
+  // // 7)METAL, Металл , признак наличия металла в изделии;
+  // // 8)SCTID, Код SNOMED CT , уникальный код по номенклатуре клинических терминов SNOMED CT;
+  // // 9)ORDER, Порядок сортировки ;
+  // ++) TYPE, Тип записи, символьный: 'O' корневой узел, 'U' узел, 'L' конечный элемент
   cmdText := 'CREATE TABLE implantant( id INTEGER, rzn INTEGER, parent INTEGER, name TEXT(120), local TEXT(80), material TEXT(20), _order INTEGER, type TEXT(1) )'
-  //   {"ID",      "N",  5, 0},;  // Код , уникальный идентификатор записи
-  //   {"RZN",     "N",  6, 0},;  // код изделия согласно Номенклатурному классификатору Росздравнадзора
-  //   {"PARENT",  "N",  5, 0},;  // Код родительского элемента
-  //   {"NAME",    "C", 120, 0},;  // Наименование , наименование вида изделия
-  //   {"TYPE",    "C",   1, 0},;   // тип записи: 'O' корневой узел, 'U' узел, 'L' конечный элемент
-  ////   {"LOCAL",   "C",  80, 0},;  // Локализация , анатомическая область, к которой относится локализация и/или действие изделия
-  ////   {"MATERIAL","C",  20, 0},;  // Материал , тип материала, из которого изготовлено изделие
-  ////   {"METAL",   "L",   1, 0},;  // Металл , признак наличия металла в изделии
-  ////   {"ORDER",   "N",   4, 0};  // Порядок сортировки
-
+    
   if sqlite3_exec(db, 'DROP TABLE implantant') == SQLITE_OK
     OutStd(hb_eol() + 'DROP TABLE implantant - Ok' + hb_eol())
   endif
@@ -428,7 +396,6 @@ function make_implant(db, source)
       OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
     endif
     sqlite3_exec(db, 'DROP TABLE tmp')
-    // print_status_insert(db)
   endif
 
   return nil
