@@ -8,10 +8,249 @@
 ***** 24.04.22
 function make_mzdrav(db, source)
 
+  make_method_inj(db, source)
   make_uslugi_mz(db, source)
-  // make_implant(db, source)
-  // make_ed_izm(db, source)
-  // make_severity(db, source)
+  make_implant(db, source)
+  make_ed_izm(db, source)
+  make_severity(db, source)
+
+  return nil
+
+***** 02.05.22
+Function make_method_inj(db, source)
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j, k1, j1
+  local nfile, nameRef
+  local oXmlNode, oNode1
+  local mID, mNameRus, mNameEng, mParent, mType
+
+  // 1) ID, Код, Целочисленный, уникальный идентификатор, обязательное поле, целое число;
+  // 2) NAME_RUS, Путь введения на русском языке, Строчный, наименование пути введения лекарственных средств на русском языке, обязательное поле, текстовый формат;
+  // 3) NAME_ENG, Путь введения на английском языке, Строчный, наименование пути введения лекарственных средств на английском языке, обязательное поле, текстовый формат;
+  // 4) PARENT, Родительский узел, Целочисленный, родительский узел иерархического справочника, целое число;
+  // // 5) NSI_CODE_EEC, Код справочника ЕАЭК, Строчный, необязательное поле – код справочника реестра НСИ ЕАЭК;
+  // // 6) NSI_ELEMENT_CODE_EEC, Код элемента справочника ЕАЭК, Строчный, необязательное поле – код элемента справочника реестра НСИ ЕАЭК;
+  // ++) TYPE, Тип записи, символьный: 'O' корневой узел, 'U' узел, 'L' конечный элемент
+  cmdText := 'CREATE TABLE method_inj( id INTEGER, name_rus TEXT(30), name_eng TEXT(30), parent INTEGER, type TEXT(1) )'
+    
+  if sqlite3_exec(db, 'DROP TABLE method_inj') == SQLITE_OK
+    OutStd(hb_eol() + 'DROP TABLE method_inj - Ok' + hb_eol())
+  endif
+     
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd( hb_eol() + 'CREATE TABLE method_inj - Ok' + hb_eol() )
+  else
+    OutStd( hb_eol() + 'CREATE TABLE method_inj - False' + hb_eol() )
+    return nil
+  endif
+
+  // временная таблица для дальнейшего использования
+  cmdTextTMP := 'CREATE TABLE tmp( id INTEGER, parent INTEGER)'
+  sqlite3_exec(db, 'DROP TABLE tmp')
+  sqlite3_exec(db, cmdTextTMP)
+    
+  nameRef := "1.2.643.5.1.13.13.11.1468.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+  
+  oXmlDoc := HXMLDoc():Read(nfile)
+  OutStd( nameRef + " - Пути введения лекарственных препаратов, в том числе для льготного обеспечения граждан лекарственными средствами (MethIntro)" + hb_eol() )
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdTextTMP := 'INSERT INTO tmp(id, parent) VALUES (:id, :parent)'
+    stmtTMP := sqlite3_prepare(db, cmdTextTMP)
+    cmdText := 'INSERT INTO method_inj ( id, name_rus, name_eng, parent ) VALUES( :id, :name_rus, :name_eng, :parent )'
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty( stmt )
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if "ENTRIES" == upper(oXmlNode:title)
+          k1 := len(oXmlNode:aItems)
+          for j1 := 1 to k1
+            oNode1 := oXmlNode:aItems[j1]
+            klll := upper(oNode1:title)
+            if "ENTRY" == upper(oNode1:title)
+              mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+              mNameRus := mo_read_xml_stroke(oNode1, 'NAME_RUS', , , 'utf8')
+              mNameEng := mo_read_xml_stroke(oNode1, 'NAME_ENG', , , 'utf8')
+              mParent := mo_read_xml_stroke(oNode1, 'PARENT', , , 'utf8')
+
+              if sqlite3_bind_int(stmt, 1, val(mID)) == SQLITE_OK .AND. ;
+                sqlite3_bind_text(stmt, 2, mNameRus) == SQLITE_OK .AND. ;
+                sqlite3_bind_text(stmt, 3, mNameEng) == SQLITE_OK .AND. ;
+                sqlite3_bind_int(stmt, 4, val(mParent)) == SQLITE_OK
+
+                if sqlite3_step(stmt) != SQLITE_DONE
+                  out_error(TAG_ROW_INVALID, nfile, j)
+                endif
+              endif
+              sqlite3_reset(stmt)
+              if sqlite3_bind_int(stmtTMP, 1, val(mID)) == SQLITE_OK .AND. ;
+                sqlite3_bind_int(stmtTMP, 2, val(mParent)) == SQLITE_OK
+                if sqlite3_step(stmtTMP) != SQLITE_DONE
+                  out_error(TAG_ROW_INVALID, nfile, j)
+                endif
+                sqlite3_reset(stmtTMP)
+              endif
+            endif
+          next j1
+        endif
+      next j
+    endif
+  endif
+
+  sqlite3_clear_bindings(stmt)
+  sqlite3_finalize(stmt)
+
+  sqlite3_clear_bindings(stmtTMP)
+  sqlite3_finalize(stmtTMP)
+
+  cmdText := "UPDATE method_inj SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE method_inj.id = tmp.parent)"
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+  else
+    OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+  endif
+  cmdText := "UPDATE method_inj SET type = 'L' WHERE NOT EXISTS (SELECT 1 FROM tmp WHERE method_inj.id = tmp.parent)"
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+  else
+    OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+  endif
+  sqlite3_exec(db, 'DROP TABLE tmp')
+
+  return NIL
+
+***** 02.05.22
+function make_implant(db, source)
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j, k1, j1
+  local nfile, nameRef
+  local oXmlNode, oNode1
+  local mID, mName, mRZN, mParent, mType, mLocal, mMaterial, mOrder
+
+  // 1)ID, Код , уникальный идентификатор записи;
+  // 2)RZN, Росздравнадзор , код изделия согласно Номенклатурному классификатору Росздравнадзора;
+  // 3)PARENT, Код родительского элемента;
+  // 4)NAME, Наименование , наименование вида изделия;
+  // // 5)LOCALIZATION, Локализация , анатомическая область, к которой относится локализация и/или действие изделия;
+  // // 6)MATERIAL, Материал , тип материала, из которого изготовлено изделие;
+  // // 7)METAL, Металл , признак наличия металла в изделии;
+  // // 8)SCTID, Код SNOMED CT , уникальный код по номенклатуре клинических терминов SNOMED CT;
+  // // 9)ORDER, Порядок сортировки ;
+  // ++) TYPE, Тип записи, символьный: 'O' корневой узел, 'U' узел, 'L' конечный элемент
+  cmdText := 'CREATE TABLE implantant( id INTEGER, rzn INTEGER, parent INTEGER, name TEXT(120), local TEXT(80), material TEXT(20), _order INTEGER, type TEXT(1) )'
+    
+  if sqlite3_exec(db, 'DROP TABLE implantant') == SQLITE_OK
+    OutStd(hb_eol() + 'DROP TABLE implantant - Ok' + hb_eol())
+  endif
+     
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd( hb_eol() + 'CREATE TABLE implantant - Ok' + hb_eol() )
+  else
+    OutStd( hb_eol() + 'CREATE TABLE implantant - False' + hb_eol() )
+    return nil
+  endif
+
+  // временная таблица для дальнейшего использования
+  cmdTextTMP := 'CREATE TABLE tmp( id INTEGER, parent INTEGER)'
+  sqlite3_exec(db, 'DROP TABLE tmp')
+  sqlite3_exec(db, cmdTextTMP)
+
+  nameRef := '1.2.643.5.1.13.13.11.1079.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  OutStd(nameRef + ' - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями (OID)' + hb_eol())
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdTextTMP := 'INSERT INTO tmp(id, parent) VALUES (:id, :parent)'
+    stmtTMP := sqlite3_prepare(db, cmdTextTMP)
+    cmdText := 'INSERT INTO implantant ( id, rzn, parent, name, local, material, _order, type ) VALUES( :id, :rzn, :parent, :name, :local, :material, :_order, :type )'
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty( stmt )
+      out_obrabotka(nfile)
+      k := Len(oXmlDoc:aItems[1]:aItems)
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if "ENTRIES" == upper(oXmlNode:title)
+          k1 := len(oXmlNode:aItems)
+          for j1 := 1 to k1
+            oNode1 := oXmlNode:aItems[j1]
+            if "ENTRY" == upper(oNode1:title)
+              mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+              mRZN := mo_read_xml_stroke(oNode1, 'RZN', , , 'utf8')
+              mParent := mo_read_xml_stroke(oNode1, 'PARENT', , , 'utf8')
+              mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
+              mLocal := mo_read_xml_stroke(oNode1, 'LOCALIZATION', , , 'utf8')
+              mMaterial := mo_read_xml_stroke(oNode1, 'MATERIAL', , , 'utf8')
+              mOrder := mo_read_xml_stroke(oNode1, 'ORDER', , , 'utf8')
+  
+              if sqlite3_bind_int(stmt, 1, val(mID)) == SQLITE_OK .AND. ;
+                      sqlite3_bind_int(stmt, 2, val(mRZN)) == SQLITE_OK .AND. ;
+                      sqlite3_bind_int(stmt, 3, val(mParent)) == SQLITE_OK  .AND. ;
+                      sqlite3_bind_text(stmt, 4, mName) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text(stmt, 5, mLocal) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text(stmt, 6, mMaterial) == SQLITE_OK .AND. ;
+                      sqlite3_bind_int(stmt, 7, val(mOrder)) == SQLITE_OK
+                if sqlite3_step(stmt) != SQLITE_DONE
+                  out_error(TAG_ROW_INVALID, nfile, j)
+                endif
+              endif
+              sqlite3_reset(stmt)
+              if sqlite3_bind_int(stmtTMP, 1, val(mID)) == SQLITE_OK .AND. ;
+                sqlite3_bind_int(stmtTMP, 2, val(mParent)) == SQLITE_OK
+                if sqlite3_step(stmtTMP) != SQLITE_DONE
+                  out_error(TAG_ROW_INVALID, nfile, j)
+                endif
+                sqlite3_reset(stmtTMP)
+              endif
+            endif
+          next j1
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+
+    sqlite3_clear_bindings(stmtTMP)
+    sqlite3_finalize(stmtTMP)
+
+    cmdText := "UPDATE implantant SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
+    if sqlite3_exec(db, cmdText) == SQLITE_OK
+      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+    else
+      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+    endif
+    cmdText := "UPDATE implantant SET type = 'L' WHERE NOT EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
+    if sqlite3_exec(db, cmdText) == SQLITE_OK
+      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+    else
+      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+    endif
+    cmdText := 'UPDATE implantant SET type = "O" WHERE rzn = 0'
+    if sqlite3_exec(db, cmdText) == SQLITE_OK
+      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+    else
+      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+    endif
+    sqlite3_exec(db, 'DROP TABLE tmp')
+  endif
 
   return nil
 
@@ -275,127 +514,3 @@ Function make_ed_izm(db, source)
   endif
   return nil
 
-***** 02.05.22
-function make_implant(db, source)
-  local stmt, stmtTMP
-  local cmdText, cmdTextTMP
-  local k, j, k1, j1
-  local nfile, nameRef
-  local oXmlNode, oNode1
-  local mID, mName, mRZN, mParent, mType, mLocal, mMaterial, mOrder
-
-  // 1)ID, Код , уникальный идентификатор записи;
-  // 2)RZN, Росздравнадзор , код изделия согласно Номенклатурному классификатору Росздравнадзора;
-  // 3)PARENT, Код родительского элемента;
-  // 4)NAME, Наименование , наименование вида изделия;
-  // // 5)LOCALIZATION, Локализация , анатомическая область, к которой относится локализация и/или действие изделия;
-  // // 6)MATERIAL, Материал , тип материала, из которого изготовлено изделие;
-  // // 7)METAL, Металл , признак наличия металла в изделии;
-  // // 8)SCTID, Код SNOMED CT , уникальный код по номенклатуре клинических терминов SNOMED CT;
-  // // 9)ORDER, Порядок сортировки ;
-  // ++) TYPE, Тип записи, символьный: 'O' корневой узел, 'U' узел, 'L' конечный элемент
-  cmdText := 'CREATE TABLE implantant( id INTEGER, rzn INTEGER, parent INTEGER, name TEXT(120), local TEXT(80), material TEXT(20), _order INTEGER, type TEXT(1) )'
-    
-  if sqlite3_exec(db, 'DROP TABLE implantant') == SQLITE_OK
-    OutStd(hb_eol() + 'DROP TABLE implantant - Ok' + hb_eol())
-  endif
-     
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd( hb_eol() + 'CREATE TABLE implantant - Ok' + hb_eol() )
-  else
-    OutStd( hb_eol() + 'CREATE TABLE implantant - False' + hb_eol() )
-    return nil
-  endif
-
-  // временная таблица для дальнейшего использования
-  cmdTextTMP := 'CREATE TABLE tmp( id INTEGER, parent INTEGER)'
-  sqlite3_exec(db, 'DROP TABLE tmp')
-  sqlite3_exec(db, cmdTextTMP)
-
-  nameRef := '1.2.643.5.1.13.13.11.1079.xml'
-  nfile := source + nameRef
-  if ! hb_vfExists(nfile)
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd(nameRef + ' - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями (OID)' + hb_eol())
-  if Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
-    return nil
-  else
-    cmdTextTMP := 'INSERT INTO tmp(id, parent) VALUES (:id, :parent)'
-    stmtTMP := sqlite3_prepare(db, cmdTextTMP)
-    cmdText := 'INSERT INTO implantant ( id, rzn, parent, name, local, material, _order, type ) VALUES( :id, :rzn, :parent, :name, :local, :material, :_order, :type )'
-    stmt := sqlite3_prepare(db, cmdText)
-    if ! Empty( stmt )
-      out_obrabotka(nfile)
-      k := Len(oXmlDoc:aItems[1]:aItems)
-      for j := 1 to k
-        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-        if "ENTRIES" == upper(oXmlNode:title)
-          k1 := len(oXmlNode:aItems)
-          for j1 := 1 to k1
-            oNode1 := oXmlNode:aItems[j1]
-            if "ENTRY" == upper(oNode1:title)
-              mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
-              mRZN := mo_read_xml_stroke(oNode1, 'RZN', , , 'utf8')
-              mParent := mo_read_xml_stroke(oNode1, 'PARENT', , , 'utf8')
-              mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
-              mLocal := mo_read_xml_stroke(oNode1, 'LOCALIZATION', , , 'utf8')
-              mMaterial := mo_read_xml_stroke(oNode1, 'MATERIAL', , , 'utf8')
-              mOrder := mo_read_xml_stroke(oNode1, 'ORDER', , , 'utf8')
-  
-              if sqlite3_bind_int(stmt, 1, val(mID)) == SQLITE_OK .AND. ;
-                      sqlite3_bind_int(stmt, 2, val(mRZN)) == SQLITE_OK .AND. ;
-                      sqlite3_bind_int(stmt, 3, val(mParent)) == SQLITE_OK  .AND. ;
-                      sqlite3_bind_text(stmt, 4, mName) == SQLITE_OK .AND. ;
-                      sqlite3_bind_text(stmt, 5, mLocal) == SQLITE_OK .AND. ;
-                      sqlite3_bind_text(stmt, 6, mMaterial) == SQLITE_OK .AND. ;
-                      sqlite3_bind_int(stmt, 7, val(mOrder)) == SQLITE_OK
-                if sqlite3_step(stmt) != SQLITE_DONE
-                  out_error(TAG_ROW_INVALID, nfile, j)
-                endif
-              endif
-              sqlite3_reset(stmt)
-              if sqlite3_bind_int(stmtTMP, 1, val(mID)) == SQLITE_OK .AND. ;
-                sqlite3_bind_int(stmtTMP, 2, val(mParent)) == SQLITE_OK
-                if sqlite3_step(stmtTMP) != SQLITE_DONE
-                  out_error(TAG_ROW_INVALID, nfile, j)
-                endif
-                sqlite3_reset(stmtTMP)
-              endif
-            endif
-          next j1
-        endif
-      next j
-    endif
-    sqlite3_clear_bindings(stmt)
-    sqlite3_finalize(stmt)
-
-    sqlite3_clear_bindings(stmtTMP)
-    sqlite3_finalize(stmtTMP)
-
-    cmdText := "UPDATE implantant SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
-    if sqlite3_exec(db, cmdText) == SQLITE_OK
-      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
-    else
-      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
-    endif
-    cmdText := "UPDATE implantant SET type = 'L' WHERE NOT EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
-    if sqlite3_exec(db, cmdText) == SQLITE_OK
-      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
-    else
-      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
-    endif
-    cmdText := 'UPDATE implantant SET type = "O" WHERE rzn = 0'
-    if sqlite3_exec(db, cmdText) == SQLITE_OK
-      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
-    else
-      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
-    endif
-    sqlite3_exec(db, 'DROP TABLE tmp')
-  endif
-
-  return nil

@@ -103,10 +103,20 @@ procedure main( ... )
     #endif
 
     sqlite3_exec( db, "PRAGMA auto_vacuum=0" )
-    sqlite3_exec( db, "PRAGMA page_size=4096" )
+    // sqlite3_exec( db, "PRAGMA auto_vacuum=2" )
+    // sqlite3_exec( db, "PRAGMA page_size=4096" )
+    sqlite3_exec( db, "PRAGMA page_size=8192" )
 
     make_mzdrav( db, source )
+    // sqlite3_exec( db, "PRAGMA incremental_vacuum" )
 
+    db := sqlite3_open_v2( "mzdrav.db", SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
+    if ! Empty( db )
+      if sqlite3_exec( db, "VACUUM" ) == SQLITE_OK
+        ? "PACK - Done"
+      endif
+    endif
+ 
     // // справочники группы F___
     // // make_f005( db, source )
     // // make_f006( db, source )
