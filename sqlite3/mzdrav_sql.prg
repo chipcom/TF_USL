@@ -5,14 +5,15 @@
 
 #require 'hbsqlit3'
 
-***** 24.04.22
+***** 03.05.22
 function make_mzdrav(db, source)
 
   make_method_inj(db, source)
-  make_uslugi_mz(db, source)
   make_implant(db, source)
   make_ed_izm(db, source)
   make_severity(db, source)
+
+  // make_uslugi_mz(db, source) // не используем (для будующего)
 
   return nil
 

@@ -11,16 +11,15 @@
 procedure main( ... )
   local cParam, cParamL
   local aParams
-  local nResult
 
   local source
   local destination
   local lExists
   local os_sep := hb_osPathSeparator()
-  local fp, i, s
 
-  LOCAL lCreateIfNotExist := .T.
-  LOCAL db
+  local lCreateIfNotExist := .t.
+  local nameDB
+  local db
 
   REQUEST HB_CODEPAGE_UTF8
   HB_CDPSELECT("UTF8")
@@ -30,16 +29,15 @@ procedure main( ... )
   // REQUEST DBFNTX
   // RDDSETDEFAULT('DBFNTX')
   
+  SET DATE GERMAN
+  SET CENTURY ON
+  
   // SET SCOREBOARD OFF
   // SET EXACT ON
-  // SET DATE GERMAN
   // SET WRAP ON
-  // SET CENTURY ON
   // SET EXCLUSIVE ON
   // SET DELETED ON
   // setblink(.f.)
-  
-  
   // READINSERT(.T.)        // режим редактирования по умолчанию Insert
   // KEYBOARD ''
   // ksetnum(.t.)
@@ -93,8 +91,9 @@ procedure main( ... )
     return
   endif
 
+  nameDB := destination + 'chip_mo.db'
   // db := sqlite3_open( destination + "chip_mo.s3db", lCreateIfNotExist )
-  db := sqlite3_open( destination + 'mzdrav.db', lCreateIfNotExist )
+  db := sqlite3_open( nameDB, lCreateIfNotExist )
 
   if ! Empty( db )
     #ifdef TRACE
@@ -103,17 +102,16 @@ procedure main( ... )
     #endif
 
     sqlite3_exec( db, "PRAGMA auto_vacuum=0" )
-    // sqlite3_exec( db, "PRAGMA auto_vacuum=2" )
-    // sqlite3_exec( db, "PRAGMA page_size=4096" )
-    sqlite3_exec( db, "PRAGMA page_size=8192" )
+    sqlite3_exec( db, "PRAGMA page_size=4096" )
 
     make_mzdrav( db, source )
-    // sqlite3_exec( db, "PRAGMA incremental_vacuum" )
 
-    db := sqlite3_open_v2( "mzdrav.db", SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
+    db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
     if ! Empty( db )
       if sqlite3_exec( db, "VACUUM" ) == SQLITE_OK
-        ? "PACK - Done"
+        OutStd(hb_eol() + 'Pack - ok' + hb_eol())
+      else
+        out_error(PACK_ERROR, nameDB)
       endif
     endif
  
@@ -311,6 +309,9 @@ function out_error(nError, nfile, j, k)
     case nError == UPDATE_TABLE_ERROR
         OutErr( ;
           'Ошибка обновления записей в таблице - ' + nfile + hb_eol() )
-  end case
+    case nError == PACK_ERROR
+        OutErr( ;
+          'Ошибка при очистки БД - ' + nfile + hb_eol() )
+    end case
 
   return nil
