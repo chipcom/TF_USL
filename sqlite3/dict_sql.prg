@@ -92,19 +92,19 @@ procedure main( ... )
   endif
 
   nameDB := destination + 'chip_mo.db'
-  // db := sqlite3_open( destination + "chip_mo.s3db", lCreateIfNotExist )
-  db := sqlite3_open( nameDB, lCreateIfNotExist )
+  db := sqlite3_open(nameDB, lCreateIfNotExist)
 
   if ! Empty( db )
     #ifdef TRACE
-         sqlite3_profile( db, .T. ) // включим профайлер
-         sqlite3_trace( db, .T. )   // включим трассировщик
+         sqlite3_profile(db, .t.) // включим профайлер
+         sqlite3_trace(db, .t.)   // включим трассировщик
     #endif
 
-    sqlite3_exec( db, "PRAGMA auto_vacuum=0" )
-    sqlite3_exec( db, "PRAGMA page_size=4096" )
+    sqlite3_exec(db, "PRAGMA auto_vacuum=0")
+    sqlite3_exec(db, "PRAGMA page_size=4096")
 
-    make_mzdrav( db, source )
+    // make_mzdrav(db, source)
+    make_ffoms(db, source)
 
     db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
     if ! Empty( db )

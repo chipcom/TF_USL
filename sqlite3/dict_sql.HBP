@@ -17,6 +17,7 @@ hxmldoc.prg
 
 dict_sql.prg
 mzdrav_sql.prg
+ffoms_sql.prg
 
 #catalog_f.prg
 #catalog_o.prg
