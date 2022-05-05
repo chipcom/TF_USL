@@ -22,6 +22,7 @@ procedure main( ... )
   local db
 
   REQUEST HB_CODEPAGE_UTF8
+  REQUEST HB_CODEPAGE_RU1251
   HB_CDPSELECT("UTF8")
   // REQUEST HB_LANG_RU866
   // HB_LANGSELECT("RU866")
@@ -210,6 +211,11 @@ Function mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
   elseif (c := valtype(oNode:aItems[1])) == 'C'
     if codepage == 'WIN1251'
       ret := hb_AnsiToOem(alltrim(oNode:aItems[1]))
+    elseif codepage == 'RU1251'
+      // ret := hb_strToUTF8(alltrim(oNode:aItems[1]), 'ru1251')
+      if HB_ISSTRING(oNode:aItems[1])
+        ret := alltrim(hb_strToUTF8(oNode:aItems[1]), 'ru1251')
+      endif
     elseif codepage == 'UTF8'
       // ret := hb_Utf8ToStr( alltrim(oNode:aItems[1]), 'RU866' )	
       ret := alltrim(oNode:aItems[1])
