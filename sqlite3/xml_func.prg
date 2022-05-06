@@ -1,5 +1,8 @@
 #include 'function.ch'
 
+function read_xml_stroke_1251_to_utf8(node, title)
+  return hb_strToUTF8(mo_read_xml_stroke(node, title, , , 'win1251'), 'RU866')
+
 ***** строка даты для XML-файла
 Function date2xml(mdate)
   return strzero(year(mdate), 4) + '-' + ;
