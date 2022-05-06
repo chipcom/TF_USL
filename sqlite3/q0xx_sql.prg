@@ -6,7 +6,7 @@
 #require 'hbsqlit3'
 
 ***** 05.05.22
-function make_ffoms(db, source)
+function make_Q0xx(db, source)
 
   make_q015(db, source)
   // make_q016(db, source)
