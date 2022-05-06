@@ -103,7 +103,8 @@ procedure main( ... )
     sqlite3_exec(db, "PRAGMA page_size=4096")
 
     // make_mzdrav(db, source)
-    make_Q0xx(db, source)
+    // make_Q0xx(db, source)
+    make_V0xx(db, source)
 
     db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
     if ! Empty( db )
