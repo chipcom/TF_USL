@@ -1,46 +1,46 @@
 #include 'function.ch'
 
-***** строка даты для XML-файла
+***** ╤Б╤В╤А╨╛╨║╨░ ╨┤╨░╤В╤Л ╨┤╨╗╤П XML-╤Д╨░╨╣╨╗╨░
 Function date2xml(mdate)
   return strzero(year(mdate), 4) + '-' + ;
      strzero(month(mdate), 2) + '-' + ;
      strzero(day(mdate), 2)
 
-***** пребразовать дату из "2002-02-01" в тип "DATE"
+***** ╨┐╤А╨╡╨▒╤А╨░╨╖╨╛╨▓╨░╤В╤М ╨┤╨░╤В╤Г ╨╕╨╖ "2002-02-01" ╨▓ ╤В╨╕╨┐ "DATE"
 Function xml2date(s)
   return stod(charrem('-', s))
 
-***** проверить наличие в XML-файле тэга и вернуть его значение
+***** ╨┐╤А╨╛╨▓╨╡╤А╨╕╤В╤М ╨╜╨░╨╗╨╕╤З╨╕╨╡ ╨▓ XML-╤Д╨░╨╣╨╗╨╡ ╤В╤Н╨│╨░ ╨╕ ╨▓╨╡╤А╨╜╤Г╤В╤М ╨╡╨│╨╛ ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╡
 Function mo_read_xml_stroke(_node, _title, _aerr, _binding, _codepage)
-  // _node - указатель на узел
-  // _title - наименование тэга
-  // _aerr - массив сообщений об ошибках
-  // _binding - обязателен ли атрибут (по-умолчанию .T.)
-  // _codepage - кодировка переданной строки
+  // _node - ╤Г╨║╨░╨╖╨░╤В╨╡╨╗╤М ╨╜╨░ ╤Г╨╖╨╡╨╗
+  // _title - ╨╜╨░╨╕╨╝╨╡╨╜╨╛╨▓╨░╨╜╨╕╨╡ ╤В╤Н╨│╨░
+  // _aerr - ╨╝╨░╤Б╤Б╨╕╨▓ ╤Б╨╛╨╛╨▒╤Й╨╡╨╜╨╕╨╣ ╨╛╨▒ ╨╛╤И╨╕╨▒╨║╨░╤Е
+  // _binding - ╨╛╨▒╤П╨╖╨░╤В╨╡╨╗╨╡╨╜ ╨╗╨╕ ╨░╤В╤А╨╕╨▒╤Г╤В (╨┐╨╛-╤Г╨╝╨╛╨╗╤З╨░╨╜╨╕╤О .T.)
+  // _codepage - ╨║╨╛╨┤╨╕╤А╨╛╨▓╨║╨░ ╨┐╨╡╤А╨╡╨┤╨░╨╜╨╜╨╛╨╣ ╤Б╤В╤А╨╛╨║╨╕
   Local ret := '', oNode, yes_err := (valtype(_aerr) == 'A'), ;
-    s_msg := 'Отсутствует значение обязательного тэга "' + _title + '"'
+    s_msg := '╨Ю╤В╤Б╤Г╤В╤Б╤В╨▓╤Г╨╡╤В ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╡ ╨╛╨▒╤П╨╖╨░╤В╨╡╨╗╤М╨╜╨╛╨│╨╛ ╤В╤Н╨│╨░ "' + _title + '"'
 
   DEFAULT _binding TO .t., _aerr TO {}
 
   DEFAULT _codepage TO 'WIN1251'
-  // ищем необходимый "_title" тэг в узле "_node"
+  // ╨╕╤Й╨╡╨╝ ╨╜╨╡╨╛╨▒╤Е╨╛╨┤╨╕╨╝╤Л╨╣ "_title" ╤В╤Н╨│ ╨▓ ╤Г╨╖╨╗╨╡ "_node"
   oNode := _node:Find(_title)
   if oNode == NIL .and. _binding .and. yes_err
-    aadd(_aerr,s_msg)
+    aadd(_aerr, s_msg)
   endif
   if oNode != NIL
     ret := mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
   endif
   return ret
 
-***** вернуть значение тэга
+***** ╨▓╨╡╤А╨╜╤Г╤В╤М ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╡ ╤В╤Н╨│╨░
 Function mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
-  // oNode - указатель на узел
-  // _aerr - массив сообщений об ошибках
-  // _binding - обязателен ли атрибут (по-умолчанию .T.)
-  // _codepage - кодировка переданной строки
+  // oNode - ╤Г╨║╨░╨╖╨░╤В╨╡╨╗╤М ╨╜╨░ ╤Г╨╖╨╡╨╗
+  // _aerr - ╨╝╨░╤Б╤Б╨╕╨▓ ╤Б╨╛╨╛╨▒╤Й╨╡╨╜╨╕╨╣ ╨╛╨▒ ╨╛╤И╨╕╨▒╨║╨░╤Е
+  // _binding - ╨╛╨▒╤П╨╖╨░╤В╨╡╨╗╨╡╨╜ ╨╗╨╕ ╨░╤В╤А╨╕╨▒╤Г╤В (╨┐╨╛-╤Г╨╝╨╛╨╗╤З╨░╨╜╨╕╤О .T.)
+  // _codepage - ╨║╨╛╨┤╨╕╤А╨╛╨▓╨║╨░ ╨┐╨╡╤А╨╡╨┤╨░╨╜╨╜╨╛╨╣ ╤Б╤В╤А╨╛╨║╨╕
   Local ret := '', c, yes_err := (valtype(_aerr) == 'A'),;
-    s_msg := 'Отсутствует значение обязательного тэга "' + oNode:title + '"'
+    s_msg := '╨Ю╤В╤Б╤Г╤В╤Б╤В╨▓╤Г╨╡╤В ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╡ ╨╛╨▒╤П╨╖╨░╤В╨╡╨╗╤М╨╜╨╛╨│╨╛ ╤В╤Н╨│╨░ "' + oNode:title + '"'
   local codepage := upper(_codepage)
 
   if empty(oNode:aItems)
@@ -60,6 +60,6 @@ Function mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
       ret := alltrim(oNode:aItems[1])
     endif
   elseif yes_err
-    aadd(_aerr, 'Неверный тип данных у тэга "' + oNode:title + '": "' + c + '"')
+    aadd(_aerr, '╨Э╨╡╨▓╨╡╤А╨╜╤Л╨╣ ╤В╨╕╨┐ ╨┤╨░╨╜╨╜╤Л╤Е ╤Г ╤В╤Н╨│╨░ "' + oNode:title + '": "' + c + '"')
   endif
   return ret

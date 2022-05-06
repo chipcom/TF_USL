@@ -5,9 +5,7 @@
 
 // #define TRACE
 
-/*
- * 25.04.2022
-*/
+** 06.05.2022
 procedure main( ... )
   local cParam, cParamL
   local aParams
@@ -23,8 +21,8 @@ procedure main( ... )
 
   REQUEST HB_CODEPAGE_UTF8
   REQUEST HB_CODEPAGE_RU1251
+  REQUEST HB_LANG_RU866
   HB_CDPSELECT("UTF8")
-  // REQUEST HB_LANG_RU866
   // HB_LANGSELECT("RU866")
   
   // REQUEST DBFNTX
@@ -175,33 +173,33 @@ procedure About()
       
   return
    
-****** 11.02.22
+** 11.02.22
 function obrabotka(nfile)
 
   @ row() + 1, 1 say "Обработка файла " + nfile + " -"
   return Col()
 
-****** 13.02.22
+** 13.02.22
 function out_obrabotka(nfile)
 
   OutStd( ;
     '===== Обработка файла ' + nfile )
   return nil
 
-****** 15.02.22
+** 15.02.22
 function out_create_file(nfile)
 
   OutStd( ;
     'Создание файла ' + nfile )
   return nil
 
-****** 14.02.22
+** 14.02.22
 function out_obrabotka_eol()
 
   OutStd( hb_eol() )
   return nil
 
-****** 14.02.22
+** 14.02.22
 function out_obrabotka_count(j, k)
 
   // OutStd( str(j / k * 100, 6, 2) + "%" )
