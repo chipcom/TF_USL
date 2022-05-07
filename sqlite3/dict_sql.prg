@@ -5,7 +5,7 @@
 
 // #define TRACE
 
-** 06.05.2022
+** 07.05.2022
 procedure main( ... )
   local cParam, cParamL
   local aParams
@@ -84,7 +84,7 @@ procedure main( ... )
     quit
   endi
 
-  OutStd(hb_eol() + 'Версия библиотеки SQLite3 - ' + sqlite3_libversion() + hb_eol())
+  OutStd(hb_eol() + 'Версия библиотеки SQLite3 - ' + sqlite3_libversion() + hb_eol() + hb_eol())
 
   if sqlite3_libversion_number() < 3005001
     return

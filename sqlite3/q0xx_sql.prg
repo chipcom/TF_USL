@@ -14,13 +14,13 @@ function make_Q0xx(db, source)
 
   return nil
 
-** 05.05.22
+** 07.05.22
 function make_q015(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
-  local oXmlNode, oNode1
+  local oXmlDoc, oXmlNode, oNode1
   local s_kod, s_name, s_nsi_obj, s_nsi_el, s_usl_test, s_val_el, s_comment, d1, d2
 
   // ID_TEST, Строчный(12), Идентификатор проверки.
@@ -110,16 +110,16 @@ function make_q015(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
   endif
-
+  out_obrabotka_eol()
   return nil
 
-** 05.05.22
+** 07.05.22
 function make_q016(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
-  local oXmlNode, oNode1
+  local oXmlDoc, oXmlNode, oNode1
   local s_kod, s_name, s_nsi_obj, s_nsi_el, s_usl_test, s_val_el, s_comment, d1, d2
 
   // ID_TEST, Строчный(12),	Идентификатор проверки. 
@@ -149,26 +149,27 @@ function make_q016(db, source)
   
   cmdText := 'CREATE TABLE q016( id_test TEXT(12), id_el TEXT(100), nsi_obj TEXT, nsi_el TEXT, usl_test BLOB, val_el BLOB, comment BLOB, datebeg TEXT(10), dateend TEXT(10) )'
     
-  if sqlite3_exec(db, 'DROP TABLE IF EXISTS q016') == SQLITE_OK
-    OutStd(hb_eol() + 'DROP TABLE q016 - Ok' + hb_eol())
-  endif
-     
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd( hb_eol() + 'CREATE TABLE q016 - Ok' + hb_eol() )
-  else
-    OutStd( hb_eol() + 'CREATE TABLE q016 - False' + hb_eol() )
-    return nil
-  endif
-
   nameRef := 'Q016.xml'
   nfile := source + nameRef
   if ! hb_vfExists(nfile)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Перечень проверок автоматизированной поддержки МЭК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (MEK_MPF)' + hb_eol())
   endif
   
+  if sqlite3_exec(db, 'DROP TABLE IF EXISTS q016') == SQLITE_OK
+    OutStd('DROP TABLE q016 - Ok' + hb_eol())
+  endif
+     
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd('CREATE TABLE q016 - Ok' + hb_eol())
+  else
+    OutStd('CREATE TABLE q016 - False' + hb_eol())
+    return nil
+  endif
+
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + ' - Перечень проверок автоматизированной поддержки МЭК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (MEK_MPF)' + hb_eol() )
   if Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     return nil
@@ -210,15 +211,16 @@ function make_q016(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
   endif
+  out_obrabotka_eol()
   return nil
 
-** 05.05.22
+** 07.05.22
 function make_q017(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
-  local oXmlNode, oNode1
+  local oXmlDoc, oXmlNode, oNode1
   local s_kod, s_name, s_comment, d1, d2
 
   // ID_KTEST, Строчный(4),	Идентификатор категории проверки
@@ -229,26 +231,27 @@ function make_q017(db, source)
   
   cmdText := 'CREATE TABLE q017( id_ktest TEXT(4), nam_ktest BLOB, comment BLOB, datebeg TEXT(10), dateend TEXT(10) )'
     
-  if sqlite3_exec(db, 'DROP TABLE IF EXISTS q017') == SQLITE_OK
-    OutStd(hb_eol() + 'DROP TABLE q017 - Ok' + hb_eol())
-  endif
-     
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd( hb_eol() + 'CREATE TABLE q017 - Ok' + hb_eol() )
-  else
-    OutStd( hb_eol() + 'CREATE TABLE q017 - False' + hb_eol() )
-    return nil
-  endif
-
   nameRef := 'Q017.xml'
   nfile := source + nameRef
   if ! hb_vfExists(nfile)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Перечень категорий проверок ФЛК и МЭК (TEST_K)' + hb_eol())
   endif
   
+  if sqlite3_exec(db, 'DROP TABLE IF EXISTS q017') == SQLITE_OK
+    OutStd('DROP TABLE q017 - Ok' + hb_eol())
+  endif
+     
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd('CREATE TABLE q017 - Ok' + hb_eol())
+  else
+    OutStd('CREATE TABLE q017 - False' + hb_eol())
+    return nil
+  endif
+
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + ' - Перечень категорий проверок ФЛК и МЭК (TEST_K)' + hb_eol() )
   if Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     return nil
@@ -282,4 +285,5 @@ function make_q017(db, source)
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
   endif
+  out_obrabotka_eol()
   return nil

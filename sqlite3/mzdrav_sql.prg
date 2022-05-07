@@ -5,7 +5,7 @@
 
 #require 'hbsqlit3'
 
-***** 03.05.22
+** 03.05.22
 function make_mzdrav(db, source)
 
   make_method_inj(db, source)
@@ -17,13 +17,13 @@ function make_mzdrav(db, source)
 
   return nil
 
-***** 02.05.22
+** 07.05.22
 Function make_method_inj(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j, k1, j1
   local nfile, nameRef
-  local oXmlNode, oNode1
+  local oXmlDoc, oXmlNode, oNode1
   local mID, mNameRus, mNameEng, mParent, mType
 
   // 1) ID, Код, Целочисленный, уникальный идентификатор, обязательное поле, целое число;
@@ -35,14 +35,23 @@ Function make_method_inj(db, source)
   // ++) TYPE, Тип записи, символьный: 'O' корневой узел, 'U' узел, 'L' конечный элемент
   cmdText := 'CREATE TABLE method_inj( id INTEGER, name_rus TEXT(30), name_eng TEXT(30), parent INTEGER, type TEXT(1) )'
     
+  nameRef := "1.2.643.5.1.13.13.11.1468.xml"
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  else
+    OutStd(hb_eol() + nameRef + " - Пути введения лекарственных препаратов, в том числе для льготного обеспечения граждан лекарственными средствами (MethIntro)" + hb_eol())
+  endif
+  
   if sqlite3_exec(db, 'DROP TABLE method_inj') == SQLITE_OK
-    OutStd(hb_eol() + 'DROP TABLE method_inj - Ok' + hb_eol())
+    OutStd('DROP TABLE method_inj - Ok' + hb_eol())
   endif
      
   if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd( hb_eol() + 'CREATE TABLE method_inj - Ok' + hb_eol() )
+    OutStd('CREATE TABLE method_inj - Ok' + hb_eol())
   else
-    OutStd( hb_eol() + 'CREATE TABLE method_inj - False' + hb_eol() )
+    OutStd('CREATE TABLE method_inj - False' + hb_eol())
     return nil
   endif
 
@@ -51,15 +60,7 @@ Function make_method_inj(db, source)
   sqlite3_exec(db, 'DROP TABLE tmp')
   sqlite3_exec(db, cmdTextTMP)
     
-  nameRef := "1.2.643.5.1.13.13.11.1468.xml"
-  nfile := source + nameRef
-  if ! hb_vfExists(nfile)
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-  
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - Пути введения лекарственных препаратов, в том числе для льготного обеспечения граждан лекарственными средствами (MethIntro)" + hb_eol() )
   if Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     return nil
@@ -116,27 +117,27 @@ Function make_method_inj(db, source)
 
   cmdText := "UPDATE method_inj SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE method_inj.id = tmp.parent)"
   if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+    OutStd(cmdText + ' - Ok' + hb_eol())
   else
-    OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+    OutErr(cmdText + ' - False' + hb_eol())
   endif
   cmdText := "UPDATE method_inj SET type = 'L' WHERE NOT EXISTS (SELECT 1 FROM tmp WHERE method_inj.id = tmp.parent)"
   if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+    OutStd(cmdText + ' - Ok' + hb_eol())
   else
-    OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+    OutErr(cmdText + ' - False' + hb_eol())
   endif
   sqlite3_exec(db, 'DROP TABLE tmp')
 
   return NIL
 
-***** 02.05.22
+** 07.05.22
 function make_implant(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j, k1, j1
   local nfile, nameRef
-  local oXmlNode, oNode1
+  local oXmlDoc, oXmlNode, oNode1
   local mID, mName, mRZN, mParent, mType, mLocal, mMaterial, mOrder
 
   // 1)ID, Код , уникальный идентификатор записи;
@@ -151,14 +152,23 @@ function make_implant(db, source)
   // ++) TYPE, Тип записи, символьный: 'O' корневой узел, 'U' узел, 'L' конечный элемент
   cmdText := 'CREATE TABLE implantant( id INTEGER, rzn INTEGER, parent INTEGER, name TEXT(120), local TEXT(80), material TEXT(20), _order INTEGER, type TEXT(1) )'
     
+  nameRef := '1.2.643.5.1.13.13.11.1079.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями (OID)' + hb_eol())
+  endif
+
   if sqlite3_exec(db, 'DROP TABLE implantant') == SQLITE_OK
-    OutStd(hb_eol() + 'DROP TABLE implantant - Ok' + hb_eol())
+    OutStd('DROP TABLE implantant - Ok' + hb_eol())
   endif
      
   if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd( hb_eol() + 'CREATE TABLE implantant - Ok' + hb_eol() )
+    OutStd('CREATE TABLE implantant - Ok' + hb_eol())
   else
-    OutStd( hb_eol() + 'CREATE TABLE implantant - False' + hb_eol() )
+    OutStd('CREATE TABLE implantant - False' + hb_eol())
     return nil
   endif
 
@@ -167,15 +177,7 @@ function make_implant(db, source)
   sqlite3_exec(db, 'DROP TABLE tmp')
   sqlite3_exec(db, cmdTextTMP)
 
-  nameRef := '1.2.643.5.1.13.13.11.1079.xml'
-  nfile := source + nameRef
-  if ! hb_vfExists(nfile)
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd(nameRef + ' - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями (OID)' + hb_eol())
   if Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     return nil
@@ -234,34 +236,34 @@ function make_implant(db, source)
 
     cmdText := "UPDATE implantant SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
     if sqlite3_exec(db, cmdText) == SQLITE_OK
-      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+      OutStd(cmdText + ' - Ok' + hb_eol())
     else
-      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+      OutErr(cmdText + ' - False' + hb_eol())
     endif
     cmdText := "UPDATE implantant SET type = 'L' WHERE NOT EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
     if sqlite3_exec(db, cmdText) == SQLITE_OK
-      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+      OutStd(cmdText + ' - Ok' + hb_eol())
     else
-      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+      OutErr(cmdText + ' - False' + hb_eol())
     endif
     cmdText := 'UPDATE implantant SET type = "O" WHERE rzn = 0'
     if sqlite3_exec(db, cmdText) == SQLITE_OK
-      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
+      OutStd(cmdText + ' - Ok' + hb_eol())
     else
-      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
+      OutErr(cmdText + ' - False' + hb_eol())
     endif
     sqlite3_exec(db, 'DROP TABLE tmp')
   endif
 
   return nil
 
-***** 02.05.22
+** 07.05.22
 function make_uslugi_mz(db, source)
   LOCAL stmt
   local cmdText
   local nfile, nameRef
   local k, j, k1, j1
-  local oXmlNode, oNode1
+  local oXmlDoc, oXmlNode, oNode1
   local mID, mS_code, mName, mRel, mDateOut
 
   // 1) ID, Уникальный идентификатор , Целочисленный, числовой формат, обязательное поле;
@@ -271,26 +273,27 @@ function make_uslugi_mz(db, source)
   // 5) DATEOUT, Дата упразднения , Дата, дата, после которой данная запись упраздняется согласно новым приказам;
   cmdText := 'CREATE TABLE Mz_services( id INTEGER, s_code TEXT(16), name TEXT(2550), rel INTEGER,  dateout TEXT(10) )'
 
-  if sqlite3_exec(db, 'DROP TABLE IF EXISTS Mz_services') == SQLITE_OK
-    OutStd(hb_eol() + 'DROP TABLE Mz_services - Ok' + hb_eol())
-  endif
-    
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-     OutStd(hb_eol() + 'CREATE TABLE Mz_services - Ok' + hb_eol())
-  else
-     OutStd(hb_eol() + 'CREATE TABLE Mz_services - False' + hb_eol())
-    return nil
-  endif
-
   nameRef := "1.2.643.5.1.13.13.11.1070.xml"  // может меняться из-за версий
   nfile := source + nameRef
   if ! hb_vfExists(nfile)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Номенклатура медицинских услуг (OID)' + hb_eol())
+  endif
+
+  if sqlite3_exec(db, 'DROP TABLE IF EXISTS Mz_services') == SQLITE_OK
+    OutStd('DROP TABLE Mz_services - Ok' + hb_eol())
+  endif
+    
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+     OutStd('CREATE TABLE Mz_services - Ok' + hb_eol())
+  else
+     OutStd('CREATE TABLE Mz_services - False' + hb_eol())
+    return nil
   endif
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd(nameRef + ' - Номенклатура медицинских услуг (OID)' + hb_eol())
   if Empty(oXmlDoc:aItems)
     out_error(FILE_READ_ERROR, nfile)
     return nil
@@ -331,15 +334,16 @@ function make_uslugi_mz(db, source)
     sqlite3_clear_bindings(stmt)
     sqlite3_finalize(stmt)
   endif
+  out_obrabotka_eol()
   return nil
 
-***** 02.05.22
+** 07.05.22
 function make_severity(db, source)
   LOCAL stmt
   local cmdText
   local nfile, nameRef
   local k, j, k1, j1
-  local oXmlNode, oNode1
+  local oXmlDoc, oXmlNode, oNode1
   local mID, mName, mSYN, mSCTID, mSort
 
   // 1) ID, Код , Целочисленный, уникальный идентификатор, возможные значения – целые числа от 1 до 6;
@@ -350,26 +354,27 @@ function make_severity(db, source)
   //    справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
   cmdText := 'CREATE TABLE Severity( id INTEGER, name TEXT(40), syn TEXT(50), sctid TEXT(10), sort INTEGER )'
   
-  if sqlite3_exec(db, 'DROP TABLE IF EXISTS Severity') == SQLITE_OK
-    OutStd(hb_eol() + 'DROP TABLE Severity - Ok' + hb_eol())
-  endif
-    
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-     OutStd(hb_eol() + 'CREATE TABLE Severity - Ok' + hb_eol())
-  else
-     OutStd(hb_eol() + 'CREATE TABLE Severity - False' + hb_eol())
-    return nil
-  endif
-
   nameRef := '1.2.643.5.1.13.13.11.1006.xml'
   nfile := source + nameRef
   if ! hb_vfExists(nfile)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Степень тяжести состояния пациента (OID)' + hb_eol())
+  endif
+
+  if sqlite3_exec(db, 'DROP TABLE IF EXISTS Severity') == SQLITE_OK
+    OutStd('DROP TABLE Severity - Ok' + hb_eol())
+  endif
+    
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+     OutStd('CREATE TABLE Severity - Ok' + hb_eol())
+  else
+     OutStd('CREATE TABLE Severity - False' + hb_eol())
+    return nil
   endif
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd(nameRef + ' - Степень тяжести состояния пациента (OID)' + hb_eol())
   if Empty(oXmlDoc:aItems)
     out_error(FILE_READ_ERROR, nfile)
     return nil
@@ -410,13 +415,14 @@ function make_severity(db, source)
     sqlite3_clear_bindings(stmt)
     sqlite3_finalize(stmt)
   endif
+  out_obrabotka_eol()
   return nil
 
-***** 02.05.22
+** 07.05.22
 Function make_ed_izm(db, source)
   local stmt
   local cmdText
-  local oXmlNode, oNode1
+  local oXmlDoc, oXmlNode, oNode1
   local nfile, nameRef
   local k, j, k1, j1
   local mID, mFullName, mShortName, mPrintName, mMeasure, mUCUM, mCoef, mConvID
@@ -439,26 +445,27 @@ Function make_ed_izm(db, source)
     'shortname TEXT(25), prnname TEXT(25), measur TEXT(45), ucum TEXT(15), coef TEXT(15), ' + ;
     'conv_id INTEGER, conv_nam TEXT(25), okei_cod INTEGER )'
     
-  if sqlite3_exec(db, 'DROP TABLE IF EXISTS UnitOfMeasurement') == SQLITE_OK
-    OutStd(hb_eol() + 'DROP TABLE UnitOfMeasurement - Ok' + hb_eol())
-  endif
-     
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd( hb_eol() + 'CREATE TABLE UnitOfMeasurement - Ok' + hb_eol() )
-  else
-    OutStd( hb_eol() + 'CREATE TABLE UnitOfMeasurement - False' + hb_eol() )
-    return nil
-  endif
-
   nameRef := '1.2.643.5.1.13.13.11.1358.xml'
   nfile := source + nameRef
   if ! hb_vfExists(nfile)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Единицы измерения (OID)' + hb_eol())
+  endif
+
+  if sqlite3_exec(db, 'DROP TABLE IF EXISTS UnitOfMeasurement') == SQLITE_OK
+    OutStd('DROP TABLE UnitOfMeasurement - Ok' + hb_eol())
+  endif
+     
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd('CREATE TABLE UnitOfMeasurement - Ok' + hb_eol())
+  else
+    OutStd('CREATE TABLE UnitOfMeasurement - False' + hb_eol())
+    return nil
   endif
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + ' - Единицы измерения (OID)' + hb_eol() )
   if Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     return nil
@@ -511,7 +518,6 @@ Function make_ed_izm(db, source)
     endif
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
-    out_obrabotka_eol()
   endif
+  out_obrabotka_eol()
   return nil
-
