@@ -7,23 +7,23 @@
 function make_V0xx(db, source)
 
   make_V002(db, source)
-  // make_V009(db, source)
-  // make_V010(db, source)
-  // make_V012(db, source)
-  // make_V015(db, source)
-  // make_V016(db, source)
-  // make_V017(db, source)
-  // make_V018(db, source)
-  // make_V019(db, source)
-  // make_V020(db, source)
-  // make_V021(db, source)
-  // make_V022(db, source)
-  // make_V025(db, source)
-  // make_V030(db, source)
-  // make_V031(db, source)
-  // make_V032(db, source)
-  // make_V033(db, source)
-  // make_v036(db, source)
+  make_V009(db, source)
+  make_V010(db, source)
+  make_V012(db, source)
+  make_V015(db, source)
+  make_V016(db, source)
+  make_V017(db, source)
+  make_V018(db, source)
+  make_V019(db, source)
+  make_V020(db, source)
+  make_V021(db, source)
+  make_V022(db, source)
+  make_V025(db, source)
+  make_V030(db, source)
+  make_V031(db, source)
+  make_V032(db, source)
+  make_V033(db, source)
+  make_v036(db, source)
 
   return nil
 
@@ -174,6 +174,78 @@ Function make_V009(db, source)
   out_obrabotka_eol()
   return nil
   
+** 09.05.22
+Function make_v010(db, source)
+  // IDSP,       "N",      2,      0  // Код способа оплаты медицинской помощи
+  // SPNAME,     "C",    254,      0  // Наименование способа оплаты медицинской помощи
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1, oNode2
+  local mIDSP, mSpname, d1, d2
+
+  cmdText := 'CREATE TABLE v010(idsp INTEGER, spname TEXT, datebeg TEXT(10), dateend TEXT(10))'
+
+  nameRef := 'V010.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Классификатор способов оплаты медицинской помощи (Sposob)' + hb_eol())
+  endif
+
+  if sqlite3_exec(db, 'DROP TABLE if EXISTS v010') == SQLITE_OK
+    OutStd('DROP TABLE v010 - Ok' + hb_eol())
+  endif
+
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd('CREATE TABLE v010 - Ok' + hb_eol() )
+  else
+    OutStd('CREATE TABLE v010 - False' + hb_eol() )
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO v010 (idsp, spname, datebeg, dateend) VALUES( :idsp, :spname, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mIDSP := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDSP')
+          mSpname := read_xml_stroke_1251_to_utf8(oXmlNode, 'SPNAME')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          if sqlite3_bind_int(stmt, 1, val(mIDSP)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mSpname) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
 ** 09.05.22
 Function make_V012(db, source)
   // IDIZ,      "N",   3, 0  // Код исхода заболевания
