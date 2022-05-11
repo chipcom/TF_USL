@@ -19,19 +19,6 @@ Function make_O001(db, source)
   // DATEBEG, "D",    8,      0
   // DATEEND, "D",    8,      0
 
-  //  1 - NAME11(C)  2 - KOD(C)  3 - DATEBEG(D)  4 - DATEEND(D)  5 - ALFA2(C)  6 - ALFA3(C)
-  // local _mo_O001 := {;
-  //   {"KOD",     "C",    3,      0},;
-  //   {"NAME11",  "C",   60,      0},;
-  //   {"NAME12",  "C",   60,      0},;
-  //   {"ALFA2",   "C",    2,      0},;
-  //   {"ALFA3",   "C",    3,      0},;
-  //   {"DATEBEG", "D",    8,      0},;
-  //   {"DATEEND", "D",    8,      0};
-  // }
-  // local mName := '', mArr
-  // local nfile, nameRef, j, k
-  
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
@@ -108,50 +95,4 @@ Function make_O001(db, source)
     sqlite3_finalize(stmt)
   endif
   out_obrabotka_eol()
-
-
-  // nameRef := "O001.xml"
-  // nfile := source + nameRef
-  // if ! hb_vfExists( nfile )
-  //     out_error(FILE_NOT_EXIST, nfile)
-  //     return nil
-  //   endif
-  //   if check_izm_file(nameRef, nfile)
-  //     return nil
-  //   endif
-  //   dbcreate(destination + "_mo_o001", _mo_O001)
-  //   use (destination + '_mo_O001') new alias O001
-  //   oXmlDoc := HXMLDoc():Read(nfile)
-  //   OutStd( nameRef + " - Общероссийский классификатор стран мира (OKSM)" + hb_eol() )
-  //   IF Empty( oXmlDoc:aItems )
-  //     out_error(FILE_READ_ERROR, nfile)
-  //     CLOSE databases
-  //     return nil
-  //   else
-  //     out_obrabotka(nfile)
-  //     k := Len( oXmlDoc:aItems[1]:aItems )
-  //     FOR j := 1 TO k
-  //       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-  //       if "ZAP" == upper(oXmlNode:title)
-  //         out_obrabotka_count(j, k)
-  //         select O001
-  //         append blank
-  //         mArr := hb_ATokens( mo_read_xml_stroke(oXmlNode,"NAME11",), '^' )
-  //         O001->KOD := mo_read_xml_stroke(oXmlNode,"KOD",)
-  //         if len(mArr) == 1
-  //           O001->NAME11 := mArr[1]
-  //         else
-  //           O001->NAME11 := mArr[1]
-  //           O001->NAME12 := mArr[2]
-  //         endif
-  //         O001->ALFA2 := mo_read_xml_stroke(oXmlNode,"ALFA2",)
-  //         O001->ALFA3 := mo_read_xml_stroke(oXmlNode,"ALFA3",)
-  //         O001->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
-  //         O001->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-      
-  //       endif
-  //     NEXT j
-  //   ENDIF
-  //   out_obrabotka_eol()
-  //   close databases
-  //   return nil
+  return nil
