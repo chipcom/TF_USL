@@ -107,7 +107,7 @@ procedure main( ... )
     // make_V0xx(db, source)
     // make_F0xx(db, source)
     // make_O0xx(db, source)
-    make_N0xx(db, source)
+    // make_N0xx(db, source)
 
     db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
     if ! Empty( db )

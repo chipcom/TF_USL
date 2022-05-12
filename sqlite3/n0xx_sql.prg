@@ -8,18 +8,27 @@
 ** 12.05.22
 function make_N0xx(db, source)
 
-  // make_n001(db, source)
-  // make_n002(db, source)
-  // make_n003(db, source)
-  // make_n004(db, source)
-  // make_n005(db, source)
-  // make_n006(db, source)
-  // make_n007(db, source)
-  // make_n008(db, source)
-  // make_n009(db, source)
-  // make_n010(db, source)
-  // make_n011(db, source)
+  make_n001(db, source)
+  make_n002(db, source)
+  make_n003(db, source)
+  make_n004(db, source)
+  make_n005(db, source)
+  make_n006(db, source)
+  make_n007(db, source)
+  make_n008(db, source)
+  make_n009(db, source)
+  make_n010(db, source)
+  make_n011(db, source)
   make_n012(db, source)
+  make_n013(db, source)
+  make_n014(db, source)
+  make_n015(db, source)
+  make_n016(db, source)
+  make_n017(db, source)
+  make_n018(db, source)
+  make_n019(db, source)
+  make_n020(db, source)
+  make_n021(db, source)
 
   return nil
 
@@ -803,6 +812,567 @@ function make_n012(db, source)
           if sqlite3_bind_int(stmt, 1, val(mID_I_D)) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 2, mDS_Igh) == SQLITE_OK .AND. ;
             sqlite3_bind_int(stmt, 3, val(mID_igh)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 5, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
+** 12.05.22
+function make_n013(db, source)
+  // ID_TLech,   "N",  1, 0 // Идентификатор типа лечения
+  // TLech_NAME, "C",250, 0 // Наименование типа лечения
+  // DATEBEG,    "D",  8, 0 // Дата начала действия записи
+  // DATEEND,    "D",  8, 0 // Дата окончания действия записи
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mID_tlech, mTlech_name, d1, d2
+
+  nameRef := 'N013.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор типов лечения (OnkLech)' + hb_eol())
+  cmdText := 'CREATE TABLE n013(id_tlech INTEGER, tlech_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO n013(id_tlech, tlech_name, datebeg, dateend) VALUES( :id_tlech, :tlech_name, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mID_tlech := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_Tlech')
+          mTlech_name := read_xml_stroke_1251_to_utf8(oXmlNode, 'Tlech_NAME')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          if sqlite3_bind_int(stmt, 1, val(mID_tlech)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mTlech_name) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
+** 12.05.22
+function make_n014(db, source)
+  // ID_THir,    "N",  1, 0 // Идентификатор типа хирургического лечения
+  // THir_NAME,  "C",250, 0 // Наименование типа хирургического лечения
+  // DATEBEG,    "D",  8, 0 // Дата начала действия записи
+  // DATEEND,    "D",  8, 0 // Дата окончания действия записи
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mID_thir, mThir_name, d1, d2
+
+  nameRef := 'N014.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор типов хирургического лечения (OnkHir)' + hb_eol())
+  cmdText := 'CREATE TABLE n014(id_thir INTEGER, thir_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO n014(id_thir, thir_name, datebeg, dateend) VALUES( :id_thir, :thir_name, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mID_thir := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_THir')
+          mThir_name := read_xml_stroke_1251_to_utf8(oXmlNode, 'THir_NAME')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          if sqlite3_bind_int(stmt, 1, val(mID_thir)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mThir_name) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
+** 12.05.22
+function make_n015(db, source)
+  // ID_TLek_L,  "N",  1, 0 // Идентификатор линии лекарственной терапии
+  // TLek_NAME_L,"C",250, 0 // Наименование линии лекарственной терапии
+  // DATEBEG,    "D",  8, 0 // Дата начала действия записи
+  // DATEEND,    "D",  8, 0 // Дата окончания действия записи
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mID_tlek_l, mTlek_name_l, d1, d2
+
+  nameRef := 'N015.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор линий лекарственной терапии (OnkLek_L)' + hb_eol())
+  cmdText := 'CREATE TABLE n015(id_tlek_l INTEGER, tlek_name_l TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO n015(id_tlek_l, tlek_name_l, datebeg, dateend) VALUES( :id_tlek_l, :tlek_name_l, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mID_tlek_l := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_TLek_L')
+          mTlek_name_l := read_xml_stroke_1251_to_utf8(oXmlNode, 'TLek_NAME_L')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          if sqlite3_bind_int(stmt, 1, val(mID_tlek_l)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mTlek_name_l) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
+** 12.05.22
+function make_n016(db, source)
+  // ID_TLek_V,  "N",  1, 0 // Идентификатор цикла лекарственной терапии
+  // TLek_NAME_V,"C",250, 0 // Наименование цикла лекарственной терапии
+  // DATEBEG,    "D",  8, 0 // Дата начала действия записи
+  // DATEEND,    "D",  8, 0 // Дата окончания действия записи
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mID_tlek_v, mTlek_name_v, d1, d2
+
+  nameRef := 'N016.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор циклов лекарственной терапии (OnkLek_V)' + hb_eol())
+  cmdText := 'CREATE TABLE n016(id_tlek_v INTEGER, tlek_name_v TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO n016(id_tlek_v, tlek_name_v, datebeg, dateend) VALUES( :id_tlek_v, :tlek_name_v, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mID_tlek_v := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_TLek_V')
+          mTlek_name_v := read_xml_stroke_1251_to_utf8(oXmlNode, 'TLek_NAME_V')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          if sqlite3_bind_int(stmt, 1, val(mID_tlek_v)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mTlek_name_v) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
+** 12.05.22
+function make_n017(db, source)
+  // ID_TLuch,  "N",  1, 0 // Идентификатор типа лучевой терапии
+  // TLuch_NAME,"C",250, 0 // Наименование типа лучевой терапии
+  // DATEBEG,    "D",  8, 0 // Дата начала действия записи
+  // DATEEND,    "D",  8, 0 // Дата окончания действия записи
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mID_tluch, mTluch_name, d1, d2
+
+  nameRef := 'N017.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор типов лучевой терапии (OnkLuch)' + hb_eol())
+  cmdText := 'CREATE TABLE n017(id_tluch INTEGER, tluch_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO n017(id_tluch, tluch_name, datebeg, dateend) VALUES( :id_tluch, :tluch_name, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mID_tluch := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_TLuch')
+          mTluch_name := read_xml_stroke_1251_to_utf8(oXmlNode, 'TLuch_NAME')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          if sqlite3_bind_int(stmt, 1, val(mID_tluch)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mTluch_name) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
+** 12.05.22
+function make_n018(db, source)
+  // ID_REAS,   "N",  2, 0 // Идентификатор повода обращения
+  // REAS_NAME, "C",300, 0 // Наименование повода обращения
+  // DATEBEG,   "D",  8, 0 // Дата начала действия записи
+  // DATEEND,   "D",  8, 0 // Дата окончания действия записи
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mID_reas, mReas_name, d1, d2
+
+  nameRef := 'N018.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор поводов обращения (OnkReas)' + hb_eol())
+  cmdText := 'CREATE TABLE n018(id_reas INTEGER, reas_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO n018(id_reas, reas_name, datebeg, dateend) VALUES( :id_reas, :reas_name, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mID_reas := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_REAS')
+          mReas_name := read_xml_stroke_1251_to_utf8(oXmlNode, 'REAS_NAME')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          if sqlite3_bind_int(stmt, 1, val(mID_reas)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mReas_name) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
+** 12.05.22
+function make_n019(db, source)
+  // ID_CONS,   "N",  1, 0 // Идентификатор цели консилиума
+  // CONS_NAME, "C",300, 0 // Наименование цели консилиума
+  // DATEBEG,   "D",  8, 0 // Дата начала действия записи
+  // DATEEND,   "D",  8, 0 // Дата окончания действия записи
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mID_cons, mCons_name, d1, d2
+
+  nameRef := 'N019.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор целей консилиума (OnkCons)' + hb_eol())
+  cmdText := 'CREATE TABLE n019(id_cons INTEGER, cons_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO n019(id_cons, cons_name, datebeg, dateend) VALUES( :id_cons, :cons_name, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mID_cons := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_CONS')
+          mCons_name := read_xml_stroke_1251_to_utf8(oXmlNode, 'CONS_NAME')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          if sqlite3_bind_int(stmt, 1, val(mID_cons)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mCons_name) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
+** 12.05.22
+function make_n020(db, source)
+  // ID_LEKP,   "C",  6, 0 // Идентификатор лекарственного препарата
+  // MNN,       "C",300, 0 // Международное непатентованное наименование лекарственного препарата (МНН)
+  // DATEBEG,   "D",  8, 0 // Дата начала действия записи
+  // DATEEND,   "D",  8, 0 // Дата окончания действия записи
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mID_lekp, mMNN, d1, d2
+
+  nameRef := 'N020.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор лекарственных препаратов, применяемых при проведении лекарственной терапии (OnkLekp)' + hb_eol())
+  cmdText := 'CREATE TABLE n020(id_lekp TEXT(6), mnn TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO n020(id_lekp, mnn, datebeg, dateend) VALUES( :id_lekp, :mnn, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mID_lekp := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_LEKP')
+          mMNN := read_xml_stroke_1251_to_utf8(oXmlNode, 'MNN')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          if sqlite3_bind_text(stmt, 1, mID_lekp) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mMNN) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
+** 12.05.22
+function make_n021(db, source)
+  // ID_ZAP,    "N",  4, 0 // Идентификатор записи (в описании Char 15)
+  // CODE_SH,   "C", 10, 0 // Код схемы лекарственной терапии
+  // ID_LEKP,   "C",  6, 0 // Идентификатор лекарственного препарата, применяемого при проведении лекарственной противоопухолевой терапии. Заполняется в соответствии с N020
+  // DATEBEG,   "D",  8, 0 // Дата начала действия записи
+  // DATEEND,   "D",  8, 0 // Дата окончания действия записи
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mID_zap, mCode_sh, mID_lekp, d1, d2
+
+  nameRef := 'N021.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор соответствия лекарственного препарата схеме лекарственной терапии (OnkLpsh)' + hb_eol())
+  cmdText := 'CREATE TABLE n021(id_zap INTEGER, code_sh TEXT(10), id_lekp TEXT(6), datebeg TEXT(10), dateend TEXT(10))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO n021(id_zap, code_sh, id_lekp, datebeg, dateend) VALUES( :id_zap, :code_sh, :id_lekp, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mID_zap := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_ZAP')
+          mCode_sh := read_xml_stroke_1251_to_utf8(oXmlNode, 'CODE_SH')
+          mId_lekp := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_LEKP')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          if sqlite3_bind_int(stmt, 1, val(mID_zap)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mCode_sh) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, mID_lekp) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 4, d1) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 5, d2) == SQLITE_OK
             if sqlite3_step(stmt) != SQLITE_DONE
