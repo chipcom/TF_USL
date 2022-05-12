@@ -23,10 +23,6 @@ q0xx_sql.prg
 v0xx_sql.prg
 f0xx_sql.prg
 o0xx_sql.prg
-
-#catalog_f.prg
-#catalog_o.prg
-#catalog_q.prg
-#catalog_v.prg
+n0xx_sql.prg
 
 dict_sql.rc

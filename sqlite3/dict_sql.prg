@@ -106,7 +106,8 @@ procedure main( ... )
     // make_Q0xx(db, source)
     // make_V0xx(db, source)
     // make_F0xx(db, source)
-    make_O0xx(db, source)
+    // make_O0xx(db, source)
+    make_N0xx(db, source)
 
     db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
     if ! Empty( db )
@@ -116,47 +117,45 @@ procedure main( ... )
         out_error(PACK_ERROR, nameDB)
       endif
     endif
- 
-    // // справочники группы F___
-    // // make_f005( db, source )
-    // // make_f006( db, source )
-    // // make_f007( db, source )
-    // // make_f008( db, source )
-    // // make_f009( db, source )
-    // // make_f010( db, source )
-    // // make_f011( db, source )
-    // // make_f014( db, source )
-    // // make_f015( db, source )
-    // // // справочники группы O___
-    // // make_o001( db, source )
-    // // справочники группы V___
-    // make_v002( db, source )
-    // // make_v005( db, source )
-    // // make_v006( db, source )
-    // // make_v008( db, source )
-    // make_v009( db, source )
-    // make_v010( db, source )
-    // make_v012( db, source )
-    // // make_v013( db, source )
-    // // make_v014( db, source )
-    // make_v015( db, source )
-    // make_v016( db, source )
-    // make_v017( db, source )
-    // make_v018( db, source )
-    // make_v019( db, source )
-    // make_v020( db, source )
-    // make_v021( db, source )
-    // make_v022( db, source )
-    // // make_v023( db, source )
-    // make_v024( db, source )
-    // make_v025( db, source )
-    // // make_v026( db, source )
-    // // make_v027( db, source )
-    // // make_v028( db, source )
-    // // make_v029( db, source )
-
   endif
   return
+
+** 12.05.22
+function clear_name_table(table)
+
+  table := Lower(alltrim(table))
+  return substr(table, 1, At('.', table) - 1)
+
+** 12.05.22
+function create_table(db, table, cmdText)
+  // db - дескриптор SQL БД
+  // table - имя таблицы вида name.xml
+  // cmdText - строка команды SQL для создания таблицы SQL БД
+  local ret := .f.
+  
+  table := clear_name_table(table)
+
+  drop_table(db, table)
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd('CREATE TABLE ' + table + ' - Ok' + hb_eol() )
+    ret := .t.
+  else
+    OutStd('CREATE TABLE ' + table + ' - False' + hb_eol() )
+  endif
+  return ret
+
+** 12.05.22
+function drop_table(db, table)
+  // db - дескриптор SQL БД
+  // table - имя таблицы SQL БД
+  local cmdText
+  
+  cmdText := 'DROP TABLE if EXISTS ' + table
+
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd('DROP TABLE ' + table + ' - Ok' + hb_eol())
+  endif
+  return nil
 
 procedure About()
 
