@@ -1,3 +1,4 @@
+#include 'directry.ch'
 #include 'function.ch'
 #include 'dict_error.ch'
 
@@ -5,7 +6,7 @@
 
 // #define TRACE
 
-** 07.05.2022
+** 13.05.2022
 procedure main( ... )
   local cParam, cParamL
   local aParams
@@ -18,6 +19,9 @@ procedure main( ... )
   local lCreateIfNotExist := .t.
   local nameDB
   local db
+  local lAll := .f.
+  local lUpdate := .f.
+  local file, name_table, cFunc, cMask := '*.xml'
 
   REQUEST HB_CODEPAGE_UTF8
   REQUEST HB_CODEPAGE_RU1251
@@ -57,15 +61,23 @@ procedure main( ... )
       case cParamL == "-quiet"
         // ? 'quiet'
       case cParamL == "-all"
-        if HB_VFEXISTS(source + FILE_HASH)
-          HB_VFERASE(source + FILE_HASH)
-        endif
+        // if HB_VFEXISTS(source + FILE_HASH)
+        //   HB_VFERASE(source + FILE_HASH)
+        // endif
+        lAll := .t.
+      case cParamL == "-update"
+        lUpdate := .t.
       case hb_LeftEq( cParamL, "-in=" )
         source := SubStr( cParam, 4 + 1 )
       case hb_LeftEq( cParamL, "-out=" )
         destination := SubStr( cParam, 5 + 1 )
     endcase
   next
+
+  if lAll .and. lUpdate
+    out_error(INVALID_COMMAND_LINE)
+    return nil
+  endif
 
   if right(source, 1) != os_sep
     source += os_sep
@@ -102,108 +114,32 @@ procedure main( ... )
     sqlite3_exec(db, "PRAGMA auto_vacuum=0")
     sqlite3_exec(db, "PRAGMA page_size=4096")
 
-    // make_mzdrav(db, source)
-    // make_Q0xx(db, source)
-    // make_V0xx(db, source)
-    // make_F0xx(db, source)
-    // make_O0xx(db, source)
-    // make_N0xx(db, source)
+    if lAll // конвертировать все файлы
+      // make_mzdrav(db, source)
+      // make_Q0xx(db, source)
+      // make_V0xx(db, source)
+      // make_F0xx(db, source)
+      // make_O0xx(db, source)
+      // make_N0xx(db, source)
+    endif
 
-    db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
-    if ! Empty( db )
-      if sqlite3_exec( db, "VACUUM" ) == SQLITE_OK
-        OutStd(hb_eol() + 'Pack - ok' + hb_eol())
-      else
-        out_error(PACK_ERROR, nameDB)
+    if lUpdate // конвертировать только файлы из каталога
+      for each file in hb_vfDirectory( source + cMask, 'HSD' )
+        name_table := clear_name_table(file[F_NAME])
+        cFunc := 'make_' + name_table + '(db,source )'
+        // &(cFunc)
+      next
+    endif
+
+    if lAll .or. lUpdate
+      db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
+      if ! Empty( db )
+        if sqlite3_exec( db, "VACUUM" ) == SQLITE_OK
+          OutStd(hb_eol() + 'Pack - ok' + hb_eol())
+        else
+          out_error(PACK_ERROR, nameDB)
+        endif
       endif
     endif
   endif
   return
-
-** 12.05.22
-function clear_name_table(table)
-
-  table := Lower(alltrim(table))
-  return substr(table, 1, At('.', table) - 1)
-
-** 12.05.22
-function create_table(db, table, cmdText)
-  // db - дескриптор SQL БД
-  // table - имя таблицы вида name.xml
-  // cmdText - строка команды SQL для создания таблицы SQL БД
-  local ret := .f.
-  
-  table := clear_name_table(table)
-
-  drop_table(db, table)
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd('CREATE TABLE ' + table + ' - Ok' + hb_eol() )
-    ret := .t.
-  else
-    OutStd('CREATE TABLE ' + table + ' - False' + hb_eol() )
-  endif
-  return ret
-
-** 12.05.22
-function drop_table(db, table)
-  // db - дескриптор SQL БД
-  // table - имя таблицы SQL БД
-  local cmdText
-  
-  cmdText := 'DROP TABLE if EXISTS ' + table
-
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd('DROP TABLE ' + table + ' - Ok' + hb_eol())
-  endif
-  return nil
-
-procedure About()
-
-  OutStd( ;
-      'Конвертер справочников обязательного медицинского страхования' + hb_eol() + ;
-      'Copyright (c) 2022, Vladimir G.Baykin' + hb_eol() + hb_eol())
-   
-  OutStd( ;
-      'Syntax:  create_dict [options] ' + hb_eol() + hb_eol())
-  OutStd( ;
-      'Опции:' + hb_eol() + ;
-      '      -in=<source directory>' + hb_eol() + ;
-      '      -out=<destination directory>' + hb_eol() + ;
-      '      -all - конвертировать все' + hb_eol() + ;
-      '      -help - помощь' + hb_eol() ;
-  )
-      
-  return
-   
-** 11.02.22
-function obrabotka(nfile)
-
-  @ row() + 1, 1 say "Обработка файла " + nfile + " -"
-  return Col()
-
-** 13.02.22
-function out_obrabotka(nfile)
-
-  OutStd( ;
-    '===== Обработка файла ' + nfile )
-  return nil
-
-** 15.02.22
-function out_create_file(nfile)
-
-  OutStd( ;
-    'Создание файла ' + nfile )
-  return nil
-
-** 14.02.22
-function out_obrabotka_eol()
-
-  OutStd( hb_eol() )
-  return nil
-
-** 14.02.22
-function out_obrabotka_count(j, k)
-
-  // OutStd( str(j / k * 100, 6, 2) + "%" )
-  return nil
-
