@@ -11,17 +11,19 @@ procedure main( ... )
   local cParam, cParamL
   local aParams
 
-  local source
   local destination
   local lExists
   local os_sep := hb_osPathSeparator()
 
   local lCreateIfNotExist := .t.
   local nameDB
-  local db
   local lAll := .f.
   local lUpdate := .f.
   local file, name_table, cFunc, cMask := '*.xml'
+
+  // приватные переменные для запуска макроса
+  private db
+  private source
 
   REQUEST HB_CODEPAGE_UTF8
   REQUEST HB_CODEPAGE_RU1251
@@ -126,8 +128,8 @@ procedure main( ... )
     if lUpdate // конвертировать только файлы из каталога
       for each file in hb_vfDirectory( source + cMask, 'HSD' )
         name_table := clear_name_table(file[F_NAME])
-        cFunc := 'make_' + name_table + '(db,source )'
-        // &(cFunc)
+        cFunc := 'make_' + name_table + '(db,source)'
+        &(cFunc)
       next
     endif
 
