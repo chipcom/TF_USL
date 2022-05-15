@@ -4,11 +4,12 @@
 
 #require 'hbsqlit3'
 
-** 12.05.22
+** 15.05.22
 function clear_name_table(table)
 
   table := Lower(alltrim(table))
-  return substr(table, 1, At('.', table) - 1)
+  
+  return hb_FNameName(table)
 
 ** 12.05.22
 function create_table(db, table, cmdText)

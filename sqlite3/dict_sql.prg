@@ -128,8 +128,20 @@ procedure main( ... )
     if lUpdate // конвертировать только файлы из каталога
       for each file in hb_vfDirectory( source + cMask, 'HSD' )
         name_table := clear_name_table(file[F_NAME])
-        cFunc := 'make_' + name_table + '(db,source)'
-        &(cFunc)
+        if name_table == '1.2.643.5.1.13.13.11.1468'
+          cFunc := 'make_method_inj(db,source)'
+        elseif name_table == '1.2.643.5.1.13.13.11.1079'
+          cFunc := 'make_implant(db,source)'
+        elseif name_table == '1.2.643.5.1.13.13.11.1070'
+          cFunc := 'make_uslugi_mz(db,source)'
+        elseif name_table == '1.2.643.5.1.13.13.11.1006'
+          cFunc := 'make_severity(db,source)'
+        elseif name_table == '1.2.643.5.1.13.13.11.1358'
+          cFunc := 'make_ed_izm(db,source)'
+        else
+          cFunc := 'make_' + name_table + '(db,source)'
+        endif
+        &(cFunc)  // запуск функции конвертации
       next
     endif
 
