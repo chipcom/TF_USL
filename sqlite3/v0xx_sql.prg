@@ -18,6 +18,7 @@ function make_V0xx(db, source)
   make_V020(db, source)
   make_V021(db, source)
   make_V022(db, source)
+  make_V024(db, source)
   make_V025(db, source)
   make_V030(db, source)
   make_V031(db, source)
@@ -917,6 +918,68 @@ Function make_V022(db, source)
           d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
           if sqlite3_bind_int(stmt, 1, val(mIDMPAC)) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 2, mMPACNAME) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+            if sqlite3_step(stmt) != SQLITE_DONE
+              out_error(TAG_ROW_INVALID, nfile, j)
+            endif
+          endif
+          sqlite3_reset(stmt)
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
+  return nil
+
+** 16.05.22
+Function make_V024(db, source)
+  // IDDKK,     "C",  10,      0  //  Идентификатор модели пациента
+  // DKKNAME,   "C", 255,      0  // Наименование модели пациента
+  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
+  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
+  
+  local stmt, stmtTMP
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mIDDKK, mDKKNAME, d1, d2
+
+  nameRef := 'V024.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор классификационных критериев (DopKr)' + hb_eol())
+  cmdText := 'CREATE TABLE v024(iddkk TEXT(10), dkkname TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := "INSERT INTO v024 (iddkk, dkkname, datebeg, dateend) VALUES( :iddkk, :dkkname, :datebeg, :dateend )"
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty(stmt)
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ZAP' == upper(oXmlNode:title)
+          mIDDKK := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDDKK')
+          mDKKNAME := read_xml_stroke_1251_to_utf8(oXmlNode, 'DKKNAME')
+          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+          if sqlite3_bind_text(stmt, 1, mIDDKK) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 2, mDKKNAME) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
             if sqlite3_step(stmt) != SQLITE_DONE
