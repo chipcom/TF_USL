@@ -632,9 +632,13 @@ Function work_t006(source, destination)
               endif
 
               if (lshifr = 'ds36.008' .or. lshifr = 'ds36.009' .or. lshifr = 'ds36.010' ;
-                  .or. lshifr = 'st36.017' .or. lshifr = 'st36.018' .or. lshifr = 'st36.019' ) ;
+                  .or. lshifr = 'st36.017' .or. lshifr = 'st36.018' .or. lshifr = 'st36.019') ;
                   .and. empty(lDS) .and. empty(lsy)
                 d6->DS  := lDS  := 'Z92.2'
+              endif
+
+              if lshifr = 'st32.019' .and. empty(lDS) .and. empty(lsy)
+                d6->DS  := lDS  := 'Z92.4'
               endif
 
               if (lshifr = 'ds37.015' .or. lshifr = 'ds37.016' ;
