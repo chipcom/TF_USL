@@ -592,47 +592,40 @@ Function usl2arr(sh_u,/*@*/j)
 
 PROCEDURE About()
 
-  OutStd( ;
-    "Конвертер справочников обязательного медицинского страхования" + hb_eol() + ;
-      "Copyright (c) 2022, Vladimir G.Baykin" + hb_eol() + ;
-    hb_eol() )
- 
-  OutStd( ;
-    "Syntax:  create_dict [options] " + hb_eol() + hb_eol() )
-  OutStd( ;
-    "Опции:" + hb_eol() + ;
-    "      -in=<source directory>" + hb_eol() + ;
-    "      -out=<destination directory>" + hb_eol() + ;
-    "      -all - конвертировать все" + hb_eol() + ;
-    "      -help - помощь" + hb_eol() ;
-  )
+  OutStd('Конвертер справочников обязательного медицинского страхования', hb_eol(), ;
+      'Copyright (c) 2022, Vladimir G.Baykin', hb_eol(), ;
+    hb_eol())
+  OutStd('Syntax:  create_dict [options] ', hb_eol(), hb_eol())
+  OutStd('Опции:', hb_eol(), ;
+    '      -in=<source directory>', hb_eol(), ;
+    '      -out=<destination directory>', hb_eol(), ;
+    '      -all - конвертировать все', hb_eol(),;
+    '      -help - помощь', hb_eol())
     
   RETURN
  
 ****** 11.02.22
 function obrabotka(nfile)
 
-  @ row() + 1, 1 say "Обработка файла " + nfile + " -"
+  @ row() + 1, 1 say 'Обработка файла ' + nfile + ' -'
   return Col()
 
 ****** 13.02.22
 function out_obrabotka(nfile)
 
-  OutStd( ;
-    "===== Обработка файла " + nfile )
+  OutStd('===== Обработка файла ' + nfile )
   return nil
 
 ****** 15.02.22
 function out_create_file(nfile)
 
-  OutStd( ;
-    "Создание файла " + nfile )
+  OutStd('Создание файла ' + nfile )
   return nil
 
 ****** 14.02.22
 function out_obrabotka_eol()
 
-  OutStd( hb_eol() )
+  OutStd(hb_eol())
   return nil
 
 ****** 14.02.22
@@ -646,35 +639,25 @@ function out_error(nError, nfile, j, k)
 
   DO CASE
   CASE nError == FILE_NOT_EXIST
-    OutErr( ;
-      "Файл " + nfile + " не существует" + hb_eol() )
+    OutErr('Файл ' + nfile + ' не существует', hb_eol())
   CASE nError == FILE_READ_ERROR
-    OutErr( ;
-      "Ошибка в загрузке файла " + nfile + hb_eol() )
+    OutErr('Ошибка в загрузке файла ' + nfile, hb_eol())
   CASE nError == FILE_RENAME_ERROR
-    OutErr( ;
-      "Ошибка переименования файла " + nfile + hb_eol() )
+    OutErr('Ошибка переименования файла ' + nfile, hb_eol())
   CASE nError == DIR_IN_NOT_EXIST
-    OutErr( ;
-      'Каталог исходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
+    OutErr('Каталог исходных данных "' + nfile + '" не существует. Продолжение работы не возможно!', hb_eol())
   CASE nError == DIR_OUT_NOT_EXIST
-    OutErr( ;
-      'Каталог для выходных данных "' + nfile + '" не существует. Продолжение работы не возможно!' + hb_eol() )
+    OutErr('Каталог для выходных данных "' + nfile + '" не существует. Продолжение работы не возможно!', hb_eol())
   CASE nError == TAG_YEAR_REPORT
-      OutErr( ;
-        'Ошибка при чтении файла "' + nfile + '". Некорректное значение тега YEAR_REPORT ' + j + hb_eol() )
+      OutErr('Ошибка при чтении файла "' + nfile + '". Некорректное значение тега YEAR_REPORT ', j, hb_eol())
   CASE nError == TAG_PLACE_ERROR
-      OutErr( ;
-        'Ошибка при чтении файла "' + nfile + '" - более одного тега PLACE в отделении: ' + alltrim(j) + hb_eol() )
+      OutErr('Ошибка при чтении файла "' + nfile + '" - более одного тега PLACE в отделении: ', alltrim(j), hb_eol())
   CASE nError == TAG_PERIOD_ERROR
-      OutErr( ;
-        'Ошибка при чтении файла "' + nfile + '" - более одного тега PERIOD в учреждении: ' + j + " в услуге " + k + hb_eol() )
+      OutErr('Ошибка при чтении файла "' + nfile + '" - более одного тега PERIOD в учреждении: ', j, ' в услуге ', k, hb_eol())
   CASE nError == TAG_VALUE_EMPTY
-      OutErr( ;
-        'Замечание при чтении файла "' + nfile + '" - пустое значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
+      OutErr('Замечание при чтении файла "' + nfile + '" - пустое значение тега VALUE/LEVEL: ', j, ' в услуге ', k, hb_eol())
   CASE nError == TAG_VALUE_INVALID
-      OutErr( ;
-        'Замечание при чтении файла "' + nfile + '" - некорректное значение тега VALUE/LEVEL: ' + j + " в услуге " + k + hb_eol() )
+      OutErr('Замечание при чтении файла "' + nfile + '" - некорректное значение тега VALUE/LEVEL: ', j, ' в услуге ', k, hb_eol())
   end case
 
   return nil

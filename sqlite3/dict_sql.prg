@@ -28,8 +28,8 @@ procedure main( ... )
   REQUEST HB_CODEPAGE_UTF8
   REQUEST HB_CODEPAGE_RU1251
   REQUEST HB_LANG_RU866
-  HB_CDPSELECT("UTF8")
-  // HB_LANGSELECT("RU866")
+  HB_CDPSELECT('UTF8')
+  // HB_LANGSELECT('RU866')
   
   // REQUEST DBFNTX
   // RDDSETDEFAULT('DBFNTX')
@@ -57,21 +57,21 @@ procedure main( ... )
   for each cParam in aParams
     cParamL := Lower( cParam )
     do case
-      case cParamL == "-help"
+      case cParamL == '-help'
         About()
         return
-      case cParamL == "-quiet"
+      case cParamL == '-quiet'
         // ? 'quiet'
-      case cParamL == "-all"
+      case cParamL == '-all'
         // if HB_VFEXISTS(source + FILE_HASH)
         //   HB_VFERASE(source + FILE_HASH)
         // endif
         lAll := .t.
-      case cParamL == "-update"
+      case cParamL == '-update'
         lUpdate := .t.
-      case hb_LeftEq( cParamL, "-in=" )
+      case hb_LeftEq( cParamL, '-in=' )
         source := SubStr( cParam, 4 + 1 )
-      case hb_LeftEq( cParamL, "-out=" )
+      case hb_LeftEq( cParamL, '-out=' )
         destination := SubStr( cParam, 5 + 1 )
     endcase
   next
@@ -113,8 +113,8 @@ procedure main( ... )
          sqlite3_trace(db, .t.)   // включим трассировщик
     #endif
 
-    sqlite3_exec(db, "PRAGMA auto_vacuum=0")
-    sqlite3_exec(db, "PRAGMA page_size=4096")
+    sqlite3_exec(db, 'PRAGMA auto_vacuum=0')
+    sqlite3_exec(db, 'PRAGMA page_size=4096')
 
     if lAll // конвертировать все файлы
       // make_mzdrav(db, source)
@@ -148,7 +148,7 @@ procedure main( ... )
     if lAll .or. lUpdate
       db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
       if ! Empty( db )
-        if sqlite3_exec( db, "VACUUM" ) == SQLITE_OK
+        if sqlite3_exec( db, 'VACUUM' ) == SQLITE_OK
           OutStd(hb_eol() + 'Pack - ok' + hb_eol())
         else
           out_error(PACK_ERROR, nameDB)

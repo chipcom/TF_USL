@@ -22,10 +22,10 @@ function create_table(db, table, cmdText)
 
   drop_table(db, table)
   if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd('CREATE TABLE ' + table + ' - Ok' + hb_eol() )
+    OutStd('CREATE TABLE ' + table + ' - Ok', hb_eol())
     ret := .t.
   else
-    OutStd('CREATE TABLE ' + table + ' - False' + hb_eol() )
+    OutStd('CREATE TABLE ' + table + ' - False', hb_eol())
   endif
   return ret
 
@@ -38,53 +38,45 @@ function drop_table(db, table)
   cmdText := 'DROP TABLE if EXISTS ' + table
 
   if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd('DROP TABLE ' + table + ' - Ok' + hb_eol())
+    OutStd('DROP TABLE ' + table + ' - Ok', hb_eol())
   endif
   return nil
 
 procedure About()
 
-  OutStd( ;
-      'Конвертер справочников обязательного медицинского страхования' + hb_eol() + ;
-      'Copyright (c) 2022, Vladimir G.Baykin' + hb_eol() + hb_eol())
-   
-  OutStd( ;
-      'Syntax:  create_dict [options] ' + hb_eol() + hb_eol())
-  OutStd( ;
-      'Опции:' + hb_eol() + ;
-      '      -in=<source directory>' + hb_eol() + ;
-      '      -out=<destination directory>' + hb_eol() + ;
-      '      -all - конвертировать все' + hb_eol() + ;
-      '      -update - конвертация отдельных файлов' + hb_eol() + ;
-      '      -help - помощь' + hb_eol() ;
-  )
-      
+  OutStd('Конвертер справочников обязательного медицинского страхования', hb_eol(), ;
+      'Copyright (c) 2022, Vladimir G.Baykin', hb_eol(), hb_eol())
+  OutStd('Syntax:  create_dict [options] ', hb_eol(), hb_eol())
+  OutStd('Опции:', hb_eol(), ;
+      '      -in=<source directory>', hb_eol(), ;
+      '      -out=<destination directory>', hb_eol(), ;
+      '      -all - конвертировать все', hb_eol(), ;
+      '      -update - конвертация отдельных файлов', hb_eol(), ;
+      '      -help - помощь', hb_eol())
   return
    
 ** 11.02.22
 function obrabotka(nfile)
 
-  @ row() + 1, 1 say "Обработка файла " + nfile + " -"
+  @ row() + 1, 1 say 'Обработка файла ' + nfile + ' -'
   return Col()
 
 ** 13.02.22
 function out_obrabotka(nfile)
 
-  OutStd( ;
-    '===== Обработка файла ' + nfile )
+  OutStd('===== Обработка файла ' + nfile)
   return nil
 
 ** 15.02.22
 function out_create_file(nfile)
 
-  OutStd( ;
-    'Создание файла ' + nfile )
+  OutStd('Создание файла ' + nfile)
   return nil
 
 ** 14.02.22
 function out_obrabotka_eol()
 
-  OutStd( hb_eol() )
+  OutStd(hb_eol())
   return nil
 
 ** 14.02.22
