@@ -207,7 +207,8 @@ proc main( ... )
   make_F010(source, destination)
   make_F011(source, destination)
   make_F014(source, destination)
-  make_O001(source, destination)
+  // make_O001(source, destination)
+  
 
   InitSpravFFOMS(source, destination)
   //

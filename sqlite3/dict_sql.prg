@@ -116,34 +116,34 @@ procedure main( ... )
     sqlite3_exec(db, 'PRAGMA auto_vacuum=0')
     sqlite3_exec(db, 'PRAGMA page_size=4096')
 
-    if lAll // конвертировать все файлы
+    make_O0xx(db, source)
+    // if lAll // конвертировать все файлы
       // make_mzdrav(db, source)
       // make_Q0xx(db, source)
       // make_V0xx(db, source)
       // make_F0xx(db, source)
-      // make_O0xx(db, source)
       // make_N0xx(db, source)
-    endif
+    // endif
 
-    if lUpdate // конвертировать только файлы из каталога
-      for each file in hb_vfDirectory( source + cMask, 'HSD' )
-        name_table := clear_name_table(file[F_NAME])
-        if name_table == '1.2.643.5.1.13.13.11.1468'
-          cFunc := 'make_method_inj(db,source)'
-        elseif name_table == '1.2.643.5.1.13.13.11.1079'
-          cFunc := 'make_implant(db,source)'
-        elseif name_table == '1.2.643.5.1.13.13.11.1070'
-          cFunc := 'make_uslugi_mz(db,source)'
-        elseif name_table == '1.2.643.5.1.13.13.11.1006'
-          cFunc := 'make_severity(db,source)'
-        elseif name_table == '1.2.643.5.1.13.13.11.1358'
-          cFunc := 'make_ed_izm(db,source)'
-        else
-          cFunc := 'make_' + name_table + '(db,source)'
-        endif
-        &(cFunc)  // запуск функции конвертации
-      next
-    endif
+    // if lUpdate // конвертировать только файлы из каталога
+    //   for each file in hb_vfDirectory( source + cMask, 'HSD' )
+    //     name_table := clear_name_table(file[F_NAME])
+    //     if name_table == '1.2.643.5.1.13.13.11.1468'
+    //       cFunc := 'make_method_inj(db,source)'
+    //     elseif name_table == '1.2.643.5.1.13.13.11.1079'
+    //       cFunc := 'make_implant(db,source)'
+    //     elseif name_table == '1.2.643.5.1.13.13.11.1070'
+    //       cFunc := 'make_uslugi_mz(db,source)'
+    //     elseif name_table == '1.2.643.5.1.13.13.11.1006'
+    //       cFunc := 'make_severity(db,source)'
+    //     elseif name_table == '1.2.643.5.1.13.13.11.1358'
+    //       cFunc := 'make_ed_izm(db,source)'
+    //     else
+    //       cFunc := 'make_' + name_table + '(db,source)'
+    //     endif
+    //     &(cFunc)  // запуск функции конвертации
+    //   next
+    // endif
 
     if lAll .or. lUpdate
       db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
