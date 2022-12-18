@@ -121,7 +121,7 @@ procedure main( ... )
       // make_mzdrav(db, source)
       // make_Q0xx(db, source)
       // make_V0xx(db, source)
-      // make_F0xx(db, source)
+      make_F0xx(db, source)
       // make_N0xx(db, source)
     // endif
 
