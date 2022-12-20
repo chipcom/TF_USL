@@ -14,7 +14,7 @@ function make_Q0xx(db, source)
 
   return nil
 
-** 07.05.22
+** 20.12.22
 function make_q015(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -22,6 +22,7 @@ function make_q015(db, source)
   local nfile, nameRef
   local oXmlDoc, oXmlNode, oNode1
   local s_kod, s_name, s_nsi_obj, s_nsi_el, s_usl_test, s_val_el, s_comment, d1, d2
+  local d1_1, d2_1
 
   // ID_TEST, Строчный(12), Идентификатор проверки.
   //      Формируется по шаблону KKKK.00.TTTT, где
@@ -88,8 +89,16 @@ function make_q015(db, source)
           s_usl_test := read_xml_stroke_1251_to_utf8(oXmlNode, 'USL_TEST')
           s_val_el := read_xml_stroke_1251_to_utf8(oXmlNode, 'VAL_EL')
           s_comment :=  read_xml_stroke_1251_to_utf8(oXmlNode, 'COMMENT')
-          d1 := mo_read_xml_stroke(oXmlNode, 'DATEBEG',)
-          d2 := mo_read_xml_stroke(oXmlNode, 'DATEEND',)
+          // d1 := mo_read_xml_stroke(oXmlNode, 'DATEBEG',)
+          // d2 := mo_read_xml_stroke(oXmlNode, 'DATEEND',)
+
+          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+          d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+          d1 := hb_ValToStr(d1_1)
+          d2 := hb_ValToStr(d2_1)
+
           if sqlite3_bind_text(stmt, 1, s_kod) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 2, s_name) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 3, s_nsi_obj) == SQLITE_OK .AND. ;
@@ -113,7 +122,7 @@ function make_q015(db, source)
   out_obrabotka_eol()
   return nil
 
-** 07.05.22
+** 20.12.22
 function make_q016(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -121,6 +130,7 @@ function make_q016(db, source)
   local nfile, nameRef
   local oXmlDoc, oXmlNode, oNode1
   local s_kod, s_name, s_nsi_obj, s_nsi_el, s_usl_test, s_val_el, s_comment, d1, d2
+  local d1_1, d2_1
 
   // ID_TEST, Строчный(12),	Идентификатор проверки. 
   //      Формируется по шаблону KKKK.RR.TTTT, где
@@ -189,8 +199,16 @@ function make_q016(db, source)
           s_usl_test := read_xml_stroke_1251_to_utf8(oXmlNode, 'USL_TEST')
           s_val_el := read_xml_stroke_1251_to_utf8(oXmlNode, 'VAL_EL')
           s_comment := read_xml_stroke_1251_to_utf8(oXmlNode, 'COMMENT')
-          d1 := mo_read_xml_stroke(oXmlNode, 'DATEBEG',)
-          d2 := mo_read_xml_stroke(oXmlNode, 'DATEEND',)
+          // d1 := mo_read_xml_stroke(oXmlNode, 'DATEBEG',)
+          // d2 := mo_read_xml_stroke(oXmlNode, 'DATEEND',)
+
+          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+          d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+          d1 := hb_ValToStr(d1_1)
+          d2 := hb_ValToStr(d2_1)
+
           if sqlite3_bind_text( stmt, 1, s_kod ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 2, s_name ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 3, s_nsi_obj ) == SQLITE_OK .AND. ;
@@ -214,14 +232,14 @@ function make_q016(db, source)
   out_obrabotka_eol()
   return nil
 
-** 07.05.22
+** 20.12.22
 function make_q017(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
   local oXmlDoc, oXmlNode, oNode1
-  local s_kod, s_name, s_comment, d1, d2
+  local s_kod, s_name, s_comment, d1, d2, d1_1, d2_1
 
   // ID_KTEST, Строчный(4),	Идентификатор категории проверки
   // NAM_KTEST, Строчный(400),	Наименование категории проверки
@@ -267,8 +285,16 @@ function make_q017(db, source)
           s_kod := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_KTEST')
           s_name := read_xml_stroke_1251_to_utf8(oXmlNode, 'NAM_KTEST')
           s_comment := read_xml_stroke_1251_to_utf8(oXmlNode, 'COMMENT')
-          d1 := mo_read_xml_stroke(oXmlNode, 'DATEBEG',)
-          d2 := mo_read_xml_stroke(oXmlNode, 'DATEEND',)
+          // d1 := mo_read_xml_stroke(oXmlNode, 'DATEBEG',)
+          // d2 := mo_read_xml_stroke(oXmlNode, 'DATEEND',)
+
+          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+          d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+          d1 := hb_ValToStr(d1_1)
+          d2 := hb_ValToStr(d2_1)
+          
           if sqlite3_bind_text( stmt, 1, s_kod ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 2, s_name ) == SQLITE_OK .AND. ;
             sqlite3_bind_text( stmt, 3, s_comment ) == SQLITE_OK .AND. ;
