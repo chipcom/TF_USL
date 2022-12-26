@@ -5,6 +5,7 @@
 
 #require 'hbsqlit3'
 
+** 26.12.22
 function make_ISDErr(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -18,7 +19,8 @@ function make_ISDErr(db, source)
   // NAME_F, Строчный(250), Дополнительная информация об ошибке
   // DATEBEG, Строчный(10),	Дата начала действия записи
   // DATEEND, Строчный(10),	Дата окончания действия записи
-  cmdText := 'CREATE TABLE isderr( code INTEGER, name TEXT(250), name_f TEXT(250))'
+  // cmdText := 'CREATE TABLE isderr( code INTEGER, name TEXT(250), name_f TEXT(250))'
+  cmdText := 'CREATE TABLE isderr( code INTEGER, name TEXT(250))'
 
   nameRef := 'ISDErr.xml'
   nfile := source + nameRef
@@ -46,8 +48,8 @@ function make_ISDErr(db, source)
     out_error(FILE_READ_ERROR, nfile)
     return nil
   else
-    cmdText := 'INSERT INTO isderr (code, name, name_f) VALUES(:code, :name, :name_f)'
-    // cmdText := 'INSERT INTO isderr (code, name) VALUES(:code, :name)'
+    // cmdText := 'INSERT INTO isderr (code, name, name_f) VALUES(:code, :name, :name_f)'
+    cmdText := 'INSERT INTO isderr (code, name) VALUES(:code, :name)'
     stmt := sqlite3_prepare(db, cmdText)
     if ! Empty( stmt )
       out_obrabotka(nfile)
@@ -57,11 +59,11 @@ function make_ISDErr(db, source)
         if 'ZAP' == upper(oXmlNode:title)
           code := read_xml_stroke_1251_to_utf8(oXmlNode, 'CODE')
           name := read_xml_stroke_1251_to_utf8(oXmlNode, 'NAME')
-          name_f := read_xml_stroke_1251_to_utf8(oXmlNode, 'NAME_F')
+          // name_f := read_xml_stroke_1251_to_utf8(oXmlNode, 'NAME_F')
 
           if sqlite3_bind_int(stmt, 1, val(code)) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 2, name) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 3, name_f) == SQLITE_OK
+            sqlite3_bind_text(stmt, 2, name) == SQLITE_OK // .AND. ;
+            // sqlite3_bind_text(stmt, 3, name_f) == SQLITE_OK
             IF sqlite3_step(stmt) != SQLITE_DONE
               out_error(TAG_ROW_INVALID, nfile, j)
             ENDIF
@@ -70,8 +72,8 @@ function make_ISDErr(db, source)
         endif
       next j
     endif
-    // sqlite3_clear_bindings(stmt)
-    // sqlite3_finalize(stmt)
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
   endif
 
   out_obrabotka_eol()
