@@ -28,6 +28,7 @@
 *.s3db
 *.hst
 *.db
+/sqlite3/chip_mo.db-journal
 /src_sqlite3/*.db
 /build
 /TFOMS_22
