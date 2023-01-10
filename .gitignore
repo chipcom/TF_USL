@@ -30,6 +30,7 @@
 *.db
 /src_sqlite3/*.db
 /build
+/TFOMS_22
 /TFOMS_21
 /TFOMS
 /FFOMS

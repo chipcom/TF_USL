@@ -6,7 +6,7 @@
 
 // #define TRACE
 
-** 13.05.2022
+** 10.01.23
 procedure main( ... )
   local cParam, cParamL
   local aParams
@@ -120,6 +120,7 @@ procedure main( ... )
     make_O0xx(db, source)
     make_Q0xx(db, source)
     make_F0xx(db, source)
+    make_V0xx(db, source)
     // if lAll // конвертировать все файлы
       // make_mzdrav(db, source)
       // make_Q0xx(db, source)
