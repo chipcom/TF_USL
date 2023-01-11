@@ -3,7 +3,7 @@
 
 #require 'hbsqlit3'
 
-** 10.01.23
+** 11.01.23
 function make_V0xx(db, source)
 
   // make_V002(db, source)
@@ -11,13 +11,13 @@ function make_V0xx(db, source)
   make_V009(db, source)
   make_V010(db, source)
   make_V012(db, source)
-  // make_V015(db, source)
-  // make_V016(db, source)
-  // make_V017(db, source)
+  make_V015(db, source)
+  make_V016(db, source)
+  make_V017(db, source)
   // make_V018(db, source)
   // make_V019(db, source)
   // make_V020(db, source)
-  // make_V021(db, source)
+  make_V021(db, source)
   // make_V022(db, source)
   // make_V024(db, source)
   // make_V025(db, source)
