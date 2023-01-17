@@ -290,7 +290,7 @@ Function make_V015(db, source)
   local oXmlDoc, oXmlNode, oNode1, oNode2
   local mRecid, mCode, mName, mHigh, mOKSO, d1, d2, d1_1, d2_1
 
-  cmdText := 'CREATE TABLE v015(recid INTEGER, code INTEGER, name TEXT, high INTEGER, okso INTEGER, datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE v015(recid INTEGER, code INTEGER, name TEXT, high TEXT(4), okso TEXT(3), datebeg TEXT(10), dateend TEXT(10))'
 
   nameRef := 'V015.xml'
   nfile := source + nameRef
@@ -343,8 +343,8 @@ Function make_V015(db, source)
           if sqlite3_bind_int(stmt, 1, val(mRecid)) == SQLITE_OK .AND. ;
             sqlite3_bind_int(stmt, 2, val(mCode)) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 3, mName) == SQLITE_OK .AND. ;
-            sqlite3_bind_int(stmt, 4, val(mHigh)) == SQLITE_OK .AND. ;
-            sqlite3_bind_int(stmt, 5, val(mOKSO)) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 4, mHigh) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 5, mOKSO) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 6, d1) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 7, d2) == SQLITE_OK
             if sqlite3_step(stmt) != SQLITE_DONE
