@@ -3,7 +3,7 @@
 
 #require 'hbsqlit3'
 
-** 11.01.23
+** 17.01.23
 function make_V0xx(db, source)
 
   // make_V002(db, source)
@@ -18,15 +18,15 @@ function make_V0xx(db, source)
   make_V019(db, source)
   make_V020(db, source)
   make_V021(db, source)
-  // make_V022(db, source)
+  make_V022(db, source)
   // make_V024(db, source)
-  // make_V025(db, source)
+  make_V025(db, source)
 
-  // make_V030(db, source)
-  // make_V031(db, source)
-  // make_V032(db, source)
-  // make_V033(db, source)
-  // make_v036(db, source)
+  make_V030(db, source)
+  make_V031(db, source)
+  make_V032(db, source)
+  make_V033(db, source)
+  make_v036(db, source)
 
   return nil
 
@@ -868,7 +868,7 @@ Function make_V021(db, source)
   out_obrabotka_eol()
   return nil
 
-** 10.01.23
+** 17.01.23
 Function make_V022(db, source)
   // IDMPAC,     "N",      5,      0  //  Идентификатор модели пациента
   // MPACNAME,   "M",     10,      0  // Наименование модели пациента
@@ -925,16 +925,19 @@ Function make_V022(db, source)
           Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
           d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
           d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr(d1_1)
-          d2 := hb_ValToStr(d2_1)
+          if d1_1 >= 0d20210101 .or. Empty(d2_1)  //0d20210101
 
-          if sqlite3_bind_int(stmt, 1, val(mIDMPAC)) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 2, mMPACNAME) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
-            if sqlite3_step(stmt) != SQLITE_DONE
-              out_error(TAG_ROW_INVALID, nfile, j)
+            Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+            d1 := hb_ValToStr(d1_1)
+            d2 := hb_ValToStr(d2_1)
+
+            if sqlite3_bind_int(stmt, 1, val(mIDMPAC)) == SQLITE_OK .AND. ;
+              sqlite3_bind_text(stmt, 2, mMPACNAME) == SQLITE_OK .AND. ;
+              sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
+              sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
+              if sqlite3_step(stmt) != SQLITE_DONE
+                out_error(TAG_ROW_INVALID, nfile, j)
+              endif
             endif
           endif
           sqlite3_reset(stmt)
