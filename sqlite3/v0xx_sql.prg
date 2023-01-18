@@ -6,7 +6,7 @@
 ** 17.01.23
 function make_V0xx(db, source)
 
-  // make_V002(db, source)
+  make_V002(db, source)
 
   make_V009(db, source)
   make_V010(db, source)
@@ -1441,7 +1441,8 @@ Function make_V036(db, source)
   local k, j
   local nfile, nameRef
   local oXmlDoc, oXmlNode, oNode1
-  local mS_Code, mName, mParam, mComment, mDATEBEG, mDATEEND, d1_1, d2_1
+  local mS_Code, mName, mParam, mComment, d1, d2, d1_1, d2_1
+  // local mDATEBEG, mDATEEND
 
   cmdText := 'CREATE TABLE v036( s_code TEXT(16), name BLOB, param INTEGER, comment TEXT, datebeg TEXT(10), dateend TEXT(10) )'
 
@@ -1482,15 +1483,22 @@ Function make_V036(db, source)
           mName := read_xml_stroke_1251_to_utf8(oXmlNode, 'NAME')
           mParam := read_xml_stroke_1251_to_utf8(oXmlNode, 'Parameter')
           mComment := read_xml_stroke_1251_to_utf8(oXmlNode, 'COMMENT')
-          mDATEBEG := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          mDATEEND := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-  
+          // mDATEBEG := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          // mDATEEND := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+          d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+          d1 := hb_ValToStr(d1_1)
+          d2 := hb_ValToStr(d2_1)
+          
           if sqlite3_bind_text(stmt, 1, mS_Code) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 2, mName) == SQLITE_OK .AND. ;
             sqlite3_bind_int(stmt, 3, val(mParam)) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 4, mComment) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 5, mDATEBEG) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 6, mDATEEND) == SQLITE_OK
+            sqlite3_bind_text(stmt, 5, d1) == SQLITE_OK .AND. ;
+            sqlite3_bind_text(stmt, 6, d2) == SQLITE_OK
             if sqlite3_step(stmt) != SQLITE_DONE
               out_error(TAG_ROW_INVALID, nfile, j)
             endif
@@ -1517,7 +1525,7 @@ Function make_V002(db, source)
   local k, j
   local nfile, nameRef
   local oXmlDoc, oXmlNode, oNode1, oNode2
-  local mIDPR, mPrname, d1, d2
+  local mIDPR, mPrname, d1, d2, d1_1, d2_1
 
   cmdText := 'CREATE TABLE v002(idpr INTEGER, prname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1556,8 +1564,15 @@ Function make_V002(db, source)
         if 'ZAP' == upper(oXmlNode:title)
           mIDRP := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDPR')
           mPrname := read_xml_stroke_1251_to_utf8(oXmlNode, 'PRNAME')
-          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+          d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+          d1 := hb_ValToStr(d1_1)
+          d2 := hb_ValToStr(d2_1)
 
           if sqlite3_bind_int(stmt, 1, val(mIDRP)) == SQLITE_OK .AND. ;
             sqlite3_bind_text(stmt, 2, mPrname) == SQLITE_OK .AND. ;
