@@ -179,7 +179,7 @@ proc main( ... )
   OutStd( '‘¯à ¢®ç­¨ª¨ ””ŽŒ‘.' + hb_eol() )
   OutStd( '***********************' + hb_eol() )
   // ‘¯à ¢®ç­¨ª¨ ””ŽŒ‘
-  work_V002(source, destination)
+  // work_V002(source, destination)
   // work_V009(source, destination)
   // work_V010(source, destination)
   // work_V012(source, destination)
