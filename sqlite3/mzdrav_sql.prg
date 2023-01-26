@@ -9,12 +9,93 @@
 function make_mzdrav(db, source)
 
   make_ed_izm(db, source)
+  make_severity(db, source)
   // make_method_inj(db, source)
   // make_implant(db, source)
-  // make_severity(db, source)
 
   // make_uslugi_mz(db, source) // не используем (для будующего)
 
+  return nil
+
+** 07.05.22
+function make_severity(db, source)
+  LOCAL stmt
+  local cmdText
+  local nfile, nameRef
+  local k, j, k1, j1
+  local oXmlDoc, oXmlNode, oNode1
+  local mID, mName, mSYN, mSCTID, mSort
+
+  // 1) ID, Код , Целочисленный, уникальный идентификатор, возможные значения – целые числа от 1 до 6;
+  // 2) NAME, Полное название, Строчный, обязательное поле, текстовый формат;
+  // 3) SYN, Синонимы, Строчный, синонимы терминов справочника, текстовый формат;
+  // 4) SCTID, Код SNOMED CT , Строчный, соответствующий код номенклатуры;
+  // 5) SORT, Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов
+  //    справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
+  cmdText := 'CREATE TABLE Severity( id INTEGER, name TEXT(40), syn TEXT(50), sctid INTEGER, sort INTEGER )'
+  
+  nameRef := '1.2.643.5.1.13.13.11.1006.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Степень тяжести состояния пациента (OID)' + hb_eol())
+  endif
+
+  if sqlite3_exec(db, 'DROP TABLE IF EXISTS Severity') == SQLITE_OK
+    OutStd('DROP TABLE Severity - Ok' + hb_eol())
+  endif
+    
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+     OutStd('CREATE TABLE Severity - Ok' + hb_eol())
+  else
+     OutStd('CREATE TABLE Severity - False' + hb_eol())
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty(oXmlDoc:aItems)
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    cmdText := 'INSERT INTO Severity ( id, name, syn, sctid, sort ) VALUES( :id, :name, :syn, :sctid, :sort )'
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty( stmt )
+      out_obrabotka(nfile)
+      k := Len(oXmlDoc:aItems[1]:aItems)
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if "ENTRIES" == upper(oXmlNode:title)
+          k1 := len(oXmlNode:aItems)
+          for j1 := 1 to k1
+            oNode1 := oXmlNode:aItems[j1]
+            if "ENTRY" == upper(oNode1:title)
+              mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
+              mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
+              mSYN := mo_read_xml_stroke(oNode1, 'SYN', , , 'utf8')
+              mSCTID := mo_read_xml_stroke(oNode1, 'SCTID', , , 'utf8')
+              mSort := mo_read_xml_stroke(oNode1, 'SORT', , , 'utf8')
+  
+              if sqlite3_bind_int(stmt, 1, val(mID)) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text(stmt, 2, mName) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text(stmt, 3, mSYN) == SQLITE_OK .AND. ;
+                      sqlite3_bind_text(stmt, 4, mSCTID) == SQLITE_OK .AND. ;
+                      sqlite3_bind_int(stmt, 5, val(mSort)) == SQLITE_OK
+                if sqlite3_step(stmt) != SQLITE_DONE
+                  out_error(TAG_ROW_INVALID, nfile, j)
+                endif
+              endif
+              sqlite3_reset(stmt)
+            endif
+          next j1
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings(stmt)
+    sqlite3_finalize(stmt)
+  endif
+  out_obrabotka_eol()
   return nil
 
 ** 26.01.23
@@ -432,87 +513,6 @@ function make_uslugi_mz(db, source)
                       sqlite3_bind_text(stmt, 3, mName) == SQLITE_OK .AND. ;
                       sqlite3_bind_int(stmt, 4, val(mRel)) == SQLITE_OK .AND. ;
                       sqlite3_bind_text(stmt, 5, mDateOut) == SQLITE_OK
-                if sqlite3_step(stmt) != SQLITE_DONE
-                  out_error(TAG_ROW_INVALID, nfile, j)
-                endif
-              endif
-              sqlite3_reset(stmt)
-            endif
-          next j1
-        endif
-      next j
-    endif
-    sqlite3_clear_bindings(stmt)
-    sqlite3_finalize(stmt)
-  endif
-  out_obrabotka_eol()
-  return nil
-
-** 07.05.22
-function make_severity(db, source)
-  LOCAL stmt
-  local cmdText
-  local nfile, nameRef
-  local k, j, k1, j1
-  local oXmlDoc, oXmlNode, oNode1
-  local mID, mName, mSYN, mSCTID, mSort
-
-  // 1) ID, Код , Целочисленный, уникальный идентификатор, возможные значения – целые числа от 1 до 6;
-  // 2) NAME, Полное название, Строчный, обязательное поле, текстовый формат;
-  // 3) SYN, Синонимы, Строчный, синонимы терминов справочника, текстовый формат;
-  // 4) SCTID, Код SNOMED CT , Строчный, соответствующий код номенклатуры;
-  // 5) SORT, Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов
-  //    справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
-  cmdText := 'CREATE TABLE Severity( id INTEGER, name TEXT(40), syn TEXT(50), sctid TEXT(10), sort INTEGER )'
-  
-  nameRef := '1.2.643.5.1.13.13.11.1006.xml'
-  nfile := source + nameRef
-  if ! hb_vfExists(nfile)
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  else
-    OutStd(hb_eol() + nameRef + ' - Степень тяжести состояния пациента (OID)' + hb_eol())
-  endif
-
-  if sqlite3_exec(db, 'DROP TABLE IF EXISTS Severity') == SQLITE_OK
-    OutStd('DROP TABLE Severity - Ok' + hb_eol())
-  endif
-    
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-     OutStd('CREATE TABLE Severity - Ok' + hb_eol())
-  else
-     OutStd('CREATE TABLE Severity - False' + hb_eol())
-    return nil
-  endif
-
-  oXmlDoc := HXMLDoc():Read(nfile)
-  if Empty(oXmlDoc:aItems)
-    out_error(FILE_READ_ERROR, nfile)
-    return nil
-  else
-    cmdText := 'INSERT INTO Severity ( id, name, syn, sctid, sort ) VALUES( :id, :name, :syn, :sctid, :sort )'
-    stmt := sqlite3_prepare(db, cmdText)
-    if ! Empty( stmt )
-      out_obrabotka(nfile)
-      k := Len(oXmlDoc:aItems[1]:aItems)
-      for j := 1 to k
-        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-        if "ENTRIES" == upper(oXmlNode:title)
-          k1 := len(oXmlNode:aItems)
-          for j1 := 1 to k1
-            oNode1 := oXmlNode:aItems[j1]
-            if "ENTRY" == upper(oNode1:title)
-              mID := mo_read_xml_stroke(oNode1, 'ID', , , 'utf8')
-              mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
-              mSYN := mo_read_xml_stroke(oNode1, 'SYN', , , 'utf8')
-              mSCTID := mo_read_xml_stroke(oNode1, 'SCTID', , , 'utf8')
-              mSort := mo_read_xml_stroke(oNode1, 'SORT', , , 'utf8')
-  
-              if sqlite3_bind_int(stmt, 1, val(mID)) == SQLITE_OK .AND. ;
-                      sqlite3_bind_text(stmt, 2, mName) == SQLITE_OK .AND. ;
-                      sqlite3_bind_text(stmt, 3, mSYN) == SQLITE_OK .AND. ;
-                      sqlite3_bind_text(stmt, 4, mSCTID) == SQLITE_OK .AND. ;
-                      sqlite3_bind_int(stmt, 5, val(mSort)) == SQLITE_OK
                 if sqlite3_step(stmt) != SQLITE_DONE
                   out_error(TAG_ROW_INVALID, nfile, j)
                 endif

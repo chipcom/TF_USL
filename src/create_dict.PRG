@@ -171,7 +171,7 @@ proc main( ... )
   OutStd( '***********************' + hb_eol() )
 
   make_implant(source, destination)
-  make_severity(source, destination)
+  // make_severity(source, destination)
   make_method_inj(source, destination)
   // make_ed_izm(source, destination)
 
