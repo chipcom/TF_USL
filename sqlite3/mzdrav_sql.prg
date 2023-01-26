@@ -8,13 +8,124 @@
 ** 03.05.22
 function make_mzdrav(db, source)
 
-  make_method_inj(db, source)
-  make_implant(db, source)
   make_ed_izm(db, source)
-  make_severity(db, source)
+  // make_method_inj(db, source)
+  // make_implant(db, source)
+  // make_severity(db, source)
 
   // make_uslugi_mz(db, source) // не используем (для будующего)
 
+  return nil
+
+** 26.01.23
+Function make_ed_izm(db, source)
+  local stmt
+  local cmdText
+  local oXmlDoc, oXmlNode, oNode1
+  local nfile, nameRef
+  local k, j, k1, j1
+  local mID, mFullName, mShortName, mPrintName, mMeasure, mUCUM, mCoef, mConvID
+  local mConvName, mOKEI
+
+  // 1) ID, Уникальный идентификатор, Целочисленный, Уникальный идентификатор единицы измерения лабораторного теста;
+  // 2) FULLNAME, Полное наименование, Строчный;
+  // 3) SHORTNAME, Краткое наименование, Строчный;
+  // 4) PRINTNAME, Наименование для печати, Строчный;
+  // 5) MEASUREMENT, Размерность, Строчный;
+  // 6) UCUM, Код UCUM, Строчный;
+  // 7) COEFFICIENT, Коэффициент пересчета, Строчный, Коэффициент пересчета в рамках одной размерности.;
+  // 8) FORMULA, Формула пересчета, Строчный, В настоящей версии справочника не используется.;
+  // 9) CONVERSION_ID, Код единицы измерения для пересчета, Целочисленный, Код единицы измерения, в которую осуществляется пересчет.;
+  // 10) CONVERSION_NAME, Единица измерения для пересчета, Строчный, Краткое наименование единицы измерения, в которую осуществляется пересчет.;
+  // 11) OKEI_CODE, Код ОКЕИ, Строчный, Соответствующий код Общероссийского классификатора единиц измерений.;
+  // // 12) NSI_CODE_EEC, Код справочника ЕАЭК, Строчный, необязательное поле – код справочника реестра НСИ ЕАЭК;
+  // // 13) NSI_ELEMENT_CODE_EEC, Код элемента справочника ЕАЭК, Строчный, необязательное поле – код элемента справочника реестра НСИ ЕАЭК;
+  // cmdText := 'CREATE TABLE ed_izm( id INTEGER, fullname TEXT(40), ' + ;
+  //   'shortname TEXT(25), prnname TEXT(25), measur TEXT(45), ucum TEXT(15), coef TEXT(15), ' + ;
+  //   'conv_id INTEGER, conv_nam TEXT(25), okei_cod INTEGER )'
+  cmdText := 'CREATE TABLE ed_izm(id INTEGER, fullname TEXT(40), shortname TEXT(25))'
+    
+  nameRef := '1.2.643.5.1.13.13.11.1358.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Единицы измерения (OID)' + hb_eol())
+  endif
+
+  if sqlite3_exec(db, 'DROP TABLE IF EXISTS ed_izm') == SQLITE_OK
+    OutStd('DROP TABLE ed_izm - Ok' + hb_eol())
+  endif
+     
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd('CREATE TABLE ed_izm - Ok' + hb_eol())
+  else
+    OutStd('CREATE TABLE ed_izm - False' + hb_eol())
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    // cmdText := 'INSERT INTO ed_izm (id, fullname, shortname, prnname, ' + ;
+    //   'measur, ucum, coef, conv_id, conv_nam, okei_cod) ' + ;
+    //   'VALUES(:id, :fullname, :shortname, :prnname, :measur, :ucum, :coef, :conv_id, :conv_nam, :okei_cod)'
+    cmdText := 'INSERT INTO ed_izm (id, fullname, shortname) ' + ;
+      'VALUES(:id, :fullname, :shortname)'
+    
+    stmt := sqlite3_prepare(db, cmdText)
+    if ! Empty( stmt )
+      out_obrabotka(nfile)
+      k := Len( oXmlDoc:aItems[1]:aItems )
+      for j := 1 to k
+        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+        if 'ENTRIES' == upper(oXmlNode:title)
+          k1 := len(oXmlNode:aItems)
+          for j1 := 1 to k1
+            oNode1 := oXmlNode:aItems[j1]
+            if 'ENTRY' == upper(oNode1:title)
+              mID := mo_read_xml_stroke(oNode1, 'ID', , , 'UTF8')
+              mFullName := mo_read_xml_stroke(oNode1, 'FULLNAME', , , 'UTF8')
+              mShortName := mo_read_xml_stroke(oNode1, 'SHORTNAME', , , 'UTF8')
+              // mPrintName := mo_read_xml_stroke(oNode1, 'PRINTNAME', , , 'utf8')
+              // mMeasure := mo_read_xml_stroke(oNode1, 'MEASUREMENT', , , 'utf8')
+              // mUCUM := mo_read_xml_stroke(oNode1, 'UCUM', , , 'utf8')
+              // mCoef := mo_read_xml_stroke(oNode1, 'COEFFICIENT', , , 'utf8')
+              // mConvID := mo_read_xml_stroke(oNode1, 'CONVERSION_ID', , , 'utf8')
+              // mConvName := mo_read_xml_stroke(oNode1, 'CONVERSION_NAME', , , 'utf8')
+              // mOKEI := mo_read_xml_stroke(oNode1, 'OKEI_CODE', , , 'utf8')
+  
+              // if sqlite3_bind_int( stmt, 1, val(mID) ) == SQLITE_OK .AND. ;
+              //         sqlite3_bind_text( stmt, 2, mFullName ) == SQLITE_OK .AND. ;
+              //         sqlite3_bind_text( stmt, 3, mShortName ) == SQLITE_OK .and. ;
+              //         sqlite3_bind_text( stmt, 4, mPrintName ) == SQLITE_OK .and. ;
+              //         sqlite3_bind_text( stmt, 5, mMeasure ) == SQLITE_OK .and. ;
+              //         sqlite3_bind_text( stmt, 6, mUCUM ) == SQLITE_OK .and. ;
+              //         sqlite3_bind_text( stmt, 7, mCoef ) == SQLITE_OK .and. ;
+              //         sqlite3_bind_int( stmt, 8, val(mConvID) ) == SQLITE_OK .and. ;
+              //         sqlite3_bind_text( stmt, 9, mConvName ) == SQLITE_OK .and. ;
+              //         sqlite3_bind_int( stmt, 10, val(mOKEI) ) == SQLITE_OK
+              if sqlite3_bind_int( stmt, 1, val(mID) ) == SQLITE_OK .AND. ;
+                sqlite3_bind_text( stmt, 2, mFullName ) == SQLITE_OK .AND. ;
+                sqlite3_bind_text( stmt, 3, mShortName ) == SQLITE_OK
+
+                if sqlite3_step( stmt ) != SQLITE_DONE
+                  out_error(TAG_ROW_INVALID, nfile, j)
+                endif
+              endif
+              sqlite3_reset( stmt )
+            endif
+          next j1
+        endif
+      next j
+    endif
+    sqlite3_clear_bindings( stmt )
+    sqlite3_finalize( stmt )
+  endif
+  out_obrabotka_eol()
   return nil
 
 ** 07.05.22
@@ -418,106 +529,3 @@ function make_severity(db, source)
   out_obrabotka_eol()
   return nil
 
-** 07.05.22
-Function make_ed_izm(db, source)
-  local stmt
-  local cmdText
-  local oXmlDoc, oXmlNode, oNode1
-  local nfile, nameRef
-  local k, j, k1, j1
-  local mID, mFullName, mShortName, mPrintName, mMeasure, mUCUM, mCoef, mConvID
-  local mConvName, mOKEI
-
-  // 1) ID, Уникальный идентификатор, Целочисленный, Уникальный идентификатор единицы измерения лабораторного теста;
-  // 2) FULLNAME, Полное наименование, Строчный;
-  // 3) SHORTNAME, Краткое наименование, Строчный;
-  // 4) PRINTNAME, Наименование для печати, Строчный;
-  // 5) MEASUREMENT, Размерность, Строчный;
-  // 6) UCUM, Код UCUM, Строчный;
-  // 7) COEFFICIENT, Коэффициент пересчета, Строчный, Коэффициент пересчета в рамках одной размерности.;
-  // 8) FORMULA, Формула пересчета, Строчный, В настоящей версии справочника не используется.;
-  // 9) CONVERSION_ID, Код единицы измерения для пересчета, Целочисленный, Код единицы измерения, в которую осуществляется пересчет.;
-  // 10) CONVERSION_NAME, Единица измерения для пересчета, Строчный, Краткое наименование единицы измерения, в которую осуществляется пересчет.;
-  // 11) OKEI_CODE, Код ОКЕИ, Строчный, Соответствующий код Общероссийского классификатора единиц измерений.;
-  // // 12) NSI_CODE_EEC, Код справочника ЕАЭК, Строчный, необязательное поле – код справочника реестра НСИ ЕАЭК;
-  // // 13) NSI_ELEMENT_CODE_EEC, Код элемента справочника ЕАЭК, Строчный, необязательное поле – код элемента справочника реестра НСИ ЕАЭК;
-  cmdText := 'CREATE TABLE UnitOfMeasurement( id INTEGER, fullname TEXT(40), ' + ;
-    'shortname TEXT(25), prnname TEXT(25), measur TEXT(45), ucum TEXT(15), coef TEXT(15), ' + ;
-    'conv_id INTEGER, conv_nam TEXT(25), okei_cod INTEGER )'
-    
-  nameRef := '1.2.643.5.1.13.13.11.1358.xml'
-  nfile := source + nameRef
-  if ! hb_vfExists(nfile)
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  else
-    OutStd(hb_eol() + nameRef + ' - Единицы измерения (OID)' + hb_eol())
-  endif
-
-  if sqlite3_exec(db, 'DROP TABLE IF EXISTS UnitOfMeasurement') == SQLITE_OK
-    OutStd('DROP TABLE UnitOfMeasurement - Ok' + hb_eol())
-  endif
-     
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd('CREATE TABLE UnitOfMeasurement - Ok' + hb_eol())
-  else
-    OutStd('CREATE TABLE UnitOfMeasurement - False' + hb_eol())
-    return nil
-  endif
-
-  oXmlDoc := HXMLDoc():Read(nfile)
-  if Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
-    return nil
-  else
-    cmdText := 'INSERT INTO UnitOfMeasurement (id, fullname, shortname, prnname, ' + ;
-      'measur, ucum, coef, conv_id, conv_nam, okei_cod) ' + ;
-      'VALUES(:id, :fullname, :shortname, :prnname, :measur, :ucum, :coef, :conv_id, :conv_nam, :okei_cod)'
-    stmt := sqlite3_prepare(db, cmdText)
-    if ! Empty( stmt )
-      out_obrabotka(nfile)
-      k := Len( oXmlDoc:aItems[1]:aItems )
-      for j := 1 to k
-        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-        if 'ENTRIES' == upper(oXmlNode:title)
-          k1 := len(oXmlNode:aItems)
-          for j1 := 1 to k1
-            oNode1 := oXmlNode:aItems[j1]
-            if 'ENTRY' == upper(oNode1:title)
-              mID := mo_read_xml_stroke(oNode1, 'ID', , , 'UTF8')
-              mFullName := mo_read_xml_stroke(oNode1, 'FULLNAME', , , 'UTF8')
-              mShortName := mo_read_xml_stroke(oNode1, 'SHORTNAME', , , 'UTF8')
-              mPrintName := mo_read_xml_stroke(oNode1, 'PRINTNAME', , , 'utf8')
-              mMeasure := mo_read_xml_stroke(oNode1, 'MEASUREMENT', , , 'utf8')
-              mUCUM := mo_read_xml_stroke(oNode1, 'UCUM', , , 'utf8')
-              mCoef := mo_read_xml_stroke(oNode1, 'COEFFICIENT', , , 'utf8')
-              mConvID := mo_read_xml_stroke(oNode1, 'CONVERSION_ID', , , 'utf8')
-              mConvName := mo_read_xml_stroke(oNode1, 'CONVERSION_NAME', , , 'utf8')
-              mOKEI := mo_read_xml_stroke(oNode1, 'OKEI_CODE', , , 'utf8')
-  
-              if sqlite3_bind_int( stmt, 1, val(mID) ) == SQLITE_OK .AND. ;
-                      sqlite3_bind_text( stmt, 2, mFullName ) == SQLITE_OK .AND. ;
-                      sqlite3_bind_text( stmt, 3, mShortName ) == SQLITE_OK .and. ;
-                      sqlite3_bind_text( stmt, 4, mPrintName ) == SQLITE_OK .and. ;
-                      sqlite3_bind_text( stmt, 5, mMeasure ) == SQLITE_OK .and. ;
-                      sqlite3_bind_text( stmt, 6, mUCUM ) == SQLITE_OK .and. ;
-                      sqlite3_bind_text( stmt, 7, mCoef ) == SQLITE_OK .and. ;
-                      sqlite3_bind_int( stmt, 8, val(mConvID) ) == SQLITE_OK .and. ;
-                      sqlite3_bind_text( stmt, 9, mConvName ) == SQLITE_OK .and. ;
-                      sqlite3_bind_int( stmt, 10, val(mOKEI) ) == SQLITE_OK
-
-                if sqlite3_step( stmt ) != SQLITE_DONE
-                  out_error(TAG_ROW_INVALID, nfile, j)
-                endif
-              endif
-              sqlite3_reset( stmt )
-            endif
-          next j1
-        endif
-      next j
-    endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
-  endif
-  out_obrabotka_eol()
-  return nil

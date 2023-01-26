@@ -173,7 +173,7 @@ proc main( ... )
   make_implant(source, destination)
   make_severity(source, destination)
   make_method_inj(source, destination)
-  make_ed_izm(source, destination)
+  // make_ed_izm(source, destination)
 
   OutStd( '***********************' + hb_eol() )
   OutStd( '‘¯à ¢®ç­¨ª¨ ””ŽŒ‘.' + hb_eol() )

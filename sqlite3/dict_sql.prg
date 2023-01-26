@@ -121,6 +121,7 @@ procedure main( ... )
     make_Q0xx(db, source)
     make_F0xx(db, source)
     make_V0xx(db, source)
+    make_mzdrav(db, source)
     // if lAll // конвертировать все файлы
       // make_mzdrav(db, source)
       // make_Q0xx(db, source)
