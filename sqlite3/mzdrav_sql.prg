@@ -323,26 +323,29 @@ Function make_MethIntro(db, source)
 
   return NIL
 
-** 07.05.22
+** 31.01.23
 function make_implant(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j, k1, j1
   local nfile, nameRef
   local oXmlDoc, oXmlNode, oNode1
-  local mID, mName, mRZN, mParent, mType, mLocal, mMaterial, mOrder
+  local mID, mName, mRZN, mParent, mType  //, mLocal, mMaterial, mOrder
 
   // 1)ID, Код , уникальный идентификатор записи;
   // 2)RZN, Росздравнадзор , код изделия согласно Номенклатурному классификатору Росздравнадзора;
   // 3)PARENT, Код родительского элемента;
   // 4)NAME, Наименование , наименование вида изделия;
+  // 5)ACTUAL, Актуальность, Логический;
+  // 6)EXISTENCE_NPA, Признак наличия НПА, Логический
   // // 5)LOCALIZATION, Локализация , анатомическая область, к которой относится локализация и/или действие изделия;
   // // 6)MATERIAL, Материал , тип материала, из которого изготовлено изделие;
   // // 7)METAL, Металл , признак наличия металла в изделии;
   // // 8)SCTID, Код SNOMED CT , уникальный код по номенклатуре клинических терминов SNOMED CT;
   // // 9)ORDER, Порядок сортировки ;
   // ++) TYPE, Тип записи, символьный: 'O' корневой узел, 'U' узел, 'L' конечный элемент
-  cmdText := 'CREATE TABLE implantant( id INTEGER, rzn INTEGER, parent INTEGER, name TEXT(120), local TEXT(80), material TEXT(20), _order INTEGER, type TEXT(1) )'
+  // cmdText := 'CREATE TABLE implantant( id INTEGER, rzn INTEGER, parent INTEGER, name TEXT(120), local TEXT(80), material TEXT(20), _order INTEGER, type TEXT(1) )'
+  cmdText := 'CREATE TABLE implantant(id INTEGER, rzn INTEGER, parent INTEGER, name TEXT(120), type TEXT(1))'
     
   nameRef := '1.2.643.5.1.13.13.11.1079.xml'
   nfile := source + nameRef
@@ -365,7 +368,7 @@ function make_implant(db, source)
   endif
 
   // временная таблица для дальнейшего использования
-  cmdTextTMP := 'CREATE TABLE tmp( id INTEGER, parent INTEGER)'
+  cmdTextTMP := 'CREATE TABLE tmp(id INTEGER, parent INTEGER)'
   sqlite3_exec(db, 'DROP TABLE tmp')
   sqlite3_exec(db, cmdTextTMP)
 
@@ -376,7 +379,8 @@ function make_implant(db, source)
   else
     cmdTextTMP := 'INSERT INTO tmp(id, parent) VALUES (:id, :parent)'
     stmtTMP := sqlite3_prepare(db, cmdTextTMP)
-    cmdText := 'INSERT INTO implantant (id, rzn, parent, name, local, material, _order, type) VALUES(:id, :rzn, :parent, :name, :local, :material, :_order, :type)'
+    // cmdText := 'INSERT INTO implantant (id, rzn, parent, name, local, material, _order, type) VALUES(:id, :rzn, :parent, :name, :local, :material, :_order, :type)'
+    cmdText := 'INSERT INTO implantant (id, rzn, parent, name, type) VALUES(:id, :rzn, :parent, :name, :type)'
     stmt := sqlite3_prepare(db, cmdText)
     if ! Empty( stmt )
       out_obrabotka(nfile)
@@ -392,17 +396,17 @@ function make_implant(db, source)
               mRZN := mo_read_xml_stroke(oNode1, 'RZN', , , 'utf8')
               mParent := mo_read_xml_stroke(oNode1, 'PARENT', , , 'utf8')
               mName := mo_read_xml_stroke(oNode1, 'NAME', , , 'utf8')
-              mLocal := mo_read_xml_stroke(oNode1, 'LOCALIZATION', , , 'utf8')
-              mMaterial := mo_read_xml_stroke(oNode1, 'MATERIAL', , , 'utf8')
-              mOrder := mo_read_xml_stroke(oNode1, 'ORDER', , , 'utf8')
+              // mLocal := mo_read_xml_stroke(oNode1, 'LOCALIZATION', , , 'utf8')
+              // mMaterial := mo_read_xml_stroke(oNode1, 'MATERIAL', , , 'utf8')
+              // mOrder := mo_read_xml_stroke(oNode1, 'ORDER', , , 'utf8')
   
               if sqlite3_bind_int(stmt, 1, val(mID)) == SQLITE_OK .AND. ;
                       sqlite3_bind_int(stmt, 2, val(mRZN)) == SQLITE_OK .AND. ;
                       sqlite3_bind_int(stmt, 3, val(mParent)) == SQLITE_OK  .AND. ;
-                      sqlite3_bind_text(stmt, 4, mName) == SQLITE_OK .AND. ;
-                      sqlite3_bind_text(stmt, 5, mLocal) == SQLITE_OK .AND. ;
-                      sqlite3_bind_text(stmt, 6, mMaterial) == SQLITE_OK .AND. ;
-                      sqlite3_bind_int(stmt, 7, val(mOrder)) == SQLITE_OK
+                      sqlite3_bind_text(stmt, 4, mName) == SQLITE_OK  // .AND. ;
+                      // sqlite3_bind_text(stmt, 5, mLocal) == SQLITE_OK .AND. ;
+                      // sqlite3_bind_text(stmt, 6, mMaterial) == SQLITE_OK .AND. ;
+                      // sqlite3_bind_int(stmt, 7, val(mOrder)) == SQLITE_OK
                 if sqlite3_step(stmt) != SQLITE_DONE
                   out_error(TAG_ROW_INVALID, nfile, j)
                 endif
