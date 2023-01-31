@@ -5,13 +5,13 @@
 
 #require 'hbsqlit3'
 
-** 03.05.22
+** 31.01.23
 function make_mzdrav(db, source)
 
   make_ed_izm(db, source)
   make_severity(db, source)
-  // make_method_inj(db, source)
-  // make_implant(db, source)
+  make_MethIntro(db, source)
+  make_implant(db, source)
 
   // make_uslugi_mz(db, source) // не используем (для будующего)
 
@@ -210,7 +210,7 @@ Function make_ed_izm(db, source)
   return nil
 
 ** 07.05.22
-Function make_method_inj(db, source)
+Function make_MethIntro(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j, k1, j1
@@ -225,7 +225,7 @@ Function make_method_inj(db, source)
   // // 5) NSI_CODE_EEC, Код справочника ЕАЭК, Строчный, необязательное поле – код справочника реестра НСИ ЕАЭК;
   // // 6) NSI_ELEMENT_CODE_EEC, Код элемента справочника ЕАЭК, Строчный, необязательное поле – код элемента справочника реестра НСИ ЕАЭК;
   // ++) TYPE, Тип записи, символьный: 'O' корневой узел, 'U' узел, 'L' конечный элемент
-  cmdText := 'CREATE TABLE method_inj( id INTEGER, name_rus TEXT(30), name_eng TEXT(30), parent INTEGER, type TEXT(1) )'
+  cmdText := 'CREATE TABLE MethIntro(id INTEGER, name_rus TEXT(30), name_eng TEXT(30), parent INTEGER, type TEXT(1))'
     
   nameRef := "1.2.643.5.1.13.13.11.1468.xml"
   nfile := source + nameRef
@@ -236,14 +236,14 @@ Function make_method_inj(db, source)
     OutStd(hb_eol() + nameRef + " - Пути введения лекарственных препаратов, в том числе для льготного обеспечения граждан лекарственными средствами (MethIntro)" + hb_eol())
   endif
   
-  if sqlite3_exec(db, 'DROP TABLE method_inj') == SQLITE_OK
-    OutStd('DROP TABLE method_inj - Ok' + hb_eol())
+  if sqlite3_exec(db, 'DROP TABLE MethIntro') == SQLITE_OK
+    OutStd('DROP TABLE MethIntro - Ok' + hb_eol())
   endif
      
   if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd('CREATE TABLE method_inj - Ok' + hb_eol())
+    OutStd('CREATE TABLE MethIntro - Ok' + hb_eol())
   else
-    OutStd('CREATE TABLE method_inj - False' + hb_eol())
+    OutStd('CREATE TABLE MethIntro - False' + hb_eol())
     return nil
   endif
 
@@ -259,7 +259,7 @@ Function make_method_inj(db, source)
   else
     cmdTextTMP := 'INSERT INTO tmp(id, parent) VALUES (:id, :parent)'
     stmtTMP := sqlite3_prepare(db, cmdTextTMP)
-    cmdText := 'INSERT INTO method_inj ( id, name_rus, name_eng, parent ) VALUES( :id, :name_rus, :name_eng, :parent )'
+    cmdText := 'INSERT INTO MethIntro (id, name_rus, name_eng, parent) VALUES(:id, :name_rus, :name_eng, :parent)'
     stmt := sqlite3_prepare(db, cmdText)
     if ! Empty( stmt )
       out_obrabotka(nfile)
@@ -307,17 +307,17 @@ Function make_method_inj(db, source)
   sqlite3_clear_bindings(stmtTMP)
   sqlite3_finalize(stmtTMP)
 
-  cmdText := "UPDATE method_inj SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE method_inj.id = tmp.parent)"
+  cmdText := "UPDATE MethIntro SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE MethIntro.id = tmp.parent)"
   if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd(cmdText + ' - Ok' + hb_eol())
+    OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
   else
-    OutErr(cmdText + ' - False' + hb_eol())
+    OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
   endif
-  cmdText := "UPDATE method_inj SET type = 'L' WHERE NOT EXISTS (SELECT 1 FROM tmp WHERE method_inj.id = tmp.parent)"
+  cmdText := "UPDATE MethIntro SET type = 'L' WHERE NOT EXISTS (SELECT 1 FROM tmp WHERE MethIntro.id = tmp.parent)"
   if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd(cmdText + ' - Ok' + hb_eol())
+    OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
   else
-    OutErr(cmdText + ' - False' + hb_eol())
+    OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
   endif
   sqlite3_exec(db, 'DROP TABLE tmp')
 
@@ -376,7 +376,7 @@ function make_implant(db, source)
   else
     cmdTextTMP := 'INSERT INTO tmp(id, parent) VALUES (:id, :parent)'
     stmtTMP := sqlite3_prepare(db, cmdTextTMP)
-    cmdText := 'INSERT INTO implantant ( id, rzn, parent, name, local, material, _order, type ) VALUES( :id, :rzn, :parent, :name, :local, :material, :_order, :type )'
+    cmdText := 'INSERT INTO implantant (id, rzn, parent, name, local, material, _order, type) VALUES(:id, :rzn, :parent, :name, :local, :material, :_order, :type)'
     stmt := sqlite3_prepare(db, cmdText)
     if ! Empty( stmt )
       out_obrabotka(nfile)
@@ -428,21 +428,21 @@ function make_implant(db, source)
 
     cmdText := "UPDATE implantant SET type = 'U' WHERE EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
     if sqlite3_exec(db, cmdText) == SQLITE_OK
-      OutStd(cmdText + ' - Ok' + hb_eol())
+      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
     else
-      OutErr(cmdText + ' - False' + hb_eol())
+      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
     endif
     cmdText := "UPDATE implantant SET type = 'L' WHERE NOT EXISTS (SELECT 1 FROM tmp WHERE implantant.id = tmp.parent)"
     if sqlite3_exec(db, cmdText) == SQLITE_OK
-      OutStd(cmdText + ' - Ok' + hb_eol())
+      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
     else
-      OutErr(cmdText + ' - False' + hb_eol())
+      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
     endif
     cmdText := 'UPDATE implantant SET type = "O" WHERE rzn = 0'
     if sqlite3_exec(db, cmdText) == SQLITE_OK
-      OutStd(cmdText + ' - Ok' + hb_eol())
+      OutStd(hb_eol() + cmdText + ' - Ok' + hb_eol())
     else
-      OutErr(cmdText + ' - False' + hb_eol())
+      OutErr(hb_eol() + cmdText + ' - False' + hb_eol())
     endif
     sqlite3_exec(db, 'DROP TABLE tmp')
   endif
