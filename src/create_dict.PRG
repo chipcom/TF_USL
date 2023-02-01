@@ -166,18 +166,18 @@ proc main( ... )
 
   // make_T001()
   // Справочники минздрава
-  OutStd( '***********************' + hb_eol() )
-  OutStd( 'Справочники министерства здравоохранения.' + hb_eol() )
-  OutStd( '***********************' + hb_eol() )
+  // OutStd( '***********************' + hb_eol() )
+  // OutStd( 'Справочники министерства здравоохранения.' + hb_eol() )
+  // OutStd( '***********************' + hb_eol() )
 
   // make_implant(source, destination)
   // make_severity(source, destination)
   // make_method_inj(source, destination)
   // make_ed_izm(source, destination)
 
-  OutStd( '***********************' + hb_eol() )
-  OutStd( 'Справочники ФФОМС.' + hb_eol() )
-  OutStd( '***********************' + hb_eol() )
+  // OutStd( '***********************' + hb_eol() )
+  // OutStd( 'Справочники ФФОМС.' + hb_eol() )
+  // OutStd( '***********************' + hb_eol() )
   // Справочники ФФОМС
   // work_V002(source, destination)
   // work_V009(source, destination)
@@ -210,7 +210,7 @@ proc main( ... )
   // make_O001(source, destination)
   
 
-  InitSpravFFOMS(source, destination)
+  // InitSpravFFOMS(source, destination)
   //
   read_spr_N00X(source, destination)
   //
@@ -340,19 +340,19 @@ proc main( ... )
     endif
     skip
   enddo
-  fp := fcreate(curent_dir + "_mo_prof.txt") ; n_list := 1 ; tek_stroke := 0
-  for j := 1 to len(aup)
-    s := aup[j,1]+iif(aup[j,2] == 0, "взр", "реб")+".{"
-    asort(aup[j,3])
-    for i := 1 to len(aup[j,3])
-      s += lstr(aup[j,3,i])+"-" + alltrim(inieditspr(A__MENUVERT,glob_V002,aup[j,3,i]))
-      if i < len(aup[j,3])
-        s += ","
-      endif
-    next
-    add_string(s+"}")
-  next
-  fclose(fp)
+  // fp := fcreate(curent_dir + "_mo_prof.txt") ; n_list := 1 ; tek_stroke := 0
+  // for j := 1 to len(aup)
+  //   s := aup[j,1]+iif(aup[j,2] == 0, "взр", "реб")+".{"
+  //   asort(aup[j,3])
+  //   for i := 1 to len(aup[j,3])
+  //     s += lstr(aup[j,3,i])+"-" + alltrim(inieditspr(A__MENUVERT,glob_V002,aup[j,3,i]))
+  //     if i < len(aup[j,3])
+  //       s += ","
+  //     endif
+  //   next
+  //   add_string(s+"}")
+  // next
+  // fclose(fp)
   //
   aup := {}
   use (destination + '_mo_spec') new alias SPEC
@@ -367,18 +367,18 @@ proc main( ... )
     endif
     skip
   enddo
-  fp := fcreate(curent_dir + "_mo_spec.txt") ; n_list := 1 ; tek_stroke := 0
-  for j := 1 to len(aup)
-    s := aup[j,1]+iif(aup[j,2] == 0, "взр", "реб")+".{"
-    asort(aup[j,3])
-    for i := 1 to len(aup[j,3])
-      s += lstr(aup[j,3,i])+"-"+ alltrim(inieditspr(A__MENUVERT,glob_V021,aup[j,3,i]))
-      if i < len(aup[j,3])
-        s += ","
-      endif
-    next
-    add_string(s+"}")
-  next
+  // fp := fcreate(curent_dir + "_mo_spec.txt") ; n_list := 1 ; tek_stroke := 0
+  // for j := 1 to len(aup)
+  //   s := aup[j,1]+iif(aup[j,2] == 0, "взр", "реб")+".{"
+  //   asort(aup[j,3])
+  //   for i := 1 to len(aup[j,3])
+  //     s += lstr(aup[j,3,i])+"-"+ alltrim(inieditspr(A__MENUVERT,glob_V021,aup[j,3,i]))
+  //     if i < len(aup[j,3])
+  //       s += ","
+  //     endif
+  //   next
+  //   add_string(s+"}")
+  // next
   fclose(fp)
   close databases
   HB_VFERASE(curent_dir + "tmp*.dbf")

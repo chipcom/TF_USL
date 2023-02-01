@@ -1621,20 +1621,22 @@ Function work_LvlPay(source, destination)
                       for j3 := 1 TO Len( oNode5:aItems )
                         oNode6 := oNode5:aItems[j3]
                         if "PAY_LEVEL" == oNode6:title
-                          select LP
-                          append blank
-                          lp->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
-                          lp->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
-                          lp->usl_ok  := val(mo_read_xml_stroke(oNode2,"USL_OK",))
-                          lp->DEPART  := val(mo_read_xml_stroke(oNode4,"CODE",))
-                          lp->LEVEL   := mo_read_xml_stroke(oNode6,"VALUE",)
-                          lp->DATEBEG := xml2date(mo_read_xml_stroke(oNode6,"D_B",))
-                          lp->DATEEND := xml2date(mo_read_xml_stroke(oNode6,"D_E",))
-                          /*if j3 > 1
-                            ? "Ошибка в чтении файла - более одного тега PAY_LEVEL",nfile
-                            ? " в учреждении",lp->codem, "в отделении",lstr(lp->DEPART)
-                            wait
-                          endif*/
+                          if str(year(xml2date(mo_read_xml_stroke(oNode6,"D_E",))), 4) == CURENT_YEAR
+                            select LP
+                            append blank
+                            lp->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
+                            lp->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
+                            lp->usl_ok  := val(mo_read_xml_stroke(oNode2,"USL_OK",))
+                            lp->DEPART  := val(mo_read_xml_stroke(oNode4,"CODE",))
+                            lp->LEVEL   := mo_read_xml_stroke(oNode6,"VALUE",)
+                            lp->DATEBEG := xml2date(mo_read_xml_stroke(oNode6,"D_B",))
+                            lp->DATEEND := xml2date(mo_read_xml_stroke(oNode6,"D_E",))
+                            /*if j3 > 1
+                              ? "Ошибка в чтении файла - более одного тега PAY_LEVEL",nfile
+                              ? " в учреждении",lp->codem, "в отделении",lstr(lp->DEPART)
+                              wait
+                            endif*/
+                          endif
                         endif
                       next j3
                     endif

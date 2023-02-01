@@ -1,1 +1,2 @@
-hbmk2 dict_sql.hbp -b
+hbmk2.exe dict_sql.hbp -b -comp=mingw
+copy dict_sql.exe ..\
