@@ -191,7 +191,7 @@ Function work_SprUnit(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+** 02.02.23
 Function work_MOServ(source, destination)
   Local _mo_moserv := {;
     {"CODEM",      "C",      6,      0},;
@@ -246,13 +246,15 @@ Function work_MOServ(source, destination)
                     if j2 > 1
                       out_error(TAG_PERIOD_ERROR, nfile, ms->codem, ms->shifr)
                     endif
-                    select MS
-                    append blank
-                    ms->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
-                    ms->mcode   := mo_read_xml_stroke(oXmlNode,"MCOD",)
-                    ms->shifr   := mo_read_xml_stroke(oNode2,"CODE",)
-                    ms->DATEBEG := xml2date(mo_read_xml_stroke(oNode4,"D_B",))
-                    ms->DATEEND := xml2date(mo_read_xml_stroke(oNode4,"D_E",))
+                    if (str(year(xml2date(mo_read_xml_stroke(oNode4, 'D_E', ))), 4) >= CURENT_YEAR) .or. empty(str(year(xml2date(mo_read_xml_stroke(oNode4, 'D_E', ))), 4))
+                      select MS
+                      append blank
+                      ms->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
+                      ms->mcode   := mo_read_xml_stroke(oXmlNode,"MCOD",)
+                      ms->shifr   := mo_read_xml_stroke(oNode2,"CODE",)
+                      ms->DATEBEG := xml2date(mo_read_xml_stroke(oNode4,"D_B",))
+                      ms->DATEEND := xml2date(mo_read_xml_stroke(oNode4,"D_E",))
+                    endif
                   endif
                 next j2
               endif
@@ -1391,7 +1393,7 @@ Function work_uslc(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+** 02.02.23
 // S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
 Function work_SprSubDiv(source, destination)
 
@@ -1437,15 +1439,17 @@ Function work_SprSubDiv(source, destination)
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
             if "PLACE" == oNode2:title
-              select SD
-              append blank
-              sd->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
-              sd->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
-              sd->code    := val(mo_read_xml_stroke(oNode2,"CODE",))
-              sd->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
-              sd->flag    := val(mo_read_xml_stroke(oNode2,"FLAG",))
-              sd->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
-              sd->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
+              if (str(year(xml2date(mo_read_xml_stroke(oNode2,"D_E",))), 4) >= CURENT_YEAR) .or. empty(str(year(xml2date(mo_read_xml_stroke(oNode2,"D_E",))), 4))
+                select SD
+                append blank
+                sd->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
+                sd->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
+                sd->code    := val(mo_read_xml_stroke(oNode2,"CODE",))
+                sd->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
+                sd->flag    := val(mo_read_xml_stroke(oNode2,"FLAG",))
+                sd->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
+                sd->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
+              endif
             endif
           next j1
         endif
@@ -1456,7 +1460,7 @@ Function work_SprSubDiv(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+** 02.02.23
 Function work_SprDep(source, destination)
   Local _mo_dep := {;
     {"CODEM",      "C",      6,      0},;
@@ -1515,43 +1519,45 @@ Function work_SprDep(source, destination)
         if (oNode1 := oXmlNode:Find("DEPARTMENTS")) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "DEPARTMENT" == oNode2:title
-              select DEP
-              append blank
-              dep->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
-              dep->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
-              dep->code    := val(mo_read_xml_stroke(oNode2,"CODE",))
-              dep->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
-              dep->NAME_SHORT := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_SHORT",))))
-              dep->usl_ok  := val(mo_read_xml_stroke(oNode2,"USL_OK",))
-              dep->vmp     := val(mo_read_xml_stroke(oNode2,"VMP",))
-              dep->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
-              dep->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
-              if (oNode3 := oNode2:Find("PLACES")) != NIL
-                for j2 := 1 TO Len( oNode3:aItems )
-                  oNode4 := oNode3:aItems[j2]
-                  if "PLACE" == oNode4:title .and. !empty(oNode4:aItems) .and. valtype(oNode4:aItems[1])=="C"
-                    if j2 > 1
-                      out_error(TAG_PLACE_ERROR, nfile, dep->NAME)
+            if (str(year(xml2date(mo_read_xml_stroke(oNode2,"D_E",))), 4) >= CURENT_YEAR) .or. empty(str(year(xml2date(mo_read_xml_stroke(oNode2,"D_E",))), 4))
+              if "DEPARTMENT" == oNode2:title
+                select DEP
+                append blank
+                dep->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
+                dep->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
+                dep->code    := val(mo_read_xml_stroke(oNode2,"CODE",))
+                dep->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
+                dep->NAME_SHORT := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_SHORT",))))
+                dep->usl_ok  := val(mo_read_xml_stroke(oNode2,"USL_OK",))
+                dep->vmp     := val(mo_read_xml_stroke(oNode2,"VMP",))
+                dep->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
+                dep->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
+                if (oNode3 := oNode2:Find("PLACES")) != NIL
+                  for j2 := 1 TO Len( oNode3:aItems )
+                    oNode4 := oNode3:aItems[j2]
+                    if "PLACE" == oNode4:title .and. !empty(oNode4:aItems) .and. valtype(oNode4:aItems[1])=="C"
+                      if j2 > 1
+                        out_error(TAG_PLACE_ERROR, nfile, dep->NAME)
+                      endif
+                      dep->place := int(val(hb_AnsiToOem(alltrim(oNode4:aItems[1]))))
                     endif
-                    dep->place := int(val(hb_AnsiToOem(alltrim(oNode4:aItems[1]))))
-                  endif
-                next j2
-              endif
-              if (oNode3 := oNode2:Find("PROFILS")) != NIL
-                for j2 := 1 TO Len( oNode3:aItems )
-                  oNode4 := oNode3:aItems[j2]
-                  if "PROFIL" == oNode4:title
-                    select DP
-                    append blank
-                    dp->codem    := dep->codem
-                    dp->mcode    := dep->mcode
-                    dp->code     := dep->code
-                    dp->place    := dep->place
-                    dp->PR_BERTH := val(mo_read_xml_stroke(oNode4,"PR_BERTH",))
-                    dp->PR_MP    := val(mo_read_xml_stroke(oNode4,"PR_MP",))
-                  endif
-                next j2
+                  next j2
+                endif
+                if (oNode3 := oNode2:Find("PROFILS")) != NIL
+                  for j2 := 1 TO Len( oNode3:aItems )
+                    oNode4 := oNode3:aItems[j2]
+                    if "PROFIL" == oNode4:title
+                      select DP
+                      append blank
+                      dp->codem    := dep->codem
+                      dp->mcode    := dep->mcode
+                      dp->code     := dep->code
+                      dp->place    := dep->place
+                      dp->PR_BERTH := val(mo_read_xml_stroke(oNode4,"PR_BERTH",))
+                      dp->PR_MP    := val(mo_read_xml_stroke(oNode4,"PR_MP",))
+                    endif
+                  next j2
+                endif
               endif
             endif
           next j1
