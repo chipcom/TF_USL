@@ -461,7 +461,7 @@ Function work_mo_uslf(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+** 04.02.23
 Function work_t006(source, destination)
   Local oXmlDoc, oXmlNode, i, s, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
@@ -628,7 +628,7 @@ Function work_t006(source, destination)
 
               // для реабилитации после COVID-19            
               lshifr := lower(alltrim(t6->SHIFR))
-              lsy     := mo_read_xml_stroke(oNode2,"SY",)
+              lsy     := mo_read_xml_stroke(oNode2, 'SY',)
               if (lshifr = 'st37.021' .or. lshifr = 'st37.022' .or. lshifr = 'st37.023' ) .and. empty(lDS) .and. empty(lsy)
                 d6->DS  := lDS  := 'U09.9'
               endif
@@ -647,6 +647,24 @@ Function work_t006(source, destination)
 
               if lshifr = 'st32.019' .and. empty(lDS) .and. ! empty(lsy)
                 d6->DS  := lDS  := 'Z92.4'
+              endif
+
+              if (lshifr = 'st36.028' .or. lshifr = 'st36.029' .or. lshifr = 'st36.030' .or. lshifr = 'st36.031' .or. ;
+                  lshifr = 'st36.032' .or. lshifr = 'st36.033' .or. lshifr = 'st36.034' .or. lshifr = 'st36.035' .or. ;
+                  lshifr = 'st36.036' .or. lshifr = 'st36.037' .or. lshifr = 'st36.038' .or. lshifr = 'st36.039' .or. ;
+                  lshifr = 'st36.040' .or. lshifr = 'st36.041' .or. lshifr = 'st36.042' .or. lshifr = 'st36.043' .or. ;
+                  lshifr = 'st36.044' .or. lshifr = 'st36.045' .or. lshifr = 'st36.046' .or. lshifr = 'st36.047') ;
+                  .and. empty(lDS) .and. empty(lsy)
+                d6->DS  := lDS  := 'Z92.2'
+              endif
+
+              if (lshifr = 'ds36.015' .or. lshifr = 'ds36.016' .or. lshifr = 'ds36.017' .or. lshifr = 'ds36.018' .or. ;
+                  lshifr = 'ds36.019' .or. lshifr = 'ds36.020' .or. lshifr = 'ds36.021' .or. lshifr = 'ds36.022' .or. ;
+                  lshifr = 'ds36.023' .or. lshifr = 'ds36.024' .or. lshifr = 'ds36.025' .or. lshifr = 'ds36.026' .or. ;
+                  lshifr = 'ds36.027' .or. lshifr = 'ds36.028' .or. lshifr = 'ds36.029' .or. lshifr = 'ds36.030' .or. ;
+                  lshifr = 'ds36.031' .or. lshifr = 'ds36.032' .or. lshifr = 'ds36.033' .or. lshifr = 'ds36.034') ;
+                  .and. empty(lDS) .and. empty(lsy)
+                d6->DS  := lDS  := 'Z92.2'
               endif
 
               d6->AGE  := mo_read_xml_stroke(oNode2,"AGE",)
