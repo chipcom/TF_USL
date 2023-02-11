@@ -123,22 +123,22 @@ Function make_T001(source, destination)
   (dbName)->(dbCloseArea())
   return NIL
 
-***** 01.11.21
+** 11.02.22
 Function work_SprUnit(source, destination)
   Local _mo_unit := {;
-    {"CODE",       "N",      3,      0},;
-    {"pz",         "N",      2,      0},;
-    {"ii",         "N",      2,      0},;
-    {"c_t",        "N",      1,      0},;
-    {"NAME",       "C",     60,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+    {'CODE',       'N',      3,      0},;
+    {'pz',         'N',      3,      0},;
+    {'ii',         'N',      3,      0},;
+    {'c_t',        'N',      1,      0},;
+    {'NAME',       'C',     60,      0},;
+    {'DATEBEG',    'D',      8,      0},;
+    {'DATEEND',    'D',      8,      0};
   }
 
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'unit'
 
-  nameRef := "SprUnit.xml"
+  nameRef := 'SprUnit.xml'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -153,7 +153,7 @@ Function work_SprUnit(source, destination)
   use (destination + nameFile) new alias UN
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - справочник видов помощи /план-заказ" + hb_eol() )
+  OutStd( nameRef + ' - справочник видов помощи /план-заказ' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -163,24 +163,24 @@ Function work_SprUnit(source, destination)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZGLV" == oXmlNode:title
-        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
+      if 'ZGLV' == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode, 'YEAR_REPORT',)) == CURENT_YEAR)
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
-      elseif "ZAP" == oXmlNode:title
+      elseif 'ZAP' == oXmlNode:title
         out_obrabotka_count(j, k)
         select UN
         append blank
-        un->code := val(mo_read_xml_stroke(oXmlNode,"CODE",))
-        un->NAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
-        un->c_t  := val(mo_read_xml_stroke(oXmlNode,"C_T",))
-        if (oNode1 := oXmlNode:Find("PERIODS")) != NIL
+        un->code := val(mo_read_xml_stroke(oXmlNode, 'CODE',))
+        un->NAME := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oXmlNode, 'NAME',))))
+        un->c_t  := val(mo_read_xml_stroke(oXmlNode, 'C_T',))
+        if (oNode1 := oXmlNode:Find('PERIODS')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "PERIOD" == oNode2:title
-              un->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"DATEBEG",))
-              un->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"DATEEND",))
+            if 'PERIOD' == oNode2:title
+              un->DATEBEG := xml2date(mo_read_xml_stroke(oNode2, 'DATEBEG',))
+              un->DATEEND := xml2date(mo_read_xml_stroke(oNode2, 'DATEEND',))
             endif
           next j1
         endif
