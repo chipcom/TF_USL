@@ -26,5 +26,6 @@ v0xx_sql.prg
 f0xx_sql.prg
 o0xx_sql.prg
 n0xx_sql.prg
+other_sql.prg
 
 dict_sql.rc
