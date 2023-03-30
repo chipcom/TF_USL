@@ -3,6 +3,13 @@
 
 #require 'hbsqlit3'
 
+// 30.03.23
+function make_other(db, source)
+
+  dlo_lgota(db, source)
+  err_csv_prik(db, source)
+  return nil
+
 // 28.03.23
 function dlo_lgota(db, source)
   // Классификатор кодов льгот по ДЛО

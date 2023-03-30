@@ -122,8 +122,7 @@ procedure main( ... )
     make_F0xx(db, source)
     make_V0xx(db, source)
     make_mzdrav(db, source)
-    dlo_lgota(db, source)
-    err_csv_prik(db, source)
+    make_other(db, source)
 
     // if lAll // конвертировать все файлы
       // make_mzdrav(db, source)
@@ -131,8 +130,7 @@ procedure main( ... )
       // make_V0xx(db, source)
       // make_F0xx(db, source)
       // make_N0xx(db, source)
-      // dlo_lgota(db, source)
-      // err_csv_prik(db, source)
+      // make_other(db, source)
     // endif
 
     // if lUpdate // конвертировать только файлы из каталога
