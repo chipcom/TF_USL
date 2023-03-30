@@ -20,7 +20,6 @@ error_func.prg
 dict_sql.prg
 dict_func.prg
 mzdrav_sql.prg
-isderr.prg
 q0xx_sql.prg
 v0xx_sql.prg
 f0xx_sql.prg
