@@ -3,7 +3,7 @@
 
 #require 'hbsqlit3'
 
-// 30.03.23
+// 31.03.23
 function make_other(db, source)
 
   make_ISDErr(db, source)
@@ -367,7 +367,7 @@ function rekv_smo(db, source)
     } ;
   }
 
-  cmdText := 'CREATE TABLE rekv_smo(kod TEXT, name TEXT, inn TEXT, kpp TEXT, ogrn TEXT, addres TEXT)'
+  cmdText := 'CREATE TABLE rekv_smo(kod TEXT(5), name TEXT, inn TEXT(10), kpp TEXT(9), ogrn TEXT(13), addres TEXT)'
 
   OutStd(hb_eol() + 'Страховые компании' + hb_eol())
 
