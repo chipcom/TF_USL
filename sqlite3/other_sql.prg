@@ -9,6 +9,7 @@ function make_other(db, source)
   make_ISDErr(db, source)
   dlo_lgota(db, source)
   err_csv_prik(db, source)
+  rekv_smo(db, source)
   return nil
 
 // 28.03.23
@@ -282,4 +283,129 @@ function make_ISDErr(db, source)
   endif
 
   out_obrabotka_eol()
+  return nil
+
+// 31.03.23
+function rekv_smo(db, source)
+  local stmt
+  local cmdText
+  local k
+  local arr
+  local  mKod, mName, mINN, mKPP, mOGRN, mAddres
+
+  // 1-код,2-имя,3-ИНН,4-КПП,5-ОГРН,6-адрес,7-банк,8-р.счет,9-БИК
+  arr := { ;
+    {'34001', ;
+     'ФИЛИАЛ ЗАКРЫТОГО АКЦИОНЕРНОГО ОБЩЕСТВА "КАПИТАЛ МЕДИЦИНСКОЕ СТРАХОВАНИЕ" В ГОРОДЕ ВОЛГОГРАДЕ', ;
+      '7709028619', ;
+      '344343001', ;
+      '1028601441274', ;
+      '400075 Волгоградская обл., г.Волгоград, ул.Историческая, д.122', ;
+      '', ;
+      '', ;
+      '' ;
+    }, ;
+    {'34002', ;
+      'ВОЛГОГРАДСКИЙ ФИЛИАЛ АКЦИОНЕРНОГО ОБЩЕСТВА "СТРАХОВАЯ КОМПАНИЯ "СОГАЗ - МЕД"', ;
+      '7728170427', ;
+      '344343001', ;
+      '1027739008440', ;
+      '400105 Волгоградская обл., г.Волгоград, ул.Штеменко, д.5', ;
+      '', ;
+      '', ;
+      '' ;
+    }, ;
+    {'34003', ;
+      'АКЦИОНЕРНОЕ ОБЩЕСТВО ВТБ МЕДИЦИНСКОЕ СТРАХОВАНИЕ', ;
+      '7704103750', ;
+      '774401001', ;
+      '1027739815245', ;
+      '400005 Волгоградская обл., г.Волгоград, ул.Мира, д.19', ;
+      '', ;
+      '', ;
+      '' ;
+    }, ;
+    {'34004', ;
+      'ВОЛГОГРАДСКИЙ ФИЛИАЛ ОБЩЕСТВА С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "СТРАХОВАЯ КОМПАНИЯ ВСК МИЛОСЕРДИЕ"', ;
+      '7730519137', ;
+      '775001001', ;
+      '1057746135325', ;
+      '400131 Волгоградская обл., г.Волгоград, ул.Коммунистическая, д.32', ;
+      '', ;
+      '', ;
+      '' ;
+    }, ;
+    {'34006', ;
+      'ФИЛИАЛ ОБЩЕСТВА С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "МЕДИЦИНСКАЯ СТРАХОВАЯ КОМПАНИЯ "МАКСИМУС" В Г.ВОЛГОГРАДЕ', ;
+      '6161056686', ;
+      '344445001', ;
+      '1106193000022', ;
+      '400074 Волгоградская обл., г.Волгоград, ул.Ковровская, д.24', ;
+      '', ;
+      '', ;
+      '' ;
+    }, ;
+    {'34007', ;
+      'ФИЛИАЛ ОБЩЕСТВА С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "КАПИТАЛ МЕДИЦИНСКОЕ СТРАХОВАНИЕ" В ВОЛГОГРАДСКОЙ ОБЛАСТИ', ;
+      '7813171100', ;
+      '344303001', ;
+      '1027806865481', ;
+      '400074 Волгоградская обл., г.Волгоград, ул.Рабоче-Крестьянская, д.30А', ;
+      '', ;
+      '', ;
+      '' ;
+    }, ;
+    {'34   ', ;
+      'ГОСУДАРСТВЕННОЕ УЧРЕЖДЕНИЕ "ТЕРРИТОРИАЛЬНЫЙ ФОНД ОБЯЗАТЕЛЬНОГО МЕДИЦИНСКОГО СТРАХОВАНИЯ ВОЛГОГРАДСКОЙ ОБЛАСТИ"', ;
+      '          ', ;
+      '         ', ;
+      '1023403856123', ;
+      '400005 г.Волгоград, проспект Ленина, 56а', ;
+      '', ;
+      '', ;
+      '' ;
+    } ;
+  }
+
+  cmdText := 'CREATE TABLE rekv_smo(kod TEXT, name TEXT, inn TEXT, kpp TEXT, ogrn TEXT, addres TEXT)'
+
+  OutStd(hb_eol() + 'Страховые компании' + hb_eol())
+
+  if sqlite3_exec(db, 'DROP TABLE if EXISTS rekv_smo') == SQLITE_OK
+    OutStd('DROP TABLE rekv_smo - Ok' + hb_eol())
+  endif
+
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd('CREATE TABLE rekv_smo - Ok' + hb_eol() )
+  else
+    OutStd('CREATE TABLE rekv_smo - False' + hb_eol() )
+    return nil
+  endif
+
+  cmdText := 'INSERT INTO rekv_smo (kod, name, inn, kpp, ogrn, addres) VALUES( :kod, :name, :inn, :kpp, :ogrn, :addres )'
+  for k := 1 to len(arr)
+    stmt := sqlite3_prepare(db, cmdText)
+    mKod := arr[k, 1]
+    mName := arr[k, 2]
+    mINN := arr[k, 3]
+    mKPP := arr[k, 4]
+    mOGRN := arr[k, 5]
+    mAddres := arr[k, 6]
+    if sqlite3_bind_text(stmt, 1, mKod) == SQLITE_OK .AND. ;
+      sqlite3_bind_text(stmt, 2, mName) == SQLITE_OK .AND. ;
+      sqlite3_bind_text(stmt, 3, mINN) == SQLITE_OK .AND. ;
+      sqlite3_bind_text(stmt, 4, mKPP) == SQLITE_OK .AND. ;
+      sqlite3_bind_text(stmt, 5, mOGRN) == SQLITE_OK .AND. ;
+      sqlite3_bind_text(stmt, 6, mAddres) == SQLITE_OK
+      if sqlite3_step(stmt) != SQLITE_DONE
+        out_error('Ошибка к = ', k)
+      endif
+    endif
+    sqlite3_reset(stmt)
+  next
+  sqlite3_clear_bindings(stmt)
+  sqlite3_finalize(stmt)
+
+  out_obrabotka_eol()
+
   return nil
