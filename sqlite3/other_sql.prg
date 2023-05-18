@@ -89,6 +89,7 @@ function make_t005(db, source)
   endif
 
   cmdText := 'INSERT INTO t005 (code, error, opis, datebeg, dateend) VALUES(:code, :error, :opis, :datebeg, :dateend)'
+  stmt := sqlite3_prepare(db, cmdText)
 
   for each row in mArr
     if sqlite3_bind_int(stmt, 1, row[1]) == SQLITE_OK .AND. ;
