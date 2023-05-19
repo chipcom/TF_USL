@@ -13,7 +13,7 @@ function make_other(db, source)
   // rekv_smo(db, source)
   return nil
 
-// 18.05.23
+// 19.05.23
 function make_t005(db, source)
   // CODE,     "N",    4,      0
   // ERROR,  "C",  91,      0
@@ -21,12 +21,10 @@ function make_t005(db, source)
   // DATEBEG, "D",    8,      0
   // DATEEND, "D",    8,      0
 
-  local mArr := {}
-  local stmt, stmtTMP
-  local cmdText, cmdTextTMP
-  local k, j
+  local stmt
+  local cmdText
+  local j
   local nfile, nameRef
-  local row
   local mCode, mError, mOpis, d1, d2, d1_1, d2_1
   local dbSource := 't005'
 
@@ -44,39 +42,6 @@ function make_t005(db, source)
 
   OutStd(hb_eol() + 'Классификатор кодов ошибок T005' + hb_eol())
 
-  dbUseArea( .t., , nfile, dbSource, .t., .f. )
-  j := 0
-  do while !(dbSource)->(EOF())
-    j++
-    mCode := (dbSource)->CODE
-    mError := hb_strToUTF8((dbSource)->ERROR, 'RU866')
-    mOpis := hb_strToUTF8((dbSource)->OPIS, 'RU866')
-    Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-    d1_1 := (dbSource)->DATEBEG
-    d2_1 := (dbSource)->DATEEND
-    Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-    d1 := hb_ValToStr(d1_1)
-    d2 := hb_ValToStr(d2_1)
-
-    aadd(mArr, {mCode, mError, mOpis, d1, d2} )
-    // if sqlite3_bind_int(stmt, 1, mCode) == SQLITE_OK .AND. ;
-    //   sqlite3_bind_text(stmt, 2, mError) == SQLITE_OK .AND. ;
-    //   sqlite3_bind_text(stmt, 3, mOpis) == SQLITE_OK .AND. ;
-    //   sqlite3_bind_text(stmt, 4, d1) == SQLITE_OK .AND. ;
-    //   sqlite3_bind_text(stmt, 5, d2) == SQLITE_OK
-    //   if sqlite3_step(stmt) != SQLITE_DONE
-    //     out_error(TAG_ROW_INVALID, nfile, j)
-    //   endif
-    // endif
-    // sqlite3_reset(stmt)
-    // OutStd(str(j) + hb_eol() )
-
-    (dbSource)->(dbSkip())
-  end do
-
-  (dbSource)->(dbCloseArea())
-  // OutStd(len(mArr) + hb_eol() )
-  // altd()
   if sqlite3_exec(db, 'DROP TABLE if EXISTS t005') == SQLITE_OK
     OutStd('DROP TABLE t005 - Ok' + hb_eol())
   endif
@@ -91,20 +56,38 @@ function make_t005(db, source)
   cmdText := 'INSERT INTO t005 (code, error, opis, datebeg, dateend) VALUES(:code, :error, :opis, :datebeg, :dateend)'
   stmt := sqlite3_prepare(db, cmdText)
 
-  for each row in mArr
-    if sqlite3_bind_int(stmt, 1, row[1]) == SQLITE_OK .AND. ;
-      sqlite3_bind_text(stmt, 2, row[2]) == SQLITE_OK .AND. ;
-      sqlite3_bind_text(stmt, 3, row[3]) == SQLITE_OK .AND. ;
-      sqlite3_bind_text(stmt, 4, row[4]) == SQLITE_OK .AND. ;
-      sqlite3_bind_text(stmt, 5, row[5]) == SQLITE_OK
+  dbUseArea(.t., , nfile, dbSource, .t., .f.)
+  j := 0
+  do while !(dbSource)->(EOF())
+    j++
+    mCode := (dbSource)->CODE
+    mError := hb_strToUTF8((dbSource)->ERROR, 'RU866')
+    mOpis := hb_strToUTF8((dbSource)->OPIS, 'RU866')
+    Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+    d1_1 := (dbSource)->DATEBEG
+    d2_1 := (dbSource)->DATEEND
+    Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+    d1 := hb_ValToStr(d1_1)
+    d2 := hb_ValToStr(d2_1)
+
+    if sqlite3_bind_int(stmt, 1, mCode) == SQLITE_OK .AND. ;
+      sqlite3_bind_text(stmt, 2, mError) == SQLITE_OK .AND. ;
+      sqlite3_bind_text(stmt, 3, mOpis) == SQLITE_OK .AND. ;
+      sqlite3_bind_text(stmt, 4, d1) == SQLITE_OK .AND. ;
+      sqlite3_bind_text(stmt, 5, d2) == SQLITE_OK
       if sqlite3_step(stmt) != SQLITE_DONE
-        out_error(TAG_ROW_INVALID, nfile, row[1])
+        out_error(TAG_ROW_INVALID, nfile, j)
       endif
     endif
-    OutStd(row[1] + hb_eol() )
     sqlite3_reset(stmt)
-  next
 
+    (dbSource)->(dbSkip())
+  end do
+
+  (dbSource)->(dbCloseArea())
+
+  sqlite3_clear_bindings(stmt)
+  sqlite3_finalize(stmt)
   out_obrabotka_eol()
   return nil
 
@@ -113,8 +96,8 @@ function dlo_lgota(db, source)
   // Классификатор кодов льгот по ДЛО
   //  1 - NAME(C)  2 - KOD(C)
 
-  local stmt, stmtTMP
-  local cmdText, cmdTextTMP
+  local stmt
+  local cmdText
   local k, j
   local oXmlDoc, oXmlNode, oNode1, oNode2
   local mKod, mName
@@ -206,8 +189,8 @@ function err_csv_prik(db, source)
   // Классификатор кодов льгот по ДЛО
   //  1 - NAME(C)  2 - KOD(C)
 
-  local stmt, stmtTMP
-  local cmdText, cmdTextTMP
+  local stmt
+  local cmdText
   local k, j
   local oXmlDoc, oXmlNode, oNode1, oNode2
   local mKod, mName
@@ -309,8 +292,8 @@ function err_csv_prik(db, source)
 
 ** 26.12.22
 function make_ISDErr(db, source)
-  local stmt, stmtTMP
-  local cmdText, cmdTextTMP
+  local stmt
+  local cmdText
   local k, j
   local nfile, nameRef
   local oXmlDoc, oXmlNode, oNode1
