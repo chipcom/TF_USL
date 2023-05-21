@@ -21,5 +21,6 @@ dict_MZDRV.prg
 dict_FFOMS.prg
 dict_TFOMS.prg
 dict_nXX.prg
+dict_dbf_func.prg
 
 create_dict.rc

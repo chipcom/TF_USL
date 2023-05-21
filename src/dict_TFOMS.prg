@@ -1,17 +1,18 @@
 /// Справочники ФФОМС
-#include "dict_error.ch"
+#include 'dict_error.ch'
 
 #include 'edit_spr.ch'
 #include 'function.ch'
 #include 'settings.ch'
+#include 'common.ch'
 
-***** 15.02.22
+// 15.02.22
 Function work_Shema(source, destination)
-  Local _mo_shema := {;
-    {"KOD",        "C",     10,      0},;
-    {"NAME",       "C",    255,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+  Local _mo_shema := { ;
+    {"KOD",        "C",     10,      0}, ;
+    {"NAME",       "C",    255,      0}, ;
+    {"DATEBEG",    "D",      8,      0}, ;
+    {"DATEEND",    "D",      8,      0} ;
   }
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'shema'
@@ -76,20 +77,20 @@ Function work_Shema(source, destination)
   close databases
   return NIL
 
-***** 15.02.22
+// 15.02.22
 Function make_T001(source, destination)
 
-  local _mo_T001 := {;
-    { 'MCOD',       'C',    6,      0 },;
-    { 'CODEM',      'C',    6,      0 },;
-    { 'NAMEF',      'M',    10,     0 },;
-    { 'NAMES',      'C',    80,     0 },;
-    { 'ADRES',      'M',    10,     0 },;
-    { 'MAIN',       'C',    1,      0 },;
-    { 'PFA',        'C',    1,      0 },;
-    { 'PFS',        'C',    1,      0 },;
-    { 'DATEBEG',    'D',    8,      0 },;
-    { 'DATEEND',    'D',    8,      0 };
+  local _mo_T001 := { ;
+    { 'MCOD',       'C',    6,      0 }, ;
+    { 'CODEM',      'C',    6,      0 }, ;
+    { 'NAMEF',      'M',    10,     0 }, ;
+    { 'NAMES',      'C',    80,     0 }, ;
+    { 'ADRES',      'M',    10,     0 }, ;
+    { 'MAIN',       'C',    1,      0 }, ;
+    { 'PFA',        'C',    1,      0 }, ;
+    { 'PFS',        'C',    1,      0 }, ;
+    { 'DATEBEG',    'D',    8,      0 }, ;
+    { 'DATEEND',    'D',    8,      0 } ;
   }
   local dbName := '_mo_t001'
   local dbSource := 'T001'
@@ -123,16 +124,16 @@ Function make_T001(source, destination)
   (dbName)->(dbCloseArea())
   return NIL
 
-** 11.02.22
+// 11.02.22
 Function work_SprUnit(source, destination)
-  Local _mo_unit := {;
-    {'CODE',       'N',      3,      0},;
-    {'pz',         'N',      3,      0},;
-    {'ii',         'N',      3,      0},;
-    {'c_t',        'N',      1,      0},;
-    {'NAME',       'C',     60,      0},;
-    {'DATEBEG',    'D',      8,      0},;
-    {'DATEEND',    'D',      8,      0};
+  Local _mo_unit := { ;
+    {'CODE',       'N',      3,      0}, ;
+    {'pz',         'N',      3,      0}, ;
+    {'ii',         'N',      3,      0}, ;
+    {'c_t',        'N',      1,      0}, ;
+    {'NAME',       'C',     60,      0}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
 
   local nfile, nameRef, j, k
@@ -191,14 +192,14 @@ Function work_SprUnit(source, destination)
   close databases
   return NIL
 
-** 02.02.23
+// 02.02.23
 Function work_MOServ(source, destination)
-  Local _mo_moserv := {;
-    {"CODEM",      "C",      6,      0},;
-    {"MCODE",      "C",      6,      0},;
-    {"SHIFR",      "C",     10,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+  Local _mo_moserv := { ;
+    {"CODEM",      "C",      6,      0}, ;
+    {"MCODE",      "C",      6,      0}, ;
+    {"SHIFR",      "C",     10,      0}, ;
+    {"DATEBEG",    "D",      8,      0}, ;
+    {"DATEEND",    "D",      8,      0} ;
   }
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'moserv'
@@ -268,15 +269,15 @@ Function work_MOServ(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_Prices(source, destination)
-  Local _mo_prices := {;
-    {"SHIFR",      "C",     10,      0},;
-    {"VZROS_REB",  "N",      1,      0},;
-    {"LEVEL",      "C",      5,      0},;
-    {"CENA",       "N",     10,      2},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+  Local _mo_prices := { ;
+    {"SHIFR",      "C",     10,      0}, ;
+    {"VZROS_REB",  "N",      1,      0}, ;
+    {"LEVEL",      "C",      5,      0}, ;
+    {"CENA",       "N",     10,      2}, ;
+    {"DATEBEG",    "D",      8,      0}, ;
+    {"DATEEND",    "D",      8,      0} ;
   }
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'prices'
@@ -359,83 +360,90 @@ Function work_Prices(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 19.05.23
 Function work_mo_uslf(source, destination)
-  Local _mo_uslf := {;
-    {"SHIFR",      "C",     20,      0},;
-    {"NAME",       "C",    255,      0},;
-    {"TIP",        "N",      1,      0},; // 1-есть ещё в стоматологии,2-только в стоматологии
-    {"GRP",        "N",      1,      0},; // код группы стоматологических услуг
-    {"TELEMED",    "N",      1,      0},; // 1-услуга телемедицины
-    {"ONKO_NAPR",  "N",      1,      0},; // тип диагн.услуги для дообследования в направлении ЗНО
-    {"ONKO_KSG",   "N",      1,      0},; // тип лечения ОНКО - привязка к КСГ
-    {"UETV",       "N",      5,      2},;
-    {"UETD",       "N",      5,      2},;
-    {"ZF",         "N",      1,      0},; // 1-обязателен ввод зубной формулы
-    {"PAR_ORG",    "C",     40,      0},; // операция на парных органах (список)
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+  Local _mo_uslf := { ;
+    {'SHIFR',      'C',     20,      0}, ;
+    {'NAME',       'C',    255,      0}, ;
+    {'TIP',        'N',      1,      0}, ; // 1-есть ещё в стоматологии,2-только в стоматологии
+    {'GRP',        'N',      1,      0}, ; // код группы стоматологических услуг
+    {'TELEMED',    'N',      1,      0}, ; // 1-услуга телемедицины
+    {'ONKO_NAPR',  'N',      1,      0}, ; // тип диагн.услуги для дообследования в направлении ЗНО
+    {'ONKO_KSG',   'N',      1,      0}, ; // тип лечения ОНКО - привязка к КСГ
+    {'UETV',       'N',      5,      2}, ;
+    {'UETD',       'N',      5,      2}, ;
+    {'ZF',         'N',      1,      0}, ; // 1-обязателен ввод зубной формулы
+    {'PAR_ORG',    'C',     40,      0}, ; // операция на парных органах (список)
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
   local nameFileUslF := prefixFileName() + 'uslf'
   Local i := 0
   local j, k
+  local napr, o_ksg
 
-  dbcreate(destination + nameFileUslF,_mo_uslf)
+  dbcreate(destination + nameFileUslF, _mo_uslf)
   use (destination + nameFileUslF) new alias LUSL
 
   index on shifr to tmp_usl
-  use (source + 'onko_napr') new alias ON
-  index on kod to tmp_on
-  use (source + 'onko_ksg') new alias OK
-  index on kod to tmp_ok
-  use (source + 'telemed') new alias TEL
-  index on kod to tmp_tel
+  // use (source + 'onko_napr') new alias ON
+  // index on kod to tmp_on
+  // use (source + 'onko_ksg') new alias OK
+  // index on kod to tmp_ok
+  // use (source + 'telemed') new alias TEL
+  // index on kod to tmp_tel
   use (source + 'par_org') new alias PO
   index on kod to tmp_po
   use (source + 'v001') new
   // use _usl_mz new alias v001
   index on IDRB to tmp1
-  // @ row(),0 say "Обработка файла V001.DBF - "
-  // @ row(),0 say "Обработка файла _usl_mz.dbf - "
-  out_obrabotka('_usl_mz.dbf')
+  out_obrabotka('_usl_mz.dbf (v001.dbf)')
   go top
   do while !eof()
-    // @ row(),30 say str(++i/lastrec()*100, 6, 2) + "%"
     out_obrabotka_count(++i, lastrec())
-    // if !empty(v001->DATEEND) .and. year(v001->DATEEND) < 2022 // 2021
-    if !empty(v001->DATEEND) .and. year(v001->DATEEND) < val(CURENT_YEAR) // 2022 // 2021
+    if !empty(v001->DATEEND) .and. year(v001->DATEEND) < val(CURENT_YEAR)
       //
     else
       select LUSL
-      find (padr(v001->IDRB,20))
+      find (padr(v001->IDRB, 20))
       if found()
       else
         append blank
         lusl->SHIFR   := v001->IDRB
-        lusl->NAME    := ltrim(charrem(eos,charone(" ",v001->RBNAME)))
+        lusl->NAME    := ltrim(charrem(eos,charone(' ', v001->RBNAME)))
         lusl->DATEBEG := v001->DATEBEG
         lusl->DATEEND := v001->DATEEND
-        select TEL
-        find (left(lusl->SHIFR,15))
-        if found()
+        // select TEL
+        // find (left(lusl->SHIFR,15))
+        // if found()
+        if is_usluga_telemed(lusl->SHIFR)
           lusl->telemed := 1
         endif
         select PO
-        find (left(lusl->SHIFR,15))
+        find (left(lusl->SHIFR, 15))
         if found()
           lusl->par_org := po->organ
         endif
-        select ON
-        find (left(lusl->SHIFR,15))
-        if found()
-          lusl->onko_napr := on->id_tlech
+        // select ON
+        // find (left(lusl->SHIFR, 15))
+        // if found()
+        //   lusl->onko_napr := on->id_tlech
+        // endif
+        napr := ret_onko_napr(lusl->SHIFR)
+        if ! napr == 0
+          lusl->onko_napr := napr   // ret_onko_napr(lusl->SHIFR)
         endif
-        select OK
-        find (left(lusl->SHIFR,15))
-        if found()
-          lusl->onko_ksg := iif(empty(ok->id_tlech), 6, ok->id_tlech)
+        
+        // select OK
+        // find (left(lusl->SHIFR, 15))
+        // if found()
+        //   lusl->onko_ksg := iif(empty(ok->id_tlech), 6, ok->id_tlech)
+        // endif
+        o_ksg := ret_onko_ksg(lusl->SHIFR)
+        if ! isnil(o_ksg)
+          lusl->onko_ksg := iif(empty(o_ksg), 6, o_ksg)
         endif
-        if empty(lusl->onko_ksg) .and. left(lusl->SHIFR,4) == "A16."
+        if empty(lusl->onko_ksg) .and. left(lusl->SHIFR, 4) == 'A16.'
           lusl->onko_ksg := 1 // хирургическое лечение
         endif
       endif
@@ -447,11 +455,11 @@ Function work_mo_uslf(source, destination)
   go top
   do while !eof()
     select LUSL
-    find (padr(po->kod,20))
+    find (padr(po->kod, 20))
     if !found()
     endif
     select V001
-    find (padr(po->kod,15))
+    find (padr(po->kod, 15))
     if !found()
     endif
     select PO
@@ -461,33 +469,33 @@ Function work_mo_uslf(source, destination)
   close databases
   return NIL
 
-** 04.02.23
+// 04.02.23
 Function work_t006(source, destination)
   Local oXmlDoc, oXmlNode, i, s, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
   Local lshifr, lsy
 
-  Local _mo_usl := {;
-    {"SHIFR",      "C",     10,      0},;
-    {"NAME",       "C",    255,      0},;
-    {"ST",         "N",      1,      0},;
-    {"USL_OK",     "N",      1,      0},;
-    {"USL_OKS",    "C",      4,      0},;
-    {"UNIT_CODE",  "N",      3,      0},; // ЮНИТ -план - заказ
-    {"UNITS",      "C",     16,      0},; // ЮНИТ -план - заказ
-    {"BUKVA",      "C",     10,      0},; // буква типа счета
-    {"VMP_F",      "C",      2,      0},;
-    {"VMP_S",      "C",      8,      0},;
-    {"IDSP",       "C",      2,      0},;
-    {"IDSPS",      "C",      8,      0},;
-    {"KSLP",       "N",      2,      0},;
-    {"KSLPS",      "C",     10,      0},;
-    {"KIRO",       "N",      2,      0},;
-    {"KIROS",      "C",     10,      0},;
-    {"UETV",       "N",      5,      2},; // УЕТ - сейчас не используются
-    {"UETD",       "N",      5,      2},; // УЕТ - сейчас не используются
-    {"DATEBEG",    "D",      8,      0},; // дата начала действия - по умолчанию т.г
-    {"DATEEND",    "D",      8,      0};  // дата конец действия - по умолчанию т.г
+  Local _mo_usl := { ;
+    {"SHIFR",      "C",     10,      0}, ;
+    {"NAME",       "C",    255,      0}, ;
+    {"ST",         "N",      1,      0}, ;
+    {"USL_OK",     "N",      1,      0}, ;
+    {"USL_OKS",    "C",      4,      0}, ;
+    {"UNIT_CODE",  "N",      3,      0}, ; // ЮНИТ -план - заказ
+    {"UNITS",      "C",     16,      0}, ; // ЮНИТ -план - заказ
+    {"BUKVA",      "C",     10,      0}, ; // буква типа счета
+    {"VMP_F",      "C",      2,      0}, ;
+    {"VMP_S",      "C",      8,      0}, ;
+    {"IDSP",       "C",      2,      0}, ;
+    {"IDSPS",      "C",      8,      0}, ;
+    {"KSLP",       "N",      2,      0}, ;
+    {"KSLPS",      "C",     10,      0}, ;
+    {"KIRO",       "N",      2,      0}, ;
+    {"KIROS",      "C",     10,      0}, ;
+    {"UETV",       "N",      5,      2}, ; // УЕТ - сейчас не используются
+    {"UETD",       "N",      5,      2}, ; // УЕТ - сейчас не используются
+    {"DATEBEG",    "D",      8,      0}, ; // дата начала действия - по умолчанию т.г
+    {"DATEEND",    "D",      8,      0} ;  // дата конец действия - по умолчанию т.г
   }
   // Static nfile    //:= source + "T006.XML"
   local nfile, nameRef, j, k
@@ -500,46 +508,46 @@ Function work_t006(source, destination)
   endif
 
   dbcreate(destination + "t006_u",_mo_usl)
-  dbcreate(destination + "t006_2",{;
-    {"SHIFR",      "C",     10,      0},;
-    {"kz",         "N",      7,      3},;
-    {"PROFIL",     "N",      2,      0},;
-    {"DS",         "C",      6,      0},;
-    {"DS1",        "M",     10,      0},;
-    {"DS2",        "M",     10,      0},;
-    {"SY",         "C",     20,      0},;
-    {"AGE",        "C",      1,      0},;
-    {"SEX",        "C",      1,      0},;
-    {"LOS",        "C",      2,      0},;
-    {"AD_CR",      "C",     20,      0},;
-    {"AD_CR1",     "C",     20,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0},;
-    {"NS",         "N",      6,      0};
+  dbcreate(destination + "t006_2", { ;
+    {"SHIFR",      "C",     10,      0}, ;
+    {"kz",         "N",      7,      3}, ;
+    {"PROFIL",     "N",      2,      0}, ;
+    {"DS",         "C",      6,      0}, ;
+    {"DS1",        "M",     10,      0}, ;
+    {"DS2",        "M",     10,      0}, ;
+    {"SY",         "C",     20,      0}, ;
+    {"AGE",        "C",      1,      0}, ;
+    {"SEX",        "C",      1,      0}, ;
+    {"LOS",        "C",      2,      0}, ;
+    {"AD_CR",      "C",     20,      0}, ;
+    {"AD_CR1",     "C",     20,      0}, ;
+    {"DATEBEG",    "D",      8,      0}, ;
+    {"DATEEND",    "D",      8,      0}, ;
+    {"NS",         "N",      6,      0} ;
   })
-  dbcreate(destination + "t006_d",{;
-    {"CODE",       "C",     10,      0},;
-    {"DS",         "C",     20,      0},;
-    {"DS1",        "C",     10,      0},;
-    {"DS2",        "C",     10,      0},;
-    {"SY",         "C",     20,      0},;
-    {"AGE",        "C",      1,      0},;
-    {"SEX",        "C",      1,      0},;
-    {"LOS",        "C",      2,      0},;
-    {"AD_CR",      "C",     20,      0},;
-    {"AD_CR1",     "C",     20,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0},;
-    {"NAME",       "C",    255,      0};
+  dbcreate(destination + "t006_d", { ;
+    {"CODE",       "C",     10,      0}, ;
+    {"DS",         "C",     20,      0}, ;
+    {"DS1",        "C",     10,      0}, ;
+    {"DS2",        "C",     10,      0}, ;
+    {"SY",         "C",     20,      0}, ;
+    {"AGE",        "C",      1,      0}, ;
+    {"SEX",        "C",      1,      0}, ;
+    {"LOS",        "C",      2,      0}, ;
+    {"AD_CR",      "C",     20,      0}, ;
+    {"AD_CR1",     "C",     20,      0}, ;
+    {"DATEBEG",    "D",      8,      0}, ;
+    {"DATEEND",    "D",      8,      0}, ;
+    {"NAME",       "C",    255,      0} ;
   })
-  dbcreate(destination + nameFileIt1,{;
-    {"CODE",       "C",     10,      0},;
-    {"USL_OK",     "N",      1,      0},;
-    {"DS",         "M",     10,      0},;
-    {"DS1",        "C",    150,      0},;
-    {"DS2",        "C",    250,      0};
+  dbcreate(destination + nameFileIt1, { ;
+    {"CODE",       "C",     10,      0}, ;
+    {"USL_OK",     "N",      1,      0}, ;
+    {"DS",         "M",     10,      0}, ;
+    {"DS1",        "C",    150,      0}, ;
+    {"DS2",        "C",    250,      0} ;
   })
-  // {"DS",         "C",   2300,      0},;
+  // {"DS",         "C",   2300,      0}, ;
 
   use (destination + nameFileIt1) new alias it
   index on code+str(usl_ok,1)+ds+ds1+ds2 to tmp_it
@@ -750,24 +758,24 @@ Function work_t006(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_SprMU(source, destination)
   local nameFileUnit := prefixFileName() + 'unit'
   local nameFileUsl := prefixFileName() + 'usl'
-  Local _mo_prof := {;
-    {"SHIFR",      "C",     20,      0},;
-    {"VZROS_REB",  "N",      1,      0},;
-    {"PROFIL",     "N",      3,      0};
+  Local _mo_prof := { ;
+    {"SHIFR",      "C",     20,      0}, ;
+    {"VZROS_REB",  "N",      1,      0}, ;
+    {"PROFIL",     "N",      3,      0} ;
   }
-  Local _mo_spec := {;
-    {"SHIFR",      "C",     20,      0},;
-    {"VZROS_REB",  "N",      1,      0},;
-    {"PRVS",       "N",      6,      0},;
-    {"PRVS_NEW",   "N",      4,      0};
+  Local _mo_spec := { ;
+    {"SHIFR",      "C",     20,      0}, ;
+    {"VZROS_REB",  "N",      1,      0}, ;
+    {"PRVS",       "N",      6,      0}, ;
+    {"PRVS_NEW",   "N",      4,      0} ;
   }
-  local _t2_v1 := {;
-    {"SHIFR",        "C",     10,      0},;
-    {"SHIFR_MZ",     "C",     20,      0};
+  local _t2_v1 := { ;
+    {"SHIFR",        "C",     10,      0}, ;
+    {"SHIFR_MZ",     "C",     20,      0} ;
   }
   local nfile, nameRef, j, k
 
@@ -781,9 +789,9 @@ Function work_SprMU(source, destination)
   dbcreate( destination + "_mo_t2_v1", _t2_v1)
   use (destination + '_mo_t2_v1') new alias T2V1
 
-  dbcreate(destination + "_mo_prof",_mo_prof)
+  dbcreate(destination + "_mo_prof", _mo_prof)
   use (destination + '_mo_prof') new alias PROF
-  dbcreate(destination + "_mo_spec",_mo_spec)
+  dbcreate(destination + "_mo_spec", _mo_spec)
   use (destination + '_mo_spec') new alias SPEC
 
   use (destination + nameFileUsl) new alias LUSL
@@ -937,7 +945,7 @@ Function work_SprMU(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_SprDS(source, destination)
   Local fl := .f., lfp, s
   local nameFileUslF := prefixFileName() + 'uslf'
@@ -1052,15 +1060,15 @@ Function work_SprDS(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_SprKslp(source, destination)
-  Local _mo_kslp := {;
-    {"CODE",       "N",      2,      0},;
-    {"NAME",       "C",     55,      0},;
-    {"NAME_F",     "C",    255,      0},;
-    {"COEFF",      "N",      4,      2},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+  Local _mo_kslp := { ;
+    {"CODE",       "N",      2,      0}, ;
+    {"NAME",       "C",     55,      0}, ;
+    {"NAME_F",     "C",    255,      0}, ;
+    {"COEFF",      "N",      4,      2}, ;
+    {"DATEBEG",    "D",      8,      0}, ;
+    {"DATEEND",    "D",      8,      0} ;
   }
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'kslp'
@@ -1119,15 +1127,15 @@ Function work_SprKslp(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_SprKiro(source, destination)
-  Local _mo_kiro := {;
-    {"CODE",       "N",      2,      0},;
-    {"NAME",       "C",     55,      0},;
-    {"NAME_F",     "C",    255,      0},;
-    {"COEFF",      "N",      4,      2},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+  Local _mo_kiro := { ;
+    {"CODE",       "N",      2,      0}, ;
+    {"NAME",       "C",     55,      0}, ;
+    {"NAME_F",     "C",    255,      0}, ;
+    {"COEFF",      "N",      4,      2}, ;
+    {"DATEBEG",    "D",      8,      0}, ;
+    {"DATEEND",    "D",      8,      0} ;
   }
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'kiro'
@@ -1186,18 +1194,18 @@ Function work_SprKiro(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_uslc(source, destination)
-  Local _mo_uslc := {;
-    {"CODEMO",     "C",      6,      0},;
-    {"SHIFR",      "C",     10,      0},;
-    {"usl_ok",     "N",      1,      0},;
-    {"DEPART",     "N",      3,      0},;
-    {"UROVEN",     "C",      5,      0},;
-    {"VZROS_REB",  "N",      1,      0},;
-    {"CENA",       "N",     10,      2},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+  Local _mo_uslc := { ;
+    {"CODEMO",     "C",      6,      0}, ;
+    {"SHIFR",      "C",     10,      0}, ;
+    {"usl_ok",     "N",      1,      0}, ;
+    {"DEPART",     "N",      3,      0}, ;
+    {"UROVEN",     "C",      5,      0}, ;
+    {"VZROS_REB",  "N",      1,      0}, ;
+    {"CENA",       "N",     10,      2}, ;
+    {"DATEBEG",    "D",      8,      0}, ;
+    {"DATEEND",    "D",      8,      0} ;
   }
 
   local nameFile := prefixFileName() + 'uslc'
@@ -1215,8 +1223,8 @@ Function work_uslc(source, destination)
   // ? "Создание файла " + nameFile + ".dbf - "
   out_create_file(nameFile + ".dbf")
   dbcreate(destination + nameFile, _mo_uslc)
-  dbcreate(destination + "not_usl",{{"shifr","C",10,0},{"spr_mu","N",1,0},{"s_price","N",1,0}})
-  dbcreate(destination + "not_lev",{{"codem","C",6,0},{"shifr","C",10,0},{"usl_ok","N",1,0},{"level","C",5,0},{"depart","N",3,0}})
+  dbcreate(destination + "not_usl", {{"shifr","C",10,0}, {"spr_mu","N",1,0}, {"s_price","N",1,0}})
+  dbcreate(destination + "not_lev", {{"codem","C",6,0}, {"shifr","C",10,0}, {"usl_ok","N",1,0}, {"level","C",5,0}, {"depart","N",3,0}})
 
   use (destination + nameFileDep) new alias DEP
   use (destination + nameFileDepPr) new alias DP
@@ -1411,18 +1419,18 @@ Function work_uslc(source, destination)
   close databases
   return NIL
 
-** 02.02.23
+// 02.02.23
 // S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
 Function work_SprSubDiv(source, destination)
 
-  Local _mo_subdiv := {;
-    {"CODEM",      "C",      6,      0},;
-    {"MCODE",      "C",      6,      0},;
-    {"CODE",       "N",      3,      0},;
-    {"NAME",       "C",     60,      0},;
-    {"flag",       "N",      1,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+  Local _mo_subdiv := { ;
+    {"CODEM",      "C",      6,      0}, ;
+    {"MCODE",      "C",      6,      0}, ;
+    {"CODE",       "N",      3,      0}, ;
+    {"NAME",       "C",     60,      0}, ;
+    {"flag",       "N",      1,      0}, ;
+    {"DATEBEG",    "D",      8,      0}, ;
+    {"DATEEND",    "D",      8,      0} ;
   }
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'subdiv'
@@ -1478,33 +1486,34 @@ Function work_SprSubDiv(source, destination)
   close databases
   return NIL
 
-** 02.02.23
+// 02.02.23
 Function work_SprDep(source, destination)
-  Local _mo_dep := {;
-    {"CODEM",      "C",      6,      0},;
-    {"MCODE",      "C",      6,      0},;
-    {"CODE",       "N",      3,      0},;
-    {"place",      "N",      3,      0},;
-    {"NAME",       "C",    100,      0},;
-    {"NAME_SHORT", "C",     35,      0},;
-    {"usl_ok",     "N",      1,      0},;
-    {"vmp",        "N",      1,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+  Local _mo_dep := { ;
+    {'CODEM',      'C',      6,      0}, ;
+    {'MCODE',      'C',      6,      0}, ;
+    {'CODE',       'N',      3,      0}, ;
+    {'place',      'N',      3,      0}, ;
+    {'NAME',       'C',    100,      0}, ;
+    {'NAME_SHORT', 'C',     35,      0}, ;
+    {'usl_ok',     'N',      1,      0}, ;
+    {'vmp',        'N',      1,      0}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
-  Local _mo_deppr := {;
-    {"CODEM",      "C",      6,      0},;
-    {"MCODE",      "C",      6,      0},;
-    {"CODE",       "N",      3,      0},;
-    {"place",      "N",      3,      0},;
-    {"pr_berth",   "N",      3,      0},;
-    {"pr_mp",      "N",      3,      0};
+  Local _mo_deppr := { ;
+    {'CODEM',      'C',      6,      0}, ;
+    {'MCODE',      'C',      6,      0}, ;
+    {'CODE',       'N',      3,      0}, ;
+    {'place',      'N',      3,      0}, ;
+    {'pr_berth',   'N',      3,      0}, ;
+    {'pr_mp',      'N',      3,      0} ;
   }
-  local nfile, nameRef, j, k
+  local nfile, nameRef, j, j1, j2, k
   local nameFileDep := prefixFileName() + 'dep'
   local nameFileDepPr := prefixFileName() + 'deppr'
+  local oXmlDoc, oXmlNode, oNode1, oNode2, oNode3, oNode4
 
-  nameRef := "S_Dep.xml"
+  nameRef := 'S_Dep.xml'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -1522,7 +1531,7 @@ Function work_SprDep(source, destination)
   use (destination + nameFileDepPr) new alias DP
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - список отделений по 11-й стационарам с разными уровнями оплаты" + hb_eol() )
+  OutStd( nameRef + ' - список отделений по 11-й стационарам с разными уровнями оплаты' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -1532,28 +1541,28 @@ Function work_SprDep(source, destination)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "MO_DEPARTMENTS" == oXmlNode:title
+      if 'MO_DEPARTMENTS' == oXmlNode:title
         out_obrabotka_count(j, k)
-        if (oNode1 := oXmlNode:Find("DEPARTMENTS")) != NIL
+        if (oNode1 := oXmlNode:Find('DEPARTMENTS')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if (str(year(xml2date(mo_read_xml_stroke(oNode2,"D_E",))), 4) >= CURENT_YEAR) .or. empty(str(year(xml2date(mo_read_xml_stroke(oNode2,"D_E",))), 4))
-              if "DEPARTMENT" == oNode2:title
+            if (str(year(xml2date(mo_read_xml_stroke(oNode2, 'D_E',))), 4) >= CURENT_YEAR) .or. empty(str(year(xml2date(mo_read_xml_stroke(oNode2, 'D_E',))), 4))
+              if 'DEPARTMENT' == oNode2:title
                 select DEP
                 append blank
-                dep->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
-                dep->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
-                dep->code    := val(mo_read_xml_stroke(oNode2,"CODE",))
-                dep->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
-                dep->NAME_SHORT := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_SHORT",))))
-                dep->usl_ok  := val(mo_read_xml_stroke(oNode2,"USL_OK",))
-                dep->vmp     := val(mo_read_xml_stroke(oNode2,"VMP",))
-                dep->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
-                dep->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
-                if (oNode3 := oNode2:Find("PLACES")) != NIL
+                dep->codem   := mo_read_xml_stroke(oXmlNode, 'CODEM',)
+                dep->mcode   := mo_read_xml_stroke(oXmlNode, 'MCODE',)
+                dep->code    := val(mo_read_xml_stroke(oNode2, 'CODE',))
+                dep->NAME    := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oNode2, 'NAME_FULL',))))
+                dep->NAME_SHORT := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oNode2, 'NAME_SHORT',))))
+                dep->usl_ok  := val(mo_read_xml_stroke(oNode2, 'USL_OK',))
+                dep->vmp     := val(mo_read_xml_stroke(oNode2, 'VMP',))
+                dep->DATEBEG := xml2date(mo_read_xml_stroke(oNode2, 'D_B',))
+                dep->DATEEND := xml2date(mo_read_xml_stroke(oNode2, 'D_E',))
+                if (oNode3 := oNode2:Find('PLACES')) != NIL
                   for j2 := 1 TO Len( oNode3:aItems )
                     oNode4 := oNode3:aItems[j2]
-                    if "PLACE" == oNode4:title .and. !empty(oNode4:aItems) .and. valtype(oNode4:aItems[1])=="C"
+                    if 'PLACE' == oNode4:title .and. !empty(oNode4:aItems) .and. valtype(oNode4:aItems[1]) == 'C'
                       if j2 > 1
                         out_error(TAG_PLACE_ERROR, nfile, dep->NAME)
                       endif
@@ -1561,18 +1570,18 @@ Function work_SprDep(source, destination)
                     endif
                   next j2
                 endif
-                if (oNode3 := oNode2:Find("PROFILS")) != NIL
+                if (oNode3 := oNode2:Find('PROFILS')) != NIL
                   for j2 := 1 TO Len( oNode3:aItems )
                     oNode4 := oNode3:aItems[j2]
-                    if "PROFIL" == oNode4:title
+                    if 'PROFIL' == oNode4:title
                       select DP
                       append blank
                       dp->codem    := dep->codem
                       dp->mcode    := dep->mcode
                       dp->code     := dep->code
                       dp->place    := dep->place
-                      dp->PR_BERTH := val(mo_read_xml_stroke(oNode4,"PR_BERTH",))
-                      dp->PR_MP    := val(mo_read_xml_stroke(oNode4,"PR_MP",))
+                      dp->PR_BERTH := val(mo_read_xml_stroke(oNode4, 'PR_BERTH',))
+                      dp->PR_MP    := val(mo_read_xml_stroke(oNode4, 'PR_MP',))
                     endif
                   next j2
                 endif
@@ -1587,21 +1596,23 @@ Function work_SprDep(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 20.05.23
 Function work_LvlPay(source, destination)
-  Local _mo_lvlpay := {;
-    {"CODEM",      "C",      6,      0},;
-    {"MCODE",      "C",      6,      0},;
-    {"usl_ok",     "N",      1,      0},;
-    {"DEPART",     "N",      3,      0},;
-    {"LEVEL",      "C",      5,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
+  Local _mo_lvlpay := { ;
+    {'CODEM',      'C',      6,      0}, ;
+    {'MCODE',      'C',      6,      0}, ;
+    {'usl_ok',     'N',      1,      0}, ;
+    {'DEPART',     'N',      3,      0}, ;
+    {'LEVEL',      'C',      5,      0}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
-  local nfile, nameRef, j, k
-  local nameFile := prefixFileName() + 'lvlpay'
+  local nfile, nameRef, j, j1, j2, j3, k
+  local nameFile := prefixFileName() + 'lvlpay', cAlias
+  local oXmlDoc, oXmlNode, oNode1, oNode2, oNode3, oNode4, oNode5, oNode6
 
-  nameRef := "S_LvlPay.xml"
+  nameRef := 'S_LvlPay.xml'
+  cAlias := 'LP'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -1614,50 +1625,53 @@ Function work_LvlPay(source, destination)
 
   dbcreate(destination + nameFile, _mo_lvlpay)
   use (destination + nameFile) new alias LP
+  // dbUseArea( .t.,, destination + nameFile, cAlias, .f., .f. )
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - код МО и уровень услуг" + hb_eol() )
-  IF Empty( oXmlDoc:aItems )
+  OutStd( nameRef + ' - код МО и уровень услуг' + hb_eol() )
+  if Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
+    lp->(dbCloseArea())
+    // CLOSE databases
     return nil
   else
     out_obrabotka(nfile)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZGLV" == oXmlNode:title
-        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
+      if 'ZGLV' == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode, 'YEAR_REPORT',)) == CURENT_YEAR)
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
-      elseif "MO_LEVELS" == oXmlNode:title
+      elseif 'MO_LEVELS' == oXmlNode:title
         out_obrabotka_count(j, k)
-        if (oNode1 := oXmlNode:Find("USL_LEVELS")) != NIL
+        if (oNode1 := oXmlNode:Find('USL_LEVELS')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "USL_LEVEL" == oNode2:title
-              if (oNode3 := oNode2:Find("DEPARTMENTS")) != NIL
+            if 'USL_LEVEL' == oNode2:title
+              if (oNode3 := oNode2:Find('DEPARTMENTS')) != NIL
                 for j2 := 1 TO Len( oNode3:aItems )
                   oNode4 := oNode3:aItems[j2]
-                  if "DEPARTMENT" == oNode4:title
-                    if (oNode5 := oNode4:Find("PAY_LEVELS")) != NIL
+                  if 'DEPARTMENT' == oNode4:title
+                    if (oNode5 := oNode4:Find('PAY_LEVELS')) != NIL
                       for j3 := 1 TO Len( oNode5:aItems )
                         oNode6 := oNode5:aItems[j3]
-                        if "PAY_LEVEL" == oNode6:title
-                          if str(year(xml2date(mo_read_xml_stroke(oNode6,"D_E",))), 4) == CURENT_YEAR
-                            select LP
-                            append blank
-                            lp->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
-                            lp->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
-                            lp->usl_ok  := val(mo_read_xml_stroke(oNode2,"USL_OK",))
-                            lp->DEPART  := val(mo_read_xml_stroke(oNode4,"CODE",))
-                            lp->LEVEL   := mo_read_xml_stroke(oNode6,"VALUE",)
-                            lp->DATEBEG := xml2date(mo_read_xml_stroke(oNode6,"D_B",))
-                            lp->DATEEND := xml2date(mo_read_xml_stroke(oNode6,"D_E",))
+                        if 'PAY_LEVEL' == oNode6:title
+                          if str(year(xml2date(mo_read_xml_stroke(oNode6, 'D_E',))), 4) == CURENT_YEAR
+                            // select LP
+                            // append blank
+                            lp->(dbAppend())
+                            lp->codem   := mo_read_xml_stroke(oXmlNode, 'CODEM',)
+                            lp->mcode   := mo_read_xml_stroke(oXmlNode, 'MCODE',)
+                            lp->usl_ok  := val(mo_read_xml_stroke(oNode2, 'USL_OK',))
+                            lp->DEPART  := val(mo_read_xml_stroke(oNode4, 'CODE',))
+                            lp->LEVEL   := mo_read_xml_stroke(oNode6, 'VALUE',)
+                            lp->DATEBEG := xml2date(mo_read_xml_stroke(oNode6, 'D_B',))
+                            lp->DATEEND := xml2date(mo_read_xml_stroke(oNode6, 'D_E',))
                             /*if j3 > 1
-                              ? "Ошибка в чтении файла - более одного тега PAY_LEVEL",nfile
-                              ? " в учреждении",lp->codem, "в отделении",lstr(lp->DEPART)
+                              ? 'Ошибка в чтении файла - более одного тега PAY_LEVEL', nfile
+                              ? ' в учреждении', lp->codem, 'в отделении', lstr(lp->DEPART)
                               wait
                             endif*/
                           endif
@@ -1674,5 +1688,6 @@ Function work_LvlPay(source, destination)
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  lp->(dbCloseArea())
+  // close databases
   return NIL
