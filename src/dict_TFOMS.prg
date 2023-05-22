@@ -365,7 +365,7 @@ Function work_mo_uslf(source, destination)
   Local _mo_uslf := { ;
     {'SHIFR',      'C',     20,      0}, ;
     {'NAME',       'C',    255,      0}, ;
-    {'TIP',        'N',      1,      0}, ; // 1-есть ещё в стоматологии,2-только в стоматологии
+    {'TIP',        'N',      1,      0}, ; // 1-есть ещё в стоматологии, 2-только в стоматологии
     {'GRP',        'N',      1,      0}, ; // код группы стоматологических услуг
     {'TELEMED',    'N',      1,      0}, ; // 1-услуга телемедицины
     {'ONKO_NAPR',  'N',      1,      0}, ; // тип диагн.услуги для дообследования в направлении ЗНО
@@ -414,7 +414,7 @@ Function work_mo_uslf(source, destination)
         lusl->DATEBEG := v001->DATEBEG
         lusl->DATEEND := v001->DATEEND
         // select TEL
-        // find (left(lusl->SHIFR,15))
+        // find (left(lusl->SHIFR, 15))
         // if found()
         if is_usluga_telemed(lusl->SHIFR)
           lusl->telemed := 1
@@ -469,94 +469,94 @@ Function work_mo_uslf(source, destination)
   close databases
   return NIL
 
-// 04.02.23
+// 22.05.23
 Function work_t006(source, destination)
   Local oXmlDoc, oXmlNode, i, s, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
   Local lshifr, lsy
 
   Local _mo_usl := { ;
-    {"SHIFR",      "C",     10,      0}, ;
-    {"NAME",       "C",    255,      0}, ;
-    {"ST",         "N",      1,      0}, ;
-    {"USL_OK",     "N",      1,      0}, ;
-    {"USL_OKS",    "C",      4,      0}, ;
-    {"UNIT_CODE",  "N",      3,      0}, ; // ЮНИТ -план - заказ
-    {"UNITS",      "C",     16,      0}, ; // ЮНИТ -план - заказ
-    {"BUKVA",      "C",     10,      0}, ; // буква типа счета
-    {"VMP_F",      "C",      2,      0}, ;
-    {"VMP_S",      "C",      8,      0}, ;
-    {"IDSP",       "C",      2,      0}, ;
-    {"IDSPS",      "C",      8,      0}, ;
-    {"KSLP",       "N",      2,      0}, ;
-    {"KSLPS",      "C",     10,      0}, ;
-    {"KIRO",       "N",      2,      0}, ;
-    {"KIROS",      "C",     10,      0}, ;
-    {"UETV",       "N",      5,      2}, ; // УЕТ - сейчас не используются
-    {"UETD",       "N",      5,      2}, ; // УЕТ - сейчас не используются
-    {"DATEBEG",    "D",      8,      0}, ; // дата начала действия - по умолчанию т.г
-    {"DATEEND",    "D",      8,      0} ;  // дата конец действия - по умолчанию т.г
+    {'SHIFR',      'C',     10,      0}, ;
+    {'NAME',       'C',    255,      0}, ;
+    {'ST',         'N',      1,      0}, ;
+    {'USL_OK',     'N',      1,      0}, ;
+    {'USL_OKS',    'C',      4,      0}, ;
+    {'UNIT_CODE',  'N',      3,      0}, ; // ЮНИТ -план - заказ
+    {'UNITS',      'C',     16,      0}, ; // ЮНИТ -план - заказ
+    {'BUKVA',      'C',     10,      0}, ; // буква типа счета
+    {'VMP_F',      'C',      2,      0}, ;
+    {'VMP_S',      'C',      8,      0}, ;
+    {'IDSP',       'C',      2,      0}, ;
+    {'IDSPS',      'C',      8,      0}, ;
+    {'KSLP',       'N',      2,      0}, ;
+    {'KSLPS',      'C',     10,      0}, ;
+    {'KIRO',       'N',      2,      0}, ;
+    {'KIROS',      'C',     10,      0}, ;
+    {'UETV',       'N',      5,      2}, ; // УЕТ - сейчас не используются
+    {'UETD',       'N',      5,      2}, ; // УЕТ - сейчас не используются
+    {'DATEBEG',    'D',      8,      0}, ; // дата начала действия - по умолчанию т.г
+    {'DATEEND',    'D',      8,      0} ;  // дата конец действия - по умолчанию т.г
   }
   // Static nfile    //:= source + "T006.XML"
   local nfile, nameRef, j, k
 
-  nameRef := "T006.XML"
+  nameRef := 'T006.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
 
-  dbcreate(destination + "t006_u",_mo_usl)
-  dbcreate(destination + "t006_2", { ;
-    {"SHIFR",      "C",     10,      0}, ;
-    {"kz",         "N",      7,      3}, ;
-    {"PROFIL",     "N",      2,      0}, ;
-    {"DS",         "C",      6,      0}, ;
-    {"DS1",        "M",     10,      0}, ;
-    {"DS2",        "M",     10,      0}, ;
-    {"SY",         "C",     20,      0}, ;
-    {"AGE",        "C",      1,      0}, ;
-    {"SEX",        "C",      1,      0}, ;
-    {"LOS",        "C",      2,      0}, ;
-    {"AD_CR",      "C",     20,      0}, ;
-    {"AD_CR1",     "C",     20,      0}, ;
-    {"DATEBEG",    "D",      8,      0}, ;
-    {"DATEEND",    "D",      8,      0}, ;
-    {"NS",         "N",      6,      0} ;
+  dbcreate(destination + 't006_u', _mo_usl)
+  dbcreate(destination + 't006_2', { ;
+    {'SHIFR',      'C',     10,      0}, ;
+    {'kz',         'N',      7,      3}, ;
+    {'PROFIL',     'N',      2,      0}, ;
+    {'DS',         'C',      6,      0}, ;
+    {'DS1',        'M',     10,      0}, ;
+    {'DS2',        'M',     10,      0}, ;
+    {'SY',         'C',     20,      0}, ;
+    {'AGE',        'C',      1,      0}, ;
+    {'SEX',        'C',      1,      0}, ;
+    {'LOS',        'C',      2,      0}, ;
+    {'AD_CR',      'C',     20,      0}, ;
+    {'AD_CR1',     'C',     20,      0}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0}, ;
+    {'NS',         'N',      6,      0} ;
   })
-  dbcreate(destination + "t006_d", { ;
-    {"CODE",       "C",     10,      0}, ;
-    {"DS",         "C",     20,      0}, ;
-    {"DS1",        "C",     10,      0}, ;
-    {"DS2",        "C",     10,      0}, ;
-    {"SY",         "C",     20,      0}, ;
-    {"AGE",        "C",      1,      0}, ;
-    {"SEX",        "C",      1,      0}, ;
-    {"LOS",        "C",      2,      0}, ;
-    {"AD_CR",      "C",     20,      0}, ;
-    {"AD_CR1",     "C",     20,      0}, ;
-    {"DATEBEG",    "D",      8,      0}, ;
-    {"DATEEND",    "D",      8,      0}, ;
-    {"NAME",       "C",    255,      0} ;
+  dbcreate(destination + 't006_d', { ;
+    {'CODE',       'C',     10,      0}, ;
+    {'DS',         'C',     20,      0}, ;
+    {'DS1',        'C',     10,      0}, ;
+    {'DS2',        'C',     10,      0}, ;
+    {'SY',         'C',     20,      0}, ;
+    {'AGE',        'C',      1,      0}, ;
+    {'SEX',        'C',      1,      0}, ;
+    {'LOS',        'C',      2,      0}, ;
+    {'AD_CR',      'C',     20,      0}, ;
+    {'AD_CR1',     'C',     20,      0}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0}, ;
+    {'NAME',       'C',    255,      0} ;
   })
   dbcreate(destination + nameFileIt1, { ;
-    {"CODE",       "C",     10,      0}, ;
-    {"USL_OK",     "N",      1,      0}, ;
-    {"DS",         "M",     10,      0}, ;
-    {"DS1",        "C",    150,      0}, ;
-    {"DS2",        "C",    250,      0} ;
+    {'CODE',       'C',     10,      0}, ;
+    {'USL_OK',     'N',      1,      0}, ;
+    {'DS',         'M',     10,      0}, ;
+    {'DS1',        'C',    150,      0}, ;
+    {'DS2',        'C',    250,      0} ;
   })
-  // {"DS",         "C",   2300,      0}, ;
+  // {'DS',         'C',   2300,      0}, ;
 
   use (destination + nameFileIt1) new alias it
-  index on code+str(usl_ok,1)+ds+ds1+ds2 to tmp_it
+  index on code+str(usl_ok, 1) + ds + ds1 + ds2 to tmp_it
   use (destination + 't006_u') new alias t6
   use (destination + 't006_2') new alias t62
   use (destination + 't006_d') new alias d6
   oXmlDoc := HXMLDoc():Read(nfile)
   kl := kl1 := kl2 := 0
-  OutStd( nameRef + " - КСГ" + hb_eol() )
+  OutStd( nameRef + ' - КСГ' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -566,73 +566,73 @@ Function work_t006(source, destination)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZGLV" == oXmlNode:title
-        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
+      if 'ZGLV' == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode, 'YEAR_REPORT',)) == CURENT_YEAR)
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
-      elseif "KSG" == oXmlNode:title
+      elseif 'KSG' == oXmlNode:title
         out_obrabotka_count(j, k)
         select T6
         append blank
-        t6->SHIFR   := mo_read_xml_stroke(oXmlNode,"CODE",)
-        t6->NAME    := charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))
-        t6->USL_OK  := val(mo_read_xml_stroke(oXmlNode,"USL",))
+        t6->SHIFR   := mo_read_xml_stroke(oXmlNode, 'CODE',)
+        t6->NAME    := charone(' ', mo_read_xml_stroke(oXmlNode, 'NAME',))
+        t6->USL_OK  := val(mo_read_xml_stroke(oXmlNode, 'USL',))
         t6->USL_OKS := lstr(t6->USL_OK)
-        t6->ST      := val(mo_read_xml_stroke(oXmlNode,"ST",))
-        //t6->DURV    :=      val(mo_read_xml_stroke(oXmlNode,"DUR_A",))
-        //t6->DURD    :=      val(mo_read_xml_stroke(oXmlNode,"DUR_C",))
-        t6->BUKVA   := upper(mo_read_xml_stroke(oXmlNode,"PAR",))
-        t6->DATEBEG := xml2date(mo_read_xml_stroke(oXmlNode,"D_BEG",))
-        t6->DATEEND := xml2date(mo_read_xml_stroke(oXmlNode,"D_END",))
-        lkz         := val(mo_read_xml_stroke(oXmlNode,"K_Z",))
-        if (oNode1 := oXmlNode:Find("VMP")) != NIL
+        t6->ST      := val(mo_read_xml_stroke(oXmlNode, 'ST',))
+        //t6->DURV    :=      val(mo_read_xml_stroke(oXmlNode, 'DUR_A',))
+        //t6->DURD    :=      val(mo_read_xml_stroke(oXmlNode, 'DUR_C',))
+        t6->BUKVA   := upper(mo_read_xml_stroke(oXmlNode, 'PAR',))
+        t6->DATEBEG := xml2date(mo_read_xml_stroke(oXmlNode, 'D_BEG',))
+        t6->DATEEND := xml2date(mo_read_xml_stroke(oXmlNode, 'D_END',))
+        lkz         := val(mo_read_xml_stroke(oXmlNode, 'K_Z',))
+        if (oNode1 := oXmlNode:Find('VMP')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "TYPE_MP" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+            if 'TYPE_MP' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
               s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
               if empty(t6->VMP_F)
                 t6->VMP_F := s
               endif
-              t6->VMP_S := iif(empty(t6->VMP_S), "", rtrim(t6->VMP_S)+",")+s
+              t6->VMP_S := iif(empty(t6->VMP_S), '', rtrim(t6->VMP_S) + ',') + s
             endif
           next j1
         endif
-        if (oNode1 := oXmlNode:Find("KSLPS")) != NIL
+        if (oNode1 := oXmlNode:Find('KSLPS')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "KSLP" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+            if 'KSLP' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
               s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
               if empty(t6->KSLP)
                 t6->KSLP := val(s)
               endif
-              t6->KSLPS := iif(empty(t6->KSLPS), "", rtrim(t6->KSLPS)+",")+s
+              t6->KSLPS := iif(empty(t6->KSLPS), '', rtrim(t6->KSLPS) + ',') + s
             endif
           next j1
         endif
-        if (oNode1 := oXmlNode:Find("KIROS")) != NIL
+        if (oNode1 := oXmlNode:Find('KIROS')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "KIRO" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+            if 'KIRO' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
               s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
               if empty(t6->KIRO)
                 t6->KIRO := val(s)
               endif
-              t6->KIROS := iif(empty(t6->KIROS), "", rtrim(t6->KIROS)+",")+s
+              t6->KIROS := iif(empty(t6->KIROS), '', rtrim(t6->KIROS) + ',') + s
             endif
           next j1
         endif
-        if (oNode1 := oXmlNode:Find("REGULATIONS")) != NIL
+        if (oNode1 := oXmlNode:Find('REGULATIONS')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "RULE" == oNode2:title
+            if 'RULE' == oNode2:title
               select D6
               append blank
               d6->code := t6->SHIFR
-              d6->DS  := lDS  := alltrim(mo_read_xml_stroke(oNode2,"DS",))+" "
-              d6->DS1 := lDS1 := alltrim(mo_read_xml_stroke(oNode2,"DS1",))+" "
-              d6->DS2 := lDS2 := alltrim(mo_read_xml_stroke(oNode2,"DS2",))+" "
-              d6->SY   := mo_read_xml_stroke(oNode2,"SY",)
+              d6->DS  := lDS  := alltrim(mo_read_xml_stroke(oNode2, 'DS',)) + ' '
+              d6->DS1 := lDS1 := alltrim(mo_read_xml_stroke(oNode2, 'DS1',)) + ' '
+              d6->DS2 := lDS2 := alltrim(mo_read_xml_stroke(oNode2, 'DS2',)) + ' '
+              d6->SY   := mo_read_xml_stroke(oNode2, 'SY',)
 
               // для реабилитации после COVID-19            
               lshifr := lower(alltrim(t6->SHIFR))
@@ -675,17 +675,17 @@ Function work_t006(source, destination)
                 d6->DS  := lDS  := 'Z92.2'
               endif
 
-              d6->AGE  := mo_read_xml_stroke(oNode2,"AGE",)
-              d6->SEX  := mo_read_xml_stroke(oNode2,"SEX",)
-              d6->LOS  := alltrim(mo_read_xml_stroke(oNode2,"LOS",))
-              d6->AD_CR := mo_read_xml_stroke(oNode2,"AD_CRITERION",)
-              d6->AD_CR1 := mo_read_xml_stroke(oNode2,"OTHER_CRITERIA",)
-              d6->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_FROM",))
-              d6->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_TO",))
+              d6->AGE  := mo_read_xml_stroke(oNode2, 'AGE',)
+              d6->SEX  := mo_read_xml_stroke(oNode2, 'SEX',)
+              d6->LOS  := alltrim(mo_read_xml_stroke(oNode2, 'LOS',))
+              d6->AD_CR := mo_read_xml_stroke(oNode2, 'AD_CRITERION',)
+              d6->AD_CR1 := mo_read_xml_stroke(oNode2, 'OTHER_CRITERIA',)
+              d6->DATEBEG := xml2date(mo_read_xml_stroke(oNode2, 'D_FROM',))
+              d6->DATEEND := xml2date(mo_read_xml_stroke(oNode2, 'D_TO',))
               d6->name := t6->NAME
-              if !empty(d6->AD_CR) .and. !eq_any(left(d6->AD_CR, 2), "sh", "mt", "rb")
+              if !empty(d6->AD_CR) .and. !eq_any(left(d6->AD_CR, 2), 'sh', 'mt', 'rb')
                 select IT
-                find (padr(d6->AD_CR,10)+str(t6->usl_ok,1)+padr(lds,2300)+padr(lds1,150)+padr(lds2,250))
+                find (padr(d6->AD_CR, 10) + str(t6->usl_ok, 1) + padr(lds, 2300) + padr(lds1, 150) + padr(lds2, 250))
                 if !found()
                   append blank
                   it->CODE := d6->AD_CR
@@ -694,9 +694,9 @@ Function work_t006(source, destination)
                   it->DS1 := lds1
                   it->DS2 := lds2
                 endif
-                kl := max(kl,len(lds))
-                kl1 := max(kl1,len(lds1))
-                kl2 := max(kl2,len(lds2))
+                kl := max(kl, len(lds))
+                kl1 := max(kl1, len(lds1))
+                kl2 := max(kl2, len(lds2))
               endif
               if empty(lDS) // нет основного диагноза
                 select T62
@@ -721,8 +721,8 @@ Function work_t006(source, destination)
                 t62->ns := d6->(recno())
               else
                 sList := alltrim(lDS)
-                for is := 1 to numtoken(sList,",")
-                  s := alltrim(token(sList,",",is))
+                for is := 1 to numtoken(sList, ',')
+                  s := alltrim(token(sList, ',', is))
                   if !empty(s)
                     select T62
                     append blank
@@ -798,7 +798,7 @@ Function work_SprMU(source, destination)
   index on shifr to tmp_lusl
 
   use (destination + nameFileUnit) new alias UN
-  index on str(code,3) to tmp_unit
+  index on str(code, 3) to tmp_unit
   oXmlDoc := HXMLDoc():Read(nfile)
   OutStd( nameRef + " - справочник услуг /наименование, шифр услуги" + hb_eol() )
   IF Empty( oXmlDoc:aItems )
@@ -819,7 +819,7 @@ Function work_SprMU(source, destination)
         out_obrabotka_count(j, k)
         lshifr := mo_read_xml_stroke(oXmlNode,"CodeMU",)
         select LUSL
-        find (padr(lshifr,10))
+        find (padr(lshifr, 10))
         if !found()
           append blank
           lusl->shifr := lshifr
@@ -900,7 +900,7 @@ Function work_SprMU(source, destination)
             lusl->units := s
             for i := 1 to len(arr_u)
               select UN
-              find (str(arr_u[i],3))
+              find (str(arr_u[i], 3))
               if found() .and. (empty(un->dateend) .or. year(un->dateend) >= sys_year)
                 lusl->unit_code := arr_u[i]
                 exit
@@ -1010,7 +1010,7 @@ Function work_SprDS(source, destination)
               endif
               if fl
                 select LUSL
-                find (padr(lshifr,20))
+                find (padr(lshifr, 20))
                 if found()
                   lusl->tip := 1
                 else
@@ -1217,14 +1217,14 @@ Function work_uslc(source, destination)
   local nameFileLvlPay := prefixFileName() + 'lvlpay'
   local nameFileMoServ := prefixFileName() + 'moserv'
 
-  Local nul_level := padr('0',5)
-  //Local nul_level := padr('1',5)
+  Local nul_level := padr('0', 5)
+  //Local nul_level := padr('1', 5)
 
   // ? "Создание файла " + nameFile + ".dbf - "
   out_create_file(nameFile + ".dbf")
   dbcreate(destination + nameFile, _mo_uslc)
-  dbcreate(destination + "not_usl", {{"shifr","C",10,0}, {"spr_mu","N",1,0}, {"s_price","N",1,0}})
-  dbcreate(destination + "not_lev", {{"codem","C",6,0}, {"shifr","C",10,0}, {"usl_ok","N",1,0}, {"level","C",5,0}, {"depart","N",3,0}})
+  dbcreate(destination + "not_usl", {{"shifr","C", 10, 0}, {"spr_mu","N", 1, 0}, {"s_price","N", 1, 0}})
+  dbcreate(destination + "not_lev", {{"codem","C", 6, 0}, {"shifr","C", 10, 0}, {"usl_ok","N", 1, 0}, {"level","C", 5, 0}, {"depart","N", 3, 0}})
 
   use (destination + nameFileDep) new alias DEP
   use (destination + nameFileDepPr) new alias DP
@@ -1233,7 +1233,7 @@ Function work_uslc(source, destination)
   use (destination + 'not_usl') new
   index on shifr to not_usl
   use (destination + 'not_lev') new
-  index on codem+shifr+str(usl_ok,1)+level+str(depart,3) to not_lev
+  index on codem+shifr+str(usl_ok, 1)+level+str(depart, 3) to not_lev
 
   use (destination + nameFileUsl) new alias LUSL
   index on shifr to tmp_lusl
@@ -1241,15 +1241,15 @@ Function work_uslc(source, destination)
   use (destination + nameFile) new alias LUSLC
 
   use (destination + nameFilePrices) new alias PRIC
-  index on shifr+str(vzros_reb,1)+level to tmp_prices
+  index on shifr+str(vzros_reb, 1)+level to tmp_prices
   
   use (destination + nameFileLvlPay) new alias LP
-  index on codem+str(usl_ok,1)+level+str(depart,3) to tmp_lvlpay
+  index on codem+str(usl_ok, 1)+level+str(depart, 3) to tmp_lvlpay
 
   use (destination + nameFileMoServ) new alias SERV
   go top
   do while !eof()
-    // @ row(),30 say str(recno()/lastrec()*100,6,2)+"%"
+    // @ row(), 30 say str(recno()/lastrec()*100, 6, 2)+"%"
     out_obrabotka_count(recno(), lastrec())
     lcodem := serv->codem
     lshifr := serv->shifr
@@ -1260,7 +1260,7 @@ Function work_uslc(source, destination)
       lusl_ok := lusl->usl_ok
       arr1 := {} ; arr2 := {}
       select LP
-      find (lcodem+str(lusl_ok,1))
+      find (lcodem+str(lusl_ok, 1))
       do while lp->codem == lcodem .and. lp->usl_ok == lusl_ok .and. !eof()
         fl := .t.
         llevel := lp->level
@@ -1270,7 +1270,7 @@ Function work_uslc(source, destination)
         if found()
           for lvzros_reb := 0 to 1
             select PRIC
-            find (lshifr+str(lvzros_reb,1)+llevel)
+            find (lshifr+str(lvzros_reb, 1)+llevel)
             do while pric->shifr == lshifr .and. pric->vzros_reb == lvzros_reb .and. pric->level == llevel .and. !eof()
               if between_date(pric->datebeg,pric->dateend,lp->datebeg,lp->dateend) .or. ;
                 between_date(lp->datebeg,lp->dateend,pric->datebeg,pric->dateend)
@@ -1305,7 +1305,7 @@ Function work_uslc(source, destination)
           if fl .and. empty(lp->depart)
             for lvzros_reb := 0 to 1
               select PRIC
-              find (lshifr+str(lvzros_reb,1)+nul_level)
+              find (lshifr+str(lvzros_reb, 1)+nul_level)
               do while pric->shifr == lshifr .and. pric->vzros_reb == lvzros_reb .and. pric->level == nul_level .and. !eof()
                 if between_date(pric->datebeg,pric->dateend,lp->datebeg,lp->dateend) .or. ;
                       between_date(lp->datebeg,lp->dateend,pric->datebeg,pric->dateend)
@@ -1348,7 +1348,7 @@ Function work_uslc(source, destination)
         endif
         if fl .and. empty(lp->depart)  // не найдено ни одного уровня оплаты в _mo0lvlpay для lcodem ...
           select NOT_LEV
-          find (lcodem+lshifr+str(lusl_ok,1)+llevel+str(lp->depart,3))
+          find (lcodem+lshifr+str(lusl_ok, 1)+llevel+str(lp->depart, 3))
           if !found()
             append blank
             replace codem with lcodem, shifr with lshifr, usl_ok with lusl_ok, ;
@@ -1361,7 +1361,7 @@ Function work_uslc(source, destination)
       if empty(arr2) // если по всем ненулевым кодам depart не найдены цены
         for lvzros_reb := 0 to 1
           select PRIC
-          find (lshifr+str(lvzros_reb,1)+nul_level)
+          find (lshifr+str(lvzros_reb, 1)+nul_level)
           do while pric->shifr == lshifr .and. pric->vzros_reb == lvzros_reb .and. pric->level == nul_level .and. !eof()
             lcena := pric->cena
             bd := pric->datebeg
@@ -1388,12 +1388,12 @@ Function work_uslc(source, destination)
         next
       elseif len(arr1) > len(arr2)
         select LP
-        find (lcodem+str(lusl_ok,1))
+        find (lcodem+str(lusl_ok, 1))
         do while lp->codem == lcodem .and. lp->usl_ok == lusl_ok .and. !eof()
           llevel := lp->level
           if ascan(arr2,llevel) == 0
             select NOT_LEV
-            find (lcodem+lshifr+str(lusl_ok,1)+llevel+str(lp->depart,3))
+            find (lcodem+lshifr+str(lusl_ok, 1)+llevel+str(lp->depart, 3))
             if !found()
               append blank
               replace codem with lcodem, shifr with lshifr, usl_ok with lusl_ok, ;
