@@ -6,18 +6,20 @@
 #include 'settings.ch'
 #include 'common.ch'
 
-// 15.02.22
+// 23.05.23
 Function work_Shema(source, destination)
   Local _mo_shema := { ;
-    {"KOD",        "C",     10,      0}, ;
-    {"NAME",       "C",    255,      0}, ;
-    {"DATEBEG",    "D",      8,      0}, ;
-    {"DATEEND",    "D",      8,      0} ;
+    {'KOD',        'C',     10,      0}, ;
+    {'NAME',       'C',    255,      0}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
   local nfile, nameRef, j, k
+  local mkod, mname, mDATEBEG, mDATEEND
   local nameFile := prefixFileName() + 'shema'
+  local oXmlDoc, oXmlNode
 
-  nameRef := "V024.xml"
+  nameRef := 'V024.xml'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -33,7 +35,7 @@ Function work_Shema(source, destination)
   index on kod to tmp_shema
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - для КСГ - Допкритерии" + hb_eol() )
+  OutStd( nameRef + ' - для КСГ - Допкритерии' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -43,12 +45,12 @@ Function work_Shema(source, destination)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZAP" == upper(oXmlNode:title)
+      if 'ZAP' == upper(oXmlNode:title)
         out_obrabotka_count(j, k)
-        mkod := mo_read_xml_stroke(oXmlNode,"IDDKK",)
-        mNAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"DKKNAME",))))
-        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
-        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
+        mkod := mo_read_xml_stroke(oXmlNode, 'IDDKK',)
+        mname := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oXmlNode, 'DKKNAME',))))
+        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
+        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
         fl := .t.
         if !empty(mDATEEND) .and. mDATEEND < FIRST_DAY
           fl := .f.
@@ -124,7 +126,7 @@ Function make_T001(source, destination)
   (dbName)->(dbCloseArea())
   return NIL
 
-// 11.02.22
+// 23.05.23
 Function work_SprUnit(source, destination)
   Local _mo_unit := { ;
     {'CODE',       'N',      3,      0}, ;
@@ -136,7 +138,8 @@ Function work_SprUnit(source, destination)
     {'DATEEND',    'D',      8,      0} ;
   }
 
-  local nfile, nameRef, j, k
+  local nfile, nameRef, j, j1, k
+  local oXmlDoc, oXmlNode, oNode1, oNode2
   local nameFile := prefixFileName() + 'unit'
 
   nameRef := 'SprUnit.xml'
@@ -192,19 +195,20 @@ Function work_SprUnit(source, destination)
   close databases
   return NIL
 
-// 02.02.23
+// 23.05.23
 Function work_MOServ(source, destination)
   Local _mo_moserv := { ;
-    {"CODEM",      "C",      6,      0}, ;
-    {"MCODE",      "C",      6,      0}, ;
-    {"SHIFR",      "C",     10,      0}, ;
-    {"DATEBEG",    "D",      8,      0}, ;
-    {"DATEEND",    "D",      8,      0} ;
+    {'CODEM',      'C',      6,      0}, ;
+    {'MCODE',      'C',      6,      0}, ;
+    {'SHIFR',      'C',     10,      0}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
-  local nfile, nameRef, j, k
+  local nfile, nameRef, j, j1, j2, k
+  local oXmlDoc, oXmlNode, oNode1, oNode2, oNode3, oNode4
   local nameFile := prefixFileName() + 'moserv'
 
-  nameRef := "S_MOServ.xml"
+  nameRef := 'S_MOServ.xml'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -219,7 +223,7 @@ Function work_MOServ(source, destination)
   use (destination + nameFile) new alias MS
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - даты действия услуги вообще" + hb_eol() )
+  OutStd( nameRef + ' - даты действия услуги вообще' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -229,32 +233,32 @@ Function work_MOServ(source, destination)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZGLV" == oXmlNode:title
-        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
+      if 'ZGLV' == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode, 'YEAR_REPORT',)) == CURENT_YEAR)
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
-      elseif "MO_SERVICES" == oXmlNode:title
+      elseif 'MO_SERVICES' == oXmlNode:title
         out_obrabotka_count(j, k)
-        if (oNode1 := oXmlNode:Find("SERVICES")) != NIL
+        if (oNode1 := oXmlNode:Find('SERVICES')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "SERVICE" == oNode2:title
-              if (oNode3 := oNode2:Find("PERIODS")) != NIL
+            if 'SERVICE' == oNode2:title
+              if (oNode3 := oNode2:Find('PERIODS')) != NIL
                 for j2 := 1 TO Len( oNode3:aItems )
                   oNode4 := oNode3:aItems[j2]
-                  if "PERIOD" == oNode4:title
+                  if 'PERIOD' == oNode4:title
                     if j2 > 1
                       out_error(TAG_PERIOD_ERROR, nfile, ms->codem, ms->shifr)
                     endif
                     if (str(year(xml2date(mo_read_xml_stroke(oNode4, 'D_E', ))), 4) >= CURENT_YEAR) .or. empty(str(year(xml2date(mo_read_xml_stroke(oNode4, 'D_E', ))), 4))
                       select MS
                       append blank
-                      ms->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
-                      ms->mcode   := mo_read_xml_stroke(oXmlNode,"MCOD",)
-                      ms->shifr   := mo_read_xml_stroke(oNode2,"CODE",)
-                      ms->DATEBEG := xml2date(mo_read_xml_stroke(oNode4,"D_B",))
-                      ms->DATEEND := xml2date(mo_read_xml_stroke(oNode4,"D_E",))
+                      ms->codem   := mo_read_xml_stroke(oXmlNode, 'CODEM',)
+                      ms->mcode   := mo_read_xml_stroke(oXmlNode, 'MCOD',)
+                      ms->shifr   := mo_read_xml_stroke(oNode2, 'CODE',)
+                      ms->DATEBEG := xml2date(mo_read_xml_stroke(oNode4, 'D_B',))
+                      ms->DATEEND := xml2date(mo_read_xml_stroke(oNode4, 'D_E',))
                     endif
                   endif
                 next j2
@@ -269,20 +273,22 @@ Function work_MOServ(source, destination)
   close databases
   return NIL
 
-// 12.02.22
+// 23.05.23
 Function work_Prices(source, destination)
   Local _mo_prices := { ;
-    {"SHIFR",      "C",     10,      0}, ;
-    {"VZROS_REB",  "N",      1,      0}, ;
-    {"LEVEL",      "C",      5,      0}, ;
-    {"CENA",       "N",     10,      2}, ;
-    {"DATEBEG",    "D",      8,      0}, ;
-    {"DATEEND",    "D",      8,      0} ;
+    {'SHIFR',      'C',     10,      0}, ;
+    {'VZROS_REB',  'N',      1,      0}, ;
+    {'LEVEL',      'C',      5,      0}, ;
+    {'CENA',       'N',     10,      2}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
-  local nfile, nameRef, j, k
+  local nfile, nameRef, j, j1, j2, j3, k, s
+  local oXmlDoc, oXmlNode, oNode1, oNode2, oNode3, oNode4, oNode5, oNode6
+  local lvzros_reb, lshifr, lLEVEL
   local nameFile := prefixFileName() + 'prices'
 
-  nameRef := "S_Prices.xml"
+  nameRef := 'S_Prices.xml'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -297,7 +303,7 @@ Function work_Prices(source, destination)
   use (destination + nameFile) new alias MP
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - цена и дата действия по уровню" + hb_eol() )
+  OutStd( nameRef + ' - цена и дата действия по уровню' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -307,43 +313,43 @@ Function work_Prices(source, destination)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZGLV" == oXmlNode:title
-        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
+      if 'ZGLV' == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode, 'YEAR_REPORT',)) == CURENT_YEAR)
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
-      elseif "AGE_PRICES" == oXmlNode:title
+      elseif 'AGE_PRICES' == oXmlNode:title
         out_obrabotka_count(j, k)
-        s := mo_read_xml_stroke(oXmlNode,"AGE",)
-        lvzros_reb := iif(alltrim(s)=="В", 0, 1)
-        if (oNode1 := oXmlNode:Find("PRICES")) != NIL
+        s := mo_read_xml_stroke(oXmlNode, 'AGE',)
+        lvzros_reb := iif(alltrim(s) == 'В', 0, 1)
+        if (oNode1 := oXmlNode:Find('PRICES')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "CODE_PRICE" == oNode2:title
-              lshifr := mo_read_xml_stroke(oNode2,"CODE",)
-              if (oNode3 := oNode2:Find("LEVELS")) != NIL
+            if 'CODE_PRICE' == oNode2:title
+              lshifr := mo_read_xml_stroke(oNode2, 'CODE',)
+              if (oNode3 := oNode2:Find('LEVELS')) != NIL
                 for j2 := 1 TO Len( oNode3:aItems )
                   oNode4 := oNode3:aItems[j2]
-                  if "LEVEL" == oNode4:title
-                    lLEVEL := mo_read_xml_stroke(oNode4,"VALUE",)
+                  if 'LEVEL' == oNode4:title
+                    lLEVEL := mo_read_xml_stroke(oNode4, 'VALUE',)
                     if empty(lLEVEL)
                       out_error(TAG_VALUE_EMPTY, nfile, lLEVEL, lshifr)
                       lLEVEL := '0'
                     elseif len(alltrim(lLEVEL)) > 5
                       out_error(TAG_VALUE_INVALID, nfile, lLEVEL, lshifr)
                     endif
-                    if (oNode5 := oNode4:Find("TARIFS")) != NIL
+                    if (oNode5 := oNode4:Find('TARIFS')) != NIL
                       for j3 := 1 TO Len( oNode5:aItems )
                         oNode6 := oNode5:aItems[j3]
-                        if "TARIF" == oNode6:title
+                        if 'TARIF' == oNode6:title
                           select MP
                           append blank
                           mp->shifr     := lshifr
                           mp->vzros_reb := lvzros_reb
                           mp->LEVEL     := lLEVEL
-                          mp->cena      := val(mo_read_xml_stroke(oNode6,"COST",))
-                          mp->DATEBEG   := xml2date(mo_read_xml_stroke(oNode6,"D_B",))
-                          mp->DATEEND   := xml2date(mo_read_xml_stroke(oNode6,"D_E",))
+                          mp->cena      := val(mo_read_xml_stroke(oNode6, 'COST',))
+                          mp->DATEBEG   := xml2date(mo_read_xml_stroke(oNode6, 'D_B',))
+                          mp->DATEEND   := xml2date(mo_read_xml_stroke(oNode6, 'D_E',))
                         endif
                       next j3
                     endif
@@ -451,29 +457,31 @@ Function work_mo_uslf(source, destination)
     select V001
     skip
   enddo
-  select PO
-  go top
-  do while !eof()
-    select LUSL
-    find (padr(po->kod, 20))
-    if !found()
-    endif
-    select V001
-    find (padr(po->kod, 15))
-    if !found()
-    endif
-    select PO
-    skip
-  enddo
+  // select PO
+  // go top
+  // do while !eof()
+  //   select LUSL
+  //   find (padr(po->kod, 20))
+  //   if !found()
+  //   endif
+  //   select V001
+  //   find (padr(po->kod, 15))
+  //   if !found()
+  //   endif
+  //   select PO
+  //   skip
+  // enddo
   out_obrabotka_eol()
   close databases
   return NIL
 
-// 22.05.23
+// 23.05.23
 Function work_t006(source, destination)
-  Local oXmlDoc, oXmlNode, i, s, af := {}
+  Local oXmlDoc, oXmlNode, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
-  Local lshifr, lsy
+  Local lshifr, lsy, lDS, lDS1, lDS2, oNode1, oNode2, lkz, kl, kl1, kl2
+  local nfile, nameRef, j, j1, k, i, s
+  // Static nfile    //:= source + "T006.XML"
 
   Local _mo_usl := { ;
     {'SHIFR',      'C',     10,      0}, ;
@@ -497,8 +505,6 @@ Function work_t006(source, destination)
     {'DATEBEG',    'D',      8,      0}, ; // дата начала действия - по умолчанию т.г
     {'DATEEND',    'D',      8,      0} ;  // дата конец действия - по умолчанию т.г
   }
-  // Static nfile    //:= source + "T006.XML"
-  local nfile, nameRef, j, k
 
   nameRef := 'T006.XML'
   nfile := source + nameRef
@@ -690,13 +696,13 @@ Function work_t006(source, destination)
                   append blank
                   it->CODE := d6->AD_CR
                   it->USL_OK := t6->USL_OK
-                  it->DS := lds
-                  it->DS1 := lds1
-                  it->DS2 := lds2
+                  it->DS := lDS
+                  it->DS1 := lDS1
+                  it->DS2 := lDS2
                 endif
-                kl := max(kl, len(lds))
-                kl1 := max(kl1, len(lds1))
-                kl2 := max(kl2, len(lds2))
+                kl := max(kl, len(lDS))
+                kl1 := max(kl1, len(lDS1))
+                kl2 := max(kl2, len(lDS2))
               endif
               if empty(lDS) // нет основного диагноза
                 select T62
@@ -705,10 +711,10 @@ Function work_t006(source, destination)
                 t62->kz := lkz
                 //t62->PROFIL := ksg->PROFIL
                 if !empty(lDS1)
-                  t62->DS1 := lds1
+                  t62->DS1 := lDS1
                 endif
                 if !empty(lDS2)
-                  t62->DS2 := lds2
+                  t62->DS2 := lDS2
                 endif
                 t62->SY  := d6->SY
                 t62->AGE := d6->AGE
@@ -731,10 +737,10 @@ Function work_t006(source, destination)
                     //t62->PROFIL := ksg->PROFIL
                     t62->DS := s
                     if !empty(lDS1)
-                      t62->DS1 := lds1
+                      t62->DS1 := lDS1
                     endif
                     if !empty(lDS2)
-                      t62->DS2 := lds2
+                      t62->DS2 := lDS2
                     endif
                     t62->SY  := d6->SY
                     t62->AGE := d6->AGE
@@ -763,35 +769,36 @@ Function work_SprMU(source, destination)
   local nameFileUnit := prefixFileName() + 'unit'
   local nameFileUsl := prefixFileName() + 'usl'
   Local _mo_prof := { ;
-    {"SHIFR",      "C",     20,      0}, ;
-    {"VZROS_REB",  "N",      1,      0}, ;
-    {"PROFIL",     "N",      3,      0} ;
+    {'SHIFR',      'C',     20,      0}, ;
+    {'VZROS_REB',  'N',      1,      0}, ;
+    {'PROFIL',     'N',      3,      0} ;
   }
   Local _mo_spec := { ;
-    {"SHIFR",      "C",     20,      0}, ;
-    {"VZROS_REB",  "N",      1,      0}, ;
-    {"PRVS",       "N",      6,      0}, ;
-    {"PRVS_NEW",   "N",      4,      0} ;
+    {'SHIFR',      'C',     20,      0}, ;
+    {'VZROS_REB',  'N',      1,      0}, ;
+    {'PRVS',       'N',      6,      0}, ;
+    {'PRVS_NEW',   'N',      4,      0} ;
   }
   local _t2_v1 := { ;
-    {"SHIFR",        "C",     10,      0}, ;
-    {"SHIFR_MZ",     "C",     20,      0} ;
+    {'SHIFR',        'C',     10,      0}, ;
+    {'SHIFR_MZ',     'C',     20,      0} ;
   }
-  local nfile, nameRef, j, k
+  local nfile, nameRef, j, j1, k, s, i, lshifr, arr_u
+  local oXmlDoc, oXmlNode, oNode1, oNode2
 
-  nameRef := "SprMU.xml"
+  nameRef := 'SprMU.xml'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
 
-  dbcreate( destination + "_mo_t2_v1", _t2_v1)
+  dbcreate( destination + '_mo_t2_v1', _t2_v1)
   use (destination + '_mo_t2_v1') new alias T2V1
 
-  dbcreate(destination + "_mo_prof", _mo_prof)
+  dbcreate(destination + '_mo_prof', _mo_prof)
   use (destination + '_mo_prof') new alias PROF
-  dbcreate(destination + "_mo_spec", _mo_spec)
+  dbcreate(destination + '_mo_spec', _mo_spec)
   use (destination + '_mo_spec') new alias SPEC
 
   use (destination + nameFileUsl) new alias LUSL
@@ -800,7 +807,7 @@ Function work_SprMU(source, destination)
   use (destination + nameFileUnit) new alias UN
   index on str(code, 3) to tmp_unit
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - справочник услуг /наименование, шифр услуги" + hb_eol() )
+  OutStd( nameRef + ' - справочник услуг /наименование, шифр услуги' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -810,92 +817,94 @@ Function work_SprMU(source, destination)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZGLV" == oXmlNode:title
-        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
+      if 'ZGLV' == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode, 'YEAR_REPORT',)) == CURENT_YEAR)
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
-      elseif "ZAP" == oXmlNode:title
+      elseif 'ZAP' == oXmlNode:title
         out_obrabotka_count(j, k)
-        lshifr := mo_read_xml_stroke(oXmlNode,"CodeMU",)
+        lshifr := mo_read_xml_stroke(oXmlNode, 'CodeMU',)
         select LUSL
         find (padr(lshifr, 10))
         if !found()
           append blank
           lusl->shifr := lshifr
         endif
-        lusl->NAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NameMU",))))
+        lusl->NAME := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oXmlNode, 'NameMU',))))
         //МЕНЯТЬ
         lusl->DATEBEG := FIRST_DAY
         lusl->DATEEND := LAST_DAY
-        lusl->USL_OK := 0 ; lusl->USL_OKS := ""
-        if (oNode1 := oXmlNode:Find("USL_OKS")) != NIL
+        lusl->USL_OK := 0
+        lusl->USL_OKS := ''
+        if (oNode1 := oXmlNode:Find('USL_OKS')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "USL_OK" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+            if 'USL_OK' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
               s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
               if empty(lusl->USL_OK)
                 lusl->USL_OK := int(val(s))
                 lusl->USL_OKS := s
               else
-                lusl->USL_OKS := alltrim(lusl->USL_OKS)+","+s
+                lusl->USL_OKS := alltrim(lusl->USL_OKS) + ',' + s
               endif
             endif
           next j1
         endif
-        lusl->ST := val(mo_read_xml_stroke(oXmlNode,"ST",))
-        lusl->VMP_F := lusl->VMP_S := ""
-        if (oNode1 := oXmlNode:Find("VMP_F")) != NIL
+        lusl->ST := val(mo_read_xml_stroke(oXmlNode, 'ST',))
+        lusl->VMP_F := lusl->VMP_S := ''
+        if (oNode1 := oXmlNode:Find('VMP_F')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "V_MP" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+            if 'V_MP' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
               s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
               if empty(lusl->VMP_F)
                 lusl->VMP_F := lusl->VMP_S := s
               else
-                lusl->VMP_S := alltrim(lusl->VMP_S)+","+s
+                lusl->VMP_S := alltrim(lusl->VMP_S) + ',' + s
               endif
             endif
           next j1
         endif
-        lusl->BUKVA := ""
-        if (oNode1 := oXmlNode:Find("PARS")) != NIL
+        lusl->BUKVA := ''
+        if (oNode1 := oXmlNode:Find('PARS')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "PAR" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+            if 'PAR' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
               s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
-              lusl->BUKVA := iif(empty(lusl->BUKVA),"",alltrim(lusl->BUKVA))+upper(s)
+              lusl->BUKVA := iif(empty(lusl->BUKVA), '', alltrim(lusl->BUKVA)) + upper(s)
             endif
           next j1
         endif
-        lusl->idsp := lusl->idsps := ""
-        if (oNode1 := oXmlNode:Find("IDSPS")) != NIL
+        lusl->idsp := lusl->idsps := ''
+        if (oNode1 := oXmlNode:Find('IDSPS')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "IDSP" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+            if 'IDSP' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
               s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
               if empty(lusl->idsp)
                 lusl->idsp := lusl->idsps := s
               else
-                lusl->idsps := alltrim(lusl->idsps)+","+s
+                lusl->idsps := alltrim(lusl->idsps) + ',' + s
               endif
             endif
           next j1
         endif
-        lusl->unit_code := 0 ; lusl->units := ""
-        if (oNode1 := oXmlNode:Find("UNITS")) != NIL
+        lusl->unit_code := 0
+        lusl->units := ''
+        if (oNode1 := oXmlNode:Find('UNITS')) != NIL
           arr_u := {}
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "UNIT_CODE" == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1])=="C"
+            if 'UNIT_CODE' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
               s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
               aadd(arr_u, int(val(s)))
             endif
           next j1
           if len(arr_u) > 0
-            s := ""
+            s := ''
             for i := 1 to len(arr_u)
-              s += iif(i==1,"",",")+lstr(arr_u[i])
+              s += iif(i == 1, '', ',') + lstr(arr_u[i])
             next i
             lusl->units := s
             for i := 1 to len(arr_u)
@@ -908,35 +917,35 @@ Function work_SprMU(source, destination)
             next i
           endif
         endif
-        if (oNode1 := oXmlNode:Find("PROFILES")) != NIL
+        if (oNode1 := oXmlNode:Find('PROFILES')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "PROFILE" == oNode2:title
+            if 'PROFILE' == oNode2:title
               select PROF
               append blank
               prof->SHIFR := lshifr
-              prof->VZROS_REB := val(mo_read_xml_stroke(oNode2,"P_AGE",)) - 1
-              prof->profil := val(mo_read_xml_stroke(oNode2,"P_CODE",))
+              prof->VZROS_REB := val(mo_read_xml_stroke(oNode2, 'P_AGE',)) - 1
+              prof->profil := val(mo_read_xml_stroke(oNode2, 'P_CODE',))
             endif
           next j1
         endif
-        if (oNode1 := oXmlNode:Find("SPECIALTIES")) != NIL
+        if (oNode1 := oXmlNode:Find('SPECIALTIES')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "SPECIALTY" == oNode2:title
+            if 'SPECIALTY' == oNode2:title
               select SPEC
               append blank
               spec->SHIFR := lshifr
-              spec->VZROS_REB := val(mo_read_xml_stroke(oNode2,"S_AGE",)) - 1
-              spec->PRVS_NEW := val(mo_read_xml_stroke(oNode2,"S_CODE",))
+              spec->VZROS_REB := val(mo_read_xml_stroke(oNode2, 'S_AGE',)) - 1
+              spec->PRVS_NEW := val(mo_read_xml_stroke(oNode2, 'S_CODE',))
             endif
           next j1
         endif
-        if (oNode1 := oXmlNode:Find("SERVICE")) != NIL
+        if (oNode1 := oXmlNode:Find('SERVICE')) != NIL
           select T2V1
           append blank
           T2V1->SHIFR := lshifr
-          T2V1->SHIFR_MZ := mo_read_xml_stroke(oXmlNode,"SERVICE",)
+          T2V1->SHIFR_MZ := mo_read_xml_stroke(oXmlNode, 'SERVICE',)
         endif
       endif
     NEXT j
