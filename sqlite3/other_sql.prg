@@ -13,6 +13,76 @@ function make_other(db, source)
   rekv_smo(db, source)
   return nil
 
+// 01.06.23
+function make_t007(db, source)
+  // PROFIL_K,  N,  2
+  // PK_V020,   N,  2
+  // PROFIL,    N,  2
+  // NAME,      C,  255
+
+  local stmt
+  local cmdText
+  local j
+  local nfile, nameRef
+  local profil_k, pk_v020, profil, name
+  local dbSource := 't007'
+
+  cmdText := 'CREATE TABLE t007(profil_k INTEGER, pk_v020 INTEGER, profil INTEGER, name TEXT)'
+
+  nameRef := 't007.dbf'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Справочник T007' + hb_eol())
+  endif
+  
+  OutStd(hb_eol() + 'Классификатор T007' + hb_eol())
+
+  if sqlite3_exec(db, 'DROP TABLE if EXISTS t007') == SQLITE_OK
+    OutStd('DROP TABLE t007 - Ok' + hb_eol())
+  endif
+
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd('CREATE TABLE t007 - Ok' + hb_eol() )
+  else
+    OutStd('CREATE TABLE t007 - False' + hb_eol() )
+    return nil
+  endif
+
+  cmdText := 'INSERT INTO t007 (profil_k, pk_v020, profil, name) VALUES (:profil_k, :pk_v020, :profil, :name)'
+  stmt := sqlite3_prepare(db, cmdText)
+
+  dbUseArea(.t., , nfile, dbSource, .t., .f.)
+  j := 0
+  do while !(dbSource)->(EOF())
+    j++
+    profil_k := (dbSource)->PROFIL_K
+    pk_v020 := (dbSource)->PK_V020
+    profil := (dbSource)->PROFIL
+    name := hb_strToUTF8((dbSource)->NAME, 'RU866')
+
+    if sqlite3_bind_int(stmt, 1, profil_k) == SQLITE_OK .AND. ;
+      sqlite3_bind_int(stmt, 2, pk_v020) == SQLITE_OK .AND. ;
+      sqlite3_bind_int(stmt, 3, profil) == SQLITE_OK .AND. ;
+      sqlite3_bind_text(stmt, 4, name) == SQLITE_OK
+      if sqlite3_step(stmt) != SQLITE_DONE
+        out_error(TAG_ROW_INVALID, nfile, j)
+      endif
+    endif
+    sqlite3_reset(stmt)
+
+    (dbSource)->(dbSkip())
+  end do
+
+  (dbSource)->(dbCloseArea())
+
+  sqlite3_clear_bindings(stmt)
+  sqlite3_finalize(stmt)
+  out_obrabotka_eol()
+  return nil
+
 // 19.05.23
 function make_t005(db, source)
   // CODE,     "N",    4,      0
