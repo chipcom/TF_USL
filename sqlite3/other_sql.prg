@@ -3,10 +3,11 @@
 
 #require 'hbsqlit3'
 
-// 31.03.23
+// 01.06.23
 function make_other(db, source)
 
-  make_t005(db, source)
+  // make_t005(db, source)
+  make_t007(db, source)
   make_ISDErr(db, source)
   dlo_lgota(db, source)
   err_csv_prik(db, source)
