@@ -63,7 +63,7 @@ external errorsys
 function prefixFileName()
   return '_mo' + substr(CURENT_YEAR, 4, 1)
 
-// 22.05.23
+// 20.06.23
 proc main( ... )
   Local _mo_usl := { ;
     {'SHIFR',      'C',     10,      0}, ;
@@ -212,7 +212,7 @@ proc main( ... )
 
   // InitSpravFFOMS(source, destination)
   //
-  read_spr_N00X(source, destination)
+  // read_spr_N00X(source, destination)
   //
   OutStd( '********' + hb_eol() )
   OutStd( '‘¯à ¢®ç­¨ª¨ ’”ŽŒ‘.' + hb_eol() )
@@ -321,14 +321,14 @@ proc main( ... )
   //
   work_uslc(source, destination)
   //
-  use (destination + nameFileUslC) new alias LUSLC
-  go top
-  do while !eof()
-    if luslc->DATEEND == 0d20191231
-      luslc->DATEEND := ctod('')
-    endif
-    skip
-  enddo
+  // use (destination + nameFileUslC) new alias LUSLC
+  // go top
+  // do while !eof()
+  //   if luslc->DATEEND == 0d20191231
+  //     luslc->DATEEND := ctod('')
+  //   endif
+  //   skip
+  // enddo
   close databases
   //
   aup := {}

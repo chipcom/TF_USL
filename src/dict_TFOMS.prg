@@ -1203,18 +1203,18 @@ Function work_SprKiro(source, destination)
   close databases
   return NIL
 
-// 12.02.22
+// 20.06.23
 Function work_uslc(source, destination)
   Local _mo_uslc := { ;
-    {"CODEMO",     "C",      6,      0}, ;
-    {"SHIFR",      "C",     10,      0}, ;
-    {"usl_ok",     "N",      1,      0}, ;
-    {"DEPART",     "N",      3,      0}, ;
-    {"UROVEN",     "C",      5,      0}, ;
-    {"VZROS_REB",  "N",      1,      0}, ;
-    {"CENA",       "N",     10,      2}, ;
-    {"DATEBEG",    "D",      8,      0}, ;
-    {"DATEEND",    "D",      8,      0} ;
+    {'CODEMO',     'C',      6,      0}, ;
+    {'SHIFR',      'C',     10,      0}, ;
+    {'usl_ok',     'N',      1,      0}, ;
+    {'DEPART',     'N',      3,      0}, ;
+    {'UROVEN',     'C',      5,      0}, ;
+    {'VZROS_REB',  'N',      1,      0}, ;
+    {'CENA',       'N',     10,      2}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
 
   local nameFile := prefixFileName() + 'uslc'
@@ -1228,12 +1228,13 @@ Function work_uslc(source, destination)
 
   Local nul_level := padr('0', 5)
   //Local nul_level := padr('1', 5)
+  local lshifr_4
 
   // ? "Создание файла " + nameFile + ".dbf - "
-  out_create_file(nameFile + ".dbf")
+  out_create_file(nameFile + '.dbf')
   dbcreate(destination + nameFile, _mo_uslc)
-  dbcreate(destination + "not_usl", {{"shifr","C", 10, 0}, {"spr_mu","N", 1, 0}, {"s_price","N", 1, 0}})
-  dbcreate(destination + "not_lev", {{"codem","C", 6, 0}, {"shifr","C", 10, 0}, {"usl_ok","N", 1, 0}, {"level","C", 5, 0}, {"depart","N", 3, 0}})
+  dbcreate(destination + 'not_usl', {{'shifr', 'C', 10, 0}, {'spr_mu', 'N', 1, 0}, {'s_price', 'N', 1, 0}})
+  dbcreate(destination + 'not_lev', {{'codem', 'C', 6, 0}, {'shifr', 'C', 10, 0}, {'usl_ok', 'N', 1, 0}, {'level', 'C', 5, 0}, {'depart', 'N', 3, 0}})
 
   use (destination + nameFileDep) new alias DEP
   use (destination + nameFileDepPr) new alias DP
@@ -1242,7 +1243,7 @@ Function work_uslc(source, destination)
   use (destination + 'not_usl') new
   index on shifr to not_usl
   use (destination + 'not_lev') new
-  index on codem+shifr+str(usl_ok, 1)+level+str(depart, 3) to not_lev
+  index on codem + shifr + str(usl_ok, 1) + level + str(depart, 3) to not_lev
 
   use (destination + nameFileUsl) new alias LUSL
   index on shifr to tmp_lusl
@@ -1250,46 +1251,51 @@ Function work_uslc(source, destination)
   use (destination + nameFile) new alias LUSLC
 
   use (destination + nameFilePrices) new alias PRIC
-  index on shifr+str(vzros_reb, 1)+level to tmp_prices
+  index on shifr + str(vzros_reb, 1) + level to tmp_prices
   
   use (destination + nameFileLvlPay) new alias LP
-  index on codem+str(usl_ok, 1)+level+str(depart, 3) to tmp_lvlpay
+  index on codem + str(usl_ok, 1) + level + str(depart, 3) to tmp_lvlpay
 
   use (destination + nameFileMoServ) new alias SERV
   go top
   do while !eof()
-    // @ row(), 30 say str(recno()/lastrec()*100, 6, 2)+"%"
     out_obrabotka_count(recno(), lastrec())
     lcodem := serv->codem
     lshifr := serv->shifr
     select LUSL
     find (lshifr)
     if found()
-      fld := lcodem=='801942' .and. alltrim(lshifr)=='2.78.15'
+      fld := lcodem == '801942' .and. alltrim(lshifr) == '2.78.15'
       lusl_ok := lusl->usl_ok
-      arr1 := {} ; arr2 := {}
+      arr1 := {}
+      arr2 := {}
       select LP
-      find (lcodem+str(lusl_ok, 1))
+      find (lcodem + str(lusl_ok, 1))
       do while lp->codem == lcodem .and. lp->usl_ok == lusl_ok .and. !eof()
         fl := .t.
         llevel := lp->level
-        aadd(arr1,llevel)
+        aadd(arr1, llevel)
         select PRIC
         find (lshifr)
         if found()
           for lvzros_reb := 0 to 1
             select PRIC
-            find (lshifr+str(lvzros_reb, 1)+llevel)
+            find (lshifr + str(lvzros_reb, 1) + llevel)
             do while pric->shifr == lshifr .and. pric->vzros_reb == lvzros_reb .and. pric->level == llevel .and. !eof()
-              if between_date(pric->datebeg,pric->dateend,lp->datebeg,lp->dateend) .or. ;
-                between_date(lp->datebeg,lp->dateend,pric->datebeg,pric->dateend)
+              if between_date(pric->datebeg, pric->dateend, lp->datebeg, lp->dateend) .or. ;
+                between_date(lp->datebeg, lp->dateend, pric->datebeg, pric->dateend)
                 lcena := pric->cena
-                bd := max(lp->datebeg,pric->datebeg)
-                bd := max(bd,serv->datebeg)
-                ed := min(lp->dateend,pric->dateend)
-                ed := min(ed,serv->dateend)
+                lshifr_4 := substr(lshifr, 1, 4)
+                if lshifr_4 == '1.22' .or. lshifr_4 == '1.11' .or. lshifr_4 == '1.19' .or. lshifr_4 == '60.3'
+                  bd := pric->datebeg
+                else
+                  bd := max(lp->datebeg, pric->datebeg)
+                endif
+                bd := max(bd, serv->datebeg)
+                ed := min(lp->dateend, pric->dateend)
+                ed := min(ed, serv->dateend)
                 if fl
-                  aadd(arr2,llevel)
+                  aadd(arr2, llevel)
                 endif
                 fl := .f.
                 select LUSLC
@@ -1314,17 +1320,22 @@ Function work_uslc(source, destination)
           if fl .and. empty(lp->depart)
             for lvzros_reb := 0 to 1
               select PRIC
-              find (lshifr+str(lvzros_reb, 1)+nul_level)
+              find (lshifr + str(lvzros_reb, 1) + nul_level)
               do while pric->shifr == lshifr .and. pric->vzros_reb == lvzros_reb .and. pric->level == nul_level .and. !eof()
-                if between_date(pric->datebeg,pric->dateend,lp->datebeg,lp->dateend) .or. ;
-                      between_date(lp->datebeg,lp->dateend,pric->datebeg,pric->dateend)
+                if between_date(pric->datebeg, pric->dateend, lp->datebeg, lp->dateend) .or. ;
+                      between_date(lp->datebeg, lp->dateend, pric->datebeg, pric->dateend)
                   lcena := pric->cena
-                  bd := max(lp->datebeg,pric->datebeg)
-                  bd := max(bd,serv->datebeg)
-                  ed := min(lp->dateend,pric->dateend)
-                  ed := min(ed,serv->dateend)
+                  lshifr_4 := substr(lshifr, 1, 4)
+                  if lshifr_4 == '1.22' .or. lshifr_4 == '1.11' .or. lshifr_4 == '1.19' .or. lshifr_4 == '60.3' 
+                      bd := pric->datebeg
+                  else
+                    bd := max(lp->datebeg, pric->datebeg)
+                  endif
+                    bd := max(bd, serv->datebeg)
+                  ed := min(lp->dateend, pric->dateend)
+                  ed := min(ed, serv->dateend)
                   if fl
-                    aadd(arr2,llevel)
+                    aadd(arr2, llevel)
                   endif
                   fl := .f.
                   select LUSLC
@@ -1357,7 +1368,7 @@ Function work_uslc(source, destination)
         endif
         if fl .and. empty(lp->depart)  // не найдено ни одного уровня оплаты в _mo0lvlpay для lcodem ...
           select NOT_LEV
-          find (lcodem+lshifr+str(lusl_ok, 1)+llevel+str(lp->depart, 3))
+          find (lcodem + lshifr + str(lusl_ok, 1) + llevel + str(lp->depart, 3))
           if !found()
             append blank
             replace codem with lcodem, shifr with lshifr, usl_ok with lusl_ok, ;
@@ -1370,13 +1381,13 @@ Function work_uslc(source, destination)
       if empty(arr2) // если по всем ненулевым кодам depart не найдены цены
         for lvzros_reb := 0 to 1
           select PRIC
-          find (lshifr+str(lvzros_reb, 1)+nul_level)
+          find (lshifr + str(lvzros_reb, 1) + nul_level)
           do while pric->shifr == lshifr .and. pric->vzros_reb == lvzros_reb .and. pric->level == nul_level .and. !eof()
             lcena := pric->cena
             bd := pric->datebeg
             ed := pric->dateend
-            bd := max(bd,serv->datebeg)
-            ed := min(ed,serv->dateend)
+            bd := max(bd, serv->datebeg)
+            ed := min(ed, serv->dateend)
             select LUSLC
             append blank
             luslc->CODEMO    := lcodem
@@ -1397,12 +1408,12 @@ Function work_uslc(source, destination)
         next
       elseif len(arr1) > len(arr2)
         select LP
-        find (lcodem+str(lusl_ok, 1))
+        find (lcodem + str(lusl_ok, 1))
         do while lp->codem == lcodem .and. lp->usl_ok == lusl_ok .and. !eof()
           llevel := lp->level
-          if ascan(arr2,llevel) == 0
+          if ascan(arr2, llevel) == 0
             select NOT_LEV
-            find (lcodem+lshifr+str(lusl_ok, 1)+llevel+str(lp->depart, 3))
+            find (lcodem + lshifr + str(lusl_ok, 1) + llevel + str(lp->depart, 3))
             if !found()
               append blank
               replace codem with lcodem, shifr with lshifr, usl_ok with lusl_ok, ;
@@ -1424,6 +1435,17 @@ Function work_uslc(source, destination)
     select SERV
     skip
   enddo
+
+  // use (destination + nameFileUslC) new alias LUSLC
+  select LUSLC
+  go top
+  do while !eof()
+    if luslc->DATEEND == 0d20191231
+      luslc->DATEEND := ctod('')
+    endif
+    skip
+  enddo
+
   out_obrabotka_eol()
   close databases
   return NIL
