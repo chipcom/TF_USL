@@ -1166,7 +1166,7 @@ Function work_SprKiro(source, destination)
   close databases
   return NIL
 
-// 20.06.23
+// 21.06.23
 Function work_uslc(source, destination)
   Local _mo_uslc := { ;
     {'CODEMO',     'C',      6,      0}, ;
@@ -1195,17 +1195,17 @@ Function work_uslc(source, destination)
 
   out_create_file(nameFile + '.dbf')
   dbcreate(destination + nameFile, _mo_uslc)
-  dbcreate(destination + 'not_usl', {{'shifr', 'C', 10, 0}, {'spr_mu', 'N', 1, 0}, {'s_price', 'N', 1, 0}})
-  dbcreate(destination + 'not_lev', {{'codem', 'C', 6, 0}, {'shifr', 'C', 10, 0}, {'usl_ok', 'N', 1, 0}, {'level', 'C', 5, 0}, {'depart', 'N', 3, 0}})
+  // dbcreate(destination + 'not_usl', {{'shifr', 'C', 10, 0}, {'spr_mu', 'N', 1, 0}, {'s_price', 'N', 1, 0}})
+  // dbcreate(destination + 'not_lev', {{'codem', 'C', 6, 0}, {'shifr', 'C', 10, 0}, {'usl_ok', 'N', 1, 0}, {'level', 'C', 5, 0}, {'depart', 'N', 3, 0}})
 
   use (destination + nameFileDep) new alias DEP
   use (destination + nameFileDepPr) new alias DP
   use (destination + nameFileSubDiv) new alias SD
   //
-  use (destination + 'not_usl') new
-  index on shifr to not_usl
-  use (destination + 'not_lev') new
-  index on codem + shifr + str(usl_ok, 1) + level + str(depart, 3) to not_lev
+  // use (destination + 'not_usl') new
+  // index on shifr to not_usl
+  // use (destination + 'not_lev') new
+  // index on codem + shifr + str(usl_ok, 1) + level + str(depart, 3) to not_lev
 
   use (destination + nameFileUsl) new alias LUSL
   index on shifr to tmp_lusl
@@ -1321,22 +1321,22 @@ Function work_uslc(source, destination)
             next
           endif
         else
-          select not_usl
-          find (lshifr)
-          if !found()
-            append blank
-          endif
-          replace shifr with lshifr, s_price with 1
+          // select not_usl
+          // find (lshifr)
+          // if !found()
+          //   append blank
+          // endif
+          // replace shifr with lshifr, s_price with 1
         endif
-        if fl .and. empty(lp->depart)  // не найдено ни одного уровня оплаты в _mo0lvlpay для lcodem ...
-          select NOT_LEV
-          find (lcodem + lshifr + str(lusl_ok, 1) + llevel + str(lp->depart, 3))
-          if !found()
-            append blank
-            replace codem with lcodem, shifr with lshifr, usl_ok with lusl_ok, ;
-                  level with llevel, depart with lp->depart
-          endif
-        endif
+        // if fl .and. empty(lp->depart)  // не найдено ни одного уровня оплаты в _mo0lvlpay для lcodem ...
+        //   select NOT_LEV
+        //   find (lcodem + lshifr + str(lusl_ok, 1) + llevel + str(lp->depart, 3))
+        //   if !found()
+        //     append blank
+        //     replace codem with lcodem, shifr with lshifr, usl_ok with lusl_ok, ;
+        //           level with llevel, depart with lp->depart
+        //   endif
+        // endif
         select LP
         skip
       enddo
@@ -1372,27 +1372,27 @@ Function work_uslc(source, destination)
         select LP
         find (lcodem + str(lusl_ok, 1))
         do while lp->codem == lcodem .and. lp->usl_ok == lusl_ok .and. !eof()
-          llevel := lp->level
-          if ascan(arr2, llevel) == 0
-            select NOT_LEV
-            find (lcodem + lshifr + str(lusl_ok, 1) + llevel + str(lp->depart, 3))
-            if !found()
-              append blank
-              replace codem with lcodem, shifr with lshifr, usl_ok with lusl_ok, ;
-                    level with llevel, depart with lp->depart
-            endif
-          endif
+          // llevel := lp->level
+          // if ascan(arr2, llevel) == 0
+          //   select NOT_LEV
+          //   find (lcodem + lshifr + str(lusl_ok, 1) + llevel + str(lp->depart, 3))
+          //   if !found()
+          //     append blank
+          //     replace codem with lcodem, shifr with lshifr, usl_ok with lusl_ok, ;
+          //           level with llevel, depart with lp->depart
+          //   endif
+          // endif
           select LP
           skip
         enddo
       endif
     else
-      select not_usl
-      find (lshifr)
-      if !found()
-        append blank
-      endif
-      replace shifr with lshifr, spr_mu with 1
+      // select not_usl
+      // find (lshifr)
+      // if !found()
+      //   append blank
+      // endif
+      // replace shifr with lshifr, spr_mu with 1
     endif
     select SERV
     skip
