@@ -158,6 +158,9 @@ proc main( ... )
     quit
   endi
  
+  make_Q015(source, destination)
+  make_Q016(source, destination)
+  make_Q017(source, destination)
 
   // InitSpravFFOMS(source, destination)
   //
