@@ -182,10 +182,6 @@ FUNCTION read_spr_N00X( source, destination )
          loop
       endif
 
-      if check_izm_file(nameRef, nfile)
-         loop
-      endif
-
       nameArr := "_mo_n" + StrZero( i, 3 )
       dbcreate(destination + nameArr, &nameArr)
         

@@ -26,10 +26,6 @@ Function work_Shema(source, destination)
     return nil
   endif
 
-  if check_izm_file(nameRef, nfile)
-    return nil
-  endif
-
   dbcreate(destination + nameFile, _mo_shema)
   use (destination + nameFile) new alias SH
   index on kod to tmp_shema
@@ -98,12 +94,11 @@ Function make_T001(source, destination)
   local dbSource := 'T001'
   local mName := '', mArr
 
-  // ? 'Т001.dbf     - Справочник МО и обособленных подразделений, финансируемых самостоятельно'
   OutStd( 'Т001.dbf - Справочник МО и обособленных подразделений, финансируемых самостоятельно' + hb_eol() )
   dbcreate(destination + '_mo_t001', _mo_T001)
-  dbUseArea( .t.,, destination + dbName, dbName, .t., .f. )
+  dbUseArea( .t., , destination + dbName, dbName, .t., .f. )
 
-  dbUseArea( .t.,, source + dbSource, dbSource, .f., .f. )
+  dbUseArea( .t., , source + dbSource, dbSource, .f., .f. )
   (dbSource)->(dbGoTop())
   do while !(dbSource)->(EOF())
     if (dbSource)->(DATEEND) > FIRST_DAY  //0d20210101
@@ -146,10 +141,6 @@ Function work_SprUnit(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  if check_izm_file(nameRef, nfile)
     return nil
   endif
 
@@ -212,10 +203,6 @@ Function work_MOServ(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  if check_izm_file(nameRef, nfile)
     return nil
   endif
 
@@ -292,10 +279,6 @@ Function work_Prices(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  if check_izm_file(nameRef, nfile)
     return nil
   endif
 
@@ -419,9 +402,6 @@ Function work_mo_uslf(source, destination)
         lusl->NAME    := ltrim(charrem(eos,charone(' ', v001->RBNAME)))
         lusl->DATEBEG := v001->DATEBEG
         lusl->DATEEND := v001->DATEEND
-        // select TEL
-        // find (left(lusl->SHIFR, 15))
-        // if found()
         if is_usluga_telemed(lusl->SHIFR)
           lusl->telemed := 1
         endif
@@ -430,21 +410,11 @@ Function work_mo_uslf(source, destination)
         if found()
           lusl->par_org := po->organ
         endif
-        // select ON
-        // find (left(lusl->SHIFR, 15))
-        // if found()
-        //   lusl->onko_napr := on->id_tlech
-        // endif
         napr := ret_onko_napr(lusl->SHIFR)
         if ! napr == 0
           lusl->onko_napr := napr   // ret_onko_napr(lusl->SHIFR)
         endif
         
-        // select OK
-        // find (left(lusl->SHIFR, 15))
-        // if found()
-        //   lusl->onko_ksg := iif(empty(ok->id_tlech), 6, ok->id_tlech)
-        // endif
         o_ksg := ret_onko_ksg(lusl->SHIFR)
         if ! isnil(o_ksg)
           lusl->onko_ksg := iif(empty(o_ksg), 6, o_ksg)
@@ -481,7 +451,6 @@ Function work_t006(source, destination)
   local nameFileIt1 := prefixFileName() + 'it1'
   Local lshifr, lsy, lDS, lDS1, lDS2, oNode1, oNode2, lkz, kl, kl1, kl2
   local nfile, nameRef, j, j1, k, i, s
-  // Static nfile    //:= source + "T006.XML"
 
   Local _mo_usl := { ;
     {'SHIFR',      'C',     10,      0}, ;
@@ -960,7 +929,7 @@ Function work_SprDS(source, destination)
   local nameFileUslF := prefixFileName() + 'uslf'
   local nfile, nameRef, j, k
 
-  nameRef := "SprDS.xml"
+  nameRef := 'SprDS.xml'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -971,7 +940,7 @@ Function work_SprDS(source, destination)
   use (destination + nameFileUslF) new alias LUSL
   index on shifr to tmp_lusl
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - федеральный справочник услуг" + hb_eol() )
+  OutStd( nameRef + ' - федеральный справочник услуг' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -982,37 +951,39 @@ Function work_SprDS(source, destination)
     FOR j := 1 TO k
       out_obrabotka_count(j, k)
       o1 := oXmlDoc:aItems[1]:aItems[j]
-      if "GRP" == o1:title
-        ngrp := val(mo_read_xml_stroke(o1,"C_GRP",))
-        if (o2 := o1:Find("ZAPS")) != NIL
+      if 'GRP' == o1:title
+        ngrp := val(mo_read_xml_stroke(o1, 'C_GRP',))
+        if (o2 := o1:Find('ZAPS')) != NIL
           for j1o2 := 1 TO Len( o2:aItems )
             oXmlNode := o2:aItems[j1o2]
-            if "ZAP" == oXmlNode:title
-              lshifr := mo_read_xml_stroke(oXmlNode,"CodeMU",)
+            if 'ZAP' == oXmlNode:title
+              lshifr := mo_read_xml_stroke(oXmlNode, 'CodeMU',)
               fl := .f.
               muetv := muetd := 0
-              if (oNode1 := oXmlNode:Find("UETV")) != NIL
+              if (oNode1 := oXmlNode:Find('UETV')) != NIL
                 for j1 := 1 TO Len( oNode1:aItems )
                   oNode2 := oNode1:aItems[j1]
-                  if "UET_A" == oNode2:title
-                    bd := xml2date(mo_read_xml_stroke(oNode2,"DA_B",))
-                    ed := xml2date(mo_read_xml_stroke(oNode2,"DA_E",))
-                    if between_date(bd,ed,sys_date)
-                      mUETV := val(mo_read_xml_stroke(oNode2,"VAL_UETA",))
-                      fl := .t. ; exit
+                  if 'UET_A' == oNode2:title
+                    bd := xml2date(mo_read_xml_stroke(oNode2, 'DA_B',))
+                    ed := xml2date(mo_read_xml_stroke(oNode2, 'DA_E',))
+                    if between_date(bd, ed, sys_date)
+                      mUETV := val(mo_read_xml_stroke(oNode2, 'VAL_UETA',))
+                      fl := .t.
+                      exit
                     endif
                   endif
                 next j1
               endif
-              if (oNode1 := oXmlNode:Find("UETD")) != NIL
+              if (oNode1 := oXmlNode:Find('UETD')) != NIL
                 for j1 := 1 TO Len( oNode1:aItems )
                   oNode2 := oNode1:aItems[j1]
-                  if "UET_C" == oNode2:title
-                    bd := xml2date(mo_read_xml_stroke(oNode2,"DC_B",))
-                    ed := xml2date(mo_read_xml_stroke(oNode2,"DC_E",))
-                    if between_date(bd,ed,sys_date)
-                      mUETD := val(mo_read_xml_stroke(oNode2,"VAL_UETC",))
-                      fl := .t. ; exit
+                  if 'UET_C' == oNode2:title
+                    bd := xml2date(mo_read_xml_stroke(oNode2, 'DC_B',))
+                    ed := xml2date(mo_read_xml_stroke(oNode2, 'DC_E',))
+                    if between_date(bd, ed, sys_date)
+                      mUETD := val(mo_read_xml_stroke(oNode2, 'VAL_UETC',))
+                      fl := .t.
+                      exit
                     endif
                   endif
                 next j1
@@ -1030,31 +1001,31 @@ Function work_SprDS(source, destination)
                 lusl->UETV := mUETV
                 lusl->UETD := mUETD
                 lusl->grp  := ngrp
-                lusl->NAME := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NameMU",))))
-                lusl->DATEBEG := xml2date(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
-                lusl->DATEEND := xml2date(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-                lusl->zf := val(mo_read_xml_stroke(oXmlNode,"T_FORMULA",))
-                if (oNode1 := oXmlNode:Find("PROFILES")) != NIL
+                lusl->NAME := ltrim(charrem(eos, charone(' ', mo_read_xml_stroke(oXmlNode, 'NameMU',))))
+                lusl->DATEBEG := xml2date(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
+                lusl->DATEEND := xml2date(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
+                lusl->zf := val(mo_read_xml_stroke(oXmlNode, 'T_FORMULA',))
+                if (oNode1 := oXmlNode:Find('PROFILES')) != NIL
                   for j1 := 1 TO Len( oNode1:aItems )
                     oNode2 := oNode1:aItems[j1]
-                    if "PROFILE" == oNode2:title
+                    if 'PROFILE' == oNode2:title
                       select PROF
                       append blank
                       prof->SHIFR := lshifr
-                      prof->VZROS_REB := val(mo_read_xml_stroke(oNode2,"P_AGE",)) - 1
-                      prof->profil := val(mo_read_xml_stroke(oNode2,"P_CODE",))
+                      prof->VZROS_REB := val(mo_read_xml_stroke(oNode2, 'P_AGE',)) - 1
+                      prof->profil := val(mo_read_xml_stroke(oNode2, 'P_CODE',))
                     endif
                   next j1
                 endif
-                if (oNode1 := oXmlNode:Find("SPECIALTIES")) != NIL
+                if (oNode1 := oXmlNode:Find('SPECIALTIES')) != NIL
                   for j1 := 1 TO Len( oNode1:aItems )
                     oNode2 := oNode1:aItems[j1]
-                    if "SPECIALTY" == oNode2:title
+                    if 'SPECIALTY' == oNode2:title
                       select SPEC
                       append blank
                       spec->SHIFR := lshifr
-                      spec->VZROS_REB := val(mo_read_xml_stroke(oNode2,"S_AGE",)) - 1
-                      spec->PRVS_NEW := val(mo_read_xml_stroke(oNode2,"S_CODE",))
+                      spec->VZROS_REB := val(mo_read_xml_stroke(oNode2, 'S_AGE',)) - 1
+                      spec->PRVS_NEW := val(mo_read_xml_stroke(oNode2, 'S_CODE',))
                     endif
                   next j1
                 endif
@@ -1072,24 +1043,20 @@ Function work_SprDS(source, destination)
 // 12.02.22
 Function work_SprKslp(source, destination)
   Local _mo_kslp := { ;
-    {"CODE",       "N",      2,      0}, ;
-    {"NAME",       "C",     55,      0}, ;
-    {"NAME_F",     "C",    255,      0}, ;
-    {"COEFF",      "N",      4,      2}, ;
-    {"DATEBEG",    "D",      8,      0}, ;
-    {"DATEEND",    "D",      8,      0} ;
+    {'CODE',       'N',      2,      0}, ;
+    {'NAME',       'C',     55,      0}, ;
+    {'NAME_F',     'C',    255,      0}, ;
+    {'COEFF',      'N',      4,      2}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'kslp'
 
-  nameRef := "SprKslp.xml"
+  nameRef := 'SprKslp.xml'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  if check_izm_file(nameRef, nfile)
     return nil
   endif
 
@@ -1097,7 +1064,7 @@ Function work_SprKslp(source, destination)
   use (destination + nameFile) new alias KS
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - для КСГ - КСЛП" + hb_eol() )
+  OutStd( nameRef + ' - для КСГ - КСЛП' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -1107,25 +1074,25 @@ Function work_SprKslp(source, destination)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZGLV" == oXmlNode:title
-        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
+      if 'ZGLV' == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode, 'YEAR_REPORT',)) == CURENT_YEAR)
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
-      elseif "ZAP" == oXmlNode:title
+      elseif 'ZAP' == oXmlNode:title
         out_obrabotka_count(j, k)
-        if (oNode1 := oXmlNode:Find("COEFF")) != NIL
+        if (oNode1 := oXmlNode:Find('COEFF')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "ENTRY" == oNode2:title
+            if 'ENTRY' == oNode2:title
               select KS
               append blank
-              ks->code    := val(mo_read_xml_stroke(oXmlNode,"CODE",))
-              ks->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
-              ks->NAME_F  := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME_F",))))
-              ks->COEFF   := val(mo_read_xml_stroke(oNode2,"C_VAL",))
-              ks->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
-              ks->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
+              ks->code    := val(mo_read_xml_stroke(oXmlNode, 'CODE',))
+              ks->NAME    := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oXmlNode, 'NAME',))))
+              ks->NAME_F  := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oXmlNode, 'NAME_F',))))
+              ks->COEFF   := val(mo_read_xml_stroke(oNode2, 'C_VAL',))
+              ks->DATEBEG := xml2date(mo_read_xml_stroke(oNode2, 'D_B',))
+              ks->DATEEND := xml2date(mo_read_xml_stroke(oNode2, 'D_E',))
             endif
           next j1
         endif
@@ -1139,24 +1106,20 @@ Function work_SprKslp(source, destination)
 // 12.02.22
 Function work_SprKiro(source, destination)
   Local _mo_kiro := { ;
-    {"CODE",       "N",      2,      0}, ;
-    {"NAME",       "C",     55,      0}, ;
-    {"NAME_F",     "C",    255,      0}, ;
-    {"COEFF",      "N",      4,      2}, ;
-    {"DATEBEG",    "D",      8,      0}, ;
-    {"DATEEND",    "D",      8,      0} ;
+    {'CODE',       'N',      2,      0}, ;
+    {'NAME',       'C',     55,      0}, ;
+    {'NAME_F',     'C',    255,      0}, ;
+    {'COEFF',      'N',      4,      2}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'kiro'
 
-  nameRef := "S_KIRO.xml"
+  nameRef := 'S_KIRO.xml'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  if check_izm_file(nameRef, nfile)
     return nil
   endif
 
@@ -1164,7 +1127,7 @@ Function work_SprKiro(source, destination)
   use (destination + nameFile) new alias KS
 
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - для КСГ - КИРО" + hb_eol() )
+  OutStd( nameRef + ' - для КСГ - КИРО' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -1174,25 +1137,25 @@ Function work_SprKiro(source, destination)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZGLV" == oXmlNode:title
-        if !((j1 := mo_read_xml_stroke(oXmlNode,"YEAR_REPORT",)) == CURENT_YEAR)
+      if 'ZGLV' == oXmlNode:title
+        if !((j1 := mo_read_xml_stroke(oXmlNode, 'YEAR_REPORT',)) == CURENT_YEAR)
           out_error(TAG_YEAR_REPORT, nfile, j1)
           exit
         endif
-      elseif "ZAP" == oXmlNode:title
+      elseif 'ZAP' == oXmlNode:title
         out_obrabotka_count(j, k)
-        if (oNode1 := oXmlNode:Find("COEFF")) != NIL
+        if (oNode1 := oXmlNode:Find('COEFF')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "ENTRY" == oNode2:title
+            if 'ENTRY' == oNode2:title
               select KS
               append blank
-              ks->code    := val(mo_read_xml_stroke(oXmlNode,"CODE",))
-              ks->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME",))))
-              ks->NAME_F  := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oXmlNode,"NAME_F",))))
-              ks->COEFF   := val(mo_read_xml_stroke(oNode2,"C_VAL",))
-              ks->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
-              ks->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
+              ks->code    := val(mo_read_xml_stroke(oXmlNode, 'CODE',))
+              ks->NAME    := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oXmlNode, 'NAME',))))
+              ks->NAME_F  := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oXmlNode, 'NAME_F',))))
+              ks->COEFF   := val(mo_read_xml_stroke(oNode2, 'C_VAL',))
+              ks->DATEBEG := xml2date(mo_read_xml_stroke(oNode2, 'D_B',))
+              ks->DATEEND := xml2date(mo_read_xml_stroke(oNode2, 'D_E',))
             endif
           next j1
         endif
@@ -1230,7 +1193,6 @@ Function work_uslc(source, destination)
   //Local nul_level := padr('1', 5)
   local lshifr_4
 
-  // ? "Создание файла " + nameFile + ".dbf - "
   out_create_file(nameFile + '.dbf')
   dbcreate(destination + nameFile, _mo_uslc)
   dbcreate(destination + 'not_usl', {{'shifr', 'C', 10, 0}, {'spr_mu', 'N', 1, 0}, {'s_price', 'N', 1, 0}})
@@ -1455,32 +1417,28 @@ Function work_uslc(source, destination)
 Function work_SprSubDiv(source, destination)
 
   Local _mo_subdiv := { ;
-    {"CODEM",      "C",      6,      0}, ;
-    {"MCODE",      "C",      6,      0}, ;
-    {"CODE",       "N",      3,      0}, ;
-    {"NAME",       "C",     60,      0}, ;
-    {"flag",       "N",      1,      0}, ;
-    {"DATEBEG",    "D",      8,      0}, ;
-    {"DATEEND",    "D",      8,      0} ;
+    {'CODEM',      'C',      6,      0}, ;
+    {'MCODE',      'C',      6,      0}, ;
+    {'CODE',       'N',      3,      0}, ;
+    {'NAME',       'C',     60,      0}, ;
+    {'flag',       'N',      1,      0}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
   }
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'subdiv'
 
-  nameRef := "S_SubDiv.xml"
+  nameRef := 'S_SubDiv.xml'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   endif
 
-  if check_izm_file(nameRef, nfile)
-    return nil
-  endif
-
   dbcreate(destination + nameFile, _mo_subdiv)
   use (destination + nameFile) new alias SD
   oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - список 11 учреждений с разными уровнями оплаты" + hb_eol() )
+  OutStd( nameRef + ' - список 11 учреждений с разными уровнями оплаты' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     CLOSE databases
@@ -1490,22 +1448,22 @@ Function work_SprSubDiv(source, destination)
     k := Len( oXmlDoc:aItems[1]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "MO_PLACES" == oXmlNode:title
+      if 'MO_PLACES' == oXmlNode:title
         out_obrabotka_count(j, k)
-        if (oNode1 := oXmlNode:Find("PLACES")) != NIL
+        if (oNode1 := oXmlNode:Find('PLACES')) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[j1]
-            if "PLACE" == oNode2:title
-              if (str(year(xml2date(mo_read_xml_stroke(oNode2,"D_E",))), 4) >= CURENT_YEAR) .or. empty(str(year(xml2date(mo_read_xml_stroke(oNode2,"D_E",))), 4))
+            if 'PLACE' == oNode2:title
+              if (str(year(xml2date(mo_read_xml_stroke(oNode2, 'D_E',))), 4) >= CURENT_YEAR) .or. empty(str(year(xml2date(mo_read_xml_stroke(oNode2, 'D_E',))), 4))
                 select SD
                 append blank
-                sd->codem   := mo_read_xml_stroke(oXmlNode,"CODEM",)
-                sd->mcode   := mo_read_xml_stroke(oXmlNode,"MCODE",)
-                sd->code    := val(mo_read_xml_stroke(oNode2,"CODE",))
-                sd->NAME    := ltrim(charrem(eos,charone(" ",mo_read_xml_stroke(oNode2,"NAME_FULL",))))
-                sd->flag    := val(mo_read_xml_stroke(oNode2,"FLAG",))
-                sd->DATEBEG := xml2date(mo_read_xml_stroke(oNode2,"D_B",))
-                sd->DATEEND := xml2date(mo_read_xml_stroke(oNode2,"D_E",))
+                sd->codem   := mo_read_xml_stroke(oXmlNode, 'CODEM',)
+                sd->mcode   := mo_read_xml_stroke(oXmlNode, 'MCODE',)
+                sd->code    := val(mo_read_xml_stroke(oNode2, 'CODE',))
+                sd->NAME    := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oNode2, 'NAME_FULL',))))
+                sd->flag    := val(mo_read_xml_stroke(oNode2, 'FLAG',))
+                sd->DATEBEG := xml2date(mo_read_xml_stroke(oNode2, 'D_B',))
+                sd->DATEEND := xml2date(mo_read_xml_stroke(oNode2, 'D_E',))
               endif
             endif
           next j1
@@ -1548,10 +1506,6 @@ Function work_SprDep(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  if check_izm_file(nameRef, nfile)
     return nil
   endif
 
@@ -1650,20 +1604,14 @@ Function work_LvlPay(source, destination)
     return nil
   endif
 
-  if check_izm_file(nameRef, nfile)
-    return nil
-  endif
-
   dbcreate(destination + nameFile, _mo_lvlpay)
   use (destination + nameFile) new alias LP
-  // dbUseArea( .t.,, destination + nameFile, cAlias, .f., .f. )
 
   oXmlDoc := HXMLDoc():Read(nfile)
   OutStd( nameRef + ' - код МО и уровень услуг' + hb_eol() )
   if Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
     lp->(dbCloseArea())
-    // CLOSE databases
     return nil
   else
     out_obrabotka(nfile)
@@ -1690,8 +1638,6 @@ Function work_LvlPay(source, destination)
                         oNode6 := oNode5:aItems[j3]
                         if 'PAY_LEVEL' == oNode6:title
                           if str(year(xml2date(mo_read_xml_stroke(oNode6, 'D_E',))), 4) == CURENT_YEAR
-                            // select LP
-                            // append blank
                             lp->(dbAppend())
                             lp->codem   := mo_read_xml_stroke(oXmlNode, 'CODEM',)
                             lp->mcode   := mo_read_xml_stroke(oXmlNode, 'MCODE',)
@@ -1700,11 +1646,6 @@ Function work_LvlPay(source, destination)
                             lp->LEVEL   := mo_read_xml_stroke(oNode6, 'VALUE',)
                             lp->DATEBEG := xml2date(mo_read_xml_stroke(oNode6, 'D_B',))
                             lp->DATEEND := xml2date(mo_read_xml_stroke(oNode6, 'D_E',))
-                            /*if j3 > 1
-                              ? 'Ошибка в чтении файла - более одного тега PAY_LEVEL', nfile
-                              ? ' в учреждении', lp->codem, 'в отделении', lstr(lp->DEPART)
-                              wait
-                            endif*/
                           endif
                         endif
                       next j3
@@ -1720,5 +1661,4 @@ Function work_LvlPay(source, destination)
   ENDIF
   out_obrabotka_eol()
   lp->(dbCloseArea())
-  // close databases
   return NIL

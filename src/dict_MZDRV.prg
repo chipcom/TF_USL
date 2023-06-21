@@ -28,10 +28,6 @@ function make_uslugi_mz(source, destination)
     return nil
   endif
 
-  if check_izm_file(nameRef, nfile)
-    return nil
-  endif
-
   dbcreate(destination + "_usl_mz", _uslugi_mz)
   use (destination + '_usl_mz') new alias MZUSL
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -90,10 +86,6 @@ function make_severity(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  if check_izm_file(nameRef, nfile)
     return nil
   endif
 
@@ -159,10 +151,6 @@ function make_implant(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  if check_izm_file(nameRef, nfile)
     return nil
   endif
 
@@ -263,10 +251,6 @@ Function make_method_inj(source, destination)
     return nil
   endif
 
-  if check_izm_file(nameRef, nfile)
-    return nil
-  endif
-
   dbcreate(destination + "_mo_method_inj", _mo_method_inj)
   use (destination + '_mo_method_inj') new alias INJ
   oXmlDoc := HXMLDoc():Read(nfile)
@@ -359,10 +343,6 @@ Function make_ed_izm(source, destination)
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  if check_izm_file(nameRef, nfile)
     return nil
   endif
 

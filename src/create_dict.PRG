@@ -37,8 +37,8 @@
 
 //  Что получаем на выходе - наши файлы
 
-   _mo2usl    - _mo_usl  - справочник наименований всех услуг
-   _mo2uslc   - _mo_uslc - справочник услуг с ценами для конкретных МО
+   _mo3usl    - _mo_usl  - справочник наименований всех услуг
+   _mo3uslc   - _mo_uslc - справочник услуг с ценами для конкретных МО
                            без КСГ
 
   _mo_t2_v1   - справочник соответсвия услуг ТФОМС услугам МЗ РФ
@@ -111,7 +111,6 @@ proc main( ... )
 
   Public sys_date := date() // ctod('31/12/2021') //date()
   Public sys_year := year(date()) // 2021 // year(date())
-  Public hash_files   // переменная для хранения хэшев исходных файлов
 
   t1 := seconds()
 
@@ -121,7 +120,6 @@ proc main( ... )
 
   aParams := hb_AParams()
 
-  // delete file ttt.ttt
   f_first()
 
   FOR EACH cParam IN aParams
@@ -159,56 +157,7 @@ proc main( ... )
     out_error(DIR_OUT_NOT_EXIST, destination)
     quit
   endi
-
-  // прочитаем массив md5-хэшев файлов
-  hash_files := hb_Hash()
-  // hash_files := read_files_md5(source)
-
-  // make_T001()
-  // Справочники минздрава
-  // OutStd( '//////**' + hb_eol() )
-  // OutStd( 'Справочники министерства здравоохранения.' + hb_eol() )
-  // OutStd( '//////**' + hb_eol() )
-
-  // make_implant(source, destination)
-  // make_severity(source, destination)
-  // make_method_inj(source, destination)
-  // make_ed_izm(source, destination)
-
-  // OutStd( '//////**' + hb_eol() )
-  // OutStd( 'Справочники ФФОМС.' + hb_eol() )
-  // OutStd( '//////**' + hb_eol() )
-  // Справочники ФФОМС
-  // work_V002(source, destination)
-  // work_V009(source, destination)
-  // work_V010(source, destination)
-  // work_V012(source, destination)
-  // work_V015(source, destination)
-  // work_V016(source, destination)
-  // work_V017(source, destination)
-  // work_V018(source, destination)
-  // work_V019(source, destination)
-  // work_V020(source, destination)
-  // work_V021(source, destination)
-  // work_V022(source, destination)
-  // work_V025(source, destination)
-  // work_V030(source, destination)
-  // work_V031(source, destination)
-  // work_V032(source, destination)
-  // work_V033(source, destination)
-  //// work_V034(source, destination)
-  //// work_V035(source, destination)
-  // work_V036(source, destination)
-  // work_V037(source, destination)
-  // make_Q015(source, destination)
-  // make_Q016(source, destination)
-  // make_Q017(source, destination)
-  // make_F006(source, destination)
-  // make_F010(source, destination)
-  // make_F011(source, destination)
-  // make_F014(source, destination)
-  // make_O001(source, destination)
-  
+ 
 
   // InitSpravFFOMS(source, destination)
   //
@@ -416,12 +365,6 @@ proc main( ... )
   HB_VFERASE(destination + 't006_2.dbt')
   HB_VFERASE(destination + 't006_d.dbf')
   HB_VFERASE(destination + 't006_u.dbf')
-
-  // запишем md5-хэши файлов источников
-  create_files_md5(source, '*.xml')
-
-  // запишем md5-хэши готовых файлов 
-  // create_files_md5(destination, '*.dbf')
 
   t2 := seconds() - t1
 
@@ -674,62 +617,3 @@ function out_error(nError, nfile, j, k)
   end case
 
   return nil
-
-function read_files_md5(source)
-  local fp, i, s
-  LOCAL aFiles, aFile
-  LOCAL cBuffer, nFileSize
-  local aStr, hash_files, tArr, row
-
-  if HB_VFEXISTS(source + FILE_HASH)
-    hash_files := hb_Hash()
-
-    fp := HB_VFOPEN(source + FILE_HASH, FO_READ)
-    nFileSize := hb_vfSize( fp )
-    cBuffer := Space( nFileSize )
-    IF hb_vfRead( fp, @cBuffer, nFileSize ) != nFileSize
-    else
-      aStr := split(cBuffer, hb_eol())
-      for each row in aStr
-        tArr := split(row, ', ')
-        if len(tArr) == 2
-          hash_files[tArr[1]] := tArr[2]
-        endif
-      next
-    endif
-
-    hb_vfClose( fp )
-    return hash_files
-  endif
-  return nil
-  
-function create_files_md5(source, ext)
-  local fp, i, s
-  LOCAL aFiles, aFile
-
-  fp := fcreate(source + FILE_HASH, FC_HIDDEN)
-  IF ! Empty( aFiles := hb_vfDirectory( source + ext ) )
-    // IF ! Empty( aFiles := hb_vfDirectory( source + '*.xml' ) )
-    s := ''
-    FOR EACH aFile IN aFiles
-      s := upper(aFile[ F_NAME ]) + ', ' + hb_MD5File( source + aFile[ F_NAME ] ) + hb_eol()
-      FWrite( fp, s)
-    NEXT
-  endif
-  fclose(fp)
-  return nil
-
-function check_izm_file(nameRef, nfile)
-  local fl := .f.
-  local hashMD5File
-
-  if hash_files != nil
-    nameRef := upper(nameRef)
-    if hb_HHasKey( hash_files, nameRef )
-      hashMD5File := hb_HGet(hash_files, nameRef)
-      if hashMD5file == hb_MD5File( nfile ) // файл не изменялся
-        fl := .t.
-      endif
-    endif
-  endif
-  return fl
