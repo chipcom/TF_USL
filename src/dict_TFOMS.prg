@@ -1248,7 +1248,8 @@ Function work_uslc(source, destination)
                 between_date(lp->datebeg, lp->dateend, pric->datebeg, pric->dateend)
                 lcena := pric->cena
                 lshifr_4 := substr(lshifr, 1, 4)
-                if lshifr_4 == '1.22' .or. lshifr_4 == '1.11' .or. lshifr_4 == '1.19' .or. lshifr_4 == '60.3'
+                // if lshifr_4 == '1.22' .or. lshifr_4 == '1.11' .or. lshifr_4 == '1.19' .or. lshifr_4 == '60.3'
+                if alltrim(pric->level) == '0'
                   bd := pric->datebeg
                 else
                   bd := max(lp->datebeg, pric->datebeg)
@@ -1288,8 +1289,9 @@ Function work_uslc(source, destination)
                       between_date(lp->datebeg, lp->dateend, pric->datebeg, pric->dateend)
                   lcena := pric->cena
                   lshifr_4 := substr(lshifr, 1, 4)
-                  if lshifr_4 == '1.22' .or. lshifr_4 == '1.11' .or. lshifr_4 == '1.19' .or. lshifr_4 == '60.3' 
-                      bd := pric->datebeg
+                  // if lshifr_4 == '1.22' .or. lshifr_4 == '1.11' .or. lshifr_4 == '1.19' .or. lshifr_4 == '60.3' 
+                  if alltrim(pric->level) == '0'
+                    bd := pric->datebeg
                   else
                     bd := max(lp->datebeg, pric->datebeg)
                   endif
