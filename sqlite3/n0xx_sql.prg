@@ -5,7 +5,7 @@
 
 #require 'hbsqlit3'
 
-** 12.05.22
+// 12.05.22
 function make_N0xx(db, source)
 
   make_n001(db, source)
@@ -32,7 +32,7 @@ function make_N0xx(db, source)
 
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n001(db, source)
   // ID_PrOt,    "N",  1, 0 // Идентификатор противопоказания или отказа
   // PrOt_NAME,  "C",250, 0 // Наименование противопоказания или отказа
@@ -95,7 +95,7 @@ function make_n001(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n002(db, source)
   // ID_St,      "N",  4, 0 // Идентификатор стадии
   // DS_St,      "C",  5, 0 // Диагноз по МКБ
@@ -160,7 +160,7 @@ function make_n002(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n003(db, source)
   // ID_T,       "N",  4, 0 // Идентификатор T
   // DS_T,       "C",  5, 0 // Диагноз по МКБ
@@ -228,7 +228,7 @@ function make_n003(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n004(db, source)
   // ID_N,       "N",  4, 0 // Идентификатор N
   // DS_N,       "C",  5, 0 // Диагноз по МКБ
@@ -296,7 +296,7 @@ function make_n004(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n005(db, source)
   // ID_M,       "N",  4, 0 // Идентификатор M
   // DS_M,       "C",  5, 0 // Диагноз по МКБ
@@ -364,7 +364,7 @@ function make_n005(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n006(db, source)
   // ID_gr,      "N",  4, 0 // Идентификатор строки
   // DS_gr,      "C",  5, 0 // Диагноз по МКБ
@@ -438,7 +438,7 @@ function make_n006(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n007(db, source)
   // ID_Mrf,     "N",  2, 0 // Идентификатор гистологического признака
   // Mrf_NAME,   "C",250, 0 // Наименование гистологического признака
@@ -500,7 +500,7 @@ function make_n007(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n008(db, source)
   // ID_R_M,     "N",  3, 0 // Идентификатор записи
   // ID_Mrf,     "N",  2, 0 // Идентификатор гистологического признака в соответствии с N007
@@ -565,7 +565,7 @@ function make_n008(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n009(db, source)
   // ID_M_D,     "N",  2, 0 // Идентификатор строки
   // DS_Mrf,     "C",  3, 0 // Диагноз по МКБ
@@ -630,7 +630,7 @@ function make_n009(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n010(db, source)
   // ID_Igh,     "N",  2, 0 // Идентификатор маркера
   // KOD_Igh,    "C",250, 0 // Обозначение маркера
@@ -695,7 +695,7 @@ function make_n010(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n011(db, source)
   // ID_R_I,     "N",  3, 0 // Идентификатор записи
   // ID_Igh,     "N",  2, 0 // Идентификатор маркера в соответствии с N010
@@ -763,7 +763,7 @@ function make_n011(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n012(db, source)
   // ID_I_D,     "N",  2, 0 // Идентификатор строки
   // DS_Igh,     "C",  3, 0 // Диагноз по МКБ
@@ -828,7 +828,7 @@ function make_n012(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n013(db, source)
   // ID_TLech,   "N",  1, 0 // Идентификатор типа лечения
   // TLech_NAME, "C",250, 0 // Наименование типа лечения
@@ -890,7 +890,7 @@ function make_n013(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n014(db, source)
   // ID_THir,    "N",  1, 0 // Идентификатор типа хирургического лечения
   // THir_NAME,  "C",250, 0 // Наименование типа хирургического лечения
@@ -952,7 +952,7 @@ function make_n014(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n015(db, source)
   // ID_TLek_L,  "N",  1, 0 // Идентификатор линии лекарственной терапии
   // TLek_NAME_L,"C",250, 0 // Наименование линии лекарственной терапии
@@ -1014,7 +1014,7 @@ function make_n015(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n016(db, source)
   // ID_TLek_V,  "N",  1, 0 // Идентификатор цикла лекарственной терапии
   // TLek_NAME_V,"C",250, 0 // Наименование цикла лекарственной терапии
@@ -1076,7 +1076,7 @@ function make_n016(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n017(db, source)
   // ID_TLuch,  "N",  1, 0 // Идентификатор типа лучевой терапии
   // TLuch_NAME,"C",250, 0 // Наименование типа лучевой терапии
@@ -1138,7 +1138,7 @@ function make_n017(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n018(db, source)
   // ID_REAS,   "N",  2, 0 // Идентификатор повода обращения
   // REAS_NAME, "C",300, 0 // Наименование повода обращения
@@ -1200,7 +1200,7 @@ function make_n018(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n019(db, source)
   // ID_CONS,   "N",  1, 0 // Идентификатор цели консилиума
   // CONS_NAME, "C",300, 0 // Наименование цели консилиума
@@ -1262,7 +1262,7 @@ function make_n019(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n020(db, source)
   // ID_LEKP,   "C",  6, 0 // Идентификатор лекарственного препарата
   // MNN,       "C",300, 0 // Международное непатентованное наименование лекарственного препарата (МНН)
@@ -1324,7 +1324,7 @@ function make_n020(db, source)
   out_obrabotka_eol()
   return nil
 
-** 12.05.22
+// 12.05.22
 function make_n021(db, source)
   // ID_ZAP,    "N",  4, 0 // Идентификатор записи (в описании Char 15)
   // CODE_SH,   "C", 10, 0 // Код схемы лекарственной терапии
