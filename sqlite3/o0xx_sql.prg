@@ -3,13 +3,15 @@
 
 #require 'hbsqlit3'
 
-** 11.05.22
+#define COMMIT_COUNT  500
+
+// 11.05.22
 function make_O0xx(db, source)
 
   make_O001(db, source)
   return nil
 
-** 11.05.22
+// 29.08.23
 Function make_O001(db, source)
   // KOD,     "C",    3,      0
   // NAME11,  "C",  250,      0
@@ -27,7 +29,10 @@ Function make_O001(db, source)
   local mKod, mName11, mName12, mAlfa2, mAlfa3, d1, d2, d1_1
   local mArr
 
-  // cmdText := 'CREATE TABLE o001(kod TEXT(3), name11 TEXT, name12 TEXT, alfa2 TEXT(2), alfa3 TEXT(3), datebeg TEXT(10), dateend TEXT(10))'
+  local textBeginTrans := 'BEGIN TRANSACTION;'
+  local textCommitTrans := 'COMMIT;'
+  local count := 0, cmdTextInsert := textBeginTrans
+
   cmdText := 'CREATE TABLE o001(kod TEXT(3), name11 TEXT, name12 TEXT, alfa2 TEXT(2), alfa3 TEXT(3))'
 
   nameRef := 'O001.xml'
@@ -55,10 +60,9 @@ Function make_O001(db, source)
     out_error(FILE_READ_ERROR, nfile)
     return nil
   else
-    // cmdText := "INSERT INTO o001 (kod, name11, name12, alfa2, alfa3, datebeg, dateend) VALUES( :kod, :name11, :name12, :alfa2, :alfa3, :datebeg, :dateend )"
-    cmdText := "INSERT INTO o001 (kod, name11, name12, alfa2, alfa3) VALUES( :kod, :name11, :name12, :alfa2, :alfa3 )"
-    stmt := sqlite3_prepare(db, cmdText)
-    if ! Empty(stmt)
+    // cmdText := "INSERT INTO o001 (kod, name11, name12, alfa2, alfa3) VALUES( :kod, :name11, :name12, :alfa2, :alfa3 )"
+    // stmt := sqlite3_prepare(db, cmdText)
+    // if ! Empty(stmt)
       out_obrabotka(nfile)
       k := Len( oXmlDoc:aItems[1]:aItems )
       for j := 1 to k
@@ -78,34 +82,39 @@ Function make_O001(db, source)
           endif
           mAlfa2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'ALFA2')
           mAlfa3 := read_xml_stroke_1251_to_utf8(oXmlNode, 'ALFA3')
-          // Set( _SET_DATEFORMAT, 'dd-mm-yyyy' )
-          // d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEUTV'))
-          // Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          // d1 := hb_ValToStr(d1_1)
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEVVED') // не используем
 
           // if sqlite3_bind_text(stmt, 1, mKod) == SQLITE_OK .AND. ;
           //   sqlite3_bind_text(stmt, 2, mName11) == SQLITE_OK .AND. ;
           //   sqlite3_bind_text(stmt, 3, mName12) == SQLITE_OK .AND. ;
           //   sqlite3_bind_text(stmt, 4, mAlfa2) == SQLITE_OK .AND. ;
-          //   sqlite3_bind_text(stmt, 5, mAlfa3) == SQLITE_OK .AND. ;
-          //   sqlite3_bind_text(stmt, 6, d1) == SQLITE_OK .AND. ;
-          //   sqlite3_bind_text(stmt, 7, d2) == SQLITE_OK
-          if sqlite3_bind_text(stmt, 1, mKod) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 2, mName11) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 3, mName12) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 4, mAlfa2) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 5, mAlfa3) == SQLITE_OK
-            if sqlite3_step(stmt) != SQLITE_DONE
-              out_error(TAG_ROW_INVALID, nfile, j)
-            endif
+          //   sqlite3_bind_text(stmt, 5, mAlfa3) == SQLITE_OK
+          //   if sqlite3_step(stmt) != SQLITE_DONE
+          //     out_error(TAG_ROW_INVALID, nfile, j)
+          //   endif
+          // endif
+          // sqlite3_reset(stmt)
+          count++
+          cmdTextInsert += 'INSERT INTO o001 (kod, name11, name12, alfa2, alfa3) VALUES(' ;
+            + "'" + mKod + "'," ;
+            + "'" + mName11 + "'," ;
+            + "'" + mName12 + "'," ;
+            + "'" + mAlfa2 + "'," ;
+            + "'" + mAlfa3 + "');"
+          if count == COMMIT_COUNT
+            cmdTextInsert += textCommitTrans
+            sqlite3_exec(db, cmdTextInsert)
+            count := 0
+            cmdTextInsert := textBeginTrans
           endif
-          sqlite3_reset(stmt)
         endif
       next j
-    endif
-    sqlite3_clear_bindings(stmt)
-    sqlite3_finalize(stmt)
+      if count > 0
+        cmdTextInsert += textCommitTrans
+        sqlite3_exec(db, cmdTextInsert)
+      endif
+    // endif
+    // sqlite3_clear_bindings(stmt)
+    // sqlite3_finalize(stmt)
   endif
   out_obrabotka_eol()
   return nil
