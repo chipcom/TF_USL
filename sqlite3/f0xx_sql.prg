@@ -3,7 +3,12 @@
 
 #require 'hbsqlit3'
 
-** 06.05.22
+#define COMMIT_COUNT  500
+
+static textBeginTrans := 'BEGIN TRANSACTION;'
+static textCommitTrans := 'COMMIT;'
+
+// 06.05.22
 function make_F0xx(db, source)
 
   make_f006(db, source)
@@ -13,7 +18,7 @@ function make_F0xx(db, source)
   
   return nil
 
-** 17.12.22
+// 01.09.23
 Function make_f006(db, source)
   // IDVID,       "N",      2,      0  // Код вида контроля
   // VIDNAME,     "C",    350,      0  // Наименование вида контроля
@@ -24,8 +29,9 @@ Function make_f006(db, source)
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1, oNode2
+  local oXmlDoc, oXmlNode
   local mIDVID, mVidname, d1, d2, d1_1, d2_1
+  local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE f006(idvid INTEGER, vidname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -54,45 +60,44 @@ Function make_f006(db, source)
     out_error(FILE_READ_ERROR, nfile)
     return nil
   else
-    cmdText := "INSERT INTO f006 (idvid, vidname, datebeg, dateend) VALUES( :idvid, :vidname, :datebeg, :dateend )"
-    stmt := sqlite3_prepare(db, cmdText)
-    if ! Empty(stmt)
-      out_obrabotka(nfile)
-      k := Len( oXmlDoc:aItems[1]:aItems )
-      for j := 1 to k
-        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-        if 'ZAP' == upper(oXmlNode:title)
-          mIDVID := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDVID')
-          mVidname := read_xml_stroke_1251_to_utf8(oXmlNode, 'VIDNAME')
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+    out_obrabotka(nfile)
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if 'ZAP' == upper(oXmlNode:title)
+        mIDVID := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDVID')
+        mVidname := read_xml_stroke_1251_to_utf8(oXmlNode, 'VIDNAME')
 
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
-          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr(d1_1)
-          d2 := hb_ValToStr(d2_1)
+        Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+        d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+        d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+        Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+        d1 := hb_ValToStr(d1_1)
+        d2 := hb_ValToStr(d2_1)
 
-          if sqlite3_bind_int(stmt, 1, val(mIDVID)) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 2, mVidname) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
-            if sqlite3_step(stmt) != SQLITE_DONE
-              out_error(TAG_ROW_INVALID, nfile, j)
-            endif
-          endif
-          sqlite3_reset(stmt)
+        count++
+        cmdTextInsert += 'INSERT INTO f006(idvid, vidname, datebeg, dateend) VALUES(' ;
+            + "" + alltrim(str(val(mIDVID))) + "," ;
+            + "'" + mVidname + "'," ;
+            + "'" + d1 + "'," ;
+            + "'" + d2 + "');"
+        if count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec(db, cmdTextInsert)
+          count := 0
+          cmdTextInsert := textBeginTrans
         endif
-      next j
+      endif
+    next j
+    if count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec(db, cmdTextInsert)
     endif
-    sqlite3_clear_bindings(stmt)
-    sqlite3_finalize(stmt)
   endif
   out_obrabotka_eol()
   return nil
 
-** 17.12.22
+// 01.09.23
 Function make_f010(db, source)
   // KOD_TF,       "C",      2,      0  // Код ТФОМС
   // KOD_OKATO,     "C",    5,      0  // Код по ОКАТО (Приложение А O002).
@@ -105,8 +110,9 @@ Function make_f010(db, source)
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1, oNode2
+  local oXmlDoc, oXmlNode
   local mKOD_TF, mKOD_OKATO, mSubname, mOkrug, d1, d2, d1_1, d2_1
+  local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE f010(kod_tf TEXT(2), kod_okato TEXT(5), subname TEXT, okrug INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -135,49 +141,48 @@ Function make_f010(db, source)
     out_error(FILE_READ_ERROR, nfile)
     return nil
   else
-    cmdText := "INSERT INTO f010 (kod_tf, kod_okato, subname, okrug, datebeg, dateend) VALUES( :kod_tf, :kod_okato, :subname, :okrug, :datebeg, :dateend )"
-    stmt := sqlite3_prepare(db, cmdText)
-    if ! Empty(stmt)
-      out_obrabotka(nfile)
-      k := Len( oXmlDoc:aItems[1]:aItems )
-      for j := 1 to k
-        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-        if 'ZAP' == upper(oXmlNode:title)
-          mKOD_TF := read_xml_stroke_1251_to_utf8(oXmlNode, 'KOD_TF')
-          mKOD_OKATO := read_xml_stroke_1251_to_utf8(oXmlNode, 'KOD_OKATO')
-          mSubname := read_xml_stroke_1251_to_utf8(oXmlNode, 'SUBNAME')
-          mOkrug := read_xml_stroke_1251_to_utf8(oXmlNode, 'OKRUG')
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+    out_obrabotka(nfile)
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if 'ZAP' == upper(oXmlNode:title)
+        mKOD_TF := read_xml_stroke_1251_to_utf8(oXmlNode, 'KOD_TF')
+        mKOD_OKATO := read_xml_stroke_1251_to_utf8(oXmlNode, 'KOD_OKATO')
+        mSubname := read_xml_stroke_1251_to_utf8(oXmlNode, 'SUBNAME')
+        mOkrug := read_xml_stroke_1251_to_utf8(oXmlNode, 'OKRUG')
 
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
-          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr(d1_1)
-          d2 := hb_ValToStr(d2_1)
+        Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+        d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+        d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+        Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+        d1 := hb_ValToStr(d1_1)
+        d2 := hb_ValToStr(d2_1)
 
-          if sqlite3_bind_text(stmt, 1, mKOD_TF) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 2, mKOD_OKATO) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 3, mSubname) == SQLITE_OK .AND. ;
-            sqlite3_bind_int(stmt, 4, val(mOkrug)) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 5, d1) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 6, d2) == SQLITE_OK
-            if sqlite3_step(stmt) != SQLITE_DONE
-              out_error(TAG_ROW_INVALID, nfile, j)
-            endif
-          endif
-          sqlite3_reset(stmt)
+        count++
+        cmdTextInsert += 'INSERT INTO f010(kod_tf, kod_okato, subname, okrug, datebeg, dateend) VALUES(' ;
+            + "'" + mKOD_TF + "'," ;
+            + "'" + mKOD_OKATO + "'," ;
+            + "'" + mSubname + "'," ;
+            + "" + alltrim(str(val(mOkrug))) + "," ;
+            + "'" + d1 + "'," ;
+            + "'" + d2 + "');"
+        if count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec(db, cmdTextInsert)
+          count := 0
+          cmdTextInsert := textBeginTrans
         endif
-      next j
+      endif
+    next j
+    if count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec(db, cmdTextInsert)
     endif
-    sqlite3_clear_bindings(stmt)
-    sqlite3_finalize(stmt)
   endif
   out_obrabotka_eol()
   return nil
 
-** 17.12.22
+// 01.09.23
 Function make_f011(db, source)
   // IDDoc,       "C",      2,      0  // Код типа документа
   // DocName,     "C",    254,      0  // Наименование типа документа
@@ -190,8 +195,9 @@ Function make_f011(db, source)
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1, oNode2
+  local oXmlDoc, oXmlNode
   local mIDDoc, mDocName, mDocSer, mDocNum, d1, d2, d1_1, d2_1
+  local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE f011(iddoc TEXT(2), docname TEXT, docser TEXT(10), docnum TEXT(20), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -220,50 +226,49 @@ Function make_f011(db, source)
     out_error(FILE_READ_ERROR, nfile)
     return nil
   else
-    cmdText := "INSERT INTO f011 (iddoc, docname, docser, docnum, datebeg, dateend) VALUES( :iddoc, :docname, :docser, :docnum, :datebeg, :dateend )"
-    stmt := sqlite3_prepare(db, cmdText)
-    if ! Empty(stmt)
-      out_obrabotka(nfile)
-      k := Len( oXmlDoc:aItems[1]:aItems )
-      for j := 1 to k
-        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-        if 'ZAP' == upper(oXmlNode:title)
-          mIDDoc := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDDoc')
-          mDocName := read_xml_stroke_1251_to_utf8(oXmlNode, 'DocName')
-          mDocSer := read_xml_stroke_1251_to_utf8(oXmlNode, 'DocSer')
-          mDocNum := read_xml_stroke_1251_to_utf8(oXmlNode, 'DocNum')
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+    out_obrabotka(nfile)
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if 'ZAP' == upper(oXmlNode:title)
+        mIDDoc := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDDoc')
+        mDocName := read_xml_stroke_1251_to_utf8(oXmlNode, 'DocName')
+        mDocSer := read_xml_stroke_1251_to_utf8(oXmlNode, 'DocSer')
+        mDocNum := read_xml_stroke_1251_to_utf8(oXmlNode, 'DocNum')
 
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
-          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr(d1_1)
-          d2 := hb_ValToStr(d2_1)
+        Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+        d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+        d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+        Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+        d1 := hb_ValToStr(d1_1)
+        d2 := hb_ValToStr(d2_1)
 
-          if sqlite3_bind_text(stmt, 1, mIDDoc) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 2, mDocName) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 3, mDocSer) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 4, mDocNum) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 5, d1) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 6, d2) == SQLITE_OK
-            if sqlite3_step(stmt) != SQLITE_DONE
-              out_error(TAG_ROW_INVALID, nfile, j)
-            endif
-          endif
-          sqlite3_reset(stmt)
+        count++
+        cmdTextInsert += 'INSERT INTO f011(iddoc, docname, docser, docnum, datebeg, dateend) VALUES(' ;
+            + "'" + mIDDoc + "'," ;
+            + "'" + mDocName + "'," ;
+            + "'" + mDocSer + "'," ;
+            + "'" + mDocNum + "'," ;
+            + "'" + d1 + "'," ;
+            + "'" + d2 + "');"
+        if count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec(db, cmdTextInsert)
+          count := 0
+          cmdTextInsert := textBeginTrans
         endif
-      next j
+      endif
+    next j
+    if count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec(db, cmdTextInsert)
     endif
-    sqlite3_clear_bindings(stmt)
-    sqlite3_finalize(stmt)
   endif
   out_obrabotka_eol()
 
 return nil
 
-** 17.12.22
+// 01.09.23
 Function make_f014(db, source)
 
   // Kod,       "N",      3,      0  // Код ошибки
@@ -279,8 +284,9 @@ Function make_f014(db, source)
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1, oNode2
+  local oXmlDoc, oXmlNode
   local mKod, mIDVID, mNaim, mOsn, mKomment, mKodPG, d1, d2, d1_1, d2_1
+  local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE f014(kod INTEGER, idvid INTEGER, naim BLOB, osn TEXT(20), komment BLOB, kodpg TEXT(20), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -309,48 +315,47 @@ Function make_f014(db, source)
     out_error(FILE_READ_ERROR, nfile)
     return nil
   else
-    cmdText := "INSERT INTO f014 (kod, idvid, naim, osn, komment, kodpg, datebeg, dateend) VALUES( :kod, :idvid, :naim, :osn, :komment, :kodpg, :datebeg, :dateend )"
-    stmt := sqlite3_prepare(db, cmdText)
-    if ! Empty(stmt)
-      out_obrabotka(nfile)
-      k := Len( oXmlDoc:aItems[1]:aItems )
-      for j := 1 to k
-        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-        if 'ZAP' == upper(oXmlNode:title)
-          mKod := read_xml_stroke_1251_to_utf8(oXmlNode, 'Kod')
-          mIDVID := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDVID')
-          mNaim := read_xml_stroke_1251_to_utf8(oXmlNode, 'Naim')
-          mOsn := read_xml_stroke_1251_to_utf8(oXmlNode, 'Osn')
-          mKomment := read_xml_stroke_1251_to_utf8(oXmlNode, 'Komment')
-          mKodPG := read_xml_stroke_1251_to_utf8(oXmlNode, 'KodPG')
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+    out_obrabotka(nfile)
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if 'ZAP' == upper(oXmlNode:title)
+        mKod := read_xml_stroke_1251_to_utf8(oXmlNode, 'Kod')
+        mIDVID := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDVID')
+        mNaim := read_xml_stroke_1251_to_utf8(oXmlNode, 'Naim')
+        mOsn := read_xml_stroke_1251_to_utf8(oXmlNode, 'Osn')
+        mKomment := read_xml_stroke_1251_to_utf8(oXmlNode, 'Komment')
+        mKodPG := read_xml_stroke_1251_to_utf8(oXmlNode, 'KodPG')
 
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
-          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr(d1_1)
-          d2 := hb_ValToStr(d2_1)
+        Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+        d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+        d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+        Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+        d1 := hb_ValToStr(d1_1)
+        d2 := hb_ValToStr(d2_1)
 
-          if sqlite3_bind_int(stmt, 1, val(mKod)) == SQLITE_OK .AND. ;
-            sqlite3_bind_int(stmt, 2, val(mIDVID)) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 3, mNaim) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 4, mOsn) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 5, mKomment) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 6, mKodPG) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 7, d1) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 8, d2) == SQLITE_OK
-            if sqlite3_step(stmt) != SQLITE_DONE
-              out_error(TAG_ROW_INVALID, nfile, j)
-            endif
-          endif
-          sqlite3_reset(stmt)
+        count++
+        cmdTextInsert += 'INSERT INTO f014(kod, idvid, naim, osn, komment, kodpg, datebeg, dateend) VALUES(' ;
+            + "" + alltrim(str(val(mKod))) + "," ;
+            + "" + alltrim(str(val(mIDVID))) + "," ;
+            + "'" + mNaim + "'," ;
+            + "'" + mOsn + "'," ;
+            + "'" + mKomment + "'," ;
+            + "'" + mKodPG + "'," ;
+            + "'" + d1 + "'," ;
+            + "'" + d2 + "');"
+        if count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec(db, cmdTextInsert)
+          count := 0
+          cmdTextInsert := textBeginTrans
         endif
-      next j
+      endif
+    next j
+    if count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec(db, cmdTextInsert)
     endif
-    sqlite3_clear_bindings(stmt)
-    sqlite3_finalize(stmt)
   endif
   out_obrabotka_eol()
 return nil
