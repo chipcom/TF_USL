@@ -25,6 +25,7 @@
 *.txt
 *.ttt
 *.xlsx
+*.xls
 *.s3db
 *.hst
 *.db
