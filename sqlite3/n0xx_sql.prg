@@ -13,26 +13,26 @@ static textCommitTrans := 'COMMIT;'
 // 12.05.22
 function make_N0xx(db, source)
 
-  make_n001(db, source)
-  make_n002(db, source)
-  make_n003(db, source)
-  make_n004(db, source)
-  make_n005(db, source)
-  make_n006(db, source)
-  make_n007(db, source)
-  make_n008(db, source)
-  make_n009(db, source)
-  make_n010(db, source)
-  make_n011(db, source)
-  make_n012(db, source)
-  make_n013(db, source)
-  make_n014(db, source)
-  make_n015(db, source)
-  make_n016(db, source)
-  make_n017(db, source)
-  make_n018(db, source)
-  make_n019(db, source)
-  make_n020(db, source)
+  // make_n001(db, source)
+  // make_n002(db, source)
+  // make_n003(db, source)
+  // make_n004(db, source)
+  // make_n005(db, source)
+  // make_n006(db, source)
+  // make_n007(db, source)
+  // make_n008(db, source)
+  // make_n009(db, source)
+  // make_n010(db, source)
+  // make_n011(db, source)
+  // make_n012(db, source)
+  // make_n013(db, source)
+  // make_n014(db, source)
+  // make_n015(db, source)
+  // make_n016(db, source)
+  // make_n017(db, source)
+  // make_n018(db, source)
+  // make_n019(db, source)
+  // make_n020(db, source)
   make_n021(db, source)
 
   return nil
@@ -1381,7 +1381,7 @@ function make_n021(db, source)
   local k, j
   local nfile, nameRef
   local oXmlDoc, oXmlNode, oNode1
-  local mID_zap, mCode_sh, mID_lekp, d1, d2
+  local mID_zap, mCode_sh, mID_lekp, d1, d2, d1_1, d2_1, s
   local count := 0, cmdTextInsert := textBeginTrans
 
   nameRef := 'N021.xml'
@@ -1392,7 +1392,9 @@ function make_n021(db, source)
   endif
 
   OutStd(hb_eol() + nameRef + ' - Классификатор соответствия лекарственного препарата схеме лекарственной терапии (OnkLpsh)' + hb_eol())
-  cmdText := 'CREATE TABLE n021(id_zap INTEGER, code_sh TEXT(10), id_lekp TEXT(6), datebeg TEXT(10), dateend TEXT(10))'
+  // cmdText := 'CREATE TABLE n021(id_zap INTEGER, code_sh TEXT(10), id_lekp TEXT(6), datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE n021(id_zap INTEGER, code_sh TEXT(10), id_lekp TEXT(6), datebeg TEXT(19), dateend TEXT(19))'
+  // 2018-04-02 12:13:46
   if ! create_table(db, nameRef, cmdText)
     return nil
   endif
@@ -1410,8 +1412,17 @@ function make_n021(db, source)
         mID_zap := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_ZAP')
         mCode_sh := read_xml_stroke_1251_to_utf8(oXmlNode, 'CODE_SH')
         mId_lekp := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_LEKP')
-        d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-        d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+        // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG') + ' 00:00:00'
+        // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND') + ' 00:00:00'
+
+        Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+        d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+        // s := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+        d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+        Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+        d1 := iif(empty(d1_1), '', hb_ValToStr(d1_1) + ' 00:00:00')
+        d2 := iif(empty(d2_1), '2222-01-01 00:00:00', hb_ValToStr(d2_1) + ' 00:00:00')
+
 
         count++
         cmdTextInsert += 'INSERT INTO n021(id_zap, code_sh, id_lekp, datebeg, dateend) VALUES(' ;
