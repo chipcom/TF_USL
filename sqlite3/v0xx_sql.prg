@@ -3,34 +3,39 @@
 
 #require 'hbsqlit3'
 
-** 17.01.23
+#define COMMIT_COUNT  500
+
+static textBeginTrans := 'BEGIN TRANSACTION;'
+static textCommitTrans := 'COMMIT;'
+
+// 17.01.23
 function make_V0xx(db, source)
 
-  make_V002(db, source)
+  // make_V002(db, source)
 
-  make_V009(db, source)
-  make_V010(db, source)
-  make_V012(db, source)
-  make_V015(db, source)
-  make_V016(db, source)
-  make_V017(db, source)
-  make_V018(db, source)
-  make_V019(db, source)
-  make_V020(db, source)
-  make_V021(db, source)
-  make_V022(db, source)
-  // make_V024(db, source)
-  make_V025(db, source)
+  // make_V009(db, source)
+  // make_V010(db, source)
+  // make_V012(db, source)
+  // make_V015(db, source)
+  // make_V016(db, source)
+  // make_V017(db, source)
+  // make_V018(db, source)
+  // make_V019(db, source)
+  // make_V020(db, source)
+  // make_V021(db, source)
+  // make_V022(db, source)
+  make_V024(db, source)
+  // make_V025(db, source)
 
-  make_V030(db, source)
-  make_V031(db, source)
-  make_V032(db, source)
-  make_V033(db, source)
-  make_v036(db, source)
+  // make_V030(db, source)
+  // make_V031(db, source)
+  // make_V032(db, source)
+  // make_V033(db, source)
+  // make_v036(db, source)
 
   return nil
 
-** 10.01.23
+// 10.01.23
 Function make_V009(db, source)
   // IDRMP,     "N",   3, 0  // Код результата обращения
   // RMPNAME,   "C", 254, 0  // Наименование результата обращения
@@ -112,7 +117,7 @@ Function make_V009(db, source)
   out_obrabotka_eol()
   return nil
   
-** 10.01.23
+// 10.01.23
 Function make_v010(db, source)
   // IDSP,       "N",      2,      0  // Код способа оплаты медицинской помощи
   // SPNAME,     "C",    254,      0  // Наименование способа оплаты медицинской помощи
@@ -191,7 +196,7 @@ Function make_v010(db, source)
   out_obrabotka_eol()
   return nil
 
-** 10.01.23
+// 10.01.23
 Function make_V012(db, source)
   // IDIZ,      "N",   3, 0  // Код исхода заболевания
   // IZNAME,    "C", 254, 0  // Наименование исхода заболевания
@@ -273,7 +278,7 @@ Function make_V012(db, source)
   out_obrabotka_eol()
   return nil
   
-** 10.01.23
+// 10.01.23
 Function make_V015(db, source)
   // RECID,  "N",    3,      0      // Номер записи
   // CODE,   "N",    4,      0      // Код специальности
@@ -361,7 +366,7 @@ Function make_V015(db, source)
   out_obrabotka_eol()
   return nil
   
-** 10.01.23
+// 10.01.23
 Function make_V016(db, source)
   // IDDT,     "C",        3,      0 // Код типа диспансеризации
   // DTNAME,   "C",      254,      0 // Наименование типа диспансеризации
@@ -452,7 +457,7 @@ Function make_V016(db, source)
   out_obrabotka_eol()
   return nil
   
-** 10.01.23
+// 10.01.23
 Function make_V017(db, source)
   // IDDR,     "N",        2,      0 // Код результата диспансеризации
   // DRNAME,   "C",      254,      0 // Наименование результата диспансеризации
@@ -531,7 +536,7 @@ Function make_V017(db, source)
   out_obrabotka_eol()
   return nil
   
-** 10.01.23
+// 10.01.23
 Function make_V018(db, source)
   // IDHVID,     "C",     12,      0 // Код вида высокотехнологичной медицинской помощи
   // HVIDNAME,   "C",   1000,      0 // Наименование вида высокотехнологичной медицинской помощи
@@ -610,7 +615,7 @@ Function make_V018(db, source)
   out_obrabotka_eol()
   return nil
   
-** 10.01.23
+// 10.01.23
 Function make_V019(db, source)
   // IDHM,       "N",      4,      0 // Идентификатор метода высокотехнологичной медицинской помощи
   // HMNAME,     "C",   1000,      0; // Наименование метода высокотехнологичной медицинской помощи
@@ -704,7 +709,7 @@ Function make_V019(db, source)
   out_obrabotka_eol()
   return NIL
 
-** 10.01.23
+// 10.01.23
 Function make_V020(db, source)
   // IDK_PR,     "N",      3,      0 // Код профиля койки
   // K_PRNAME,   "C",    254,      0 // Наименование профиля койки
@@ -783,7 +788,7 @@ Function make_V020(db, source)
   out_obrabotka_eol()
   return NIL
 
-** 10.01.23
+// 10.01.23
 Function make_V021(db, source)
   // IDSPEC,     "N",      3,      0  // Код специальности
   // SPECNAME,   "C", 254             // Наименование специальности
@@ -868,7 +873,7 @@ Function make_V021(db, source)
   out_obrabotka_eol()
   return nil
 
-** 17.01.23
+// 17.01.23
 Function make_V022(db, source)
   // IDMPAC,     "N",      5,      0  //  Идентификатор модели пациента
   // MPACNAME,   "M",     10,      0  // Наименование модели пациента
@@ -950,77 +955,7 @@ Function make_V022(db, source)
   out_obrabotka_eol()
   return nil
 
-** 10.01.23
-Function make_V024(db, source)
-  // IDDKK,     "C",  10,      0  //  Идентификатор модели пациента
-  // DKKNAME,   "C", 255,      0  // Наименование модели пациента
-  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
-  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
-  
-  local stmt, stmtTMP
-  local cmdText, cmdTextTMP
-  local k, j
-  local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
-  local mIDDKK, mDKKNAME, d1, d2, d1_1, d2_1
-
-  nameRef := 'V024.xml'
-  nfile := source + nameRef
-  if ! hb_vfExists(nfile)
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-
-  OutStd(hb_eol() + nameRef + ' - Классификатор классификационных критериев (DopKr)' + hb_eol())
-  cmdText := 'CREATE TABLE v024(iddkk TEXT(10), dkkname TEXT, datebeg TEXT(10), dateend TEXT(10))'
-  if ! create_table(db, nameRef, cmdText)
-    return nil
-  endif
-
-  oXmlDoc := HXMLDoc():Read(nfile)
-  if Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
-    return nil
-  else
-    cmdText := "INSERT INTO v024 (iddkk, dkkname, datebeg, dateend) VALUES( :iddkk, :dkkname, :datebeg, :dateend )"
-    stmt := sqlite3_prepare(db, cmdText)
-    if ! Empty(stmt)
-      out_obrabotka(nfile)
-      k := Len( oXmlDoc:aItems[1]:aItems )
-      for j := 1 to k
-        oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-        if 'ZAP' == upper(oXmlNode:title)
-          mIDDKK := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDDKK')
-          mDKKNAME := read_xml_stroke_1251_to_utf8(oXmlNode, 'DKKNAME')
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
-          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr(d1_1)
-          d2 := hb_ValToStr(d2_1)
-
-          if sqlite3_bind_text(stmt, 1, mIDDKK) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 2, mDKKNAME) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 3, d1) == SQLITE_OK .AND. ;
-            sqlite3_bind_text(stmt, 4, d2) == SQLITE_OK
-            if sqlite3_step(stmt) != SQLITE_DONE
-              out_error(TAG_ROW_INVALID, nfile, j)
-            endif
-          endif
-          sqlite3_reset(stmt)
-        endif
-      next j
-    endif
-    sqlite3_clear_bindings(stmt)
-    sqlite3_finalize(stmt)
-  endif
-  out_obrabotka_eol()
-  return nil
-
-** 10.01.23
+// 10.01.23
 Function make_V025(db, source)
   // IDPC,      "C",   3, 0  // Код цели посещения
   // N_PC,      "C", 254, 0  // Наименование цели посещения
@@ -1099,7 +1034,7 @@ Function make_V025(db, source)
   out_obrabotka_eol()
   return nil
 
-** 10.01.23
+// 10.01.23
 Function make_V030(db, source)
   // SCHEMCOD,  "C",   5, 0  // 
   // SCHEME,    "C",  15, 0  //
@@ -1184,7 +1119,7 @@ Function make_V030(db, source)
   out_obrabotka_eol()
   return nil
 
-** 10.01.23
+// 10.01.23
 Function make_V031(db, source)
   // DRUGCODE,  "N",   2, 0  // 
   // DRUGGRUP,  "C",  50, 0  //
@@ -1266,7 +1201,7 @@ Function make_V031(db, source)
   out_obrabotka_eol()
   return nil
 
-** 10.01.23
+// 10.01.23
 Function make_V032(db, source)
   // SCHEDRUG,  "C",  10, 0  // Сочетание схемы лечения и группы препаратов
   // NAME,      "C", 100, 0  //
@@ -1348,7 +1283,7 @@ Function make_V032(db, source)
   out_obrabotka_eol()
   return nil
 
-** 10.01.23
+// 10.01.23
 Function make_V033(db, source)
   // SCHEDRUG,  "C",  10, 0  // 
   // DRUGCODE,  "C",   6, 0  //
@@ -1427,7 +1362,7 @@ Function make_V033(db, source)
   out_obrabotka_eol()
   return nil
 
-** 10.01.23
+// 10.01.23
 Function make_V036(db, source)
   // S_CODE    "C",  16, 0
   // NAME",      "C", 150, 0
@@ -1513,7 +1448,7 @@ Function make_V036(db, source)
   out_obrabotka_eol()
   return nil
 
-** 09.05.22
+// 09.05.22
 Function make_V002(db, source)
   // IDPR,       "N",      3,      0  // Код профиля медицинской помощи
   // PRNAME,     "C",    350,      0  // Наименование профиля медицинской помощи
@@ -1590,4 +1525,77 @@ Function make_V002(db, source)
     sqlite3_finalize(stmt)
   endif
   out_obrabotka_eol()
+  return nil
+
+// 25.09.23
+Function make_V024(db, source)
+  // IDDKK,     "C",  10,      0  //  Идентификатор модели пациента
+  // DKKNAME,   "C", 255,      0  // Наименование модели пациента
+  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
+  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
+  
+  local cmdText, cmdTextTMP
+  local k, j
+  local nfile, nameRef
+  local oXmlDoc, oXmlNode, oNode1
+  local mIDDKK, mDkkname, d1, d2, d1_1, d2_1
+  local count := 0, cmdTextInsert := textBeginTrans
+
+  nameRef := 'V024.xml'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  endif
+
+  OutStd(hb_eol() + nameRef + ' - Классификатор классификационных критериев (DopKr)' + hb_eol())
+  cmdText := 'CREATE TABLE v024(iddkk TEXT(10), dkkname BLOB, datebeg TEXT(19), dateend TEXT(19))'
+  if ! create_table(db, nameRef, cmdText)
+    return nil
+  endif
+
+  oXmlDoc := HXMLDoc():Read(nfile)
+  if Empty( oXmlDoc:aItems )
+    out_error(FILE_READ_ERROR, nfile)
+    return nil
+  else
+    out_obrabotka(nfile)
+    k := Len( oXmlDoc:aItems[1]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      if 'ZAP' == upper(oXmlNode:title)
+        mIDDKK := read_xml_stroke_1251_to_utf8(oXmlNode, 'IDDKK')
+        mDkkname := read_xml_stroke_1251_to_utf8(oXmlNode, 'DKKNAME')
+        // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG') + ' 00:00:00'
+        // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND') + ' 00:00:00'
+
+        Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+        d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+        d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+        Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+        d1 := iif(empty(d1_1), '', hb_ValToStr(d1_1) + ' 00:00:00')
+        d2 := iif(empty(d2_1), '2222-01-01 00:00:00', hb_ValToStr(d2_1) + ' 00:00:00')
+
+
+        count++
+        cmdTextInsert += 'INSERT INTO v024(iddkk, dkkname, datebeg, dateend) VALUES(' ;
+            + "'" + mIDDKK + "'," ;
+            + "'" + mDkkname + "'," ;
+            + "'" + d1 + "'," ;
+            + "'" + d2 + "');"
+        if count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec(db, cmdTextInsert)
+          count := 0
+          cmdTextInsert := textBeginTrans
+        endif
+      endif
+    next j
+    if count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec(db, cmdTextInsert)
+    endif
+  endif
+  out_obrabotka_eol()
+
   return nil

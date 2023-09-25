@@ -43,7 +43,6 @@ function make_n001(db, source)
   // PrOt_NAME,  "C",250, 0 // Наименование противопоказания или отказа
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -109,7 +108,6 @@ function make_n002(db, source)
   // KOD_St,     "C",  5, 0 // Стадия
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -177,7 +175,6 @@ function make_n003(db, source)
   // T_NAME,     "C", 250, 0 // Расшифровка T для диагноза
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -247,7 +244,6 @@ function make_n004(db, source)
   // N_NAME,     "C",500, 0 // Расшифровка N для диагноза
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -317,7 +313,6 @@ function make_n005(db, source)
   // M_NAME,     "C",250, 0 // Расшифровка M для диагноза
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -389,7 +384,6 @@ function make_n006(db, source)
   // ID_M,       "N",  4, 0 // Идентификатор M
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -461,7 +455,6 @@ function make_n007(db, source)
   // Mrf_NAME,   "C",250, 0 // Наименование гистологического признака
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -526,7 +519,6 @@ function make_n008(db, source)
   // R_M_NAME,   "C",250, 0 // Наименование результата гистологического исследования
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -593,7 +585,6 @@ function make_n009(db, source)
   // ID_Mrf,     "N",  2, 0 // Идентификатор гистологического признака в соответствии с N007
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -660,7 +651,6 @@ function make_n010(db, source)
   // Igh_NAME,   "C",250, 0 // Наименование маркера
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -728,7 +718,6 @@ function make_n011(db, source)
   // R_I_NAME,   "C",250, 0 // Наименование результата
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -797,7 +786,6 @@ function make_n012(db, source)
   // ID_Igh,     "N",  2, 0 // Идентификатор маркера в соответствии с N010
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -863,7 +851,6 @@ function make_n013(db, source)
   // TLech_NAME, "C",250, 0 // Наименование типа лечения
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -927,7 +914,6 @@ function make_n014(db, source)
   // THir_NAME,  "C",250, 0 // Наименование типа хирургического лечения
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -991,7 +977,6 @@ function make_n015(db, source)
   // TLek_NAME_L,"C",250, 0 // Наименование линии лекарственной терапии
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -1055,7 +1040,6 @@ function make_n016(db, source)
   // TLek_NAME_V,"C",250, 0 // Наименование цикла лекарственной терапии
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -1119,7 +1103,6 @@ function make_n017(db, source)
   // TLuch_NAME,"C",250, 0 // Наименование типа лучевой терапии
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -1183,7 +1166,6 @@ function make_n018(db, source)
   // REAS_NAME, "C",300, 0 // Наименование повода обращения
   // DATEBEG,   "D",  8, 0 // Дата начала действия записи
   // DATEEND,   "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -1247,7 +1229,6 @@ function make_n019(db, source)
   // CONS_NAME, "C",300, 0 // Наименование цели консилиума
   // DATEBEG,   "D",  8, 0 // Дата начала действия записи
   // DATEEND,   "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -1311,7 +1292,6 @@ function make_n020(db, source)
   // MNN,       "C",300, 0 // Международное непатентованное наименование лекарственного препарата (МНН)
   // DATEBEG,   "D",  8, 0 // Дата начала действия записи
   // DATEEND,   "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
@@ -1376,7 +1356,6 @@ function make_n021(db, source)
   // ID_LEKP,   "C",  6, 0 // Идентификатор лекарственного препарата, применяемого при проведении лекарственной противоопухолевой терапии. Заполняется в соответствии с N020
   // DATEBEG,   "D",  8, 0 // Дата начала действия записи
   // DATEEND,   "D",  8, 0 // Дата окончания действия записи
-  local stmt, stmtTMP
   local cmdText, cmdTextTMP
   local k, j
   local nfile, nameRef
