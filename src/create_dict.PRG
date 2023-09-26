@@ -63,7 +63,7 @@ external errorsys
 function prefixFileName()
   return '_mo' + substr(CURENT_YEAR, 4, 1)
 
-// 20.06.23
+// 26.09.23
 proc main( ... )
   Local _mo_usl := { ;
     {'SHIFR',      'C',     10,      0}, ;
@@ -173,7 +173,7 @@ proc main( ... )
   // make_uslugi_mz(source, destination)  // Справочник минздрава для формирования файлов ТФОМС
   // Справочники ТФОМС
   dbcreate(destination + nameFileUsl, _mo_usl)
-  work_Shema(source, destination)
+  // work_Shema(source, destination)
   work_SprSubDiv(source, destination)
   work_SprDep(source, destination)
   work_LvlPay(source, destination)

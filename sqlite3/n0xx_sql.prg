@@ -32,7 +32,7 @@ function make_N0xx(db, source)
   // make_n017(db, source)
   // make_n018(db, source)
   // make_n019(db, source)
-  // make_n020(db, source)
+  make_n020(db, source)
   make_n021(db, source)
 
   return nil
