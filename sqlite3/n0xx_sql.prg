@@ -1286,7 +1286,7 @@ function make_n019(db, source)
   out_obrabotka_eol()
   return nil
 
-// 31.08.23
+// 27.09.23
 function make_n020(db, source)
   // ID_LEKP,   "C",  6, 0 // Идентификатор лекарственного препарата
   // MNN,       "C",300, 0 // Международное непатентованное наименование лекарственного препарата (МНН)
@@ -1296,7 +1296,7 @@ function make_n020(db, source)
   local k, j
   local nfile, nameRef
   local oXmlDoc, oXmlNode, oNode1
-  local mID_lekp, mMNN, d1, d2
+  local mID_lekp, mMNN, d1, d2, d1_1, d2_1
   local count := 0, cmdTextInsert := textBeginTrans
 
   nameRef := 'N020.xml'
@@ -1307,7 +1307,7 @@ function make_n020(db, source)
   endif
 
   OutStd(hb_eol() + nameRef + ' - Классификатор лекарственных препаратов, применяемых при проведении лекарственной терапии (OnkLekp)' + hb_eol())
-  cmdText := 'CREATE TABLE n020(id_lekp TEXT(6), mnn TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE n020(id_lekp TEXT(6), mnn TEXT, datebeg TEXT(19), dateend TEXT(19))'
   if ! create_table(db, nameRef, cmdText)
     return nil
   endif
@@ -1324,8 +1324,16 @@ function make_n020(db, source)
       if 'ZAP' == upper(oXmlNode:title)
         mID_lekp := read_xml_stroke_1251_to_utf8(oXmlNode, 'ID_LEKP')
         mMNN := read_xml_stroke_1251_to_utf8(oXmlNode, 'MNN')
-        d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-        d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+        // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+        // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+
+        Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+        d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
+        // s := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+        d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+        Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+        d1 := iif(empty(d1_1), '', hb_ValToStr(d1_1) + ' 00:00:00')
+        d2 := iif(empty(d2_1), '2222-01-01 00:00:00', hb_ValToStr(d2_1) + ' 00:00:00')
 
         count++
         cmdTextInsert += 'INSERT INTO n020(id_lekp, mnn, datebeg, dateend) VALUES(' ;
