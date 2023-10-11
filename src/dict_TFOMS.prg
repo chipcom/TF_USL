@@ -650,6 +650,13 @@ Function work_t006(source, destination)
                 d6->DS  := lDS  := 'Z92.2'
               endif
 
+              // Для пункта 5.21. Особенности формирования КСГ st36.013-st36.015 для случаев проведения антимикробной
+              // терапии инфекций, вызванных полирезистентными микроорганизмами (инструкции для КСГ)
+              if (lshifr = 'st36.013' .or. lshifr = 'st36.014' .or. lshifr = 'st36.015' .or. lshifr = 'st36.031') ;
+                  .and. empty(lDS) .and. empty(lsy)
+                d6->DS  := lDS  := 'Z92.8'
+              endif
+
               d6->AGE  := mo_read_xml_stroke(oNode2, 'AGE',)
               d6->SEX  := mo_read_xml_stroke(oNode2, 'SEX',)
               d6->LOS  := alltrim(mo_read_xml_stroke(oNode2, 'LOS',))
