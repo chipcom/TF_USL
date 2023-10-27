@@ -466,7 +466,7 @@ Function work_t006(source, destination)
     {'IDSP',       'C',      2,      0}, ;
     {'IDSPS',      'C',      8,      0}, ;
     {'KSLP',       'N',      2,      0}, ;
-    {'KSLPS',      'C',     10,      0}, ;
+    {'KSLPS',      'C',     30,      0}, ;
     {'KIRO',       'N',      2,      0}, ;
     {'KIROS',      'C',     10,      0}, ;
     {'UETV',       'N',      5,      2}, ; // УЕТ - сейчас не используются
