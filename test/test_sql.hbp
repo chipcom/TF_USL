@@ -2,8 +2,8 @@
 -lMyLib_HBT
 -lhbct
 
-hbsqlit3.hbc
-xhb.hbc
+# hbsqlit3.hbc
+# xhb.hbc
 
 -mt
 -inc
