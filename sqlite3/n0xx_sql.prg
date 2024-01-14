@@ -13,26 +13,26 @@ static textCommitTrans := 'COMMIT;'
 // 12.05.22
 function make_N0xx(db, source)
 
-  make_n001(db, source)
-  make_n002(db, source)
-  make_n003(db, source)
-  make_n004(db, source)
-  make_n005(db, source)
-  make_n006(db, source)
-  make_n007(db, source)
-  make_n008(db, source)
-  make_n009(db, source)
-  make_n010(db, source)
-  make_n011(db, source)
-  make_n012(db, source)
-  make_n013(db, source)
-  make_n014(db, source)
-  make_n015(db, source)
-  make_n016(db, source)
-  make_n017(db, source)
-  make_n018(db, source)
-  make_n019(db, source)
-  make_n020(db, source)
+//  make_n001(db, source)
+//  make_n002(db, source)
+//  make_n003(db, source)
+//  make_n004(db, source)
+//  make_n005(db, source)
+//  make_n006(db, source)
+//  make_n007(db, source)
+//  make_n008(db, source)
+//  make_n009(db, source)
+//  make_n010(db, source)
+//  make_n011(db, source)
+//  make_n012(db, source)
+//  make_n013(db, source)
+//  make_n014(db, source)
+//  make_n015(db, source)
+//  make_n016(db, source)
+//  make_n017(db, source)
+//  make_n018(db, source)
+//  make_n019(db, source)
+//  make_n020(db, source)
   make_n021(db, source)
 
   return nil
@@ -43,10 +43,10 @@ function make_n001(db, source)
   // PrOt_NAME,  "C",250, 0 // Наименование противопоказания или отказа
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_prot, mProt_Name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -108,10 +108,10 @@ function make_n002(db, source)
   // KOD_St,     "C",  5, 0 // Стадия
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_st, mDS_St, mKod_st, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -175,10 +175,10 @@ function make_n003(db, source)
   // T_NAME,     "C", 250, 0 // Расшифровка T для диагноза
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_T, mDS_T, mKod_T, mT_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -244,10 +244,10 @@ function make_n004(db, source)
   // N_NAME,     "C",500, 0 // Расшифровка N для диагноза
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_N, mDS_N, mKod_N, mN_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -313,10 +313,10 @@ function make_n005(db, source)
   // M_NAME,     "C",250, 0 // Расшифровка M для диагноза
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_M, mDS_M, mKod_M, mM_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -384,10 +384,10 @@ function make_n006(db, source)
   // ID_M,       "N",  4, 0 // Идентификатор M
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_gr, mDS_gr, mID_St, mID_T, mID_N, mID_M, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -455,10 +455,10 @@ function make_n007(db, source)
   // Mrf_NAME,   "C",250, 0 // Наименование гистологического признака
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_Mrf, mMrf_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -519,10 +519,10 @@ function make_n008(db, source)
   // R_M_NAME,   "C",250, 0 // Наименование результата гистологического исследования
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_Mrf, mID_r_m, mR_M_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -585,10 +585,10 @@ function make_n009(db, source)
   // ID_Mrf,     "N",  2, 0 // Идентификатор гистологического признака в соответствии с N007
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_Mrf, mID_m_d, mDS_mrf, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -651,10 +651,10 @@ function make_n010(db, source)
   // Igh_NAME,   "C",250, 0 // Наименование маркера
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_igh, mKOD_igh, mIgh_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -718,10 +718,10 @@ function make_n011(db, source)
   // R_I_NAME,   "C",250, 0 // Наименование результата
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_R_I, mID_igh, mKOD_R_I, mR_I_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -786,10 +786,10 @@ function make_n012(db, source)
   // ID_Igh,     "N",  2, 0 // Идентификатор маркера в соответствии с N010
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_I_D, mID_igh, mDS_Igh, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -851,10 +851,10 @@ function make_n013(db, source)
   // TLech_NAME, "C",250, 0 // Наименование типа лечения
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_tlech, mTlech_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -914,10 +914,10 @@ function make_n014(db, source)
   // THir_NAME,  "C",250, 0 // Наименование типа хирургического лечения
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_thir, mThir_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -977,10 +977,10 @@ function make_n015(db, source)
   // TLek_NAME_L,"C",250, 0 // Наименование линии лекарственной терапии
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_tlek_l, mTlek_name_l, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -1040,10 +1040,10 @@ function make_n016(db, source)
   // TLek_NAME_V,"C",250, 0 // Наименование цикла лекарственной терапии
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_tlek_v, mTlek_name_v, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -1103,10 +1103,10 @@ function make_n017(db, source)
   // TLuch_NAME,"C",250, 0 // Наименование типа лучевой терапии
   // DATEBEG,    "D",  8, 0 // Дата начала действия записи
   // DATEEND,    "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_tluch, mTluch_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -1166,10 +1166,10 @@ function make_n018(db, source)
   // REAS_NAME, "C",300, 0 // Наименование повода обращения
   // DATEBEG,   "D",  8, 0 // Дата начала действия записи
   // DATEEND,   "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_reas, mReas_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -1229,10 +1229,10 @@ function make_n019(db, source)
   // CONS_NAME, "C",300, 0 // Наименование цели консилиума
   // DATEBEG,   "D",  8, 0 // Дата начала действия записи
   // DATEEND,   "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_cons, mCons_name, d1, d2
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -1292,10 +1292,10 @@ function make_n020(db, source)
   // MNN,       "C",300, 0 // Международное непатентованное наименование лекарственного препарата (МНН)
   // DATEBEG,   "D",  8, 0 // Дата начала действия записи
   // DATEEND,   "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_lekp, mMNN, d1, d2, d1_1, d2_1
   local count := 0, cmdTextInsert := textBeginTrans
 
@@ -1364,10 +1364,10 @@ function make_n021(db, source)
   // ID_LEKP,   "C",  6, 0 // Идентификатор лекарственного препарата, применяемого при проведении лекарственной противоопухолевой терапии. Заполняется в соответствии с N020
   // DATEBEG,   "D",  8, 0 // Дата начала действия записи
   // DATEEND,   "D",  8, 0 // Дата окончания действия записи
-  local cmdText, cmdTextTMP
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mID_zap, mCode_sh, mID_lekp, d1, d2, d1_1, d2_1, s
   local count := 0, cmdTextInsert := textBeginTrans
 
