@@ -5,19 +5,19 @@
 
 #require 'hbsqlit3'
 
-** 31.01.23
+// 31.01.23
 function make_mzdrav(db, source)
 
-  make_ed_izm(db, source)
+  // make_ed_izm(db, source)
   make_severity(db, source)
-  make_MethIntro(db, source)
-  make_implant(db, source)
+  // make_MethIntro(db, source)
+  // make_implant(db, source)
 
   // make_uslugi_mz(db, source) // не используем (для будующего)
 
   return nil
 
-** 07.05.22
+// 13.01.24
 function make_severity(db, source)
   LOCAL stmt
   local cmdText
@@ -32,7 +32,7 @@ function make_severity(db, source)
   // 4) SCTID, Код SNOMED CT , Строчный, соответствующий код номенклатуры;
   // 5) SORT, Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов
   //    справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
-  cmdText := 'CREATE TABLE Severity( id INTEGER, name TEXT(40), syn TEXT(50), sctid INTEGER, sort INTEGER )'
+  cmdText := 'CREATE TABLE Severity( id INTEGER PRIMARY KEY NOT NULL, name TEXT(40), syn TEXT(50), sctid INTEGER, sort INTEGER )'
   
   nameRef := '1.2.643.5.1.13.13.11.1006.xml'
   nfile := source + nameRef
@@ -98,7 +98,7 @@ function make_severity(db, source)
   out_obrabotka_eol()
   return nil
 
-** 26.01.23
+// 26.01.23
 Function make_ed_izm(db, source)
   local stmt
   local cmdText
@@ -209,7 +209,7 @@ Function make_ed_izm(db, source)
   out_obrabotka_eol()
   return nil
 
-** 07.05.22
+// 07.05.22
 Function make_MethIntro(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -323,7 +323,7 @@ Function make_MethIntro(db, source)
 
   return NIL
 
-** 31.01.23
+// 31.01.23
 function make_implant(db, source)
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -453,7 +453,7 @@ function make_implant(db, source)
 
   return nil
 
-** 07.05.22
+// 07.05.22
 function make_uslugi_mz(db, source)
   LOCAL stmt
   local cmdText

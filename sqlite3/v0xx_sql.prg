@@ -11,37 +11,37 @@ static textCommitTrans := 'COMMIT;'
 // 17.01.23
 function make_V0xx(db, source)
 
-  make_V002(db, source)
+  // make_V002(db, source)
 
-  make_V009(db, source)
-  make_V010(db, source)
-  make_V012(db, source)
-  make_V015(db, source)
-  make_V016(db, source)
-  make_V017(db, source)
-  make_V018(db, source)
-  make_V019(db, source)
-  make_V020(db, source)
-  make_V021(db, source)
-  make_V022(db, source)
-  make_V024(db, source)
-  make_V025(db, source)
+  // make_V009(db, source)
+  // make_V010(db, source)
+  // make_V012(db, source)
+  // make_V015(db, source)
+  // make_V016(db, source)
+  // make_V017(db, source)
+  // make_V018(db, source)
+  // make_V019(db, source)
+  // make_V020(db, source)
+  // make_V021(db, source)
+  // make_V022(db, source)
+  // make_V024(db, source)
+  // make_V025(db, source)
 
   make_V030(db, source)
-  make_V031(db, source)
-  make_V032(db, source)
-  make_V033(db, source)
-  make_v036(db, source)
+  // make_V031(db, source)
+  // make_V032(db, source)
+  // make_V033(db, source)
+  // make_v036(db, source)
 
   return nil
 
 // 10.01.23
 Function make_V009(db, source)
-  // IDRMP,     "N",   3, 0  // РљРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚Р° РѕР±СЂР°С‰РµРЅРёСЏ
-  // RMPNAME,   "C", 254, 0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РѕР±СЂР°С‰РµРЅРёСЏ
-  // DL_USLOV,  "N",   2, 0  // РЎРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ СѓСЃР»РѕРІРёСЏРј РѕРєР°Р·Р°РЅРёСЏ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (V006)
-  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDRMP,     "N",   3, 0  // Код результата обращения
+  // RMPNAME,   "C", 254, 0  // Наименование результата обращения
+  // DL_USLOV,  "N",   2, 0  // Соответствует условиям оказания медицинской помощи (V006)
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -58,7 +58,7 @@ Function make_V009(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РѕР±СЂР°С‰РµРЅРёСЏ Р·Р° РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰СЊСЋ (Rezult)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор результатов обращения за медицинской помощью (Rezult)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v009') == SQLITE_OK
@@ -119,10 +119,10 @@ Function make_V009(db, source)
   
 // 10.01.23
 Function make_v010(db, source)
-  // IDSP,       "N",      2,      0  // РљРѕРґ СЃРїРѕСЃРѕР±Р° РѕРїР»Р°С‚С‹ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
-  // SPNAME,     "C",    254,      0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃРїРѕСЃРѕР±Р° РѕРїР»Р°С‚С‹ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
-  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDSP,       "N",      2,      0  // Код способа оплаты медицинской помощи
+  // SPNAME,     "C",    254,      0  // Наименование способа оплаты медицинской помощи
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -139,7 +139,7 @@ Function make_v010(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ СЃРїРѕСЃРѕР±РѕРІ РѕРїР»Р°С‚С‹ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (Sposob)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор способов оплаты медицинской помощи (Sposob)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v010') == SQLITE_OK
@@ -198,11 +198,11 @@ Function make_v010(db, source)
 
 // 10.01.23
 Function make_V012(db, source)
-  // IDIZ,      "N",   3, 0  // РљРѕРґ РёСЃС…РѕРґР° Р·Р°Р±РѕР»РµРІР°РЅРёСЏ
-  // IZNAME,    "C", 254, 0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РёСЃС…РѕРґР° Р·Р°Р±РѕР»РµРІР°РЅРёСЏ
-  // DL_USLOV,  "N",   2, 0  // РЎРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ СѓСЃР»РѕРІРёСЏРј РѕРєР°Р·Р°РЅРёСЏ РњРџ (V006)
-  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDIZ,      "N",   3, 0  // Код исхода заболевания
+  // IZNAME,    "C", 254, 0  // Наименование исхода заболевания
+  // DL_USLOV,  "N",   2, 0  // Соответствует условиям оказания МП (V006)
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -219,7 +219,7 @@ Function make_V012(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РёСЃС…РѕРґРѕРІ Р·Р°Р±РѕР»РµРІР°РЅРёСЏ (Ishod)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор исходов заболевания (Ishod)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v012') == SQLITE_OK
@@ -280,13 +280,13 @@ Function make_V012(db, source)
   
 // 10.01.23
 Function make_V015(db, source)
-  // RECID,  "N",    3,      0      // РќРѕРјРµСЂ Р·Р°РїРёСЃРё
-  // CODE,   "N",    4,      0      // РљРѕРґ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё
-  // NAME,   "C",  254,      0      // РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё
-  // HIGH,   "N",    4,      0      // РџСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚СЊ (РёРµСЂР°СЂС…РёСЏ)
-  // OKSO,   "N",    3,      0      // Р—РЅР°С‡РµРЅРёРµ РћРљРЎРћ
-  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,    "D",      8,      0 // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // RECID,  "N",    3,      0      // Номер записи
+  // CODE,   "N",    4,      0      // Код специальности
+  // NAME,   "C",  254,      0      // Наименование специальности
+  // HIGH,   "N",    4,      0      // Принадлежность (иерархия)
+  // OKSO,   "N",    3,      0      // Значение ОКСО
+  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
+  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -303,7 +303,7 @@ Function make_V015(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РјРµРґРёС†РёРЅСЃРєРёС… СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚РµР№ (Medspec)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор медицинских специальностей (Medspec)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v015') == SQLITE_OK
@@ -368,11 +368,11 @@ Function make_V015(db, source)
   
 // 10.01.23
 Function make_V016(db, source)
-  // IDDT,     "C",        3,      0 // РљРѕРґ С‚РёРїР° РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё
-  // DTNAME,   "C",      254,      0 // РќР°РёРјРµРЅРѕРІР°РЅРёРµ С‚РёРїР° РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё
-  // RULE,     "N",        2,      0 // Р—РЅР°С‡РµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё (Р—Р°РїРѕР»РЅСЏРµС‚СЃСЏ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂРѕРј V017)
-  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,    "D",      8,      0 // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDDT,     "C",        3,      0 // Код типа диспансеризации
+  // DTNAME,   "C",      254,      0 // Наименование типа диспансеризации
+  // RULE,     "N",        2,      0 // Значение результата диспансеризации (Заполняется в соответствии с классификатором V017)
+  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
+  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -389,7 +389,7 @@ Function make_V016(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ С‚РёРїРѕРІ РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё (DispT)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор типов диспансеризации (DispT)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v016') == SQLITE_OK
@@ -459,10 +459,10 @@ Function make_V016(db, source)
   
 // 10.01.23
 Function make_V017(db, source)
-  // IDDR,     "N",        2,      0 // РљРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚Р° РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё
-  // DRNAME,   "C",      254,      0 // РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё
-  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,    "D",      8,      0 // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDDR,     "N",        2,      0 // Код результата диспансеризации
+  // DRNAME,   "C",      254,      0 // Наименование результата диспансеризации
+  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
+  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -479,7 +479,7 @@ Function make_V017(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё (DispR)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор результатов диспансеризации (DispR)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v017') == SQLITE_OK
@@ -538,10 +538,10 @@ Function make_V017(db, source)
   
 // 10.01.23
 Function make_V018(db, source)
-  // IDHVID,     "C",     12,      0 // РљРѕРґ РІРёРґР° РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
-  // HVIDNAME,   "C",   1000,      0 // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РІРёРґР° РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
-  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,    "D",      8,      0 // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDHVID,     "C",     12,      0 // Код вида высокотехнологичной медицинской помощи
+  // HVIDNAME,   "C",   1000,      0 // Наименование вида высокотехнологичной медицинской помощи
+  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
+  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -558,7 +558,7 @@ Function make_V018(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РІРёРґРѕРІ РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (HVid)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор видов высокотехнологичной медицинской помощи (HVid)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v018') == SQLITE_OK
@@ -617,15 +617,15 @@ Function make_V018(db, source)
   
 // 10.01.23
 Function make_V019(db, source)
-  // IDHM,       "N",      4,      0 // РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РјРµС‚РѕРґР° РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
-  // HMNAME,     "C",   1000,      0; // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РјРµС‚РѕРґР° РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
-  // DIAG,       "C",   1000,      0 // Р’РµСЂС…РЅРёРµ СѓСЂРѕРІРЅРё РєРѕРґРѕРІ РґРёР°РіРЅРѕР·Р° РїРѕ РњРљР‘ РґР»СЏ РґР°РЅРЅРѕРіРѕ РјРµС‚РѕРґР°; СѓРєР°Р·С‹РІР°СЋС‚СЃСЏ С‡РµСЂРµР· СЂР°Р·РґРµР»РёС‚РµР»СЊ ";".
-  // HVID,       "C",     12,      0 // РљРѕРґ РІРёРґР° РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё РґР»СЏ РґР°РЅРЅРѕРіРѕ РјРµС‚РѕРґР°
-  // HGR,        "N",      3,      0 // РќРѕРјРµСЂ РіСЂСѓРїРїС‹ РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё РґР»СЏ РґР°РЅРЅРѕРіРѕ РјРµС‚РѕРґР°
-  // HMODP,      "C",   1000,      0 // РњРѕРґРµР»СЊ РїР°С†РёРµРЅС‚Р° РґР»СЏ РјРµС‚РѕРґРѕРІ РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё СЃ РѕРґРёРЅР°РєРѕРІС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РїРѕР»СЏ "HMNAME". РќРµ Р·Р°РїРѕР»РЅСЏРµС‚СЃСЏ, РЅР°С‡РёРЅР°СЏ СЃ РІРµСЂСЃРёРё 3.0
-  // IDMODP,     "N",      5,      0 // РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РјРѕРґРµР»Рё РїР°С†РёРµРЅС‚Р° РґР»СЏ РґР°РЅРЅРѕРіРѕ РјРµС‚РѕРґР° (РЅР°С‡РёРЅР°СЏ СЃ РІРµСЂСЃРёРё 3.0, Р·Р°РїРѕР»РЅСЏРµС‚СЃСЏ Р·РЅР°С‡РµРЅРёРµРј РїРѕР»СЏ IDMPAC РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР° V022)
-  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,    "D",      8,      0 // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDHM,       "N",      4,      0 // Идентификатор метода высокотехнологичной медицинской помощи
+  // HMNAME,     "C",   1000,      0; // Наименование метода высокотехнологичной медицинской помощи
+  // DIAG,       "C",   1000,      0 // Верхние уровни кодов диагноза по МКБ для данного метода; указываются через разделитель ";".
+  // HVID,       "C",     12,      0 // Код вида высокотехнологичной медицинской помощи для данного метода
+  // HGR,        "N",      3,      0 // Номер группы высокотехнологичной медицинской помощи для данного метода
+  // HMODP,      "C",   1000,      0 // Модель пациента для методов высокотехнологичной медицинской помощи с одинаковыми значениями поля "HMNAME". Не заполняется, начиная с версии 3.0
+  // IDMODP,     "N",      5,      0 // Идентификатор модели пациента для данного метода (начиная с версии 3.0, заполняется значением поля IDMPAC классификатора V022)
+  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
+  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -642,7 +642,7 @@ Function make_V019(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РјРµС‚РѕРґРѕРІ РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (HMet)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор методов высокотехнологичной медицинской помощи (HMet)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v019') == SQLITE_OK
@@ -711,10 +711,10 @@ Function make_V019(db, source)
 
 // 10.01.23
 Function make_V020(db, source)
-  // IDK_PR,     "N",      3,      0 // РљРѕРґ РїСЂРѕС„РёР»СЏ РєРѕР№РєРё
-  // K_PRNAME,   "C",    254,      0 // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РїСЂРѕС„РёР»СЏ РєРѕР№РєРё
-  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,    "D",      8,      0  // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDK_PR,     "N",      3,      0 // Код профиля койки
+  // K_PRNAME,   "C",    254,      0 // Наименование профиля койки
+  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
+  // DATEEND,    "D",      8,      0  // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -731,7 +731,7 @@ Function make_V020(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РїСЂРѕС„РёР»СЏ РєРѕР№РєРё (KoPr)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор профиля койки (KoPr)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v020') == SQLITE_OK
@@ -790,12 +790,12 @@ Function make_V020(db, source)
 
 // 10.01.23
 Function make_V021(db, source)
-  // IDSPEC,     "N",      3,      0  // РљРѕРґ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё
-  // SPECNAME,   "C", 254             // РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё
-  // POSTNAME,   "C",    400,      0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё
-  // IDPOST_MZ,   "C",    4,      0  // РљРѕРґ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РќРЎР РњРёРЅР·РґСЂР°РІР° Р РѕСЃСЃРёРё (OID 1.2.643.5.1.13.13.11.1002)
-  // DATEBEG,   "D",   8, 0           // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0           // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDSPEC,     "N",      3,      0  // Код специальности
+  // SPECNAME,   "C", 254             // Наименование специальности
+  // POSTNAME,   "C",    400,      0  // Наименование должности
+  // IDPOST_MZ,   "C",    4,      0  // Код должности в соответствии с НСИ Минздрава России (OID 1.2.643.5.1.13.13.11.1002)
+  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
+  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
   
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -812,7 +812,7 @@ Function make_V021(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РјРµРґРёС†РёРЅСЃРєРёС… СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚РµР№ (РґРѕР»Р¶РЅРѕСЃС‚РµР№) (MedSpec)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор медицинских специальностей (должностей) (MedSpec)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v021') == SQLITE_OK
@@ -875,10 +875,10 @@ Function make_V021(db, source)
 
 // 17.01.23
 Function make_V022(db, source)
-  // IDMPAC,     "N",      5,      0  //  РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РјРѕРґРµР»Рё РїР°С†РёРµРЅС‚Р°
-  // MPACNAME,   "M",     10,      0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РјРѕРґРµР»Рё РїР°С†РёРµРЅС‚Р°
-  // DATEBEG,   "D",   8, 0           // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0           // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDMPAC,     "N",      5,      0  //  Идентификатор модели пациента
+  // MPACNAME,   "M",     10,      0  // Наименование модели пациента
+  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
+  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
   
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -895,7 +895,7 @@ Function make_V022(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РјРѕРґРµР»РµР№ РїР°С†РёРµРЅС‚Р° РїСЂРё РѕРєР°Р·Р°РЅРёРё РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (ModPac)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор моделей пациента при оказании высокотехнологичной медицинской помощи (ModPac)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v022') == SQLITE_OK
@@ -957,10 +957,10 @@ Function make_V022(db, source)
 
 // 10.01.23
 Function make_V025(db, source)
-  // IDPC,      "C",   3, 0  // РљРѕРґ С†РµР»Рё РїРѕСЃРµС‰РµРЅРёСЏ
-  // N_PC,      "C", 254, 0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ С†РµР»Рё РїРѕСЃРµС‰РµРЅРёСЏ
-  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDPC,      "C",   3, 0  // Код цели посещения
+  // N_PC,      "C", 254, 0  // Наименование цели посещения
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -977,7 +977,7 @@ Function make_V025(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ С†РµР»РµР№ РїРѕСЃРµС‰РµРЅРёСЏ (KPC)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор целей посещения (KPC)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v025') == SQLITE_OK
@@ -1034,23 +1034,25 @@ Function make_V025(db, source)
   out_obrabotka_eol()
   return nil
 
-// 10.01.23
+// 13.01.24
 Function make_V030(db, source)
   // SCHEMCOD,  "C",   5, 0  // 
   // SCHEME,    "C",  15, 0  //
   // DEGREE,    "N",   2, 0  //
   // COMMENT,   "M",  10, 0  //
-  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
-  local stmt, stmtTMP
-  local cmdText, cmdTextTMP
+  local stmt
+  local cmdText
   local k, j
   local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1
+  local oXmlDoc, oXmlNode
   local mSchemCode, mScheme, mDegree, mComment, d1, d2, d1_1, d2_1
+  local strD_End
 
-  cmdText := 'CREATE TABLE v030(schemcode TEXT(5), scheme TEXT(15), degree INTEGER, comment BLOB, datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE v030(schemcode TEXT(5), scheme TEXT(15), degree INTEGER, comment BLOB, datebeg TEXT(10), dateend TEXT(10), '
+  cmdText += 'FOREIGN KEY(degree) REFERENCES Severity(id))'
 
   nameRef := 'V030.xml'
   nfile := source + nameRef
@@ -1058,9 +1060,9 @@ Function make_V030(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РЎС…РµРјС‹ Р»РµС‡РµРЅРёСЏ Р·Р°Р±РѕР»РµРІР°РЅРёСЏ COVID-19 (TreatReg)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Схемы лечения заболевания COVID-19 (TreatReg)' + hb_eol())
   endif
-  
+
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v030') == SQLITE_OK
     OutStd('DROP TABLE v030 - Ok' + hb_eol())
   endif
@@ -1094,7 +1096,13 @@ Function make_V030(db, source)
             
           Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
           d1_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG'))
-          d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+          strD_End := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+          // d2_1 := ctod(read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND'))
+          if empty( strD_End )
+            d2_1 := ctod('01.01.2222')
+          else
+            d2_1 := ctod(strD_End)
+          endif
           Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
           d1 := hb_ValToStr(d1_1)
           d2 := hb_ValToStr(d2_1)
@@ -1123,9 +1131,9 @@ Function make_V030(db, source)
 Function make_V031(db, source)
   // DRUGCODE,  "N",   2, 0  // 
   // DRUGGRUP,  "C",  50, 0  //
-  // INDMNN,    "N",   2, 0  // РџСЂРёР·РЅР°Рє РѕР±СЏР·Р°С‚РµР»СЊРЅРѕСЃС‚Рё СѓРєР°Р·Р°РЅРёСЏ РњРќРќ (1-РґР°, 0-РЅРµС‚)
-  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // INDMNN,    "N",   2, 0  // Признак обязательности указания МНН (1-да, 0-нет)
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -1142,7 +1150,7 @@ Function make_V031(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - Р“СЂСѓРїРїС‹ РїСЂРµРїР°СЂР°С‚РѕРІ РґР»СЏ Р»РµС‡РµРЅРёСЏ Р·Р°Р±РѕР»РµРІР°РЅРёСЏ COVID-19 (GroupDrugs)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Группы препаратов для лечения заболевания COVID-19 (GroupDrugs)' + hb_eol())
   endif
   
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v031') == SQLITE_OK
@@ -1203,11 +1211,11 @@ Function make_V031(db, source)
 
 // 10.01.23
 Function make_V032(db, source)
-  // SCHEDRUG,  "C",  10, 0  // РЎРѕС‡РµС‚Р°РЅРёРµ СЃС…РµРјС‹ Р»РµС‡РµРЅРёСЏ Рё РіСЂСѓРїРїС‹ РїСЂРµРїР°СЂР°С‚РѕРІ
+  // SCHEDRUG,  "C",  10, 0  // Сочетание схемы лечения и группы препаратов
   // NAME,      "C", 100, 0  //
   // SCHEMCODE,  "C",   5, 0  //
-  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0  // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0  // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -1224,7 +1232,7 @@ Function make_V032(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РЎРѕС‡РµС‚Р°РЅРёРµ СЃС…РµРјС‹ Р»РµС‡РµРЅРёСЏ Рё РіСЂСѓРїРїС‹ РїСЂРµРїР°СЂР°С‚РѕРІ (CombTreat)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Сочетание схемы лечения и группы препаратов (CombTreat)' + hb_eol())
   endif
   
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v032') == SQLITE_OK
@@ -1287,8 +1295,8 @@ Function make_V032(db, source)
 Function make_V033(db, source)
   // SCHEDRUG,  "C",  10, 0  // 
   // DRUGCODE,  "C",   6, 0  //
-  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -1305,7 +1313,7 @@ Function make_V033(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РЎРѕРѕС‚РІРµС‚СЃС‚РІРёРµ РєРѕРґР° РїСЂРµРїР°СЂР°С‚Р° СЃС…РµРјРµ Р»РµС‡РµРЅРёСЏ (DgTreatReg)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Соответствие кода препарата схеме лечения (DgTreatReg)' + hb_eol())
   endif
   
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v033') == SQLITE_OK
@@ -1368,8 +1376,8 @@ Function make_V036(db, source)
   // NAME",      "C", 150, 0
   // "PARAM",     "N",   1, 0
   // "COMMENT",   "C",  20, 0
-  // "DATEBEG",   "D",   8, 0 Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // "DATEEND",   "D",   8, 0 Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // "DATEBEG",   "D",   8, 0 Дата начала действия записи
+  // "DATEEND",   "D",   8, 0 Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -1387,7 +1395,7 @@ Function make_V036(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РџРµСЂРµС‡РµРЅСЊ СѓСЃР»СѓРі, С‚СЂРµР±СѓСЋС‰РёС… РёРјРїР»Р°РЅС‚Р°С†РёСЋ РјРµРґРёС†РёРЅСЃРєРёС… РёР·РґРµР»РёР№ (ServImplDv)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)' + hb_eol())
   endif
   
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v036') == SQLITE_OK
@@ -1450,10 +1458,10 @@ Function make_V036(db, source)
 
 // 09.05.22
 Function make_V002(db, source)
-  // IDPR,       "N",      3,      0  // РљРѕРґ РїСЂРѕС„РёР»СЏ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
-  // PRNAME,     "C",    350,      0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РїСЂРѕС„РёР»СЏ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
-  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDPR,       "N",      3,      0  // Код профиля медицинской помощи
+  // PRNAME,     "C",    350,      0  // Наименование профиля медицинской помощи
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
   local stmt, stmtTMP
   local cmdText, cmdTextTMP
@@ -1470,7 +1478,7 @@ Function make_V002(db, source)
     out_error(FILE_NOT_EXIST, nfile)
     return nil
   else
-    OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РїСЂРѕС„РёР»РµР№ РѕРєР°Р·Р°РЅРЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (ProfOt)' + hb_eol())
+    OutStd(hb_eol() + nameRef + ' - Классификатор профилей оказанной медицинской помощи (ProfOt)' + hb_eol())
   endif
 
   if sqlite3_exec(db, 'DROP TABLE if EXISTS v002') == SQLITE_OK
@@ -1529,10 +1537,10 @@ Function make_V002(db, source)
 
 // 25.09.23
 Function make_V024(db, source)
-  // IDDKK,     "C",  10,      0  //  РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РјРѕРґРµР»Рё РїР°С†РёРµРЅС‚Р°
-  // DKKNAME,   "C", 255,      0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РјРѕРґРµР»Рё РїР°С†РёРµРЅС‚Р°
-  // DATEBEG,   "D",   8, 0           // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
-  // DATEEND,   "D",   8, 0           // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // IDDKK,     "C",  10,      0  //  Идентификатор модели пациента
+  // DKKNAME,   "C", 255,      0  // Наименование модели пациента
+  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
+  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
   
   local cmdText, cmdTextTMP
   local k, j
@@ -1548,7 +1556,7 @@ Function make_V024(db, source)
     return nil
   endif
 
-  OutStd(hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РєР»Р°СЃСЃРёС„РёРєР°С†РёРѕРЅРЅС‹С… РєСЂРёС‚РµСЂРёРµРІ (DopKr)' + hb_eol())
+  OutStd(hb_eol() + nameRef + ' - Классификатор классификационных критериев (DopKr)' + hb_eol())
   cmdText := 'CREATE TABLE v024(iddkk TEXT(10), dkkname BLOB, datebeg TEXT(19), dateend TEXT(19))'
   if ! create_table(db, nameRef, cmdText)
     return nil

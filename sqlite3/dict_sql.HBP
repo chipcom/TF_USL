@@ -12,6 +12,8 @@ xhb.hbc
 -odict_sql
 -icon=database.ico
 
+-gtwvg
+
 xmlparse.c
 hxmldoc.prg
 xml_func.prg

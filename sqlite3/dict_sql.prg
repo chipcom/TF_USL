@@ -1,3 +1,5 @@
+#include 'hbgtinfo.ch'
+#include 'hbgtwvg.ch'
 #include 'directry.ch'
 #include 'function.ch'
 #include 'dict_error.ch'
@@ -19,11 +21,15 @@ procedure main( ... )
   local nameDB
   local lAll := .f.
   local lUpdate := .f.
-  local file, name_table, cFunc, cMask := '*.xml'
+  local cMask := '*.xml'
+  local db
+  local source
+
+  //  local file, name_table, cFunc, 
 
   // приватные переменные для запуска макроса
-  private db
-  private source
+  // private db
+  // private source
 
   REQUEST HB_CODEPAGE_UTF8
   REQUEST HB_CODEPAGE_RU1251
@@ -49,6 +55,15 @@ procedure main( ... )
   // SETCURSOR(0)
   // SETCLEARB(' ')
   // SET COLOR TO
+  
+    Announce HB_GTSYS
+    Request HB_GT_WVT
+    Request HB_GT_WVT_DEFAULT
+    // запретить закрытие окна (крестиком и по Alt+F4)
+    hb_gtInfo( HB_GTI_CLOSABLE, .f. ) // для GT_WVT
+    // hb_gtInfo(HB_GTI_CLOSEMODE, 2 ) // для GT_WVG
+    // Определить сразу окно 25*80 символов, иначе нужна дополнительная настройка
+    SetMode( 25, 80 )
   
   source := upper(beforatnum(os_sep, exename())) + os_sep
   destination := upper(beforatnum(os_sep, exename())) + os_sep
@@ -78,7 +93,7 @@ procedure main( ... )
 
   if lAll .and. lUpdate
     out_error(INVALID_COMMAND_LINE)
-    return nil
+    return
   endif
 
   if right(source, 1) != os_sep
@@ -116,13 +131,13 @@ procedure main( ... )
     sqlite3_exec(db, 'PRAGMA auto_vacuum=0')
     sqlite3_exec(db, 'PRAGMA page_size=4096')
 
-    make_O0xx(db, source)
-    make_Q0xx(db, source)
-    make_F0xx(db, source)
-    make_V0xx(db, source)
     make_mzdrav(db, source)
-    make_other(db, source)
-    make_N0xx(db, source)
+    // make_O0xx(db, source)
+    // make_Q0xx(db, source)
+    // make_F0xx(db, source)
+    make_V0xx(db, source)
+    // make_other(db, source)
+    // make_N0xx(db, source)
 
     // if lAll // конвертировать все файлы
       // make_mzdrav(db, source)
