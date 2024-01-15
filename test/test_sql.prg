@@ -13,7 +13,8 @@ procedure main( ... )
 
   local nameDB
   local lCreateIfNotExist := .t.
-  local db, ar
+  local db
+  local ar
 
   REQUEST HB_CODEPAGE_UTF8
   REQUEST HB_CODEPAGE_RU1251
@@ -48,10 +49,12 @@ procedure main( ... )
   
     sqlite3_exec(db, 'PRAGMA auto_vacuum=0')
     sqlite3_exec(db, 'PRAGMA page_size=4096')
-    sqlite3_exec( db, 'PRAGMA user_version = 1000' )      
-    make_table( db )
+    sqlite3_exec( db, 'PRAGMA user_version = 1000' )
+//    clear_db( db )  
+//    make_table( db )
 
     ar := getTablesSQL( db )
+//    ar := getUserVersion( db )
     OutStd(hb_eol() + hb_ValToExp( ar ) )
 //  stmt := sqlite3_prepare( db, 'SELECT user_version FROM pragma_user_version' )
 
@@ -60,7 +63,20 @@ procedure main( ... )
     
   return
 
-// 14.01.23
+// 15.01.24
+function getUserVersion( db )
+
+  local stmt
+  local aRet := {}
+
+  stmt := sqlite3_prepare( db, "SELECT user_version FROM pragma_user_version" )
+//  sqlite3_bind_text( stmt, 1, '' )
+  DO WHILE sqlite3_step( stmt ) == SQLITE_ROW
+    AAdd( aRet, sqlite3_column_int( stmt, 1 ) )
+  ENDDO
+  return aRet
+
+// 14.01.24
 function getTablesSQL( db )
   local stmt
   local aRet := {}
@@ -71,6 +87,31 @@ function getTablesSQL( db )
     AAdd( aRet, {sqlite3_column_text( stmt, 1 ), sqlite3_column_text( stmt, 2 ), sqlite3_column_text( stmt, 3 ), sqlite3_column_int( stmt, 4 ), sqlite3_column_text( stmt, 5 ) } )
   ENDDO
   return aRet
+
+// 15.01.24
+function clear_db( db )
+
+//  local cSql
+  local i, cName, arr_table
+
+  arr_table := getTablesSQL( db )
+
+  OutStd( hb_eol() )
+  for i := 1 TO len( arr_table )
+    cName := arr_table[ i, 3 ]
+    OutStd( 'Table name: ' + cName + hb_eol() )
+    if lower( cName ) != 'n021' .and. lower( cName ) != 'n020'
+      if sqlite3_exec(db, 'DROP TABLE if EXISTS ' + cName ) == SQLITE_OK
+        OutStd('DROP TABLE ' + cName + ' - Ok' + hb_eol())
+      endif
+    endif
+  next
+  
+  if sqlite3_exec( db, 'VACUUM' ) == SQLITE_OK
+    OutStd('PACK - Done' + hb_eol())
+  endif
+
+  return nil
 
 // 14.01.24
 function make_table( db )
