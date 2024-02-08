@@ -9,6 +9,7 @@ REQUEST HB_CODEPAGE_RU1251, HB_CODEPAGE_RU866
   
 //  http://clipper.borda.ru/?1-4-0-00001115-000-10001-0-1606795293  
 
+// 08.02.24
 PROCEDURE Main() 
   
   local _vmp_usl := {;
@@ -27,16 +28,16 @@ PROCEDURE Main()
     hb_SDDODBC_Register() 
   #endif 
   
-  dbcreate('_mo3vmp_usl', _vmp_usl)
-  dbUseArea( .t.,, '_mo3vmp_usl', 'MO3VMP', .f., .f. )
-  MO3VMP->(dbGoTop())
+  dbcreate('_mo4vmp_usl', _vmp_usl)
+  dbUseArea( .t.,, '_mo4vmp_usl', 'MO4VMP', .f., .f. )
+  MO4VMP->(dbGoTop())
 
   Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
   HB_SETCODEPAGE( 'RU1251' ) 
   
   rddSetDefault( 'SQLMIX' ) 
   // ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=TEST1.XLS;' })
-  ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=TEST23.XLS;' })
+  ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=VMP24.XLS;' })
   ? 'Use:', dbUseArea( .T., , 'select * from [111$] ', 'VMP') 
   ? 'Alias:', Alias() 
   // ? "DB struct:", hb_ValToExp( dbStruct() ) 
@@ -45,24 +46,24 @@ PROCEDURE Main()
   VMP->(dbGoTop())
   // VMP->(dbSkip())
   while !empty((VMP->(fieldget(1)))) // != nil //(eof())
-    MO3VMP->(dbAppend())
-    MO3VMP->SHIFR := VMP->(fieldget(1))
+    MO4VMP->(dbAppend())
+    MO4VMP->SHIFR := VMP->(fieldget(1))
     // if VMP->(fieldget(7)) != nil
     if VMP->(fieldget(6)) != nil
-      // MO3VMP->HVID := hb_ValToStr(VMP->(fieldget(7)))
-      MO3VMP->HVID := alltrim(Str(VMP->(fieldget(6)), 12))
+      // MO4VMP->HVID := hb_ValToStr(VMP->(fieldget(7)))
+      MO4VMP->HVID := alltrim(Str(VMP->(fieldget(6)), 12))
     endif
-    // MO3VMP->HMETHOD := VMP->(fieldget(9))
-    MO3VMP->HMETHOD := VMP->(fieldget(8))
+    // MO4VMP->HMETHOD := VMP->(fieldget(9))
+    MO4VMP->HMETHOD := VMP->(fieldget(8))
     // if VMP->(fieldget(10)) != nil
     if VMP->(fieldget(11)) != nil
-      // MO3VMP->MODEL := val(alltrim(VMP->(fieldget(10))))
-      MO3VMP->MODEL := VMP->(fieldget(11))
+      // MO4VMP->MODEL := val(alltrim(VMP->(fieldget(10))))
+      MO4VMP->MODEL := VMP->(fieldget(11))
     endif
-    // MO3VMP->DIAGNOZIS := VMP->(fieldget(12))
-    MO3VMP->DIAGNOZIS := StrTran(VMP->(fieldget(10)), ', ', ';')
-    MO3VMP->DATEBEG := VMP->(fieldget(13))
-    MO3VMP->DATEEND := VMP->(fieldget(14))
+    // MO4VMP->DIAGNOZIS := VMP->(fieldget(12))
+    MO4VMP->DIAGNOZIS := StrTran(VMP->(fieldget(10)), ', ', ';')
+    MO4VMP->DATEBEG := VMP->(fieldget(13))
+    MO4VMP->DATEEND := VMP->(fieldget(14))
 
     VMP->(dbSkip())
   end
@@ -72,6 +73,6 @@ PROCEDURE Main()
   // dbGoTop() 
   // Browse() 
   VMP->(dbCloseArea())
-  MO3VMP->(dbCloseArea())
+  MO4VMP->(dbCloseArea())
   
   RETURN
