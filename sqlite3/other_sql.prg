@@ -7,11 +7,11 @@
 function make_other(db, source)
 
   make_t005(db, source)
-  make_t007(db, source)
-  make_ISDErr(db, source)
-  dlo_lgota(db, source)
-  err_csv_prik(db, source)
-  rekv_smo(db, source)
+  // make_t007(db, source)
+  // make_ISDErr(db, source)
+  // dlo_lgota(db, source)
+  // err_csv_prik(db, source)
+  // rekv_smo(db, source)
   return nil
 
 // 01.06.23
