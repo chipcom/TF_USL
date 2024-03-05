@@ -3,15 +3,87 @@
 
 #require 'hbsqlit3'
 
+#define COMMIT_COUNT  500
+
+static textBeginTrans := 'BEGIN TRANSACTION;'
+static textCommitTrans := 'COMMIT;'
+
 // 01.06.23
 function make_other(db, source)
 
-  make_t005(db, source)
+  make_p_cel(db, source)
+  // make_t005(db, source)
   // make_t007(db, source)
   // make_ISDErr(db, source)
   // dlo_lgota(db, source)
   // err_csv_prik(db, source)
   // rekv_smo(db, source)
+  return nil
+
+// 05.03.24
+function make_p_cel(db, source)
+  // SHIFR,     "C",    10,      0
+  // P_CEL,  "C",  4,      0
+
+  local cmdText
+  local nfile, nameRef
+  local mSHIFR, mPCEL
+  local count := 0, cmdTextInsert := textBeginTrans
+  local dbSource := 'pcel'
+
+
+  cmdText := 'CREATE TABLE usl_p_cel(shifr TEXT(10), p_cel TEXT(4))'
+
+  nameRef := 'p_cel_usl.dbf'
+  nfile := source + nameRef
+  if ! hb_vfExists(nfile)
+    out_error(FILE_NOT_EXIST, nfile)
+    return nil
+  else
+    OutStd(hb_eol() + nameRef + ' - Соответствие услуг АПП и цели посещения' + hb_eol())
+  endif
+
+  OutStd(hb_eol() + 'Соответствие услуг АПП и цели посещения USL_P_CEL' + hb_eol())
+
+  if sqlite3_exec(db, 'DROP TABLE if EXISTS usl_p_cel') == SQLITE_OK
+    OutStd('DROP TABLE usl_p_cel - Ok' + hb_eol())
+  endif
+
+  if sqlite3_exec(db, cmdText) == SQLITE_OK
+    OutStd('CREATE TABLE usl_p_cel - Ok' + hb_eol() )
+  else
+    OutStd('CREATE TABLE usl_p_cel - False' + hb_eol() )
+    return nil
+  endif
+
+//  cmdText := 'INSERT INTO t005 (code, error, opis, datebeg, dateend) VALUES(:code, :error, :opis, :datebeg, :dateend)'
+//  stmt := sqlite3_prepare(db, cmdText)
+
+  dbUseArea(.t., , nfile, dbSource, .t., .f.)
+  do while !(dbSource)->(EOF())
+    mSHIFR := alltrim( (dbSource)->SHIFR )
+    mPCEL := alltrim( (dbSource)->P_CEL )
+
+    count++
+    cmdTextInsert += 'INSERT INTO usl_p_cel(shifr, p_cel) VALUES(' ;
+        + "'" + mSHIFR + "'," ;
+        + "'" + mPCEL + "');"
+    if count == COMMIT_COUNT
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec(db, cmdTextInsert)
+      count := 0
+      cmdTextInsert := textBeginTrans
+    endif
+
+    (dbSource)->(dbSkip())
+  end do
+  if count > 0
+    cmdTextInsert += textCommitTrans
+    sqlite3_exec(db, cmdTextInsert)
+  endif
+
+  (dbSource)->(dbCloseArea())
+  out_obrabotka_eol()
   return nil
 
 // 01.06.23

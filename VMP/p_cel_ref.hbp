@@ -1,0 +1,14 @@
+-L..\..\LIB
+-lMyLib_HBT
+-lhbct
+-mt
+-inc
+-i..\..\include
+xhb.hbc
+hbodbc.hbc
+sddodbc.hbc
+
+-workdir=d:\_MO\TEMP\MO_MKB10
+-op_cel_ref
+
+p_cel_ref.prg
