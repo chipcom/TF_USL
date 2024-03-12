@@ -25,16 +25,11 @@ procedure main( ... )
   local db
   local source
 
-  //  local file, name_table, cFunc, 
-
-  // РїСЂРёРІР°С‚РЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ РґР»СЏ Р·Р°РїСѓСЃРєР° РјР°РєСЂРѕСЃР°
-  // private db
-  // private source
-
   REQUEST HB_CODEPAGE_UTF8
   REQUEST HB_CODEPAGE_RU1251
   REQUEST HB_LANG_RU866
-  HB_CDPSELECT('UTF8')
+//  HB_CDPSELECT('UTF8')
+  HB_CDPSELECT('RU1251')
   // HB_LANGSELECT('RU866')
   
   // REQUEST DBFNTX
@@ -49,7 +44,7 @@ procedure main( ... )
   // SET EXCLUSIVE ON
   // SET DELETED ON
   // setblink(.f.)
-  // READINSERT(.T.)        // СЂРµР¶РёРј СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ Insert
+  // READINSERT(.T.)        // режим редактирования по умолчанию Insert
   // KEYBOARD ''
   // ksetnum(.t.)
   // SETCURSOR(0)
@@ -59,10 +54,10 @@ procedure main( ... )
     Announce HB_GTSYS
     Request HB_GT_WVT
     Request HB_GT_WVT_DEFAULT
-    // Р·Р°РїСЂРµС‚РёС‚СЊ Р·Р°РєСЂС‹С‚РёРµ РѕРєРЅР° (РєСЂРµСЃС‚РёРєРѕРј Рё РїРѕ Alt+F4)
-    hb_gtInfo( HB_GTI_CLOSABLE, .f. ) // РґР»СЏ GT_WVT
-    // hb_gtInfo(HB_GTI_CLOSEMODE, 2 ) // РґР»СЏ GT_WVG
-    // РћРїСЂРµРґРµР»РёС‚СЊ СЃСЂР°Р·Сѓ РѕРєРЅРѕ 25*80 СЃРёРјРІРѕР»РѕРІ, РёРЅР°С‡Рµ РЅСѓР¶РЅР° РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РЅР°СЃС‚СЂРѕР№РєР°
+    // запретить закрытие окна (крестиком и по Alt+F4)
+    hb_gtInfo( HB_GTI_CLOSABLE, .f. ) // для GT_WVT
+    // hb_gtInfo(HB_GTI_CLOSEMODE, 2 ) // для GT_WVG
+    // Определить сразу окно 25*80 символов, иначе нужна дополнительная настройка
     SetMode( 25, 80 )
   
   source := upper(beforatnum(os_sep, exename())) + os_sep
@@ -113,7 +108,7 @@ procedure main( ... )
     quit
   endi
 
-  OutStd(hb_eol() + 'Р’РµСЂСЃРёСЏ Р±РёР±Р»РёРѕС‚РµРєРё SQLite3 - ' + sqlite3_libversion() + hb_eol() + hb_eol())
+  OutStd(hb_eol() + 'Версия библиотеки SQLite3 - ' + sqlite3_libversion() + hb_eol() + hb_eol())
 
   if sqlite3_libversion_number() < 3005001
     return
@@ -124,8 +119,8 @@ procedure main( ... )
 
   if ! Empty( db )
     #ifdef TRACE
-         sqlite3_profile(db, .t.) // РІРєР»СЋС‡РёРј РїСЂРѕС„Р°Р№Р»РµСЂ
-         sqlite3_trace(db, .t.)   // РІРєР»СЋС‡РёРј С‚СЂР°СЃСЃРёСЂРѕРІС‰РёРє
+         sqlite3_profile(db, .t.) // включим профайлер
+         sqlite3_trace(db, .t.)   // включим трассировщик
     #endif
 
     sqlite3_exec(db, 'PRAGMA auto_vacuum=0')
@@ -139,7 +134,7 @@ procedure main( ... )
     // make_other(db, source)
     // make_N0xx(db, source)
 
-    // if lAll // РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ РІСЃРµ С„Р°Р№Р»С‹
+    // if lAll // конвертировать все файлы
       // make_mzdrav(db, source)
       // make_Q0xx(db, source)
       // make_V0xx(db, source)
@@ -148,7 +143,7 @@ procedure main( ... )
       // make_other(db, source)
     // endif
 
-    // if lUpdate // РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ С‚РѕР»СЊРєРѕ С„Р°Р№Р»С‹ РёР· РєР°С‚Р°Р»РѕРіР°
+    // if lUpdate // конвертировать только файлы из каталога
     //   for each file in hb_vfDirectory( source + cMask, 'HSD' )
     //     name_table := clear_name_table(file[F_NAME])
     //     if name_table == '1.2.643.5.1.13.13.11.1468'
@@ -164,7 +159,7 @@ procedure main( ... )
     //     else
     //       cFunc := 'make_' + name_table + '(db,source)'
     //     endif
-    //     &(cFunc)  // Р·Р°РїСѓСЃРє С„СѓРЅРєС†РёРё РєРѕРЅРІРµСЂС‚Р°С†РёРё
+    //     &(cFunc)  // запуск функции конвертации
     //   next
     // endif
 

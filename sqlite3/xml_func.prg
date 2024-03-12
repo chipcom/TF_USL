@@ -1,19 +1,30 @@
+#include 'common.ch'
 #include 'function.ch'
 
 function read_xml_stroke_1251_to_utf8(node, title)
   return hb_strToUTF8(mo_read_xml_stroke(node, title, , , 'win1251'), 'RU866')
 
-***** строка даты для XML-файла
+function date_xml_sqlite( sDate )
+
+  local sDay, sMonth, sYear, out
+
+  sDay := substr( sDate, 1, 2 )
+  sMonth := substr( sDate, 4, 2 )
+  sYear := substr( sDate, 7, 4 )
+  out := sYear + '-' + sMonth + '-' + sDay
+  return out
+
+// строка даты для XML-файла
 Function date2xml(mdate)
   return strzero(year(mdate), 4) + '-' + ;
      strzero(month(mdate), 2) + '-' + ;
      strzero(day(mdate), 2)
 
-***** пребразовать дату из "2002-02-01" в тип "DATE"
+// пребразовать дату из "2002-02-01" в тип "DATE"
 Function xml2date(s)
   return stod(charrem('-', s))
 
-***** проверить наличие в XML-файле тэга и вернуть его значение
+// проверить наличие в XML-файле тэга и вернуть его значение
 Function mo_read_xml_stroke(_node, _title, _aerr, _binding, _codepage)
   // _node - указатель на узел
   // _title - наименование тэга
@@ -36,7 +47,7 @@ Function mo_read_xml_stroke(_node, _title, _aerr, _binding, _codepage)
   endif
   return ret
 
-***** вернуть значение тэга
+// вернуть значение тэга
 Function mo_read_xml_tag(oNode, _aerr, _binding, _codepage)
   // oNode - указатель на узел
   // _aerr - массив сообщений об ошибках
