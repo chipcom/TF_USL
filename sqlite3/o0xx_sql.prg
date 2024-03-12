@@ -5,17 +5,19 @@
 
 #define COMMIT_COUNT  500
 
-static textBeginTrans := 'BEGIN TRANSACTION;'
-static textCommitTrans := 'COMMIT;'
+Static textBeginTrans := 'BEGIN TRANSACTION;'
+Static textCommitTrans := 'COMMIT;'
 
 // 11.05.22
-function make_O0xx(db, source)
+Function make_o0xx( db, source )
 
-  make_O001(db, source)
-  return nil
+  make_o001( db, source )
+
+  Return Nil
 
 // 29.08.23
-Function make_O001(db, source)
+Function make_o001( db, source )
+
   // KOD,     "C",    3,      0
   // NAME11,  "C",  250,      0
   // NAME12", "C",  250,      0
@@ -24,62 +26,62 @@ Function make_O001(db, source)
   // DATEBEG, "D",    8,      0
   // DATEEND, "D",    8,      0
 
-  local stmt, stmtTMP
-  local cmdText, cmdTextTMP
-  local k, j
-  local nfile, nameRef
-  local oXmlDoc, oXmlNode, oNode1, oNode2
-  local mKod, mName11, mName12, mAlfa2, mAlfa3, d1, d2, d1_1
-  local mArr
+  Local stmt, stmtTMP
+  Local cmdText, cmdTextTMP
+  Local k, j
+  Local nfile, nameRef
+  Local oXmlDoc, oXmlNode, oNode1, oNode2
+  Local mKod, mName11, mName12, mAlfa2, mAlfa3, d1, d2, d1_1
+  Local mArr
 
-  local count := 0, cmdTextInsert := textBeginTrans
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE o001(kod TEXT(3), name11 TEXT, name12 TEXT, alfa2 TEXT(2), alfa3 TEXT(3))'
 
   nameRef := 'O001.xml'
   nfile := source + nameRef
-  if ! hb_vfExists(nfile)
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  else
-    OutStd(hb_eol() + nameRef + ' - Общероссийский классификатор стран мира (OKSM)' + hb_eol())
-  endif
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    OutStd( hb_eol() + nameRef + ' - Общероссийский классификатор стран мира (OKSM)' + hb_eol() )
+  Endif
 
-  if sqlite3_exec(db, 'DROP TABLE if EXISTS o001') == SQLITE_OK
-    OutStd('DROP TABLE o001 - Ok' + hb_eol())
-  endif
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS o001' ) == SQLITE_OK
+    OutStd( 'DROP TABLE o001 - Ok' + hb_eol() )
+  Endif
 
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd('CREATE TABLE o001 - Ok' + hb_eol() )
-  else
-    OutStd('CREATE TABLE o001 - False' + hb_eol() )
-    return nil
-  endif
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE o001 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE o001 - False' + hb_eol() )
+    Return Nil
+  Endif
 
-  oXmlDoc := HXMLDoc():Read(nfile)
-  if Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
-    return nil
-  else
-    out_obrabotka(nfile)
-    k := Len( oXmlDoc:aItems[1]:aItems )
-    for j := 1 to k
-      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if 'ZAP' == upper(oXmlNode:title)
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
         d1 := ''
         d1_1 := ''
         d2 := ''
-        mKod := read_xml_stroke_1251_to_utf8(oXmlNode, 'KOD')
-        mArr := hb_ATokens(read_xml_stroke_1251_to_utf8(oXmlNode, 'NAME11'), '^')
-        if len(mArr) == 1
-          mName11 := mArr[1]
+        mKod := read_xml_stroke_1251_to_utf8( oXmlNode, 'KOD' )
+        mArr := hb_ATokens( read_xml_stroke_1251_to_utf8( oXmlNode, 'NAME11' ), '^' )
+        If Len( mArr ) == 1
+          mName11 := mArr[ 1 ]
           mName12 := ''
-        else
-          mName11 := mArr[1]
-          mName12 := mArr[2]
-        endif
-        mAlfa2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'ALFA2')
-        mAlfa3 := read_xml_stroke_1251_to_utf8(oXmlNode, 'ALFA3')
+        Else
+          mName11 := mArr[ 1 ]
+          mName12 := mArr[ 2 ]
+        Endif
+        mAlfa2 := read_xml_stroke_1251_to_utf8( oXmlNode, 'ALFA2' )
+        mAlfa3 := read_xml_stroke_1251_to_utf8( oXmlNode, 'ALFA3' )
 
         count++
         cmdTextInsert += 'INSERT INTO o001 (kod, name11, name12, alfa2, alfa3) VALUES(' ;
@@ -88,18 +90,19 @@ Function make_O001(db, source)
           + "'" + mName12 + "'," ;
           + "'" + mAlfa2 + "'," ;
           + "'" + mAlfa3 + "');"
-        if count == COMMIT_COUNT
+        If count == COMMIT_COUNT
           cmdTextInsert += textCommitTrans
-          sqlite3_exec(db, cmdTextInsert)
+          sqlite3_exec( db, cmdTextInsert )
           count := 0
           cmdTextInsert := textBeginTrans
-        endif
-      endif
-    next j
-    if count > 0
+        Endif
+      Endif
+    Next j
+    If count > 0
       cmdTextInsert += textCommitTrans
-      sqlite3_exec(db, cmdTextInsert)
-    endif
-  endif
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
+  Endif
   out_obrabotka_eol()
-  return nil
+
+  Return Nil

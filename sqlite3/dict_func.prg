@@ -4,83 +4,93 @@
 
 #require 'hbsqlit3'
 
-** 15.05.22
-function clear_name_table(table)
+// * 15.05.22
+Function clear_name_table( table )
 
-  table := Lower(alltrim(table))
-  
-  return hb_FNameName(table)
+  table := Lower( AllTrim( table ) )
 
-** 12.05.22
-function create_table(db, table, cmdText)
+  Return hb_FNameName( table )
+
+// * 12.05.22
+Function create_table( db, table, cmdText )
+
   // db - дескриптор SQL БД
   // table - имя таблицы вида name.xml
   // cmdText - строка команды SQL для создания таблицы SQL БД
-  local ret := .f.
-  
-  table := clear_name_table(table)
+  Local ret := .f.
 
-  drop_table(db, table)
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd('CREATE TABLE ' + table + ' - Ok', hb_eol())
+  table := clear_name_table( table )
+
+  drop_table( db, table )
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE ' + table + ' - Ok', hb_eol() )
     ret := .t.
-  else
-    OutStd('CREATE TABLE ' + table + ' - False', hb_eol())
-  endif
-  return ret
+  Else
+    OutStd( 'CREATE TABLE ' + table + ' - False', hb_eol() )
+  Endif
 
-** 12.05.22
-function drop_table(db, table)
+  Return ret
+
+// * 12.05.22
+Function drop_table( db, table )
+
   // db - дескриптор SQL БД
   // table - имя таблицы SQL БД
-  local cmdText
-  
+  Local cmdText
+
   cmdText := 'DROP TABLE if EXISTS ' + table
 
-  if sqlite3_exec(db, cmdText) == SQLITE_OK
-    OutStd('DROP TABLE ' + table + ' - Ok', hb_eol())
-  endif
-  return nil
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'DROP TABLE ' + table + ' - Ok', hb_eol() )
+  Endif
 
-procedure About()
+  Return Nil
 
-  OutStd('Конвертер справочников обязательного медицинского страхования', hb_eol(), ;
-      'Copyright (c) 2022, Vladimir G.Baykin', hb_eol(), hb_eol())
-  OutStd('Syntax:  create_dict [options] ', hb_eol(), hb_eol())
-  OutStd('Опции:', hb_eol(), ;
-      '      -in=<source directory>', hb_eol(), ;
-      '      -out=<destination directory>', hb_eol(), ;
-      '      -all - конвертировать все', hb_eol(), ;
-      '      -update - конвертация отдельных файлов', hb_eol(), ;
-      '      -help - помощь', hb_eol())
-  return
-   
-** 11.02.22
-function obrabotka(nfile)
+Procedure about()
 
-  @ row() + 1, 1 say 'Обработка файла ' + nfile + ' -'
-  return Col()
+  OutStd( 'Конвертер справочников обязательного медицинского страхования', hb_eol(), ;
+    'Copyright (c) 2022, Vladimir G.Baykin', hb_eol(), hb_eol() )
+  OutStd( 'Syntax:  create_dict [options] ', hb_eol(), hb_eol() )
+  OutStd( 'Опции:', hb_eol(), ;
+    '      -in=<source directory>', hb_eol(), ;
+    '      -out=<destination directory>', hb_eol(), ;
+    '      -all - конвертировать все', hb_eol(), ;
+    '      -update - конвертация отдельных файлов', hb_eol(), ;
+    '      -help - помощь', hb_eol() )
 
-** 13.02.22
-function out_obrabotka(nfile)
+  Return
 
-  OutStd('===== Обработка файла ' + nfile)
-  return nil
+// * 11.02.22
+Function obrabotka( nfile )
 
-** 15.02.22
-function out_create_file(nfile)
+  @ Row() + 1, 1 Say 'Обработка файла ' + nfile + ' -'
 
-  OutStd('Создание файла ' + nfile)
-  return nil
+  Return Col()
 
-** 14.02.22
-function out_obrabotka_eol()
+// * 13.02.22
+Function out_obrabotka( nfile )
 
-  OutStd(hb_eol())
-  return nil
+  OutStd( '===== Обработка файла ' + nfile )
 
-** 14.02.22
-function out_obrabotka_count(j, k)
+  Return Nil
+
+// * 15.02.22
+Function out_create_file( nfile )
+
+  OutStd( 'Создание файла ' + nfile )
+
+  Return Nil
+
+// * 14.02.22
+Function out_obrabotka_eol()
+
+  OutStd( hb_eol() )
+
+  Return Nil
+
+// * 14.02.22
+Function out_obrabotka_count( j, k )
 
   // OutStd( str(j / k * 100, 6, 2) + "%" )
-  return nil
+
+  Return Nil

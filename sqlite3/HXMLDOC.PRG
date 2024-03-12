@@ -19,146 +19,154 @@
  *  HXMLNode
  */
 
-CLASS HXMLNode
+Class HXMLNode
 
-   DATA title
-   DATA type
-   DATA aItems  INIT {}
-   DATA aAttr   INIT {}
+  Data title
+  Data Type
+  Data aItems  Init {}
+  Data aAttr   Init {}
 
-   METHOD New( cTitle, type, aAttr )
-   METHOD Add( xItem )
-   METHOD GetAttribute( cName )
-   METHOD SetAttribute( cName,cValue )
-   METHOD Save( handle,level )
-   METHOD Find( cTitle,nStart )
-ENDCLASS
+  Method new( cTitle, type, aAttr )
+  Method add( xItem )
+  Method getattribute( cName )
+  Method setattribute( cName, cValue )
+  Method save( handle, level )
+  Method find( cTitle, nStart )
 
-METHOD New( cTitle, type, aAttr, cValue ) CLASS HXMLNode
+Endclass
 
-   IF cTitle != Nil ; ::title := cTitle ; ENDIF
-   IF aAttr  != Nil ; ::aAttr := aAttr  ; ENDIF
-   ::type := Iif( type != Nil , type, HBXML_TYPE_TAG )
-   IF cValue != Nil
-      ::Add( cValue )
-   ENDIF
-Return Self
+Method new( cTitle, type, aAttr, cValue ) Class HXMLNode
 
-METHOD Add( xItem ) CLASS HXMLNode
+  If cTitle != Nil ; ::title := cTitle ; Endif
+  If aAttr  != Nil ; ::aAttr := aAttr  ; Endif
+  ::type := iif( type != Nil, type, HBXML_TYPE_TAG )
+  If cValue != Nil
+    ::add( cValue )
+  Endif
 
-   Aadd( ::aItems, xItem )
-Return xItem
+  Return Self
 
-METHOD GetAttribute( cName ) CLASS HXMLNode
-Local i := Ascan( ::aAttr,{|a|a[1]==cName} )
+Method add( xItem ) Class HXMLNode
 
-Return Iif( i==0, Nil, ::aAttr[ i,2 ] )
+  AAdd( ::aItems, xItem )
 
-METHOD SetAttribute( cName,cValue ) CLASS HXMLNode
-Local i := Ascan( ::aAttr,{|a|a[1]==cName} )
+  Return xItem
 
-   IF i == 0
-      Aadd( ::aAttr,{ cName,cValue } )
-   ELSE
-      ::aAttr[ i,2 ] := cValue
-   ENDIF
+Method getattribute( cName ) Class HXMLNode
 
-Return .T.
+  Local i := AScan( ::aAttr, {| a| a[ 1 ] == cName } )
 
-METHOD Save( handle,level ) CLASS HXMLNode
-Local i, s, lNewLine
+  Return iif( i == 0, Nil, ::aAttr[ i, 2 ] )
 
-   s := Space(level*2) + '<'
-   IF ::type == HBXML_TYPE_COMMENT
-      s += '!--'
-   ELSEIF ::type == HBXML_TYPE_CDATA
-      s += '![CDATA['
-   ELSEIF ::type == HBXML_TYPE_PI
-      s += '?' + ::title
-   ELSE
-      s += ::title
-   ENDIF
-   IF ::type == HBXML_TYPE_TAG .OR. ::type == HBXML_TYPE_SINGLE
-      FOR i := 1 TO Len( ::aAttr )
-         s += ' ' + ::aAttr[i,1] + '="' + HBXML_Transform(::aAttr[i,2]) + '"'
-      NEXT
-   ENDIF
-   IF ::type == HBXML_TYPE_COMMENT
-      s += '-->' + EOS
-   ELSEIF ::type == HBXML_TYPE_PI
-      s += '?>' + EOS
-   ELSEIF ::type == HBXML_TYPE_SINGLE
-      s += '/>' + EOS
-   ELSEIF ::type == HBXML_TYPE_TAG
-      s += '>'
-      IF Len(::aItems) == 1 .AND. Valtype(::aItems[1]) == "C"
-         lNewLine := .F.
-      ELSE
-         s += EOS
-         lNewLine := .T.
-      ENDIF
-   ENDIF
-   IF handle >= 0
-      FWrite( handle,s )
-   ENDIF
+Method setattribute( cName, cValue ) Class HXMLNode
 
-   FOR i := 1 TO Len( ::aItems )
-      IF Valtype( ::aItems[i] ) == "C"
-        IF handle >= 0
-           IF ::type == HBXML_TYPE_CDATA
-              FWrite( handle, ::aItems[i] )
-           ELSE
-              FWrite( handle, HBXML_Transform( ::aItems[i] ) )
-           ENDIF
-        ELSE
-           IF ::type == HBXML_TYPE_CDATA
-              s += ::aItems[i]
-           ELSE
-              s += HBXML_Transform( ::aItems[i] )
-           ENDIF
-        ENDIF
-      ELSE
-        s += ::aItems[i]:Save( handle, level+1 )
-      ENDIF
-   NEXT
-   IF handle >= 0
-      IF ::type == HBXML_TYPE_TAG
-         FWrite( handle, Iif(lNewLine,Space(level*2),"") + '</' + ::title + '>' + EOS )
-      ELSEIF ::type == HBXML_TYPE_CDATA
-         FWrite( handle, ']]>' + EOS )
-      ENDIF
-   ELSE
-      IF ::type == HBXML_TYPE_TAG
-         s += Iif(lNewLine,Space(level*2),"") + '</' + ::title + '>' + EOS
-      ELSEIF ::type == HBXML_TYPE_CDATA
-         s += ']]>' + EOS
-      ENDIF
-      Return s
-   ENDIF
-Return ""
+  Local i := AScan( ::aAttr, {| a| a[ 1 ] == cName } )
 
-METHOD Find( cTitle,nStart,block ) CLASS HXMLNode
-Local i
+  If i == 0
+    AAdd( ::aAttr, { cName, cValue } )
+  Else
+    ::aAttr[ i, 2 ] := cValue
+  Endif
 
-   IF nStart == Nil
-      nStart := 1
-   ENDIF
-   DO WHILE .T.
-      i := Ascan( ::aItems,{|a| Valtype(a) != "C" .and. ;
-                                upper(a:title) == upper(cTitle) }, nStart)
-      IF i == 0
-         EXIT
-      ELSE
-         nStart := i
-         IF block == Nil .OR. Eval( block,::aItems[i] )
-            Return ::aItems[i]
-         ELSE
-            nStart ++
-         ENDIF
-      ENDIF
-   ENDDO
+  Return .t.
 
-Return Nil
+Method save( handle, level ) Class HXMLNode
+
+  Local i, s, lNewLine
+
+  s := Space( level * 2 ) + '<'
+  IF ::type == HBXML_TYPE_COMMENT
+    s += '!--'
+  ELSEIF ::type == HBXML_TYPE_CDATA
+    s += '![CDATA['
+  ELSEIF ::type == HBXML_TYPE_PI
+    s += '?' + ::title
+  Else
+    s += ::title
+  Endif
+  IF ::type == HBXML_TYPE_TAG .or. ::type == HBXML_TYPE_SINGLE
+    For i := 1 To Len( ::aAttr )
+      s += ' ' + ::aAttr[ i, 1 ] + '="' + hbxml_transform( ::aAttr[ i, 2 ] ) + '"'
+    Next
+  Endif
+  IF ::type == HBXML_TYPE_COMMENT
+    s += '-->' + EOS
+  ELSEIF ::type == HBXML_TYPE_PI
+    s += '?>' + EOS
+  ELSEIF ::type == HBXML_TYPE_SINGLE
+    s += '/>' + EOS
+  ELSEIF ::type == HBXML_TYPE_TAG
+    s += '>'
+    If Len( ::aItems ) == 1 .and. ValType( ::aItems[ 1 ] ) == "C"
+      lNewLine := .f.
+    Else
+      s += EOS
+      lNewLine := .t.
+    Endif
+  Endif
+  If handle >= 0
+    FWrite( handle, s )
+  Endif
+
+  For i := 1 To Len( ::aItems )
+    If ValType( ::aItems[ i ] ) == "C"
+      If handle >= 0
+        IF ::type == HBXML_TYPE_CDATA
+          FWrite( handle, ::aItems[ i ] )
+        Else
+          FWrite( handle, hbxml_transform( ::aItems[ i ] ) )
+        Endif
+      Else
+        IF ::type == HBXML_TYPE_CDATA
+          s += ::aItems[ i ]
+        Else
+          s += hbxml_transform( ::aItems[ i ] )
+        Endif
+      Endif
+    Else
+      s += ::aItems[ i ]:save( handle, level + 1 )
+    Endif
+  Next
+  If handle >= 0
+    IF ::type == HBXML_TYPE_TAG
+      FWrite( handle, iif( lNewLine, Space( level * 2 ), "" ) + '</' + ::title + '>' + EOS )
+    ELSEIF ::type == HBXML_TYPE_CDATA
+      FWrite( handle, ']]>' + EOS )
+    Endif
+  Else
+    IF ::type == HBXML_TYPE_TAG
+      s += iif( lNewLine, Space( level * 2 ), "" ) + '</' + ::title + '>' + EOS
+    ELSEIF ::type == HBXML_TYPE_CDATA
+      s += ']]>' + EOS
+    Endif
+    Return s
+  Endif
+
+  Return ""
+
+Method find( cTitle, nStart, block ) Class HXMLNode
+
+  Local i
+
+  If nStart == Nil
+    nStart := 1
+  Endif
+  Do While .t.
+    i := AScan( ::aItems, {| a| ValType( a ) != "C" .and. ;
+      Upper( a:title ) == Upper( cTitle ) }, nStart )
+    If i == 0
+      Exit
+    Else
+      nStart := i
+      If block == Nil .or. Eval( block, ::aItems[ i ] )
+        Return ::aItems[ i ]
+      Else
+        nStart++
+      Endif
+    Endif
+  Enddo
+
+  Return Nil
 
 
 /*
@@ -166,67 +174,72 @@ Return Nil
  *  HXMLDoc
  */
 
-CLASS HXMLDoc INHERIT HXMLNode
+Class HXMLDoc Inherit HXMLNode
 
-   METHOD New( encoding )
-   METHOD Read( fname )
-   METHOD ReadString( buffer )  INLINE ::Read( ,buffer )
-   METHOD Save( fname,lNoHeader )
-   METHOD Save2String()  INLINE ::Save()
-ENDCLASS
+  Method new( encoding )
+  Method read( fname )
+  Method readstring( buffer )  INLINE ::read( , buffer )
+  Method save( fname, lNoHeader )
+  Method save2string()  INLINE ::save()
 
-METHOD New( encoding ) CLASS HXMLDoc
+Endclass
 
-   IF encoding == Nil
-     encoding := "Windows-1251"
-   ENDIF
-   Aadd( ::aAttr, { "version","1.0" } )
-   Aadd( ::aAttr, { "encoding",encoding } )
+Method new( encoding ) Class HXMLDoc
 
-Return Self
+  If encoding == Nil
+    encoding := "Windows-1251"
+  Endif
+  AAdd( ::aAttr, { "version", "1.0" } )
+  AAdd( ::aAttr, { "encoding", encoding } )
 
-METHOD Read( fname,buffer ) CLASS HXMLDoc
-Local han
+  Return Self
 
-   IF fname != Nil
-      han := FOpen( fname, FO_READ )
-      IF han != -1
-         hbxml_GetDoc( Self,han )
-         FClose( han )
-      ENDIF
-   ELSEIF buffer != Nil
-      hbxml_GetDoc( Self,buffer )
-   ELSE
-      Return Nil
-   ENDIF
-Return Self
+Method read( fname, buffer ) Class HXMLDoc
 
-METHOD Save( fname,lNoHeader ) CLASS HXMLDoc
-Local handle := -2
-Local cEncod, i, s
+  Local han
 
-   IF fname != Nil
-      handle := FCreate( fname )
-   ENDIF
-   IF handle != -1
-      IF lNoHeader == Nil .OR. !lNoHeader
-         IF ( cEncod := ::GetAttribute( "encoding" ) ) == Nil
-            cEncod := "Windows-1251"
-         ENDIF
-         s := '<?xml version="1.0" encoding="'+cEncod+'"?>'+EOS
-         IF fname != Nil
-            FWrite( handle, s )
-         ENDIF
-      ELSE
-         s := ""
-      ENDIF
-      FOR i := 1 TO Len( ::aItems )
-         s += ::aItems[i]:Save( handle, 0 )
-      NEXT
-      IF fname != Nil
-         FClose( handle )
-      ELSE
-         Return s
-      ENDIF
-   ENDIF
-Return .T.
+  If fname != Nil
+    han := FOpen( fname, FO_READ )
+    If han != -1
+      hbxml_getdoc( Self, han )
+      FClose( han )
+    Endif
+  Elseif buffer != Nil
+    hbxml_getdoc( Self, buffer )
+  Else
+    Return Nil
+  Endif
+
+  Return Self
+
+Method save( fname, lNoHeader ) Class HXMLDoc
+
+  Local handle := -2
+  Local cEncod, i, s
+
+  If fname != Nil
+    handle := FCreate( fname )
+  Endif
+  If handle != -1
+    If lNoHeader == Nil .or. !lNoHeader
+      If ( cEncod := ::getattribute( "encoding" ) ) == Nil
+        cEncod := "Windows-1251"
+      Endif
+      s := '<?xml version="1.0" encoding="' + cEncod + '"?>' + EOS
+      If fname != Nil
+        FWrite( handle, s )
+      Endif
+    Else
+      s := ""
+    Endif
+    For i := 1 To Len( ::aItems )
+      s += ::aItems[ i ]:save( handle, 0 )
+    Next
+    If fname != Nil
+      FClose( handle )
+    Else
+      Return s
+    Endif
+  Endif
+
+  Return .t.
