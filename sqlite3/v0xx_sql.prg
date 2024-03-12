@@ -11,7 +11,7 @@ Static textCommitTrans := 'COMMIT;'
 // 17.01.23
 Function make_v0xx( db, source )
 
-  // make_V002(db, source)
+  make_V002(db, source)
 
   // make_V009(db, source)
   // make_V010(db, source)
@@ -31,25 +31,25 @@ Function make_v0xx( db, source )
   // make_V031(db, source)
   // make_V032(db, source)
   // make_V033(db, source)
-  // make_v036(db, source)
+  make_v036(db, source)
 
   Return Nil
 
 // 10.01.23
 Function make_v009( db, source )
 
-  // IDRMP,     "N",   3, 0  // Код результата обращения
-  // RMPNAME,   "C", 254, 0  // Наименование результата обращения
-  // DL_USLOV,  "N",   2, 0  // Соответствует условиям оказания медицинской помощи (V006)
-  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
-  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+  // IDRMP,     "N",   3, 0  // РљРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚Р° РѕР±СЂР°С‰РµРЅРёСЏ
+  // RMPNAME,   "C", 254, 0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РѕР±СЂР°С‰РµРЅРёСЏ
+  // DL_USLOV,  "N",   2, 0  // РЎРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ СѓСЃР»РѕРІРёСЏРј РѕРєР°Р·Р°РЅРёСЏ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (V006)
+  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1, oNode2
-  Local mIDRMP, mRmpname, mDL_USLOV, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mIDRMP, mRmpname, mDL_USLOV, d1, d2
 
   cmdText := 'CREATE TABLE v009(idrmp INTEGER, rmpname TEXT, dl_uslov INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -59,7 +59,7 @@ Function make_v009( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор результатов обращения за медицинской помощью (Rezult)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РѕР±СЂР°С‰РµРЅРёСЏ Р·Р° РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰СЊСЋ (Rezult)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v009' ) == SQLITE_OK
@@ -89,16 +89,9 @@ Function make_v009( db, source )
           mIDRMP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDRMP' )
           mRmpname := read_xml_stroke_1251_to_utf8( oXmlNode, 'RMPNAME' )
           mDL_USLOV := read_xml_stroke_1251_to_utf8( oXmlNode, 'DL_USLOV' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_int( stmt, 1, Val( mIDRMP ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mRmpname ) == SQLITE_OK .and. ;
               sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
@@ -122,17 +115,17 @@ Function make_v009( db, source )
 // 10.01.23
 Function make_v010( db, source )
 
-  // IDSP,       "N",      2,      0  // Код способа оплаты медицинской помощи
-  // SPNAME,     "C",    254,      0  // Наименование способа оплаты медицинской помощи
-  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
-  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+  // IDSP,       "N",      2,      0  // РљРѕРґ СЃРїРѕСЃРѕР±Р° РѕРїР»Р°С‚С‹ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
+  // SPNAME,     "C",    254,      0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃРїРѕСЃРѕР±Р° РѕРїР»Р°С‚С‹ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
+  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1, oNode2
-  Local mIDSP, mSpname, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mIDSP, mSpname, d1, d2
 
   cmdText := 'CREATE TABLE v010(idsp INTEGER, spname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -142,7 +135,7 @@ Function make_v010( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор способов оплаты медицинской помощи (Sposob)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ СЃРїРѕСЃРѕР±РѕРІ РѕРїР»Р°С‚С‹ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (Sposob)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v010' ) == SQLITE_OK
@@ -171,16 +164,9 @@ Function make_v010( db, source )
         If 'ZAP' == Upper( oXmlNode:title )
           mIDSP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDSP' )
           mSpname := read_xml_stroke_1251_to_utf8( oXmlNode, 'SPNAME' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_int( stmt, 1, Val( mIDSP ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mSpname ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -203,18 +189,18 @@ Function make_v010( db, source )
 // 10.01.23
 Function make_v012( db, source )
 
-  // IDIZ,      "N",   3, 0  // Код исхода заболевания
-  // IZNAME,    "C", 254, 0  // Наименование исхода заболевания
-  // DL_USLOV,  "N",   2, 0  // Соответствует условиям оказания МП (V006)
-  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
-  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+  // IDIZ,      "N",   3, 0  // РљРѕРґ РёСЃС…РѕРґР° Р·Р°Р±РѕР»РµРІР°РЅРёСЏ
+  // IZNAME,    "C", 254, 0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РёСЃС…РѕРґР° Р·Р°Р±РѕР»РµРІР°РЅРёСЏ
+  // DL_USLOV,  "N",   2, 0  // РЎРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ СѓСЃР»РѕРІРёСЏРј РѕРєР°Р·Р°РЅРёСЏ РњРџ (V006)
+  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1, oNode2
-  Local mIDIZ, mIzname, mDL_USLOV, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mIDIZ, mIzname, mDL_USLOV, d1, d2
 
   cmdText := 'CREATE TABLE v012(idiz INTEGER, izname TEXT, dl_uslov INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -224,7 +210,7 @@ Function make_v012( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор исходов заболевания (Ishod)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РёСЃС…РѕРґРѕРІ Р·Р°Р±РѕР»РµРІР°РЅРёСЏ (Ishod)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v012' ) == SQLITE_OK
@@ -254,16 +240,9 @@ Function make_v012( db, source )
           mIDIZ := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDIZ' )
           mIzname := read_xml_stroke_1251_to_utf8( oXmlNode, 'IZNAME' )
           mDL_USLOV := read_xml_stroke_1251_to_utf8( oXmlNode, 'DL_USLOV' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_int( stmt, 1, Val( mIDIZ ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mIzname ) == SQLITE_OK .and. ;
               sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
@@ -287,20 +266,20 @@ Function make_v012( db, source )
 // 10.01.23
 Function make_v015( db, source )
 
-  // RECID,  "N",    3,      0      // Номер записи
-  // CODE,   "N",    4,      0      // Код специальности
-  // NAME,   "C",  254,      0      // Наименование специальности
-  // HIGH,   "N",    4,      0      // Принадлежность (иерархия)
-  // OKSO,   "N",    3,      0      // Значение ОКСО
-  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
-  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
+  // RECID,  "N",    3,      0      // РќРѕРјРµСЂ Р·Р°РїРёСЃРё
+  // CODE,   "N",    4,      0      // РљРѕРґ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё
+  // NAME,   "C",  254,      0      // РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё
+  // HIGH,   "N",    4,      0      // РџСЂРёРЅР°РґР»РµР¶РЅРѕСЃС‚СЊ (РёРµСЂР°СЂС…РёСЏ)
+  // OKSO,   "N",    3,      0      // Р—РЅР°С‡РµРЅРёРµ РћРљРЎРћ
+  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,    "D",      8,      0 // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1, oNode2
-  Local mRecid, mCode, mName, mHigh, mOKSO, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mRecid, mCode, mName, mHigh, mOKSO, d1, d2
 
   cmdText := 'CREATE TABLE v015(recid INTEGER, code INTEGER, name TEXT, high TEXT(4), okso TEXT(3), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -310,7 +289,7 @@ Function make_v015( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор медицинских специальностей (Medspec)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РјРµРґРёС†РёРЅСЃРєРёС… СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚РµР№ (Medspec)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v015' ) == SQLITE_OK
@@ -342,16 +321,9 @@ Function make_v015( db, source )
           mName := read_xml_stroke_1251_to_utf8( oXmlNode, 'NAME' )
           mHigh := read_xml_stroke_1251_to_utf8( oXmlNode, 'HIGH' )
           mOKSO := read_xml_stroke_1251_to_utf8( oXmlNode, 'OKSO' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_int( stmt, 1, Val( mRecid ) ) == SQLITE_OK .and. ;
               sqlite3_bind_int( stmt, 2, Val( mCode ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, mName ) == SQLITE_OK .and. ;
@@ -377,18 +349,18 @@ Function make_v015( db, source )
 // 10.01.23
 Function make_v016( db, source )
 
-  // IDDT,     "C",        3,      0 // Код типа диспансеризации
-  // DTNAME,   "C",      254,      0 // Наименование типа диспансеризации
-  // RULE,     "N",        2,      0 // Значение результата диспансеризации (Заполняется в соответствии с классификатором V017)
-  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
-  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
+  // IDDT,     "C",        3,      0 // РљРѕРґ С‚РёРїР° РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё
+  // DTNAME,   "C",      254,      0 // РќР°РёРјРµРЅРѕРІР°РЅРёРµ С‚РёРїР° РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё
+  // RULE,     "N",        2,      0 // Р—РЅР°С‡РµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё (Р—Р°РїРѕР»РЅСЏРµС‚СЃСЏ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂРѕРј V017)
+  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,    "D",      8,      0 // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
-  Local k, j
+  Local stmt
+  Local cmdText
+  Local k, j, j1
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode, oNode1, oNode2
-  Local mIDDT, mDTNAME, mRule, d1, d2, d1_1, d2_1
+  Local mIDDT, mDTNAME, mRule, d1, d2
 
   cmdText := 'CREATE TABLE v016(iddt TEXT(3), dtname TEXT, rule TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -398,7 +370,7 @@ Function make_v016( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор типов диспансеризации (DispT)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ С‚РёРїРѕРІ РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё (DispT)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v016' ) == SQLITE_OK
@@ -427,16 +399,9 @@ Function make_v016( db, source )
         If 'ZAP' == Upper( oXmlNode:title )
           mIDDT := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDDT' )
           mDTNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'DTNAME' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           mRule := ''
           If ( oNode1 := oXmlNode:find( 'DTRULE' ) ) != NIL
             For j1 := 1 To Len( oNode1:aItems )
@@ -470,17 +435,17 @@ Function make_v016( db, source )
 // 10.01.23
 Function make_v017( db, source )
 
-  // IDDR,     "N",        2,      0 // Код результата диспансеризации
-  // DRNAME,   "C",      254,      0 // Наименование результата диспансеризации
-  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
-  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
+  // IDDR,     "N",        2,      0 // РљРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚Р° РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё
+  // DRNAME,   "C",      254,      0 // РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚Р° РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё
+  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,    "D",      8,      0 // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
-  Local mIDDR, mDRNAME, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mIDDR, mDRNAME, d1, d2
 
   cmdText := 'CREATE TABLE v017(iddr INTEGER, drname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -490,7 +455,7 @@ Function make_v017( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор результатов диспансеризации (DispR)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РґРёСЃРїР°РЅСЃРµСЂРёР·Р°С†РёРё (DispR)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v017' ) == SQLITE_OK
@@ -519,16 +484,9 @@ Function make_v017( db, source )
         If 'ZAP' == Upper( oXmlNode:title )
           mIDDR := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDDR' )
           mDRNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'DRNAME' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_int( stmt, 1, Val( mIDDR ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mDRNAME ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -551,17 +509,17 @@ Function make_v017( db, source )
 // 10.01.23
 Function make_v018( db, source )
 
-  // IDHVID,     "C",     12,      0 // Код вида высокотехнологичной медицинской помощи
-  // HVIDNAME,   "C",   1000,      0 // Наименование вида высокотехнологичной медицинской помощи
-  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
-  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
+  // IDHVID,     "C",     12,      0 // РљРѕРґ РІРёРґР° РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
+  // HVIDNAME,   "C",   1000,      0 // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РІРёРґР° РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
+  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,    "D",      8,      0 // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
-  Local mIDHVID, mHVIDNAME, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mIDHVID, mHVIDNAME, d1, d2
 
   cmdText := 'CREATE TABLE v018(idhvid TEXT(12), hvidname BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -571,7 +529,7 @@ Function make_v018( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор видов высокотехнологичной медицинской помощи (HVid)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РІРёРґРѕРІ РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (HVid)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v018' ) == SQLITE_OK
@@ -600,16 +558,9 @@ Function make_v018( db, source )
         If 'ZAP' == Upper( oXmlNode:title )
           mIDHVID := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDHVID' )
           mHVIDNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'HVIDNAME' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_text( stmt, 1, mIDHVID ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mHVIDNAME ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -632,17 +583,17 @@ Function make_v018( db, source )
 // 10.01.23
 Function make_v020( db, source )
 
-  // IDK_PR,     "N",      3,      0 // Код профиля койки
-  // K_PRNAME,   "C",    254,      0 // Наименование профиля койки
-  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
-  // DATEEND,    "D",      8,      0  // Дата окончания действия записи
+  // IDK_PR,     "N",      3,      0 // РљРѕРґ РїСЂРѕС„РёР»СЏ РєРѕР№РєРё
+  // K_PRNAME,   "C",    254,      0 // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РїСЂРѕС„РёР»СЏ РєРѕР№РєРё
+  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,    "D",      8,      0  // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
-  Local mIDK_PR, mK_PRNAME, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mIDK_PR, mK_PRNAME, d1, d2
 
   cmdText := 'CREATE TABLE v020(idk_pr INTEGER, k_prname BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -652,7 +603,7 @@ Function make_v020( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор профиля койки (KoPr)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РїСЂРѕС„РёР»СЏ РєРѕР№РєРё (KoPr)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v020' ) == SQLITE_OK
@@ -681,16 +632,9 @@ Function make_v020( db, source )
         If 'ZAP' == Upper( oXmlNode:title )
           mIDK_PR := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDK_PR' )
           mK_PRNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'K_PRNAME' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_int( stmt, 1, Val( mIDK_PR ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mK_PRNAME ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -713,19 +657,19 @@ Function make_v020( db, source )
 // 10.01.23
 Function make_v021( db, source )
 
-  // IDSPEC,     "N",      3,      0  // Код специальности
-  // SPECNAME,   "C", 254             // Наименование специальности
-  // POSTNAME,   "C",    400,      0  // Наименование должности
-  // IDPOST_MZ,   "C",    4,      0  // Код должности в соответствии с НСИ Минздрава России (OID 1.2.643.5.1.13.13.11.1002)
-  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
-  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
+  // IDSPEC,     "N",      3,      0  // РљРѕРґ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё
+  // SPECNAME,   "C", 254             // РќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚Рё
+  // POSTNAME,   "C",    400,      0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РґРѕР»Р¶РЅРѕСЃС‚Рё
+  // IDPOST_MZ,   "C",    4,      0  // РљРѕРґ РґРѕР»Р¶РЅРѕСЃС‚Рё РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РќРЎР РњРёРЅР·РґСЂР°РІР° Р РѕСЃСЃРёРё (OID 1.2.643.5.1.13.13.11.1002)
+  // DATEBEG,   "D",   8, 0           // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0           // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
-  Local mIDSPEC, mSPECNAME, mPOSTNAME, mIDPOST_MZ, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mIDSPEC, mSPECNAME, mPOSTNAME, mIDPOST_MZ, d1, d2
 
   cmdText := 'CREATE TABLE v021(idspec INTEGER, specname BLOB, postname BLOB, idpost_mz TEXT(4), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -735,7 +679,7 @@ Function make_v021( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор медицинских специальностей (должностей) (MedSpec)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РјРµРґРёС†РёРЅСЃРєРёС… СЃРїРµС†РёР°Р»СЊРЅРѕСЃС‚РµР№ (РґРѕР»Р¶РЅРѕСЃС‚РµР№) (MedSpec)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v021' ) == SQLITE_OK
@@ -766,16 +710,9 @@ Function make_v021( db, source )
           mSPECNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'SPECNAME' )
           mPOSTNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'POSTNAME' )
           mIDPOST_MZ := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDPOST_MZ' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_int( stmt, 1, Val( mIDSPEC ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mSPECNAME ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, mPOSTNAME ) == SQLITE_OK .and. ;
@@ -800,16 +737,16 @@ Function make_v021( db, source )
 // 17.01.23
 Function make_v022( db, source )
 
-  // IDMPAC,     "N",      5,      0  //  Идентификатор модели пациента
-  // MPACNAME,   "M",     10,      0  // Наименование модели пациента
-  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
-  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
+  // IDMPAC,     "N",      5,      0  //  РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РјРѕРґРµР»Рё РїР°С†РёРµРЅС‚Р°
+  // MPACNAME,   "M",     10,      0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РјРѕРґРµР»Рё РїР°С†РёРµРЅС‚Р°
+  // DATEBEG,   "D",   8, 0           // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0           // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
+  Local oXmlDoc, oXmlNode
   Local mIDMPAC, mMPACNAME, d1, d2, d1_1, d2_1
 
   cmdText := 'CREATE TABLE v022(idmpac INTEGER, mpacname BLOB, datebeg TEXT(10), dateend TEXT(10))'
@@ -820,7 +757,7 @@ Function make_v022( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор моделей пациента при оказании высокотехнологичной медицинской помощи (ModPac)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РјРѕРґРµР»РµР№ РїР°С†РёРµРЅС‚Р° РїСЂРё РѕРєР°Р·Р°РЅРёРё РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (ModPac)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v022' ) == SQLITE_OK
@@ -884,17 +821,17 @@ Function make_v022( db, source )
 // 10.01.23
 Function make_v025( db, source )
 
-  // IDPC,      "C",   3, 0  // Код цели посещения
-  // N_PC,      "C", 254, 0  // Наименование цели посещения
-  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
-  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+  // IDPC,      "C",   3, 0  // РљРѕРґ С†РµР»Рё РїРѕСЃРµС‰РµРЅРёСЏ
+  // N_PC,      "C", 254, 0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ С†РµР»Рё РїРѕСЃРµС‰РµРЅРёСЏ
+  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
-  Local mIDPC, mN_PC, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mIDPC, mN_PC, d1, d2
 
   cmdText := 'CREATE TABLE v025(idpc TEXT(3), n_pc BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -904,7 +841,7 @@ Function make_v025( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор целей посещения (KPC)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ С†РµР»РµР№ РїРѕСЃРµС‰РµРЅРёСЏ (KPC)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v025' ) == SQLITE_OK
@@ -933,16 +870,9 @@ Function make_v025( db, source )
         If 'ZAP' == Upper( oXmlNode:title )
           mIDPC := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDPC' )
           mN_PC := read_xml_stroke_1251_to_utf8( oXmlNode, 'N_PC' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_text( stmt, 1, mIDPC ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mN_PC ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -969,8 +899,8 @@ Function make_v030( db, source )
   // SCHEME,    "C",  15, 0  //
   // DEGREE,    "N",   2, 0  //
   // COMMENT,   "M",  10, 0  //
-  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
-  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
   Local stmt
   Local cmdText
@@ -989,7 +919,7 @@ Function make_v030( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Схемы лечения заболевания COVID-19 (TreatReg)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РЎС…РµРјС‹ Р»РµС‡РµРЅРёСЏ Р·Р°Р±РѕР»РµРІР°РЅРёСЏ COVID-19 (TreatReg)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v030' ) == SQLITE_OK
@@ -1062,16 +992,16 @@ Function make_v031( db, source )
 
   // DRUGCODE,  "N",   2, 0  //
   // DRUGGRUP,  "C",  50, 0  //
-  // INDMNN,    "N",   2, 0  // Признак обязательности указания МНН (1-да, 0-нет)
-  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
-  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+  // INDMNN,    "N",   2, 0  // РџСЂРёР·РЅР°Рє РѕР±СЏР·Р°С‚РµР»СЊРЅРѕСЃС‚Рё СѓРєР°Р·Р°РЅРёСЏ РњРќРќ (1-РґР°, 0-РЅРµС‚)
+  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
-  Local mDrugCode, mDrugGrup, mIndMNN, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mDrugCode, mDrugGrup, mIndMNN, d1, d2
 
   cmdText := 'CREATE TABLE v031(drugcode INTEGER, druggrup TEXT, indmnn INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1081,7 +1011,7 @@ Function make_v031( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Группы препаратов для лечения заболевания COVID-19 (GroupDrugs)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - Р“СЂСѓРїРїС‹ РїСЂРµРїР°СЂР°С‚РѕРІ РґР»СЏ Р»РµС‡РµРЅРёСЏ Р·Р°Р±РѕР»РµРІР°РЅРёСЏ COVID-19 (GroupDrugs)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v031' ) == SQLITE_OK
@@ -1111,16 +1041,9 @@ Function make_v031( db, source )
           mDrugCode := read_xml_stroke_1251_to_utf8( oXmlNode, 'DrugGroupCode' )
           mDrugGrup := read_xml_stroke_1251_to_utf8( oXmlNode, 'DrugGroup' )
           mIndMNN := read_xml_stroke_1251_to_utf8( oXmlNode, 'ManIndMNN' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_int( stmt, 1, Val( mDrugCode ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mDrugGrup ) == SQLITE_OK .and. ;
               sqlite3_bind_int( stmt, 3, Val( mIndMNN ) ) == SQLITE_OK .and. ;
@@ -1144,18 +1067,18 @@ Function make_v031( db, source )
 // 10.01.23
 Function make_v032( db, source )
 
-  // SCHEDRUG,  "C",  10, 0  // Сочетание схемы лечения и группы препаратов
+  // SCHEDRUG,  "C",  10, 0  // РЎРѕС‡РµС‚Р°РЅРёРµ СЃС…РµРјС‹ Р»РµС‡РµРЅРёСЏ Рё РіСЂСѓРїРїС‹ РїСЂРµРїР°СЂР°С‚РѕРІ
   // NAME,      "C", 100, 0  //
   // SCHEMCODE,  "C",   5, 0  //
-  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
-  // DATEEND,   "D",   8, 0  // Дата окончания действия записи
+  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0  // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
-  Local mScheDrug, mName, mSchemCode, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mScheDrug, mName, mSchemCode, d1, d2
 
   cmdText := 'CREATE TABLE v032(schedrug TEXT(10), name TEXT, schemcode TEXT(5), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1165,7 +1088,7 @@ Function make_v032( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Сочетание схемы лечения и группы препаратов (CombTreat)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РЎРѕС‡РµС‚Р°РЅРёРµ СЃС…РµРјС‹ Р»РµС‡РµРЅРёСЏ Рё РіСЂСѓРїРїС‹ РїСЂРµРїР°СЂР°С‚РѕРІ (CombTreat)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v032' ) == SQLITE_OK
@@ -1195,16 +1118,9 @@ Function make_v032( db, source )
           mScheDrug := read_xml_stroke_1251_to_utf8( oXmlNode, 'ScheDrugGrCd' )
           mName := read_xml_stroke_1251_to_utf8( oXmlNode, 'Name' )
           mSchemCode := read_xml_stroke_1251_to_utf8( oXmlNode, 'SchemCode' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_text( stmt, 1, mScheDrug ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mName ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, mSchemCode ) == SQLITE_OK .and. ;
@@ -1230,15 +1146,15 @@ Function make_v033( db, source )
 
   // SCHEDRUG,  "C",  10, 0  //
   // DRUGCODE,  "C",   6, 0  //
-  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
-  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local stmt
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
-  Local mScheDrug, mDrugCode, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mScheDrug, mDrugCode, d1, d2
 
   cmdText := 'CREATE TABLE v033(schedrug TEXT(10), drugcode TEXT(6), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1248,7 +1164,7 @@ Function make_v033( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Соответствие кода препарата схеме лечения (DgTreatReg)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РЎРѕРѕС‚РІРµС‚СЃС‚РІРёРµ РєРѕРґР° РїСЂРµРїР°СЂР°С‚Р° СЃС…РµРјРµ Р»РµС‡РµРЅРёСЏ (DgTreatReg)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v033' ) == SQLITE_OK
@@ -1277,16 +1193,9 @@ Function make_v033( db, source )
         If 'ZAP' == Upper( oXmlNode:title )
           mScheDrug := read_xml_stroke_1251_to_utf8( oXmlNode, 'ScheDrugGrCd' )
           mDrugCode := read_xml_stroke_1251_to_utf8( oXmlNode, 'DrugCode' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
           If sqlite3_bind_text( stmt, 1, mScheDrug ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mDrugCode ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -1306,23 +1215,22 @@ Function make_v033( db, source )
 
   Return Nil
 
-// 10.01.23
+// 12.03.24
 Function make_v036( db, source )
 
   // S_CODE    "C",  16, 0
   // NAME",      "C", 150, 0
   // "PARAM",     "N",   1, 0
   // "COMMENT",   "C",  20, 0
-  // "DATEBEG",   "D",   8, 0 Дата начала действия записи
-  // "DATEEND",   "D",   8, 0 Дата окончания действия записи
+  // "DATEBEG",   "D",   8, 0 Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // "DATEEND",   "D",   8, 0 Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
-  Local mS_Code, mName, mParam, mComment, d1, d2, d1_1, d2_1
-  // local mDATEBEG, mDATEEND
+  Local oXmlDoc, oXmlNode
+  Local mS_Code, mName, mParam, mComment, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE v036( s_code TEXT(16), name BLOB, param INTEGER, comment TEXT, datebeg TEXT(10), dateend TEXT(10) )'
 
@@ -1332,7 +1240,7 @@ Function make_v036( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РџРµСЂРµС‡РµРЅСЊ СѓСЃР»СѓРі, С‚СЂРµР±СѓСЋС‰РёС… РёРјРїР»Р°РЅС‚Р°С†РёСЋ РјРµРґРёС†РёРЅСЃРєРёС… РёР·РґРµР»РёР№ (ServImplDv)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v036' ) == SQLITE_OK
@@ -1351,63 +1259,57 @@ Function make_v036( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    cmdText := "INSERT INTO v036 ( s_code, name, param, comment, datebeg, dateend ) VALUES( :s_code, :name, :param, :comment, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
-      out_obrabotka( nfile )
-      k := Len( oXmlDoc:aItems[ 1 ]:aItems )
-      For j := 1 To k
-        oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
-        If 'ZAP' == Upper( oXmlNode:title )
-          mS_Code := read_xml_stroke_1251_to_utf8( oXmlNode, 'S_CODE' )
-          mName := read_xml_stroke_1251_to_utf8( oXmlNode, 'NAME' )
-          mParam := read_xml_stroke_1251_to_utf8( oXmlNode, 'Parameter' )
-          mComment := read_xml_stroke_1251_to_utf8( oXmlNode, 'COMMENT' )
-          // mDATEBEG := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // mDATEEND := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
-          If sqlite3_bind_text( stmt, 1, mS_Code ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 2, mName ) == SQLITE_OK .and. ;
-              sqlite3_bind_int( stmt, 3, Val( mParam ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 4, mComment ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 5, d1 ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 6, d2 ) == SQLITE_OK
-            If sqlite3_step( stmt ) != SQLITE_DONE
-              out_error( TAG_ROW_INVALID, nfile, j )
-            Endif
-          Endif
-          sqlite3_reset( stmt )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mS_Code := read_xml_stroke_1251_to_utf8( oXmlNode, 'S_CODE' )
+        mName := read_xml_stroke_1251_to_utf8( oXmlNode, 'NAME' )
+        mParam := read_xml_stroke_1251_to_utf8( oXmlNode, 'Parameter' )
+        mComment := read_xml_stroke_1251_to_utf8( oXmlNode, 'COMMENT' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
+        count++
+        cmdTextInsert += 'INSERT INTO v036(s_code, name, param, comment, datebeg, dateend) VALUES(' ;
+          + "'" + mS_Code + "'," ;
+          + "'" + mName + "'," ;
+          + "'" + mParam + "'," ;
+          + "'" + mComment + "'," ;
+          + "'" + d1 + "'," ;
+          + "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
         Endif
-      Next j
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
     Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
 
   Return Nil
 
-// 09.05.22
+// 12.03.24
 Function make_v002( db, source )
 
-  // IDPR,       "N",      3,      0  // Код профиля медицинской помощи
-  // PRNAME,     "C",    350,      0  // Наименование профиля медицинской помощи
-  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
-  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+  // IDPR,       "N",      3,      0  // РљРѕРґ РїСЂРѕС„РёР»СЏ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
+  // PRNAME,     "C",    350,      0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РїСЂРѕС„РёР»СЏ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
+  // DATEBEG,   "D",   8, 0  // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0   // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1, oNode2
-  Local mIDPR, mPrname, d1, d2, d1_1, d2_1
+  Local oXmlDoc, oXmlNode
+  Local mIDPR, mPrname, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE v002(idpr INTEGER, prname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1417,7 +1319,7 @@ Function make_v002( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор профилей оказанной медицинской помощи (ProfOt)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РїСЂРѕС„РёР»РµР№ РѕРєР°Р·Р°РЅРЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (ProfOt)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v002' ) == SQLITE_OK
@@ -1436,40 +1338,34 @@ Function make_v002( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    cmdText := "INSERT INTO v002 (idpr, prname, datebeg, dateend) VALUES( :idpr, :prname, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
-      out_obrabotka( nfile )
-      k := Len( oXmlDoc:aItems[ 1 ]:aItems )
-      For j := 1 To k
-        oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
-        If 'ZAP' == Upper( oXmlNode:title )
-          mIDRP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDPR' )
-          mPrname := read_xml_stroke_1251_to_utf8( oXmlNode, 'PRNAME' )
-          // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
-          // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
-
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
-
-          If sqlite3_bind_int( stmt, 1, Val( mIDRP ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 2, mPrname ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
-            If sqlite3_step( stmt ) != SQLITE_DONE
-              out_error( TAG_ROW_INVALID, nfile, j )
-            Endif
-          Endif
-          sqlite3_reset( stmt )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mIDPR := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDPR' )
+        mPrname := read_xml_stroke_1251_to_utf8( oXmlNode, 'PRNAME' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+          
+        count++
+        cmdTextInsert += 'INSERT INTO v002(idpr, prname, datebeg, dateend) VALUES(' ;
+          + "'" + mIDPR + "'," ;
+          + "'" + mPrname + "'," ;
+          + "'" + d1 + "'," ;
+          + "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
         Endif
-      Next j
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
     Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
 
@@ -1478,15 +1374,15 @@ Function make_v002( db, source )
 // 12.03.24
 Function make_v024( db, source )
 
-  // IDDKK,     "C",  10,      0  //  Идентификатор модели пациента
-  // DKKNAME,   "C", 255,      0  // Наименование модели пациента
-  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
-  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
+  // IDDKK,     "C",  10,      0  //  РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РјРѕРґРµР»Рё РїР°С†РёРµРЅС‚Р°
+  // DKKNAME,   "C", 255,      0  // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РјРѕРґРµР»Рё РїР°С†РёРµРЅС‚Р°
+  // DATEBEG,   "D",   8, 0           // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,   "D",   8, 0           // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
-  Local cmdText, cmdTextTMP
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
+  Local oXmlDoc, oXmlNode
   Local mIDDKK, mDkkname, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
 
@@ -1497,7 +1393,7 @@ Function make_v024( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор классификационных критериев (DopKr)' + hb_eol() )
+  OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РєР»Р°СЃСЃРёС„РёРєР°С†РёРѕРЅРЅС‹С… РєСЂРёС‚РµСЂРёРµРІ (DopKr)' + hb_eol() )
   cmdText := 'CREATE TABLE v024(iddkk TEXT(10), dkkname BLOB, datebeg TEXT(19), dateend TEXT(19))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -1544,15 +1440,15 @@ Function make_v024( db, source )
 // 12.03.24
 Function make_v019( db, source )
 
-  // IDHM,       "N",      4,      0 // Идентификатор метода высокотехнологичной медицинской помощи
-  // HMNAME,     "C",   1000,      0; // Наименование метода высокотехнологичной медицинской помощи
-  // DIAG,       "C",   1000,      0 // Верхние уровни кодов диагноза по МКБ для данного метода; указываются через разделитель ";".
-  // HVID,       "C",     12,      0 // Код вида высокотехнологичной медицинской помощи для данного метода
-  // HGR,        "N",      3,      0 // Номер группы высокотехнологичной медицинской помощи для данного метода
-  // HMODP,      "C",   1000,      0 // Модель пациента для методов высокотехнологичной медицинской помощи с одинаковыми значениями поля "HMNAME". Не заполняется, начиная с версии 3.0
-  // IDMODP,     "N",      5,      0 // Идентификатор модели пациента для данного метода (начиная с версии 3.0, заполняется значением поля IDMPAC классификатора V022)
-  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
-  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
+  // IDHM,       "N",      4,      0 // РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РјРµС‚РѕРґР° РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
+  // HMNAME,     "C",   1000,      0; // РќР°РёРјРµРЅРѕРІР°РЅРёРµ РјРµС‚РѕРґР° РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё
+  // DIAG,       "C",   1000,      0 // Р’РµСЂС…РЅРёРµ СѓСЂРѕРІРЅРё РєРѕРґРѕРІ РґРёР°РіРЅРѕР·Р° РїРѕ РњРљР‘ РґР»СЏ РґР°РЅРЅРѕРіРѕ РјРµС‚РѕРґР°; СѓРєР°Р·С‹РІР°СЋС‚СЃСЏ С‡РµСЂРµР· СЂР°Р·РґРµР»РёС‚РµР»СЊ ";".
+  // HVID,       "C",     12,      0 // РљРѕРґ РІРёРґР° РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё РґР»СЏ РґР°РЅРЅРѕРіРѕ РјРµС‚РѕРґР°
+  // HGR,        "N",      3,      0 // РќРѕРјРµСЂ РіСЂСѓРїРїС‹ РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё РґР»СЏ РґР°РЅРЅРѕРіРѕ РјРµС‚РѕРґР°
+  // HMODP,      "C",   1000,      0 // РњРѕРґРµР»СЊ РїР°С†РёРµРЅС‚Р° РґР»СЏ РјРµС‚РѕРґРѕРІ РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё СЃ РѕРґРёРЅР°РєРѕРІС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РїРѕР»СЏ "HMNAME". РќРµ Р·Р°РїРѕР»РЅСЏРµС‚СЃСЏ, РЅР°С‡РёРЅР°СЏ СЃ РІРµСЂСЃРёРё 3.0
+  // IDMODP,     "N",      5,      0 // РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РјРѕРґРµР»Рё РїР°С†РёРµРЅС‚Р° РґР»СЏ РґР°РЅРЅРѕРіРѕ РјРµС‚РѕРґР° (РЅР°С‡РёРЅР°СЏ СЃ РІРµСЂСЃРёРё 3.0, Р·Р°РїРѕР»РЅСЏРµС‚СЃСЏ Р·РЅР°С‡РµРЅРёРµРј РїРѕР»СЏ IDMPAC РєР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂР° V022)
+  // DATEBEG,    "D",      8,      0 // Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
+  // DATEEND,    "D",      8,      0 // Р”Р°С‚Р° РѕРєРѕРЅС‡Р°РЅРёСЏ РґРµР№СЃС‚РІРёСЏ Р·Р°РїРёСЃРё
 
   Local cmdText
   Local k, j
@@ -1569,7 +1465,7 @@ Function make_v019( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор методов высокотехнологичной медицинской помощи (HMet)' + hb_eol() )
+    OutStd( hb_eol() + nameRef + ' - РљР»Р°СЃСЃРёС„РёРєР°С‚РѕСЂ РјРµС‚РѕРґРѕРІ РІС‹СЃРѕРєРѕС‚РµС…РЅРѕР»РѕРіРёС‡РЅРѕР№ РјРµРґРёС†РёРЅСЃРєРѕР№ РїРѕРјРѕС‰Рё (HMet)' + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v019' ) == SQLITE_OK

@@ -29,8 +29,8 @@ Procedure Main( ... )
 Request HB_CODEPAGE_UTF8
 Request HB_CODEPAGE_RU1251
 Request HB_LANG_RU866
-// HB_CDPSELECT('UTF8')
-hb_cdpSelect( 'RU1251' )
+HB_CDPSELECT('UTF8')
+//hb_cdpSelect( 'RU1251' )
 // HB_LANGSELECT('RU866')
 
 // REQUEST DBFNTX
