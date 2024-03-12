@@ -12,6 +12,9 @@ Function date_xml_sqlite( sDate )
   sMonth := SubStr( sDate, 4, 2 )
   sYear := SubStr( sDate, 7, 4 )
   out := sYear + '-' + sMonth + '-' + sDay
+  if empty( sDate )
+    out := '    -  -  '
+  endif
 
   Return out
 
