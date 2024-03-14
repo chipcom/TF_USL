@@ -1,0 +1,14 @@
+-L..\..\LIB
+-lMyLib_HBT
+-lhbct
+-mt
+-inc
+-i..\..\include
+xhb.hbc
+
+-workdir=d:\_MO\TEMP\MO_MKB10
+-of032_ref
+
+..\src\xmlparse.c
+..\src\hxmldoc.prg
+f032_ref.prg
