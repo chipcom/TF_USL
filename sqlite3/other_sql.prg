@@ -11,13 +11,13 @@ Static textCommitTrans := 'COMMIT;'
 // 01.06.23
 Function make_other( db, source )
 
-  make_p_cel( db, source )
+  // make_p_cel( db, source )
   // make_t005(db, source)
   // make_t007(db, source)
   // make_ISDErr(db, source)
   // dlo_lgota(db, source)
   // err_csv_prik(db, source)
-  // rekv_smo(db, source)
+  rekv_smo(db, source)
 
   Return Nil
 
@@ -520,7 +520,7 @@ Function make_isderr( db, source )
 
   Return Nil
 
-// 12.09.23
+// 15.04.24
 Function rekv_smo( db, source )
 
   Local stmt
@@ -530,9 +530,10 @@ Function rekv_smo( db, source )
   Local  mKod, mName, mINN, mKPP, mOGRN, mAddres
 
   // 1-код,2-имя,3-ИНН,4-КПП,5-ОГРН,6-адрес,7-банк,8-р.счет,9-БИК
+//  'ФИЛИАЛ ЗАКРЫТОГО АКЦИОНЕРНОГО ОБЩЕСТВА "КАПИТАЛ МЕДИЦИНСКОЕ СТРАХОВАНИЕ" В ГОРОДЕ ВОЛГОГРАДЕ', ;
   arr := { ;
     { '34001', ;
-    'ФИЛИАЛ ЗАКРЫТОГО АКЦИОНЕРНОГО ОБЩЕСТВА "КАПИТАЛ МЕДИЦИНСКОЕ СТРАХОВАНИЕ" В ГОРОДЕ ВОЛГОГРАДЕ', ;
+    'АСП ООО Капитал МС - Филиал в Волгоградской области', ;
     '7709028619', ;
     '344343001', ;
     '1028601441274', ;
