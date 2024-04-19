@@ -12,12 +12,12 @@ Static textCommitTrans := 'COMMIT;'
 Function make_other( db, source )
 
   // make_p_cel( db, source )
-  // make_t005(db, source)
+  make_t005(db, source)
   // make_t007(db, source)
   // make_ISDErr(db, source)
   // dlo_lgota(db, source)
   // err_csv_prik(db, source)
-  rekv_smo(db, source)
+  // rekv_smo(db, source)
 
   Return Nil
 
