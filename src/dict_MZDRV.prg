@@ -6,7 +6,7 @@
 #include 'function.ch'
 #include 'settings.ch'
 
-***** 21.04.22
+// 21.04.22
 function make_uslugi_mz(source, destination)
   local _uslugi_mz := {;
     {"ID",      "N",  5, 0},;  // Целочисленный, уникальный идентификатор, возможные значения ? целые числа от 1 до 6
@@ -19,7 +19,7 @@ function make_uslugi_mz(source, destination)
   local mID, mS_code, mName, mRel, mDateOut
   local mDateBeg := 0d20110101
   local nfile, nameRef
-  local hashMD5File
+  local oXmlDoc, oXmlNode, oNode1
 
   nameRef := "1.2.643.5.1.13.13.11.1070.xml"  // может меняться из-за версий
   nfile := source + nameRef
@@ -69,7 +69,7 @@ function make_uslugi_mz(source, destination)
   close databases
   return nil
 
-***** 21.04.22
+// 21.04.22
 function make_severity(source, destination)
 
   local _mo_severity := {;
@@ -80,7 +80,7 @@ function make_severity(source, destination)
     {"SORT",    "N",  2, 0};  // Сортировка , Целочисленный, приведение данных к порядковой шкале для упорядочивания терминов справочника от более легкой к более тяжелой степени тяжести состояний, целое число от 1 до 7;
   }
   local nfile, nameRef
-  local hashMD5File
+  local oXmlDoc, oXmlNode, oNode1
 
   nameRef := "1.2.643.5.1.13.13.11.1006.xml"  // может меняться из-за версий
   nfile := source + nameRef
@@ -129,7 +129,7 @@ function make_severity(source, destination)
   close databases
   return NIL
 
-***** 01.04.22
+// 01.04.22
 function make_implant(source, destination)
 
   local _mo_impl := {;
@@ -145,7 +145,7 @@ function make_implant(source, destination)
   }
   local fl_parent, rec_n, id_t
   local nfile, nameRef
-  local hashMD5File
+  local oXmlDoc, oXmlNode, oNode1
 
   nameRef := "1.2.643.5.1.13.13.11.1079.xml"  // может меняться из-за версий
   nfile := source + nameRef
@@ -230,7 +230,7 @@ function make_implant(source, destination)
   close databases
   return NIL
 
-***** 21.04.22
+// 21.04.22
 Function make_method_inj(source, destination)
   local _mo_method_inj := {;
     {"ID",        "N",   3, 0},;  // уникальный идентификатор, обязательное поле, целое число
@@ -242,7 +242,7 @@ Function make_method_inj(source, destination)
   // {"CODE_EEC",  "C",  10, 0},;   // код справочника реестра НСИ ЕАЭК
   // {"CODE_EEC",  "C",  10, 0};   // код элемента справочника реестра НСИ ЕАЭК
   local nfile, nameRef
-  local hashMD5File
+  local oXmlDoc, oXmlNode, oNode1
 
   nameRef := "1.2.643.5.1.13.13.11.1468.xml"
   nfile := source + nameRef
@@ -319,7 +319,7 @@ Function make_method_inj(source, destination)
   close databases
   return NIL
 
-***** 10.02.22
+// 10.02.22
 Function make_ed_izm(source, destination)
   local _mo_ed_izm := {;
     {"ID",        "N",   3, 0},;  // Уникальный идентификатор единицы измерения лабораторного теста, целое число
@@ -337,7 +337,7 @@ Function make_ed_izm(source, destination)
   // {"NSI_EL_EEC",  "C",  10, 0};   // Код элемента справочника ЕАЭК, Строчный, необязательное поле ? код элемента справочника реестра НСИ ЕАЭК;
   local rec_n, id_t, fl_parent := .f.
   local nfile, nameRef
-  local hashMD5File
+  local oXmlDoc, oXmlNode, oNode1
 
   nameRef := "1.2.643.5.1.13.13.11.1358.xml"
   nfile := source + nameRef

@@ -5,16 +5,16 @@
 
 #require 'hbsqlit3'
 
-// * 05.05.22
+// 05.05.22
 Function make_q0xx( db, source )
 
   make_q015( db, source )
-  make_q016( db, source )
-  make_q017( db, source )
+  // make_q016( db, source )
+  // make_q017( db, source )
 
   Return Nil
 
-// * 20.12.22
+// 20.12.22
 Function make_q015( db, source )
 
   Local stmt, stmtTMP
@@ -124,7 +124,7 @@ Function make_q015( db, source )
 
   Return Nil
 
-// * 20.12.22
+// 20.12.22
 Function make_q016( db, source )
 
   Local stmt, stmtTMP
@@ -236,7 +236,7 @@ Function make_q016( db, source )
 
   Return Nil
 
-// * 20.12.22
+// 20.12.22
 Function make_q017( db, source )
 
   Local stmt, stmtTMP

@@ -3,10 +3,9 @@
 #include "edit_spr.ch"
 #include "function.ch"
 
-// **** 10.02.22
+// 10.02.22
 FUNCTION read_spr_N00X( source, destination )
    local nfile, nameRef, nameArr
-   local hashMD5File
 
    // N001 Классификатор противопоказаний и отказов (OnkPrOt)
    private _mo_N001 := {;
@@ -303,6 +302,6 @@ FUNCTION read_spr_N00X( source, destination )
 
    RETURN NIL
 
-// ****
+// 
 FUNCTION sss( s )
    RETURN LTrim( CharRem( eos, CharOne( " ", s ) ) )
