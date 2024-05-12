@@ -170,7 +170,7 @@ proc main( ... )
   OutStd( 'Справочники ТФОМС.' + hb_eol() )
   OutStd( '********' + hb_eol() )
 
-  // make_uslugi_mz(source, destination)  // Справочник минздрава для формирования файлов ТФОМС
+  make_uslugi_mz(source, destination)  // Справочник минздрава для формирования файлов ТФОМС
   // Справочники ТФОМС
   dbcreate(destination + nameFileUsl, _mo_usl)
   // work_Shema(source, destination)
