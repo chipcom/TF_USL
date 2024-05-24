@@ -13,9 +13,9 @@ Function make_other( db, source )
 
   // make_p_cel( db, source )
   make_t005(db, source)
-  // make_t007(db, source)
+  make_t007(db, source)
   // make_ISDErr(db, source)
-  // dlo_lgota(db, source)
+  dlo_lgota(db, source)
   // err_csv_prik(db, source)
   // rekv_smo(db, source)
 
@@ -58,9 +58,6 @@ Function make_p_cel( db, source )
     Return Nil
   Endif
 
-  // cmdText := 'INSERT INTO t005 (code, error, opis, datebeg, dateend) VALUES(:code, :error, :opis, :datebeg, :dateend)'
-  // stmt := sqlite3_prepare(db, cmdText)
-
   dbUseArea( .t., , nfile, dbSource, .t., .f. )
   Do While !( dbSource )->( Eof() )
     mSHIFR := AllTrim( ( dbSource )->SHIFR )
@@ -89,7 +86,7 @@ Function make_p_cel( db, source )
 
   Return Nil
 
-// 01.06.23
+// 24.05.24
 Function make_t007( db, source )
 
   // PROFIL_K,  N,  2
@@ -97,11 +94,10 @@ Function make_t007( db, source )
   // PROFIL,    N,  2
   // NAME,      C,  255
 
-  Local stmt
   Local cmdText
-  Local j
   Local nfile, nameRef
   Local profil_k, pk_v020, profil, name
+  Local count := 0, cmdTextInsert := textBeginTrans
   Local dbSource := 't007'
 
   cmdText := 'CREATE TABLE t007(profil_k INTEGER, pk_v020 INTEGER, profil INTEGER, name TEXT)'
@@ -128,40 +124,40 @@ Function make_t007( db, source )
     Return Nil
   Endif
 
-  cmdText := 'INSERT INTO t007 (profil_k, pk_v020, profil, name) VALUES (:profil_k, :pk_v020, :profil, :name)'
-  stmt := sqlite3_prepare( db, cmdText )
-
   dbUseArea( .t., , nfile, dbSource, .t., .f. )
-  j := 0
   Do While !( dbSource )->( Eof() )
-    j++
-    profil_k := ( dbSource )->PROFIL_K
-    pk_v020 := ( dbSource )->PK_V020
-    profil := ( dbSource )->PROFIL
+    profil_k := str( ( dbSource )->PROFIL_K )
+    pk_v020 := str( ( dbSource )->PK_V020 )
+    profil := str( ( dbSource )->PROFIL )
     name := hb_StrToUTF8( ( dbSource )->NAME, 'RU866' )
 
-    If sqlite3_bind_int( stmt, 1, profil_k ) == SQLITE_OK .and. ;
-        sqlite3_bind_int( stmt, 2, pk_v020 ) == SQLITE_OK .and. ;
-        sqlite3_bind_int( stmt, 3, profil ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 4, name ) == SQLITE_OK
-      If sqlite3_step( stmt ) != SQLITE_DONE
-        out_error( TAG_ROW_INVALID, nfile, j )
-      Endif
+    count++
+    cmdTextInsert += 'INSERT INTO t007(profil_k, pk_v020, profil, name) VALUES(' ;
+      + "'" + profil_k + "'," ;
+      + "'" + pk_v020 + "'," ;
+      + "'" + profil + "'," ;
+      + "'" + name + "');"
+    If count == COMMIT_COUNT
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+      count := 0
+      cmdTextInsert := textBeginTrans
     Endif
-    sqlite3_reset( stmt )
 
     ( dbSource )->( dbSkip() )
   End Do
 
+  If count > 0
+    cmdTextInsert += textCommitTrans
+    sqlite3_exec( db, cmdTextInsert )
+  Endif
   ( dbSource )->( dbCloseArea() )
 
-  sqlite3_clear_bindings( stmt )
-  sqlite3_finalize( stmt )
   out_obrabotka_eol()
 
   Return Nil
 
-// 19.05.23
+// 24.05.24
 Function make_t005( db, source )
 
   // CODE,     "N",    4,      0
@@ -170,13 +166,11 @@ Function make_t005( db, source )
   // DATEBEG, "D",    8,      0
   // DATEEND, "D",    8,      0
 
-  Local stmt
   Local cmdText
-  Local j
   Local nfile, nameRef
   Local mCode, mError, mOpis, d1, d2, d1_1, d2_1
+  Local count := 0, cmdTextInsert := textBeginTrans
   Local dbSource := 't005'
-
 
   cmdText := 'CREATE TABLE t005(code INTEGER, error TEXT, opis TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -202,14 +196,9 @@ Function make_t005( db, source )
     Return Nil
   Endif
 
-  cmdText := 'INSERT INTO t005 (code, error, opis, datebeg, dateend) VALUES(:code, :error, :opis, :datebeg, :dateend)'
-  stmt := sqlite3_prepare( db, cmdText )
-
   dbUseArea( .t., , nfile, dbSource, .t., .f. )
-  j := 0
   Do While !( dbSource )->( Eof() )
-    j++
-    mCode := ( dbSource )->CODE
+    mCode := str( ( dbSource )->CODE )
     mError := hb_StrToUTF8( ( dbSource )->ERROR, 'RU866' )
     mOpis := hb_StrToUTF8( ( dbSource )->OPIS, 'RU866' )
     Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
@@ -219,40 +208,42 @@ Function make_t005( db, source )
     d1 := hb_ValToStr( d1_1 )
     d2 := hb_ValToStr( d2_1 )
 
-    If sqlite3_bind_int( stmt, 1, mCode ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 2, mError ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 3, mOpis ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
-      If sqlite3_step( stmt ) != SQLITE_DONE
-        out_error( TAG_ROW_INVALID, nfile, j )
-      Endif
+    count++
+    cmdTextInsert += 'INSERT INTO t005(code, error, opis, datebeg, dateend) VALUES(' ;
+      + "'" + mCode + "'," ;
+      + "'" + mError + "'," ;
+      + "'" + mOpis + "'," ;
+      + "'" + d1 + "'," ;
+      + "'" + d2 + "');"
+    If count == COMMIT_COUNT
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+      count := 0
+      cmdTextInsert := textBeginTrans
     Endif
-    sqlite3_reset( stmt )
 
     ( dbSource )->( dbSkip() )
   End Do
+  If count > 0
+    cmdTextInsert += textCommitTrans
+    sqlite3_exec( db, cmdTextInsert )
+  Endif
 
   ( dbSource )->( dbCloseArea() )
-
-  sqlite3_clear_bindings( stmt )
-  sqlite3_finalize( stmt )
   out_obrabotka_eol()
-
   Return Nil
 
-// 28.03.23
+// 24.05.24
 Function dlo_lgota( db, source )
 
   // Классификатор кодов льгот по ДЛО
   // 1 - NAME(C)  2 - KOD(C)
 
-  Local stmt
   Local cmdText
-  Local k, j
-  Local oXmlDoc, oXmlNode, oNode1, oNode2
+  Local k
   Local mKod, mName
   Local mArr := {}
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   AAdd( mArr, { '000 --- без льготы ---', '   ' } )
   AAdd( mArr, { '010 Инвалиды войны', '010' } )
@@ -316,24 +307,28 @@ Function dlo_lgota( db, source )
     Return Nil
   Endif
 
-  cmdText := 'INSERT INTO dlo_lgota (kod, name) VALUES( :kod, :name )'
   For k := 1 To Len( mArr )
-    stmt := sqlite3_prepare( db, cmdText )
     mKod := mArr[ k, 2 ]
     mName := mArr[ k, 1 ]
-    If sqlite3_bind_text( stmt, 1, mKod ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 2, mName ) == SQLITE_OK
-      If sqlite3_step( stmt ) != SQLITE_DONE
-        // out_error('Ошибка к = ', k)
-      Endif
+
+    count++
+    cmdTextInsert += 'INSERT INTO dlo_lgota (kod, name) VALUES(' ;
+      + "'" + mKod + "'," ;
+      + "'" + mName + "');"
+    If count == COMMIT_COUNT
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+      count := 0
+      cmdTextInsert := textBeginTrans
     Endif
-    sqlite3_reset( stmt )
   Next
-  sqlite3_clear_bindings( stmt )
-  sqlite3_finalize( stmt )
+
+  If count > 0
+    cmdTextInsert += textCommitTrans
+    sqlite3_exec( db, cmdTextInsert )
+  Endif
 
   out_obrabotka_eol()
-
   Return Nil
 
 // 30.03.23
@@ -444,7 +439,7 @@ Function err_csv_prik( db, source )
 
   Return Nil
 
-// * 26.12.22
+// 26.12.22
 Function make_isderr( db, source )
 
   Local stmt
