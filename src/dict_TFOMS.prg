@@ -349,7 +349,7 @@ Function work_Prices(source, destination)
   close databases
   return NIL
 
-// 19.05.23
+// 25.05.24
 Function work_mo_uslf(source, destination)
   Local _mo_uslf := { ;
     {'SHIFR',      'C',     20,      0}, ;
@@ -383,8 +383,8 @@ Function work_mo_uslf(source, destination)
   // index on kod to tmp_tel
   use (source + 'par_org') new alias PO
   index on kod to tmp_po
-  // use (source + 'v001') new
-  use ( source + '_usl_mz' ) new alias v001
+  use (source + 'v001') new
+  // use ( source + '_usl_mz' ) new alias v001
   index on IDRB to tmp1
   out_obrabotka('_usl_mz.dbf (v001.dbf)')
   go top
