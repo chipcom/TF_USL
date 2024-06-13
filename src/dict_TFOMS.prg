@@ -349,7 +349,7 @@ Function work_Prices(source, destination)
   close databases
   return NIL
 
-// 25.05.24
+// 13.06.24
 Function work_mo_uslf(source, destination)
   Local _mo_uslf := { ;
     {'SHIFR',      'C',     20,      0}, ;
@@ -379,12 +379,10 @@ Function work_mo_uslf(source, destination)
   // index on kod to tmp_on
   // use (source + 'onko_ksg') new alias OK
   // index on kod to tmp_ok
-  // use (source + 'telemed') new alias TEL
-  // index on kod to tmp_tel
   use (source + 'par_org') new alias PO
   index on kod to tmp_po
-  use (source + 'v001') new
-  // use ( source + '_usl_mz' ) new alias v001
+  // use (source + 'v001') new
+  use ( source + '_usl_mz' ) new alias v001
   index on IDRB to tmp1
   out_obrabotka('_usl_mz.dbf (v001.dbf)')
   go top
@@ -427,20 +425,32 @@ Function work_mo_uslf(source, destination)
     select V001
     skip
   enddo
-  // select PO
-  // go top
-  // do while !eof()
-  //   select LUSL
-  //   find (padr(po->kod, 20))
-  //   if !found()
-  //   endif
-  //   select V001
-  //   find (padr(po->kod, 15))
-  //   if !found()
-  //   endif
-  //   select PO
-  //   skip
-  // enddo
+
+  // добавим услуги телемедицины ( получены из ТФОМС )
+  use ( source + 'telemed' ) new alias TELE
+  select tele
+  out_obrabotka('Услуги телемедицины telemed.dbf')
+  go top
+  do while !eof()
+    if !empty( tele->DATEEND ) .and. year( tele->DATEEND ) < val( CURENT_YEAR )
+      //
+    else
+      select LUSL
+      find ( padr( tele->SHIFR, 20 ) )
+      if found()
+      else
+        append blank
+        lusl->SHIFR   := tele->SHIFR
+        lusl->NAME    := ltrim( charrem( eos, charone( ' ', tele->NAME ) ) )
+        lusl->DATEBEG := tele->DATEBEG
+        lusl->DATEEND := tele->DATEEND
+        lusl->telemed := 1
+      endif
+    endif
+    select TELE
+    skip
+  enddo
+
   out_obrabotka_eol()
   close databases
   return NIL
