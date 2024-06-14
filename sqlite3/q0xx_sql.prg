@@ -5,6 +5,11 @@
 
 #require 'hbsqlit3'
 
+#define COMMIT_COUNT  500
+
+Static textBeginTrans := 'BEGIN TRANSACTION;'
+Static textCommitTrans := 'COMMIT;'
+
 // 05.05.22
 Function make_q0xx( db, source )
 
@@ -14,16 +19,18 @@ Function make_q0xx( db, source )
 
   Return Nil
 
-// 20.12.22
+// 14.06.24
 Function make_q015( db, source )
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+//  Local stmt, stmtTMP
+  Local cmdText
+//  , cmdTextTMP
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode, oNode1
   Local s_kod, s_name, s_nsi_obj, s_nsi_el, s_usl_test, s_val_el, s_comment, d1, d2
   Local d1_1, d2_1
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   // ID_TEST, Строчный(12), Идентификатор проверки.
   // Формируется по шаблону KKKK.00.TTTT, где
@@ -75,9 +82,9 @@ Function make_q015( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    cmdText := "INSERT INTO q015 ( id_test, id_el, nsi_obj, nsi_el, usl_test, val_el, comment, datebeg, dateend ) VALUES( :id_test, :id_el, :nsi_obj, :nsi_el, :usl_test, :val_el, :comment, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
+    // cmdText := "INSERT INTO q015 ( id_test, id_el, nsi_obj, nsi_el, usl_test, val_el, comment, datebeg, dateend ) VALUES( :id_test, :id_el, :nsi_obj, :nsi_el, :usl_test, :val_el, :comment, :datebeg, :dateend )"
+    // stmt := sqlite3_prepare( db, cmdText )
+    // If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -93,32 +100,57 @@ Function make_q015( db, source )
           // d1 := mo_read_xml_stroke(oXmlNode, 'DATEBEG',)
           // d2 := mo_read_xml_stroke(oXmlNode, 'DATEEND',)
 
-          Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
-          d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
-          d1 := hb_ValToStr( d1_1 )
-          d2 := hb_ValToStr( d2_1 )
+          // Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+          // d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          // d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+          // Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+          // d1 := hb_ValToStr( d1_1 )
+          // d2 := hb_ValToStr( d2_1 )
 
-          If sqlite3_bind_text( stmt, 1, s_kod ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 2, s_name ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 3, s_nsi_obj ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 4, s_nsi_el ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 5, s_usl_test ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 6, s_val_el ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 7, s_comment ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 8, d1 ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 9, d2 ) == SQLITE_OK
-            If sqlite3_step( stmt ) != SQLITE_DONE
-              out_error( TAG_ROW_INVALID, nfile, j )
-            Endif
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+  
+          count++
+          cmdTextInsert += 'INSERT INTO q015( id_test, id_el, nsi_obj, nsi_el, usl_test, val_el, comment, datebeg, dateend ) VALUES(' ;
+            + "'" + s_kod + "'," ;
+            + "'" + s_name + "'," ;
+            + "'" + s_nsi_obj+ "'," ;
+            + "'" + s_nsi_el + "'," ;
+            + "'" + s_usl_test + "'," ;
+            + "'" + s_val_el + "'," ;
+            + "'" + s_comment + "'," ;
+            + "'" + d1 + "'," ;
+            + "'" + d2 + "');"
+          If count == COMMIT_COUNT
+            cmdTextInsert += textCommitTrans
+            sqlite3_exec( db, cmdTextInsert )
+            count := 0
+            cmdTextInsert := textBeginTrans
           Endif
-          sqlite3_reset( stmt )
+  
+          // If sqlite3_bind_text( stmt, 1, s_kod ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 2, s_name ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 3, s_nsi_obj ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 4, s_nsi_el ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 5, s_usl_test ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 6, s_val_el ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 7, s_comment ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 8, d1 ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 9, d2 ) == SQLITE_OK
+          //   If sqlite3_step( stmt ) != SQLITE_DONE
+          //     out_error( TAG_ROW_INVALID, nfile, j )
+          //   Endif
+          // Endif
+          // sqlite3_reset( stmt )
         Endif
       Next j
+    // Endif
+    // sqlite3_clear_bindings( stmt )
+    // sqlite3_finalize( stmt )
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
     Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
 
