@@ -21,7 +21,7 @@ Function make_other( db, source )
 
   Return Nil
 
-// 05.03.24
+// 15.06.24
 Function make_p_cel( db, source )
 
   // SHIFR,     "C",    10,      0
@@ -64,9 +64,9 @@ Function make_p_cel( db, source )
     mPCEL := AllTrim( ( dbSource )->P_CEL )
 
     count++
-    cmdTextInsert += 'INSERT INTO usl_p_cel(shifr, p_cel) VALUES(' ;
-      + "'" + mSHIFR + "'," ;
-      + "'" + mPCEL + "');"
+    cmdTextInsert += 'INSERT INTO usl_p_cel(shifr, p_cel) VALUES('
+    cmdTextInsert += "'" + mSHIFR + "',"
+    cmdTextInsert += "'" + mPCEL + "');"
     If count == COMMIT_COUNT
       cmdTextInsert += textCommitTrans
       sqlite3_exec( db, cmdTextInsert )
