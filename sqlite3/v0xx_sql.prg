@@ -14,15 +14,15 @@ Function make_v0xx( db, source )
   make_V002(db, source)
 
   make_V009(db, source)
-  // make_V010(db, source)
-  // make_V012(db, source)
-  // make_V015(db, source)
+  make_V010(db, source)
+  make_V012(db, source)
+  make_V015(db, source)
   // make_V016(db, source)
-  make_V017(db, source)
+  // make_V017(db, source)
   // make_V018(db, source)
-  make_v019( db, source )
+  // make_v019( db, source )
   // make_V020(db, source)
-  make_V021(db, source)
+  // make_V021(db, source)
   // make_V022(db, source)
   // make_V024(db, source)
   // make_V025(db, source)
@@ -35,7 +35,7 @@ Function make_v0xx( db, source )
 
   Return Nil
 
-// 10.01.23
+// 19.06.24
 Function make_v009( db, source )
 
   // IDRMP,     "N",   3, 0  // Код результата обращения
@@ -44,12 +44,13 @@ Function make_v009( db, source )
   // DATEBEG,   "D",   8, 0  // Дата начала действия записи
   // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
-  Local stmt
+  // Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDRMP, mRmpname, mDL_USLOV, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE v009(idrmp INTEGER, rmpname TEXT, dl_uslov INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -78,9 +79,9 @@ Function make_v009( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    cmdText := "INSERT INTO v009 (idrmp, rmpname, dl_uslov, datebeg, dateend) VALUES( :idrmp, :rmpname, :dl_uslov, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
+    // cmdText := "INSERT INTO v009 (idrmp, rmpname, dl_uslov, datebeg, dateend) VALUES( :idrmp, :rmpname, :dl_uslov, :datebeg, :dateend )"
+    // stmt := sqlite3_prepare( db, cmdText )
+    // If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -92,27 +93,46 @@ Function make_v009( db, source )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
   
-          If sqlite3_bind_int( stmt, 1, Val( mIDRMP ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 2, mRmpname ) == SQLITE_OK .and. ;
-              sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
-            If sqlite3_step( stmt ) != SQLITE_DONE
-              out_error( TAG_ROW_INVALID, nfile, j )
-            Endif
+          count++
+          // cmdText := "INSERT INTO v009 (idrmp, rmpname, dl_uslov, datebeg, dateend) VALUES( :idrmp, :rmpname, :dl_uslov, :datebeg, :dateend )"
+          cmdTextInsert := cmdTextInsert + "INSERT INTO v009( idrmp, rmpname, dl_uslov, datebeg, dateend ) VALUES("
+          cmdTextInsert += "'" + mIDRMP + "',"
+          cmdTextInsert += "'" + mRmpname + "',"
+          cmdTextInsert += "'" + mDL_USLOV + "',"
+          cmdTextInsert += "'" + d1 + "',"
+          cmdTextInsert += "'" + d2 + "');"
+          If count == COMMIT_COUNT
+            cmdTextInsert += textCommitTrans
+            sqlite3_exec( db, cmdTextInsert )
+            count := 0
+            cmdTextInsert := textBeginTrans
           Endif
-          sqlite3_reset( stmt )
+  
+          // If sqlite3_bind_int( stmt, 1, Val( mIDRMP ) ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 2, mRmpname ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
+          //   If sqlite3_step( stmt ) != SQLITE_DONE
+          //     out_error( TAG_ROW_INVALID, nfile, j )
+          //   Endif
+          // Endif
+          // sqlite3_reset( stmt )
         Endif
       Next j
-    Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
+      If count > 0
+        cmdTextInsert += textCommitTrans
+        sqlite3_exec( db, cmdTextInsert )
+      Endif
+    // Endif
+    // sqlite3_clear_bindings( stmt )
+    // sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
 
   Return Nil
 
-// 10.01.23
+// 19.06.24
 Function make_v010( db, source )
 
   // IDSP,       "N",      2,      0  // Код способа оплаты медицинской помощи
@@ -120,12 +140,13 @@ Function make_v010( db, source )
   // DATEBEG,   "D",   8, 0  // Дата начала действия записи
   // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
-  Local stmt
+  // Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDSP, mSpname, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE v010(idsp INTEGER, spname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -154,9 +175,9 @@ Function make_v010( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    cmdText := "INSERT INTO v010 (idsp, spname, datebeg, dateend) VALUES( :idsp, :spname, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
+    // cmdText := "INSERT INTO v010 (idsp, spname, datebeg, dateend) VALUES( :idsp, :spname, :datebeg, :dateend )"
+    // stmt := sqlite3_prepare( db, cmdText )
+    // If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -166,27 +187,45 @@ Function make_v010( db, source )
           mSpname := read_xml_stroke_1251_to_utf8( oXmlNode, 'SPNAME' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
-          If sqlite3_bind_int( stmt, 1, Val( mIDSP ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 2, mSpname ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
-            If sqlite3_step( stmt ) != SQLITE_DONE
-              out_error( TAG_ROW_INVALID, nfile, j )
-            Endif
+
+          // cmdText := "INSERT INTO v010 (idsp, spname, datebeg, dateend) VALUES( :idsp, :spname, :datebeg, :dateend )"
+          count++
+          cmdTextInsert := cmdTextInsert + "INSERT INTO v010( idsp, spname, datebeg, dateend ) VALUES("
+          cmdTextInsert += "'" + mIDSP + "',"
+          cmdTextInsert += "'" + mSpname + "',"
+          cmdTextInsert += "'" + d1 + "',"
+          cmdTextInsert += "'" + d2 + "');"
+          If count == COMMIT_COUNT
+            cmdTextInsert += textCommitTrans
+            sqlite3_exec( db, cmdTextInsert )
+            count := 0
+            cmdTextInsert := textBeginTrans
           Endif
-          sqlite3_reset( stmt )
+            
+          // If sqlite3_bind_int( stmt, 1, Val( mIDSP ) ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 2, mSpname ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
+          //   If sqlite3_step( stmt ) != SQLITE_DONE
+          //     out_error( TAG_ROW_INVALID, nfile, j )
+          //   Endif
+          // Endif
+          // sqlite3_reset( stmt )
         Endif
       Next j
-    Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
+      If count > 0
+        cmdTextInsert += textCommitTrans
+        sqlite3_exec( db, cmdTextInsert )
+      Endif
+    // Endif
+    // sqlite3_clear_bindings( stmt )
+    // sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
 
   Return Nil
 
-// 10.01.23
+// 19.06.24
 Function make_v012( db, source )
 
   // IDIZ,      "N",   3, 0  // Код исхода заболевания
@@ -195,12 +234,13 @@ Function make_v012( db, source )
   // DATEBEG,   "D",   8, 0  // Дата начала действия записи
   // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
-  Local stmt
+  // Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDIZ, mIzname, mDL_USLOV, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE v012(idiz INTEGER, izname TEXT, dl_uslov INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -229,9 +269,9 @@ Function make_v012( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    cmdText := "INSERT INTO v012 (idiz, izname, dl_uslov, datebeg, dateend) VALUES( :idiz, :izname, :dl_uslov, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
+    // cmdText := "INSERT INTO v012 (idiz, izname, dl_uslov, datebeg, dateend) VALUES( :idiz, :izname, :dl_uslov, :datebeg, :dateend )"
+    // stmt := sqlite3_prepare( db, cmdText )
+    // If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -242,28 +282,47 @@ Function make_v012( db, source )
           mDL_USLOV := read_xml_stroke_1251_to_utf8( oXmlNode, 'DL_USLOV' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
-          If sqlite3_bind_int( stmt, 1, Val( mIDIZ ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 2, mIzname ) == SQLITE_OK .and. ;
-              sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
-            If sqlite3_step( stmt ) != SQLITE_DONE
-              out_error( TAG_ROW_INVALID, nfile, j )
-            Endif
+
+          // cmdText := "INSERT INTO v012 (idiz, izname, dl_uslov, datebeg, dateend) VALUES( :idiz, :izname, :dl_uslov, :datebeg, :dateend )"
+          count++
+          cmdTextInsert := cmdTextInsert + "INSERT INTO v012( idiz, izname, dl_uslov, datebeg, dateend ) VALUES("
+          cmdTextInsert += "'" + mIDIZ + "',"
+          cmdTextInsert += "'" + mIzname + "',"
+          cmdTextInsert += "'" + mDL_USLOV + "',"
+          cmdTextInsert += "'" + d1 + "',"
+          cmdTextInsert += "'" + d2 + "');"
+          If count == COMMIT_COUNT
+            cmdTextInsert += textCommitTrans
+            sqlite3_exec( db, cmdTextInsert )
+            count := 0
+            cmdTextInsert := textBeginTrans
           Endif
-          sqlite3_reset( stmt )
+            
+          // If sqlite3_bind_int( stmt, 1, Val( mIDIZ ) ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 2, mIzname ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
+          //   If sqlite3_step( stmt ) != SQLITE_DONE
+          //     out_error( TAG_ROW_INVALID, nfile, j )
+          //   Endif
+          // Endif
+          // sqlite3_reset( stmt )
         Endif
       Next j
-    Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
+      If count > 0
+        cmdTextInsert += textCommitTrans
+        sqlite3_exec( db, cmdTextInsert )
+      Endif
+    // Endif
+    // sqlite3_clear_bindings( stmt )
+    // sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
 
   Return Nil
 
-// 10.01.23
+// 19.06.23
 Function make_v015( db, source )
 
   // RECID,  "N",    3,      0      // Номер записи
@@ -274,12 +333,13 @@ Function make_v015( db, source )
   // DATEBEG,    "D",      8,      0 // Дата начала действия записи
   // DATEEND,    "D",      8,      0 // Дата окончания действия записи
 
-  Local stmt
+  // Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mRecid, mCode, mName, mHigh, mOKSO, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   cmdText := 'CREATE TABLE v015(recid INTEGER, code INTEGER, name TEXT, high TEXT(4), okso TEXT(3), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -308,9 +368,9 @@ Function make_v015( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    cmdText := "INSERT INTO v015 (recid, code, name, high, okso, datebeg, dateend) VALUES( :recid, :code, :name, :high, :okso, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
+    // cmdText := "INSERT INTO v015 (recid, code, name, high, okso, datebeg, dateend) VALUES( :recid, :code, :name, :high, :okso, :datebeg, :dateend )"
+    // stmt := sqlite3_prepare( db, cmdText )
+    // If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -323,24 +383,45 @@ Function make_v015( db, source )
           mOKSO := read_xml_stroke_1251_to_utf8( oXmlNode, 'OKSO' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
-          If sqlite3_bind_int( stmt, 1, Val( mRecid ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_int( stmt, 2, Val( mCode ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 3, mName ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 4, mHigh ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 5, mOKSO ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 6, d1 ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 7, d2 ) == SQLITE_OK
-            If sqlite3_step( stmt ) != SQLITE_DONE
-              out_error( TAG_ROW_INVALID, nfile, j )
-            Endif
+
+          // cmdText := "INSERT INTO v015 (recid, code, name, high, okso, datebeg, dateend) VALUES( :recid, :code, :name, :high, :okso, :datebeg, :dateend )"
+          count++
+          cmdTextInsert := cmdTextInsert + "INSERT INTO v015( recid, code, name, high, okso, datebeg, dateend ) VALUES("
+          cmdTextInsert += "'" + mRecid + "',"
+          cmdTextInsert += "'" + mCode + "',"
+          cmdTextInsert += "'" + mName + "',"
+          cmdTextInsert += "'" + mHigh + "',"
+          cmdTextInsert += "'" + mOKSO + "',"
+          cmdTextInsert += "'" + d1 + "',"
+          cmdTextInsert += "'" + d2 + "');"
+          If count == COMMIT_COUNT
+            cmdTextInsert += textCommitTrans
+            sqlite3_exec( db, cmdTextInsert )
+            count := 0
+            cmdTextInsert := textBeginTrans
           Endif
-          sqlite3_reset( stmt )
+            
+          // If sqlite3_bind_int( stmt, 1, Val( mRecid ) ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_int( stmt, 2, Val( mCode ) ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 3, mName ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 4, mHigh ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 5, mOKSO ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 6, d1 ) == SQLITE_OK .and. ;
+          //     sqlite3_bind_text( stmt, 7, d2 ) == SQLITE_OK
+          //   If sqlite3_step( stmt ) != SQLITE_DONE
+          //     out_error( TAG_ROW_INVALID, nfile, j )
+          //   Endif
+          // Endif
+          // sqlite3_reset( stmt )
         Endif
       Next j
-    Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
+      If count > 0
+        cmdTextInsert += textCommitTrans
+        sqlite3_exec( db, cmdTextInsert )
+      Endif
+    // Endif
+    // sqlite3_clear_bindings( stmt )
+    // sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
 
