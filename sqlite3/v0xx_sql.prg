@@ -322,7 +322,7 @@ Function make_v012( db, source )
 
   Return Nil
 
-// 19.06.23
+// 25.06.23
 Function make_v015( db, source )
 
   // RECID,  "N",    3,      0      // Номер записи
@@ -415,6 +415,16 @@ Function make_v015( db, source )
           // sqlite3_reset( stmt )
         Endif
       Next j
+      // добавим фиктивную запись
+      count++
+      cmdTextInsert := cmdTextInsert + "INSERT INTO v015( recid, code, name, high, okso, datebeg, dateend ) VALUES("
+          cmdTextInsert += "'999',"
+          cmdTextInsert += "'9999',"
+          cmdTextInsert += "'Клиническая психология',"
+          cmdTextInsert += "'287',"
+          cmdTextInsert += "'201',"
+          cmdTextInsert += "'" + d1 + "',"
+          cmdTextInsert += "'');"
       If count > 0
         cmdTextInsert += textCommitTrans
         sqlite3_exec( db, cmdTextInsert )
