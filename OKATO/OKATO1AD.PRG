@@ -1,3 +1,5 @@
+#include "set.ch"
+#include "inkey.ch"
 #include "function.ch"
 #include "edit_spr.ch"
 
@@ -59,7 +61,7 @@ Local selsov := ; //  (район)
    {"selo",       "N",      1,      0},;    // 0-село/1-город
    {"fl_n",       "N",      1,      0};
    }
-//   {"name_f",     "C",    250,      0},;   // полное наименование
+
 
 
 f_first()
@@ -162,7 +164,9 @@ do while !eof()
     append blank
     region->okato  := okato->ter
     //region->name_f := charrem("/",okato->name1)
-    region->name   := padr(charrem("/",okato->name1),72)
+    //region->name   := padr(charrem("/",okato->name1),72)
+	region->name   := padr(charrem("/",hb_ANSIToOEM(okato->name1 )),72)
+	 
   endif
   select OKATO
   skip
@@ -185,7 +189,7 @@ do while !eof()
     append blank
     rajon->okato  := okato->ter+okato->kod1
     //rajon->name_f := charrem("/",okato->name1)
-    rajon->name   := padr(charrem("/",okato->name1),72)
+    rajon->name   := padr(charrem("/",hb_ANSIToOEM(okato->name1)),72)
     if eq_any(alltrim(okato->kod1),"110","120","130","140","150","170","200",;
                         "400" ,"500","550")
       rajon->fl_zagol := 1
@@ -260,19 +264,22 @@ select OKATO
 go top
 do while !eof()
   @ 22,1 say str(recno()/lastrec()*100,6,2)+" %"
-  if okato->kod2 !="000" .and. okato->kod1 != "000"
+  //  my_debug(,"                                                        "+selo->okato) 
+  if (okato->kod2 !="000" .or. (okato->ter == "71" .and. okato->kod2 == "000" ) ).and. okato->kod1 != "000"
+    my_debug(,"                  "+okato->ter+okato->kod1+okato->kod2+okato->kod3) 
     if okato->kod3 != "000" .or.(okato->kod3 == "000" .and. alltrim(okato->razdel) == "1";
        .and. val(okato->kod2)<600).or.(okato->kod3 == "000" .and. alltrim(okato->razdel) == "1";
-       .and. val(okato->kod2)==800)
+       .and. val(okato->kod2)==800) .or. (okato->ter == "71" .and. val(okato->kod2)<200) 
       //(val(okato->kod2)>500.and.val(okato->kod2)<600))
       select SELO
       append blank
       selo->okato    := okato->ter+okato->kod1+okato->kod2+okato->kod3
+	 
       if val(okato->kod2)==800
-        selo->name     := padr(atrepl("Сельсоветы",charrem("/",okato->name1),"Населённые пункты"),60)
+        selo->name     := padr(atrepl("Сельсоветы",charrem("/",hb_ANSIToOEM(okato->name1)),"Населённые пункты"),60)
       else
         //selo->name     := padr(charrem("/",okato->name1),72)
-        selo->name     := alltrim(charrem("/",okato->name1))+iif(len(alltrim(okato->centrum))> 2 ,"/"+alltrim(okato->centrum),"")
+        selo->name     := alltrim(charrem("/",hb_ANSIToOEM(okato->name1)))+iif(len(alltrim(okato->centrum))> 2 ,"/"+alltrim(okato->centrum),"")
       endif
       selo->fl_vibor := 1
       if eq_any(okato->kod2,"360","500","550","600","800")
@@ -311,6 +318,8 @@ do while !eof()
         selo8->selo     := selo->selo
       endif
     endif
+  else   
+  my_debug(,okato->ter+okato->kod1+okato->kod2+okato->kod3) 
   endif
   select OKATO
   skip
