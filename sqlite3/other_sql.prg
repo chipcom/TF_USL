@@ -11,7 +11,7 @@ Static textCommitTrans := 'COMMIT;'
 // 01.06.23
 Function make_other( db, source )
 
-  // make_p_cel( db, source )
+  make_p_cel( db, source )
   make_t005(db, source)
   make_t007(db, source)
   // make_ISDErr(db, source)
