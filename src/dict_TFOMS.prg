@@ -425,6 +425,8 @@ Function work_mo_uslf(source, destination)
     select V001
     skip
   enddo
+  
+  out_obrabotka_eol()
 
   // добавим услуги телемедицины ( получены из ТФОМС )
   use ( source + 'telemed' ) new alias TELE
