@@ -24,7 +24,7 @@ Function make_v0xx( db, source )
   // make_V020(db, source)
   // make_V021(db, source)
   // make_V022(db, source)
-  // make_V024(db, source)
+  make_V024(db, source)
   // make_V025(db, source)
 
   // make_V030(db, source)

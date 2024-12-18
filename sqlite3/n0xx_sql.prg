@@ -1397,7 +1397,7 @@ Function make_n020( db, source )
 
   Return Nil
 
-// 31.08.23
+// 18.12.24
 Function make_n021( db, source )
 
   // ID_ZAP,    "N",  4, 0 // Идентификатор записи (в описании Char 15)
@@ -1405,11 +1405,14 @@ Function make_n021( db, source )
   // ID_LEKP,   "C",  6, 0 // Идентификатор лекарственного препарата, применяемого при проведении лекарственной противоопухолевой терапии. Заполняется в соответствии с N020
   // DATEBEG,   "D",  8, 0 // Дата начала действия записи
   // DATEEND,   "D",  8, 0 // Дата окончания действия записи
+  // добавлено 16.12.24
+  // LEKP_EXT,  "C",250, 0 // Расширенный идентификатор МНН лек. препарата с указанием пути введения
+  // ID_LEKP_EXT,"C", 25,0 // Код расширенного идентификатора МНН лек. препарата с указанием пути введения
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
-  Local mID_zap, mCode_sh, mID_lekp, d1, d2, d1_1, d2_1, s
+  Local mID_zap, mCode_sh, mID_lekp, d1, d2, d1_1, d2_1, mLekp_ext, mID_lekp_ext
   Local count := 0, cmdTextInsert := textBeginTrans
 
   nameRef := 'N021.xml'
@@ -1421,7 +1424,7 @@ Function make_n021( db, source )
 
   OutStd( hb_eol() + nameRef + ' - Классификатор соответствия лекарственного препарата схеме лекарственной терапии (OnkLpsh)' + hb_eol() )
   // cmdText := 'CREATE TABLE n021(id_zap INTEGER, code_sh TEXT(10), id_lekp TEXT(6), datebeg TEXT(10), dateend TEXT(10))'
-  cmdText := 'CREATE TABLE n021(id_zap INTEGER, code_sh TEXT(10), id_lekp TEXT(6), datebeg TEXT(19), dateend TEXT(19))'
+  cmdText := 'CREATE TABLE n021(id_zap INTEGER, code_sh TEXT(10), id_lekp TEXT(6), lekp_ext TEXT(150), id_lekp_ext TEXT(25), datebeg TEXT(19), dateend TEXT(19))'
   // 2018-04-02 12:13:46
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -1440,6 +1443,8 @@ Function make_n021( db, source )
         mID_zap := read_xml_stroke_1251_to_utf8( oXmlNode, 'ID_ZAP' )
         mCode_sh := read_xml_stroke_1251_to_utf8( oXmlNode, 'CODE_SH' )
         mId_lekp := read_xml_stroke_1251_to_utf8( oXmlNode, 'ID_LEKP' )
+        mLekp_ext := read_xml_stroke_1251_to_utf8( oXmlNode, 'LEKP_EXT' )
+        mID_lekp_ext := read_xml_stroke_1251_to_utf8( oXmlNode, 'ID_LEKP_EXT' )
         // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG') + ' 00:00:00'
         // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND') + ' 00:00:00'
 
@@ -1453,10 +1458,12 @@ Function make_n021( db, source )
 
 
         count++
-        cmdTextInsert += 'INSERT INTO n021(id_zap, code_sh, id_lekp, datebeg, dateend) VALUES(' ;
+        cmdTextInsert += 'INSERT INTO n021(id_zap, code_sh, id_lekp, lekp_ext, id_lekp_ext, datebeg, dateend) VALUES(' ;
           + "" + mID_zap + "," ;
           + "'" + mCode_sh + "'," ;
           + "'" + mID_lekp + "'," ;
+          + "'" + mLekp_ext + "'," ;
+          + "'" + mID_lekp_ext + "'," ;
           + "'" + d1 + "'," ;
           + "'" + d2 + "');"
         If count == COMMIT_COUNT
