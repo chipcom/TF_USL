@@ -11,12 +11,13 @@ Static textCommitTrans := 'COMMIT;'
 // 17.01.23
 Function make_v0xx( db, source )
 
-  make_V002(db, source)
+  make_v002( db, source )
+  make_v004( db, source )
 
-  make_V009(db, source)
-  make_V010(db, source)
-  make_V012(db, source)
-  make_V015(db, source)
+  make_v009( db, source )
+  make_v010( db, source )
+  make_v012( db, source )
+  make_v015( db, source )
   // make_V016(db, source)
   // make_V017(db, source)
   // make_V018(db, source)
@@ -24,14 +25,14 @@ Function make_v0xx( db, source )
   // make_V020(db, source)
   // make_V021(db, source)
   // make_V022(db, source)
-  make_V024(db, source)
+  make_v024( db, source )
   // make_V025(db, source)
 
   // make_V030(db, source)
   // make_V031(db, source)
   // make_V032(db, source)
   // make_V033(db, source)
-  make_v036(db, source)
+  make_v036( db, source )
 
   Return Nil
 
@@ -82,48 +83,48 @@ Function make_v009( db, source )
     // cmdText := "INSERT INTO v009 (idrmp, rmpname, dl_uslov, datebeg, dateend) VALUES( :idrmp, :rmpname, :dl_uslov, :datebeg, :dateend )"
     // stmt := sqlite3_prepare( db, cmdText )
     // If ! Empty( stmt )
-      out_obrabotka( nfile )
-      k := Len( oXmlDoc:aItems[ 1 ]:aItems )
-      For j := 1 To k
-        oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
-        If 'ZAP' == Upper( oXmlNode:title )
-          mIDRMP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDRMP' )
-          mRmpname := read_xml_stroke_1251_to_utf8( oXmlNode, 'RMPNAME' )
-          mDL_USLOV := read_xml_stroke_1251_to_utf8( oXmlNode, 'DL_USLOV' )
-          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
-          count++
-          // cmdText := "INSERT INTO v009 (idrmp, rmpname, dl_uslov, datebeg, dateend) VALUES( :idrmp, :rmpname, :dl_uslov, :datebeg, :dateend )"
-          cmdTextInsert := cmdTextInsert + "INSERT INTO v009( idrmp, rmpname, dl_uslov, datebeg, dateend ) VALUES("
-          cmdTextInsert += "'" + mIDRMP + "',"
-          cmdTextInsert += "'" + mRmpname + "',"
-          cmdTextInsert += "'" + mDL_USLOV + "',"
-          cmdTextInsert += "'" + d1 + "',"
-          cmdTextInsert += "'" + d2 + "');"
-          If count == COMMIT_COUNT
-            cmdTextInsert += textCommitTrans
-            sqlite3_exec( db, cmdTextInsert )
-            count := 0
-            cmdTextInsert := textBeginTrans
-          Endif
-  
-          // If sqlite3_bind_int( stmt, 1, Val( mIDRMP ) ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 2, mRmpname ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
-          //   If sqlite3_step( stmt ) != SQLITE_DONE
-          //     out_error( TAG_ROW_INVALID, nfile, j )
-          //   Endif
-          // Endif
-          // sqlite3_reset( stmt )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mIDRMP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDRMP' )
+        mRmpname := read_xml_stroke_1251_to_utf8( oXmlNode, 'RMPNAME' )
+        mDL_USLOV := read_xml_stroke_1251_to_utf8( oXmlNode, 'DL_USLOV' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+
+        count++
+        // cmdText := "INSERT INTO v009 (idrmp, rmpname, dl_uslov, datebeg, dateend) VALUES( :idrmp, :rmpname, :dl_uslov, :datebeg, :dateend )"
+        cmdTextInsert := cmdTextInsert + "INSERT INTO v009( idrmp, rmpname, dl_uslov, datebeg, dateend ) VALUES("
+        cmdTextInsert += "'" + mIDRMP + "',"
+        cmdTextInsert += "'" + mRmpname + "',"
+        cmdTextInsert += "'" + mDL_USLOV + "',"
+        cmdTextInsert += "'" + d1 + "',"
+        cmdTextInsert += "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
         Endif
-      Next j
-      If count > 0
-        cmdTextInsert += textCommitTrans
-        sqlite3_exec( db, cmdTextInsert )
+
+        // If sqlite3_bind_int( stmt, 1, Val( mIDRMP ) ) == SQLITE_OK .and. ;
+        // sqlite3_bind_text( stmt, 2, mRmpname ) == SQLITE_OK .and. ;
+        // sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
+        // sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
+        // sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
+        // If sqlite3_step( stmt ) != SQLITE_DONE
+        // out_error( TAG_ROW_INVALID, nfile, j )
+        // Endif
+        // Endif
+        // sqlite3_reset( stmt )
       Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
     // Endif
     // sqlite3_clear_bindings( stmt )
     // sqlite3_finalize( stmt )
@@ -178,45 +179,45 @@ Function make_v010( db, source )
     // cmdText := "INSERT INTO v010 (idsp, spname, datebeg, dateend) VALUES( :idsp, :spname, :datebeg, :dateend )"
     // stmt := sqlite3_prepare( db, cmdText )
     // If ! Empty( stmt )
-      out_obrabotka( nfile )
-      k := Len( oXmlDoc:aItems[ 1 ]:aItems )
-      For j := 1 To k
-        oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
-        If 'ZAP' == Upper( oXmlNode:title )
-          mIDSP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDSP' )
-          mSpname := read_xml_stroke_1251_to_utf8( oXmlNode, 'SPNAME' )
-          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mIDSP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDSP' )
+        mSpname := read_xml_stroke_1251_to_utf8( oXmlNode, 'SPNAME' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
 
-          // cmdText := "INSERT INTO v010 (idsp, spname, datebeg, dateend) VALUES( :idsp, :spname, :datebeg, :dateend )"
-          count++
-          cmdTextInsert := cmdTextInsert + "INSERT INTO v010( idsp, spname, datebeg, dateend ) VALUES("
-          cmdTextInsert += "'" + mIDSP + "',"
-          cmdTextInsert += "'" + mSpname + "',"
-          cmdTextInsert += "'" + d1 + "',"
-          cmdTextInsert += "'" + d2 + "');"
-          If count == COMMIT_COUNT
-            cmdTextInsert += textCommitTrans
-            sqlite3_exec( db, cmdTextInsert )
-            count := 0
-            cmdTextInsert := textBeginTrans
-          Endif
-            
-          // If sqlite3_bind_int( stmt, 1, Val( mIDSP ) ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 2, mSpname ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
-          //   If sqlite3_step( stmt ) != SQLITE_DONE
-          //     out_error( TAG_ROW_INVALID, nfile, j )
-          //   Endif
-          // Endif
-          // sqlite3_reset( stmt )
+        // cmdText := "INSERT INTO v010 (idsp, spname, datebeg, dateend) VALUES( :idsp, :spname, :datebeg, :dateend )"
+        count++
+        cmdTextInsert := cmdTextInsert + "INSERT INTO v010( idsp, spname, datebeg, dateend ) VALUES("
+        cmdTextInsert += "'" + mIDSP + "',"
+        cmdTextInsert += "'" + mSpname + "',"
+        cmdTextInsert += "'" + d1 + "',"
+        cmdTextInsert += "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
         Endif
-      Next j
-      If count > 0
-        cmdTextInsert += textCommitTrans
-        sqlite3_exec( db, cmdTextInsert )
+
+        // If sqlite3_bind_int( stmt, 1, Val( mIDSP ) ) == SQLITE_OK .and. ;
+        // sqlite3_bind_text( stmt, 2, mSpname ) == SQLITE_OK .and. ;
+        // sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
+        // sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
+        // If sqlite3_step( stmt ) != SQLITE_DONE
+        // out_error( TAG_ROW_INVALID, nfile, j )
+        // Endif
+        // Endif
+        // sqlite3_reset( stmt )
       Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
     // Endif
     // sqlite3_clear_bindings( stmt )
     // sqlite3_finalize( stmt )
@@ -272,48 +273,48 @@ Function make_v012( db, source )
     // cmdText := "INSERT INTO v012 (idiz, izname, dl_uslov, datebeg, dateend) VALUES( :idiz, :izname, :dl_uslov, :datebeg, :dateend )"
     // stmt := sqlite3_prepare( db, cmdText )
     // If ! Empty( stmt )
-      out_obrabotka( nfile )
-      k := Len( oXmlDoc:aItems[ 1 ]:aItems )
-      For j := 1 To k
-        oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
-        If 'ZAP' == Upper( oXmlNode:title )
-          mIDIZ := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDIZ' )
-          mIzname := read_xml_stroke_1251_to_utf8( oXmlNode, 'IZNAME' )
-          mDL_USLOV := read_xml_stroke_1251_to_utf8( oXmlNode, 'DL_USLOV' )
-          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mIDIZ := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDIZ' )
+        mIzname := read_xml_stroke_1251_to_utf8( oXmlNode, 'IZNAME' )
+        mDL_USLOV := read_xml_stroke_1251_to_utf8( oXmlNode, 'DL_USLOV' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
 
-          // cmdText := "INSERT INTO v012 (idiz, izname, dl_uslov, datebeg, dateend) VALUES( :idiz, :izname, :dl_uslov, :datebeg, :dateend )"
-          count++
-          cmdTextInsert := cmdTextInsert + "INSERT INTO v012( idiz, izname, dl_uslov, datebeg, dateend ) VALUES("
-          cmdTextInsert += "'" + mIDIZ + "',"
-          cmdTextInsert += "'" + mIzname + "',"
-          cmdTextInsert += "'" + mDL_USLOV + "',"
-          cmdTextInsert += "'" + d1 + "',"
-          cmdTextInsert += "'" + d2 + "');"
-          If count == COMMIT_COUNT
-            cmdTextInsert += textCommitTrans
-            sqlite3_exec( db, cmdTextInsert )
-            count := 0
-            cmdTextInsert := textBeginTrans
-          Endif
-            
-          // If sqlite3_bind_int( stmt, 1, Val( mIDIZ ) ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 2, mIzname ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
-          //   If sqlite3_step( stmt ) != SQLITE_DONE
-          //     out_error( TAG_ROW_INVALID, nfile, j )
-          //   Endif
-          // Endif
-          // sqlite3_reset( stmt )
+        // cmdText := "INSERT INTO v012 (idiz, izname, dl_uslov, datebeg, dateend) VALUES( :idiz, :izname, :dl_uslov, :datebeg, :dateend )"
+        count++
+        cmdTextInsert := cmdTextInsert + "INSERT INTO v012( idiz, izname, dl_uslov, datebeg, dateend ) VALUES("
+        cmdTextInsert += "'" + mIDIZ + "',"
+        cmdTextInsert += "'" + mIzname + "',"
+        cmdTextInsert += "'" + mDL_USLOV + "',"
+        cmdTextInsert += "'" + d1 + "',"
+        cmdTextInsert += "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
         Endif
-      Next j
-      If count > 0
-        cmdTextInsert += textCommitTrans
-        sqlite3_exec( db, cmdTextInsert )
+
+        // If sqlite3_bind_int( stmt, 1, Val( mIDIZ ) ) == SQLITE_OK .and. ;
+        // sqlite3_bind_text( stmt, 2, mIzname ) == SQLITE_OK .and. ;
+        // sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
+        // sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
+        // sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
+        // If sqlite3_step( stmt ) != SQLITE_DONE
+        // out_error( TAG_ROW_INVALID, nfile, j )
+        // Endif
+        // Endif
+        // sqlite3_reset( stmt )
       Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
     // Endif
     // sqlite3_clear_bindings( stmt )
     // sqlite3_finalize( stmt )
@@ -333,7 +334,6 @@ Function make_v015( db, source )
   // DATEBEG,    "D",      8,      0 // Дата начала действия записи
   // DATEEND,    "D",      8,      0 // Дата окончания действия записи
 
-  // Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
@@ -368,70 +368,50 @@ Function make_v015( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    // cmdText := "INSERT INTO v015 (recid, code, name, high, okso, datebeg, dateend) VALUES( :recid, :code, :name, :high, :okso, :datebeg, :dateend )"
-    // stmt := sqlite3_prepare( db, cmdText )
-    // If ! Empty( stmt )
-      out_obrabotka( nfile )
-      k := Len( oXmlDoc:aItems[ 1 ]:aItems )
-      For j := 1 To k
-        oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
-        If 'ZAP' == Upper( oXmlNode:title )
-          mRecid := read_xml_stroke_1251_to_utf8( oXmlNode, 'RECID' )
-          mCode := read_xml_stroke_1251_to_utf8( oXmlNode, 'CODE' )
-          mName := read_xml_stroke_1251_to_utf8( oXmlNode, 'NAME' )
-          mHigh := read_xml_stroke_1251_to_utf8( oXmlNode, 'HIGH' )
-          mOKSO := read_xml_stroke_1251_to_utf8( oXmlNode, 'OKSO' )
-          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mRecid := read_xml_stroke_1251_to_utf8( oXmlNode, 'RECID' )
+        mCode := read_xml_stroke_1251_to_utf8( oXmlNode, 'CODE' )
+        mName := read_xml_stroke_1251_to_utf8( oXmlNode, 'NAME' )
+        mHigh := read_xml_stroke_1251_to_utf8( oXmlNode, 'HIGH' )
+        mOKSO := read_xml_stroke_1251_to_utf8( oXmlNode, 'OKSO' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
 
-          // cmdText := "INSERT INTO v015 (recid, code, name, high, okso, datebeg, dateend) VALUES( :recid, :code, :name, :high, :okso, :datebeg, :dateend )"
-          count++
-          cmdTextInsert := cmdTextInsert + "INSERT INTO v015( recid, code, name, high, okso, datebeg, dateend ) VALUES("
-          cmdTextInsert += "'" + mRecid + "',"
-          cmdTextInsert += "'" + mCode + "',"
-          cmdTextInsert += "'" + mName + "',"
-          cmdTextInsert += "'" + mHigh + "',"
-          cmdTextInsert += "'" + mOKSO + "',"
-          cmdTextInsert += "'" + d1 + "',"
-          cmdTextInsert += "'" + d2 + "');"
-          If count == COMMIT_COUNT
-            cmdTextInsert += textCommitTrans
-            sqlite3_exec( db, cmdTextInsert )
-            count := 0
-            cmdTextInsert := textBeginTrans
-          Endif
-            
-          // If sqlite3_bind_int( stmt, 1, Val( mRecid ) ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_int( stmt, 2, Val( mCode ) ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 3, mName ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 4, mHigh ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 5, mOKSO ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 6, d1 ) == SQLITE_OK .and. ;
-          //     sqlite3_bind_text( stmt, 7, d2 ) == SQLITE_OK
-          //   If sqlite3_step( stmt ) != SQLITE_DONE
-          //     out_error( TAG_ROW_INVALID, nfile, j )
-          //   Endif
-          // Endif
-          // sqlite3_reset( stmt )
+        count++
+        cmdTextInsert := cmdTextInsert + "INSERT INTO v015( recid, code, name, high, okso, datebeg, dateend ) VALUES("
+        cmdTextInsert += "'" + mRecid + "',"
+        cmdTextInsert += "'" + mCode + "',"
+        cmdTextInsert += "'" + mName + "',"
+        cmdTextInsert += "'" + mHigh + "',"
+        cmdTextInsert += "'" + mOKSO + "',"
+        cmdTextInsert += "'" + d1 + "',"
+        cmdTextInsert += "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
         Endif
-      Next j
-      // добавим фиктивную запись
-      count++
-      cmdTextInsert := cmdTextInsert + "INSERT INTO v015( recid, code, name, high, okso, datebeg, dateend ) VALUES("
-          cmdTextInsert += "'999',"
-          cmdTextInsert += "'9999',"
-          cmdTextInsert += "'Клиническая психология',"
-          cmdTextInsert += "'287',"
-          cmdTextInsert += "'201',"
-          cmdTextInsert += "'" + d1 + "',"
-          cmdTextInsert += "'');"
-      If count > 0
-        cmdTextInsert += textCommitTrans
-        sqlite3_exec( db, cmdTextInsert )
       Endif
-    // Endif
-    // sqlite3_clear_bindings( stmt )
-    // sqlite3_finalize( stmt )
+    Next j
+    // добавим фиктивную запись
+    count++
+    cmdTextInsert := cmdTextInsert + "INSERT INTO v015( recid, code, name, high, okso, datebeg, dateend ) VALUES("
+    cmdTextInsert += "'999',"
+    cmdTextInsert += "'9999',"
+    cmdTextInsert += "'Клиническая психология',"
+    cmdTextInsert += "'287',"
+    cmdTextInsert += "'201',"
+    cmdTextInsert += "'" + d1 + "',"
+    cmdTextInsert += "'');"
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
   Endif
   out_obrabotka_eol()
 
@@ -492,7 +472,7 @@ Function make_v016( db, source )
           mDTNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'DTNAME' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
+
           mRule := ''
           If ( oNode1 := oXmlNode:find( 'DTRULE' ) ) != NIL
             For j1 := 1 To Len( oNode1:aItems )
@@ -577,7 +557,7 @@ Function make_v017( db, source )
           mDRNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'DRNAME' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
+
           If sqlite3_bind_int( stmt, 1, Val( mIDDR ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mDRNAME ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -651,7 +631,7 @@ Function make_v018( db, source )
           mHVIDNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'HVIDNAME' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
+
           If sqlite3_bind_text( stmt, 1, mIDHVID ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mHVIDNAME ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -725,7 +705,7 @@ Function make_v020( db, source )
           mK_PRNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'K_PRNAME' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
+
           If sqlite3_bind_int( stmt, 1, Val( mIDK_PR ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mK_PRNAME ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -803,7 +783,7 @@ Function make_v021( db, source )
           mIDPOST_MZ := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDPOST_MZ' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
+
           If sqlite3_bind_int( stmt, 1, Val( mIDSPEC ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mSPECNAME ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, mPOSTNAME ) == SQLITE_OK .and. ;
@@ -963,7 +943,7 @@ Function make_v025( db, source )
           mN_PC := read_xml_stroke_1251_to_utf8( oXmlNode, 'N_PC' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
+
           If sqlite3_bind_text( stmt, 1, mIDPC ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mN_PC ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -1134,7 +1114,7 @@ Function make_v031( db, source )
           mIndMNN := read_xml_stroke_1251_to_utf8( oXmlNode, 'ManIndMNN' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
+
           If sqlite3_bind_int( stmt, 1, Val( mDrugCode ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mDrugGrup ) == SQLITE_OK .and. ;
               sqlite3_bind_int( stmt, 3, Val( mIndMNN ) ) == SQLITE_OK .and. ;
@@ -1211,7 +1191,7 @@ Function make_v032( db, source )
           mSchemCode := read_xml_stroke_1251_to_utf8( oXmlNode, 'SchemCode' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
+
           If sqlite3_bind_text( stmt, 1, mScheDrug ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mName ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, mSchemCode ) == SQLITE_OK .and. ;
@@ -1286,7 +1266,7 @@ Function make_v033( db, source )
           mDrugCode := read_xml_stroke_1251_to_utf8( oXmlNode, 'DrugCode' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
+
           If sqlite3_bind_text( stmt, 1, mScheDrug ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mDrugCode ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -1361,7 +1341,7 @@ Function make_v036( db, source )
         mComment := read_xml_stroke_1251_to_utf8( oXmlNode, 'COMMENT' )
         d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
         d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-  
+
         count++
         cmdTextInsert += 'INSERT INTO v036(s_code, name, param, comment, datebeg, dateend) VALUES(' ;
           + "'" + mS_Code + "'," ;
@@ -1438,7 +1418,7 @@ Function make_v002( db, source )
         mPrname := read_xml_stroke_1251_to_utf8( oXmlNode, 'PRNAME' )
         d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
         d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-          
+
         count++
         cmdTextInsert += 'INSERT INTO v002(idpr, prname, datebeg, dateend) VALUES(' ;
           + "'" + mIDPR + "'," ;
@@ -1613,6 +1593,305 @@ Function make_v019( db, source )
       cmdTextInsert += textCommitTrans
       sqlite3_exec( db, cmdTextInsert )
     Endif
+  Endif
+  out_obrabotka_eol()
+
+  Return Nil
+
+// 20.12.24
+Function make_v004( db, source )
+
+  // V004.xml - Классификатор медицинских специальностей
+  // IDMSP(N)   // Код медицинской специальности
+  // MSPNAME(C) // Наименование медицинской специальности
+  // DATEBEG(D) // Дата начала действия записи
+  // DATEEND(D) // Дата окончания действия записи
+
+  Local cmdText
+  Local _arr := {}
+  Local empty_date := SToD( '' )
+  Local date_20110101 := SToD( '20110101' )
+  Local j, nameRef
+  Local mIDMSP, mMSPname, d1, d2, d1_1, d2_1
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+
+  AAdd( _arr, { 'Высшее медицинское образование', 1, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лечебное дело. Педиатрия', 11, date_20110101, empty_date } )
+  AAdd( _arr, { 'Акушерство и гинекология', 1101, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ультразвуковая диагностика', 110101, date_20110101, empty_date } )
+  AAdd( _arr, { 'Физиотерапия', 110102, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 110103, date_20110101, empty_date } )
+  AAdd( _arr, { 'Эндоскопия', 110104, date_20110101, empty_date } )
+  AAdd( _arr, { 'Анестезиология и реаниматология', 1103, date_20110101, empty_date } )
+  AAdd( _arr, { 'Токсикология', 110301, date_20110101, empty_date } )
+  AAdd( _arr, { 'Трансфузиология', 110302, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 110303, date_20110101, empty_date } )
+  AAdd( _arr, { 'Дерматовенерология', 1104, date_20110101, empty_date } )
+  AAdd( _arr, { 'Клиническая микология', 110401, date_20110101, empty_date } )
+  AAdd( _arr, { 'Генетика', 1105, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная генетика', 110501, date_20110101, empty_date } )
+  AAdd( _arr, { 'Инфекционные болезни', 1106, date_20110101, empty_date } )
+  AAdd( _arr, { 'Клиническая микология', 110601, date_20110101, empty_date } )
+  AAdd( _arr, { 'Клиническая лабораторная диагностика', 1107, date_20110101, empty_date } )
+  AAdd( _arr, { 'Бактериология', 110701, date_20110101, empty_date } )
+  AAdd( _arr, { 'Вирусология', 110702, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная генетика', 110703, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная микология', 110704, date_20110101, empty_date } )
+  AAdd( _arr, { 'Неврология', 1109, date_20110101, empty_date } )
+  AAdd( _arr, { 'Мануальная терапия', 110901, date_20110101, empty_date } )
+  AAdd( _arr, { 'Рефлексотерапия', 110902, date_20110101, empty_date } )
+  AAdd( _arr, { 'Восстановительная медицина', 110903, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лечебная физкультура и спортивная медицина', 110904, date_20110101, empty_date } )
+  AAdd( _arr, { 'Физиотерапия', 110905, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 110906, date_20110101, empty_date } )
+  AAdd( _arr, { 'Общая врачебная практика (семейная медицина)', 1110, date_20110101, empty_date } )
+  AAdd( _arr, { 'Восстановительная медицина', 111001, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гериатрия', 111002, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лечебная физкультура и спортивная медицина', 111003, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ультразвуковая диагностика', 111004, date_20110101, empty_date } )
+  AAdd( _arr, { 'Физиотерапия', 111005, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 111006, date_20110101, empty_date } )
+  AAdd( _arr, { 'Эндоскопия', 111007, date_20110101, empty_date } )
+  AAdd( _arr, { 'Отоларингология', 1111, date_20110101, empty_date } )
+  AAdd( _arr, { 'Сурдология-отоларингология', 111101, date_20110101, empty_date } )
+  AAdd( _arr, { 'Офтальмология', 1112, date_20110101, empty_date } )
+  AAdd( _arr, { 'Патологическая анатомия', 1113, date_20110101, empty_date } )
+  AAdd( _arr, { 'Психиатрия', 1115, date_20110101, empty_date } )
+  AAdd( _arr, { 'Психотерапия', 111501, date_20110101, empty_date } )
+  AAdd( _arr, { 'Сексология', 111502, date_20110101, empty_date } )
+  AAdd( _arr, { 'Судебно-психиатрическая экспертиза', 111503, date_20110101, empty_date } )
+  AAdd( _arr, { 'Психиатрия-наркология', 111504, date_20110101, empty_date } )
+  AAdd( _arr, { 'Рентгенология', 1118, date_20110101, empty_date } )
+  AAdd( _arr, { 'Радиология', 111801, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ультразвуковая диагностика', 111802, date_20110101, empty_date } )
+  AAdd( _arr, { 'Скорая медицинская помощь', 1119, date_20110101, empty_date } )
+  AAdd( _arr, { 'Восстановительная медицина', 111901, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лечебная физкультура и спортивная медицина', 111902, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ультразвуковая диагностика', 111903, date_20110101, empty_date } )
+  AAdd( _arr, { 'Физиотерапия', 111904, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 111905, date_20110101, empty_date } )
+  AAdd( _arr, { 'Организация здравоохранения и общественное здоровье', 1120, date_20110101, empty_date } )
+  AAdd( _arr, { 'Судебно-медицинская экспертиза', 1121, date_20110101, empty_date } )
+  AAdd( _arr, { 'Терапия', 1122, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гастроэнтерология', 112201, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гематология', 112202, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гериатрия', 112203, date_20110101, empty_date } )
+  AAdd( _arr, { 'Диетология', 112204, date_20110101, empty_date } )
+  AAdd( _arr, { 'Кардиология', 112205, date_20110101, empty_date } )
+  AAdd( _arr, { 'Клиническая фармакология', 112206, date_20110101, empty_date } )
+  AAdd( _arr, { 'Нефрология', 112207, date_20110101, empty_date } )
+  AAdd( _arr, { 'Пульмонология', 112208, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ревматология', 112209, date_20110101, empty_date } )
+  AAdd( _arr, { 'Трансфузиология', 112210, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ультразвуковая диагностика', 112211, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 112212, date_20110101, empty_date } )
+  AAdd( _arr, { 'Авиационная и космическая медицина', 112213, date_20110101, empty_date } )
+  AAdd( _arr, { 'Аллергология и иммунология', 112214, date_20110101, empty_date } )
+  AAdd( _arr, { 'Восстановительная медицина', 112215, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лечебная физкультура и спортивная медицина', 112216, date_20110101, empty_date } )
+  AAdd( _arr, { 'Мануальная терапия', 112217, date_20110101, empty_date } )
+  AAdd( _arr, { 'Профпатология', 112218, date_20110101, empty_date } )
+  AAdd( _arr, { 'Рефлексотерапия', 112219, date_20110101, empty_date } )
+  AAdd( _arr, { 'Физиотерапия', 112220, date_20110101, empty_date } )
+  AAdd( _arr, { 'Эндоскопия', 112221, date_20110101, empty_date } )
+  AAdd( _arr, { 'Травматология и ортопедия', 1123, date_20110101, empty_date } )
+  AAdd( _arr, { 'Мануальная терапия', 112301, date_20110101, empty_date } )
+  AAdd( _arr, { 'Восстановительная медицина', 112302, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лечебная физкультура и спортивная медицина', 112303, date_20110101, empty_date } )
+  AAdd( _arr, { 'Физиология', 112304, date_20110101, empty_date } )
+  AAdd( _arr, { 'Физиотерапия', 1124, date_20110101, empty_date } )
+  AAdd( _arr, { 'Фтизиатрия', 1125, date_20110101, empty_date } )
+  AAdd( _arr, { 'Пульмонология', 112501, date_20110101, empty_date } )
+  AAdd( _arr, { 'Хирургия', 1126, date_20110101, empty_date } )
+  AAdd( _arr, { 'Колопроктология', 112601, date_20110101, empty_date } )
+  AAdd( _arr, { 'Нейрохирургия', 112602, date_20110101, empty_date } )
+  AAdd( _arr, { 'Урология', 112603, date_20110101, empty_date } )
+  AAdd( _arr, { 'Сердечно-сосудистая хирургия', 112604, date_20110101, empty_date } )
+  AAdd( _arr, { 'Торакальная хирургия', 112605, date_20110101, empty_date } )
+  AAdd( _arr, { 'Трансфузиология', 112606, date_20110101, empty_date } )
+  AAdd( _arr, { 'Челюстно-лицевая хирургия', 112608, date_20110101, empty_date } )
+  AAdd( _arr, { 'Эндоскопия', 112609, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ультразвуковая диагностика', 112610, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 112611, date_20110101, empty_date } )
+  AAdd( _arr, { 'Эндокринология', 1127, date_20110101, empty_date } )
+  AAdd( _arr, { 'Диабетология', 112701, date_20110101, empty_date } )
+  AAdd( _arr, { 'Детская эндокринология', 112702, date_20110101, empty_date } )
+  AAdd( _arr, { 'Онкология', 1128, date_20110101, empty_date } )
+  AAdd( _arr, { 'Детская онкология', 112801, date_20110101, empty_date } )
+  AAdd( _arr, { 'Радиология', 112802, date_20110101, empty_date } )
+  AAdd( _arr, { 'Педиатрия', 1134, date_20110101, empty_date } )
+  AAdd( _arr, { 'Детская онкология', 113401, date_20110101, empty_date } )
+  AAdd( _arr, { 'Детская эндокринология', 113402, date_20110101, empty_date } )
+  AAdd( _arr, { 'Детская кардиология', 113403, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лечебная физкультура и спортивная медицина', 113404, date_20110101, empty_date } )
+  AAdd( _arr, { 'Аллергология и иммунология', 113405, date_20110101, empty_date } )
+  AAdd( _arr, { 'Восстановительная медицина', 113406, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гастроэнтерология', 113407, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гематология', 113408, date_20110101, empty_date } )
+  AAdd( _arr, { 'Диетология', 113409, date_20110101, empty_date } )
+  AAdd( _arr, { 'Клиническая фармакология', 113410, date_20110101, empty_date } )
+  AAdd( _arr, { 'Мануальная терапия', 113411, date_20110101, empty_date } )
+  AAdd( _arr, { 'Нефрология', 113412, date_20110101, empty_date } )
+  AAdd( _arr, { 'Пульмонология', 113413, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ревматология', 113414, date_20110101, empty_date } )
+  AAdd( _arr, { 'Трансфузиология', 113415, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ультразвуковая диагностика', 113416, date_20110101, empty_date } )
+  AAdd( _arr, { 'Физиотерапия', 113417, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 113418, date_20110101, empty_date } )
+  AAdd( _arr, { 'Эндоскопия', 113419, date_20110101, empty_date } )
+  AAdd( _arr, { 'Детская хирургия', 1135, date_20110101, empty_date } )
+  AAdd( _arr, { 'Детская онкология', 113501, date_20110101, empty_date } )
+  AAdd( _arr, { 'Детская урология-андрология', 113502, date_20110101, empty_date } )
+  AAdd( _arr, { 'Колопроктология', 113503, date_20110101, empty_date } )
+  AAdd( _arr, { 'Нейрохирургия', 113504, date_20110101, empty_date } )
+  AAdd( _arr, { 'Сердечно-сосудистая хирургия', 113505, date_20110101, empty_date } )
+  AAdd( _arr, { 'Торакальная хирургия', 113506, date_20110101, empty_date } )
+  AAdd( _arr, { 'Трансфузиология', 113507, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ультразвуковая диагностика', 113508, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 113509, date_20110101, empty_date } )
+  AAdd( _arr, { 'Челюстно-лицевая хирургия', 113510, date_20110101, empty_date } )
+  AAdd( _arr, { 'Эндоскопия', 113511, date_20110101, empty_date } )
+  AAdd( _arr, { 'Неонатология', 1136, date_20110101, empty_date } )
+  AAdd( _arr, { 'Медико-профилактическое дело', 13, date_20110101, empty_date } )
+  AAdd( _arr, { 'Клиническая лабораторная диагностика', 1301, date_20110101, empty_date } )
+  AAdd( _arr, { 'Бактериология', 130101, date_20110101, empty_date } )
+  AAdd( _arr, { 'Вирусология', 130102, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная генетика', 130103, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная микология', 130104, date_20110101, empty_date } )
+  AAdd( _arr, { 'Эпидемиология', 1302, date_20110101, empty_date } )
+  AAdd( _arr, { 'Бактериология', 130201, date_20110101, empty_date } )
+  AAdd( _arr, { 'Дезинфектология', 130203, date_20110101, empty_date } )
+  AAdd( _arr, { 'Паразитология', 130204, date_20110101, empty_date } )
+  AAdd( _arr, { 'Вирусология', 130205, date_20110101, empty_date } )
+  AAdd( _arr, { 'Общая гигиена', 1303, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гигиена детей и подростков', 130301, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гигиеническое воспитание', 130302, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гигиена питания', 130303, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гигиена труда', 130304, date_20110101, empty_date } )
+  AAdd( _arr, { 'Коммунальная гигиена', 130305, date_20110101, empty_date } )
+  AAdd( _arr, { 'Радиационная гигиена', 130306, date_20110101, empty_date } )
+  AAdd( _arr, { 'Санитарно-гигиенические лабораторные исследования', 130307, date_20110101, empty_date } )
+  AAdd( _arr, { 'Социальная гигиена и организация госсанэпидслужбы', 1306, date_20110101, empty_date } )
+  AAdd( _arr, { 'Стоматология', 14, date_20110101, empty_date } )
+  AAdd( _arr, { 'Стоматология общей практики', 1401, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ортодонтия', 140101, date_20110101, empty_date } )
+  AAdd( _arr, { 'Стоматология детская', 140102, date_20110101, empty_date } )
+  AAdd( _arr, { 'Стоматология терапевтическая', 140103, date_20110101, empty_date } )
+  AAdd( _arr, { 'Стоматология ортопедическая', 140104, date_20110101, empty_date } )
+  AAdd( _arr, { 'Стоматология хирургическая', 140105, date_20110101, empty_date } )
+  AAdd( _arr, { 'Челюстно-лицевая хирургия', 140106, date_20110101, empty_date } )
+  AAdd( _arr, { 'Физиотерапия', 140107, date_20110101, empty_date } )
+  AAdd( _arr, { 'Клиническая лабораторная диагностика', 1402, date_20110101, empty_date } )
+  AAdd( _arr, { 'Бактериология', 140201, date_20110101, empty_date } )
+  AAdd( _arr, { 'Вирусология', 140202, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная генетика', 140203, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная микология', 140204, date_20110101, empty_date } )
+  AAdd( _arr, { 'Фармация', 15, date_20110101, empty_date } )
+  AAdd( _arr, { 'Управление и экономика фармации', 1501, date_20110101, empty_date } )
+  AAdd( _arr, { 'Фармацевтическая технология', 1502, date_20110101, empty_date } )
+  AAdd( _arr, { 'Фармацевтическая химия и фармакогнозия', 1503, date_20110101, empty_date } )
+  AAdd( _arr, { 'Сестринское дело', 16, date_20110101, empty_date } )
+  AAdd( _arr, { 'Управление сестринской деятельностью', 1601, date_20110101, empty_date } )
+  AAdd( _arr, { 'Медицинская биохимия', 17, date_20110101, empty_date } )
+  AAdd( _arr, { 'Генетика', 1701, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная генетика', 170101, date_20110101, empty_date } )
+  AAdd( _arr, { 'Клиническая лабораторная диагностика', 1702, date_20110101, empty_date } )
+  AAdd( _arr, { 'Бактериология', 170201, date_20110101, empty_date } )
+  AAdd( _arr, { 'Вирусология', 170202, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная генетика', 170203, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная микология', 170204, date_20110101, empty_date } )
+  AAdd( _arr, { 'Судебно-медицинская экспертиза', 1703, date_20110101, empty_date } )
+  AAdd( _arr, { 'Медицинская биофизика. Медицинская кибернетика', 18, date_20110101, empty_date } )
+  AAdd( _arr, { 'Клиническая лабораторная диагностика', 1801, date_20110101, empty_date } )
+  AAdd( _arr, { 'Бактериология', 180101, date_20110101, empty_date } )
+  AAdd( _arr, { 'Вирусология', 180102, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная генетика', 180103, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная микология', 180104, date_20110101, empty_date } )
+  AAdd( _arr, { 'Рентгенология', 1802, date_20110101, empty_date } )
+  AAdd( _arr, { 'Радиология', 180201, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 180202, date_20110101, empty_date } )
+  AAdd( _arr, { 'Ультразвуковая диагностика', 180203, date_20110101, empty_date } )
+  AAdd( _arr, { 'Среднее медицинское и фармацевтическое образование', 2, date_20110101, empty_date } )
+  AAdd( _arr, { 'Организация сестринского дела', 2001, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лечебное дело', 2002, date_20110101, empty_date } )
+  AAdd( _arr, { 'Акушерское дело', 2003, date_20110101, empty_date } )
+  AAdd( _arr, { 'Стоматология', 2004, date_20110101, empty_date } )
+  AAdd( _arr, { 'Стоматология ортопедическая', 2005, date_20110101, empty_date } )
+  AAdd( _arr, { 'Эпидемиология (паразитология)', 2006, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гигиена и санитария', 2007, date_20110101, empty_date } )
+  AAdd( _arr, { 'Дезинфекционное дело', 2008, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гигиеническое воспитание', 2009, date_20110101, empty_date } )
+  AAdd( _arr, { 'Энтомология', 2010, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторная диагностика', 2011, date_20110101, empty_date } )
+  AAdd( _arr, { 'Гистология', 2012, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лабораторное дело', 2013, date_20110101, empty_date } )
+  AAdd( _arr, { 'Фармация', 2014, date_20110101, empty_date } )
+  AAdd( _arr, { 'Сестринское дело', 2015, date_20110101, empty_date } )
+  AAdd( _arr, { 'Сестринское дело в педиатрии', 2016, date_20110101, empty_date } )
+  AAdd( _arr, { 'Операционное дело', 2017, date_20110101, empty_date } )
+  AAdd( _arr, { 'Анестезиология и реаниматология', 2018, date_20110101, empty_date } )
+  AAdd( _arr, { 'Общая практика', 2019, date_20110101, empty_date } )
+  AAdd( _arr, { 'Рентгенология', 2020, date_20110101, empty_date } )
+  AAdd( _arr, { 'Функциональная диагностика', 2021, date_20110101, empty_date } )
+  AAdd( _arr, { 'Физиотерапия', 2022, date_20110101, empty_date } )
+  AAdd( _arr, { 'Медицинский массаж', 2023, date_20110101, empty_date } )
+  AAdd( _arr, { 'Лечебная физкультура', 2024, date_20110101, empty_date } )
+  AAdd( _arr, { 'Диетология', 2025, date_20110101, empty_date } )
+  AAdd( _arr, { 'Медицинская статистика', 2026, date_20110101, empty_date } )
+  AAdd( _arr, { 'Стоматология профилактическая', 2027, date_20110101, empty_date } )
+  AAdd( _arr, { 'Судебно-медицинская экспертиза', 2028, date_20110101, empty_date } )
+  AAdd( _arr, { 'Медицинская оптика', 2029, date_20110101, empty_date } )
+  AAdd( _arr, { 'Естественные науки', 3, date_20110101, empty_date } )
+  AAdd( _arr, { 'Биофизика', 31, date_20110101, empty_date } )
+  AAdd( _arr, { 'Медицинская биофизика', 3101, date_20110101, empty_date } )
+  AAdd( _arr, { 'Медицинская кибернетика', 3102, date_20110101, empty_date } )
+  AAdd( _arr, { 'Биохимия', 32, date_20110101, empty_date } )
+  AAdd( _arr, { 'Медицинская биохимия', 3201, date_20110101, empty_date } )
+
+  cmdText := 'CREATE TABLE v004( idmsp INTEGER, mspname TEXT(50), datebeg TEXT(10), dateend TEXT(10) )'
+
+  nameRef := 'V004.xml'
+  OutStd( hb_eol() + nameRef + ' - Классификатор медицинских специальностей' + hb_eol() )
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS v004' ) == SQLITE_OK
+    OutStd( 'DROP TABLE v004 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE v004 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE v004 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  For j := 1 To Len( _arr )
+    mIDMSP := Str( _arr[ j, 2 ], 10 )
+    mMSPname := _arr[ j, 1 ]
+
+    d1_1 := _arr[ j, 3 ]
+    d2_1 := _arr[ j, 4 ]
+
+    Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+    d1 := hb_ValToStr( d1_1 )
+    d2 := hb_ValToStr( d2_1 )
+
+    count++
+    cmdTextInsert += 'INSERT INTO v004( idmsp, mspname, datebeg, dateend) VALUES(' ;
+      + "'" + mIDMSP + "'," ;
+      + "'" + mMSPname + "'," ;
+      + "'" + d1 + "'," ;
+      + "'" + d2 + "');"
+    If count == COMMIT_COUNT
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+      count := 0
+      cmdTextInsert := textBeginTrans
+    Endif
+  Next j
+  If count > 0
+    cmdTextInsert += textCommitTrans
+    sqlite3_exec( db, cmdTextInsert )
   Endif
   out_obrabotka_eol()
 
