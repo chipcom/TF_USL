@@ -4,14 +4,14 @@
 
 #require 'hbsqlit3'
 
-// * 15.05.22
+// 15.05.22
 Function clear_name_table( table )
 
   table := Lower( AllTrim( table ) )
 
   Return hb_FNameName( table )
 
-// * 12.05.22
+// 12.05.22
 Function create_table( db, table, cmdText )
 
   // db - дескриптор SQL БД
@@ -31,7 +31,7 @@ Function create_table( db, table, cmdText )
 
   Return ret
 
-// * 12.05.22
+// 12.05.22
 Function drop_table( db, table )
 
   // db - дескриптор SQL БД
@@ -60,35 +60,39 @@ Procedure about()
 
   Return
 
-// * 11.02.22
+// 11.02.22
 Function obrabotka( nfile )
 
   @ Row() + 1, 1 Say 'Обработка файла ' + nfile + ' -'
 
   Return Col()
 
-// * 13.02.22
+// 20.12.24
 Function out_obrabotka( nfile )
 
-  OutStd( '===== Обработка файла ' + nfile )
+  local st
+
+  st := hb_Utf8ToStr( '===== Обработка файла ', 'RU866' )	
+
+  OutStd( st + nfile )
 
   Return Nil
 
-// * 15.02.22
+// 15.02.22
 Function out_create_file( nfile )
 
   OutStd( 'Создание файла ' + nfile )
 
   Return Nil
 
-// * 14.02.22
+// 14.02.22
 Function out_obrabotka_eol()
 
   OutStd( hb_eol() )
 
   Return Nil
 
-// * 14.02.22
+// 14.02.22
 Function out_obrabotka_count( j, k )
 
   // OutStd( str(j / k * 100, 6, 2) + "%" )

@@ -10,34 +10,34 @@
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 12.05.22
+// 22.12.24
 Function make_n0xx( db, source )
 
-  // make_n001(db, source)
+  make_n001(db, source)
   make_n002(db, source)
   make_n003(db, source)
   make_n004(db, source)
   make_n005(db, source)
-  // make_n006(db, source)
-  // make_n007(db, source)
-  // make_n008(db, source)
-  // make_n009(db, source)
-  // make_n010(db, source)
-  // make_n011(db, source)
+  make_n006(db, source)
+  make_n007(db, source)
+  make_n008(db, source)
+  make_n009(db, source)
+  make_n010(db, source)
+  make_n011(db, source)
   make_n012(db, source)
-  // make_n013(db, source)
-  // make_n014(db, source)
-  // make_n015(db, source)
-  // make_n016(db, source)
-  // make_n017(db, source)
-  // make_n018(db, source)
-  // make_n019(db, source)
+  make_n013(db, source)
+  make_n014(db, source)
+  make_n015(db, source)
+  make_n016(db, source)
+  make_n017(db, source)
+  make_n018(db, source)
+  make_n019(db, source)
   make_n020(db, source)
   make_n021( db, source )
 
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n001( db, source )
 
   // ID_PrOt,    "N",  1, 0 // Идентификатор противопоказания или отказа
@@ -50,6 +50,7 @@ Function make_n001( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_prot, mProt_Name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N001.xml'
   nfile := source + nameRef
@@ -58,7 +59,8 @@ Function make_n001( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор противопоказаний и отказов (OnkPrOt)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор противопоказаний и отказов (OnkPrOt)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
 
   cmdText := 'CREATE TABLE n001(id_prot INTEGER, prot_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
@@ -100,10 +102,9 @@ Function make_n001( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n002( db, source )
 
   // ID_St,      "N",  4, 0 // Идентификатор стадии
@@ -117,6 +118,7 @@ Function make_n002( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_st, mDS_St, mKod_st, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N002.xml'
   nfile := source + nameRef
@@ -125,7 +127,9 @@ Function make_n002( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор стадий (OnkStad)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор стадий (OnkStad)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n002(id_st INTEGER, ds_st TEXT(5), kod_st TEXT(5), datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -168,10 +172,9 @@ Function make_n002( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n003( db, source )
 
   // ID_T,       "N",  4, 0 // Идентификатор T
@@ -186,6 +189,7 @@ Function make_n003( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_T, mDS_T, mKod_T, mT_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N003.xml'
   nfile := source + nameRef
@@ -194,7 +198,9 @@ Function make_n003( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор Tumor (OnkT)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор Tumor (OnkT)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n003(id_t INTEGER, ds_t TEXT(5), kod_t TEXT(5), t_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -239,10 +245,9 @@ Function make_n003( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n004( db, source )
 
   // ID_N,       "N",  4, 0 // Идентификатор N
@@ -257,6 +262,7 @@ Function make_n004( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_N, mDS_N, mKod_N, mN_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N004.xml'
   nfile := source + nameRef
@@ -265,7 +271,9 @@ Function make_n004( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор Nodus (OnkN)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор Nodus (OnkN)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n004(id_n INTEGER, ds_n TEXT(5), kod_n TEXT(5), n_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -310,10 +318,9 @@ Function make_n004( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n005( db, source )
 
   // ID_M,       "N",  4, 0 // Идентификатор M
@@ -328,6 +335,7 @@ Function make_n005( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_M, mDS_M, mKod_M, mM_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N005.xml'
   nfile := source + nameRef
@@ -336,7 +344,9 @@ Function make_n005( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор Metastasis (OnkM)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор Metastasis (OnkM)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n005(id_m INTEGER, ds_m TEXT(5), kod_m TEXT(5), m_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -381,10 +391,9 @@ Function make_n005( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n006( db, source )
 
   // ID_gr,      "N",  4, 0 // Идентификатор строки
@@ -401,6 +410,7 @@ Function make_n006( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_gr, mDS_gr, mID_St, mID_T, mID_N, mID_M, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N006.xml'
   nfile := source + nameRef
@@ -409,7 +419,9 @@ Function make_n006( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Справочник соответствия стадий TNM (OnkTNM)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Справочник соответствия стадий TNM (OnkTNM)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n006(id_gr INTEGER, ds_gr TEXT(5), id_st INTEGER, id_t INTEGER, id_n INTEGER, id_m INTEGER, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -458,10 +470,9 @@ Function make_n006( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n007( db, source )
 
   // ID_Mrf,     "N",  2, 0 // Идентификатор гистологического признака
@@ -474,6 +485,7 @@ Function make_n007( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_Mrf, mMrf_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N007.xml'
   nfile := source + nameRef
@@ -482,7 +494,9 @@ Function make_n007( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор гистологических признаков (OnkMrf)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор гистологических признаков (OnkMrf)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n007(id_mrf INTEGER, mrf_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -523,10 +537,9 @@ Function make_n007( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n008( db, source )
 
   // ID_R_M,     "N",  3, 0 // Идентификатор записи
@@ -540,6 +553,7 @@ Function make_n008( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_Mrf, mID_r_m, mR_M_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N008.xml'
   nfile := source + nameRef
@@ -548,7 +562,9 @@ Function make_n008( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор результатов гистологических исследований (OnkMrfRt)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор результатов гистологических исследований (OnkMrfRt)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n008(id_r_m INTEGER, id_mrf INTEGER, r_m_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -591,10 +607,9 @@ Function make_n008( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n009( db, source )
 
   // ID_M_D,     "N",  2, 0 // Идентификатор строки
@@ -608,6 +623,7 @@ Function make_n009( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_Mrf, mID_m_d, mDS_mrf, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N009.xml'
   nfile := source + nameRef
@@ -616,7 +632,9 @@ Function make_n009( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор соответствия гистологических признаков диагнозам (OnkMrtDS)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор соответствия гистологических признаков диагнозам (OnkMrtDS)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n009(id_m_d INTEGER, ds_mrf TEXT(3), id_mrf INTEGER, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -659,10 +677,9 @@ Function make_n009( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n010( db, source )
 
   // ID_Igh,     "N",  2, 0 // Идентификатор маркера
@@ -676,6 +693,7 @@ Function make_n010( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_igh, mKOD_igh, mIgh_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N010.xml'
   nfile := source + nameRef
@@ -684,7 +702,9 @@ Function make_n010( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор маркеров (OnkIgh)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор маркеров (OnkIgh)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n010(id_igh INTEGER, kod_igh TEXT, igh_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -727,10 +747,9 @@ Function make_n010( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n011( db, source )
 
   // ID_R_I,     "N",  3, 0 // Идентификатор записи
@@ -745,6 +764,7 @@ Function make_n011( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_R_I, mID_igh, mKOD_R_I, mR_I_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N011.xml'
   nfile := source + nameRef
@@ -753,7 +773,9 @@ Function make_n011( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор значений маркеров (OnkIghRt)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор значений маркеров (OnkIghRt)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n011(id_r_i INTEGER, id_igh INTEGER, kod_r_i TEXT, r_i_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -798,10 +820,9 @@ Function make_n011( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n012( db, source )
 
   // ID_I_D,     "N",  2, 0 // Идентификатор строки
@@ -815,6 +836,7 @@ Function make_n012( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_I_D, mID_igh, mDS_Igh, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N012.xml'
   nfile := source + nameRef
@@ -823,7 +845,9 @@ Function make_n012( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор соответствия маркеров диагнозам (OnkIghDS)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор соответствия маркеров диагнозам (OnkIghDS)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n012(id_i_d INTEGER, ds_igh TEXT(3), id_igh INTEGER, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -866,10 +890,9 @@ Function make_n012( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n013( db, source )
 
   // ID_TLech,   "N",  1, 0 // Идентификатор типа лечения
@@ -882,6 +905,7 @@ Function make_n013( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_tlech, mTlech_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N013.xml'
   nfile := source + nameRef
@@ -890,7 +914,9 @@ Function make_n013( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор типов лечения (OnkLech)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор типов лечения (OnkLech)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n013(id_tlech INTEGER, tlech_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -931,10 +957,9 @@ Function make_n013( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n014( db, source )
 
   // ID_THir,    "N",  1, 0 // Идентификатор типа хирургического лечения
@@ -947,6 +972,7 @@ Function make_n014( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_thir, mThir_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N014.xml'
   nfile := source + nameRef
@@ -955,7 +981,9 @@ Function make_n014( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор типов хирургического лечения (OnkHir)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор типов хирургического лечения (OnkHir)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n014(id_thir INTEGER, thir_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -996,10 +1024,9 @@ Function make_n014( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n015( db, source )
 
   // ID_TLek_L,  "N",  1, 0 // Идентификатор линии лекарственной терапии
@@ -1012,6 +1039,7 @@ Function make_n015( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_tlek_l, mTlek_name_l, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N015.xml'
   nfile := source + nameRef
@@ -1020,7 +1048,9 @@ Function make_n015( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор линий лекарственной терапии (OnkLek_L)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор линий лекарственной терапии (OnkLek_L)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n015(id_tlek_l INTEGER, tlek_name_l TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -1061,10 +1091,9 @@ Function make_n015( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n016( db, source )
 
   // ID_TLek_V,  "N",  1, 0 // Идентификатор цикла лекарственной терапии
@@ -1077,6 +1106,7 @@ Function make_n016( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_tlek_v, mTlek_name_v, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N016.xml'
   nfile := source + nameRef
@@ -1085,7 +1115,9 @@ Function make_n016( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор циклов лекарственной терапии (OnkLek_V)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор циклов лекарственной терапии (OnkLek_V)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n016(id_tlek_v INTEGER, tlek_name_v TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -1126,10 +1158,9 @@ Function make_n016( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.08.23
+// 20.12.24
 Function make_n017( db, source )
 
   // ID_TLuch,  "N",  1, 0 // Идентификатор типа лучевой терапии
@@ -1142,6 +1173,7 @@ Function make_n017( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_tluch, mTluch_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N017.xml'
   nfile := source + nameRef
@@ -1150,7 +1182,9 @@ Function make_n017( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор типов лучевой терапии (OnkLuch)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор типов лучевой терапии (OnkLuch)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n017(id_tluch INTEGER, tluch_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -1191,10 +1225,9 @@ Function make_n017( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 31.06.23
+// 20.12.24
 Function make_n018( db, source )
 
   // ID_REAS,   "N",  2, 0 // Идентификатор повода обращения
@@ -1207,6 +1240,7 @@ Function make_n018( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_reas, mReas_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N018.xml'
   nfile := source + nameRef
@@ -1215,7 +1249,9 @@ Function make_n018( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор поводов обращения (OnkReas)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор поводов обращения (OnkReas)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n018(id_reas INTEGER, reas_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -1256,7 +1292,6 @@ Function make_n018( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 31.08.23
@@ -1272,6 +1307,7 @@ Function make_n019( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_cons, mCons_name, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N019.xml'
   nfile := source + nameRef
@@ -1280,7 +1316,9 @@ Function make_n019( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор целей консилиума (OnkCons)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор целей консилиума (OnkCons)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n019(id_cons INTEGER, cons_name TEXT, datebeg TEXT(10), dateend TEXT(10))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -1321,10 +1359,9 @@ Function make_n019( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
-// 27.09.23
+// 20.12.24
 Function make_n020( db, source )
 
   // ID_LEKP,   "C",  6, 0 // Идентификатор лекарственного препарата
@@ -1337,6 +1374,7 @@ Function make_n020( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_lekp, mMNN, d1, d2, d1_1, d2_1
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N020.xml'
   nfile := source + nameRef
@@ -1345,7 +1383,9 @@ Function make_n020( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор лекарственных препаратов, применяемых при проведении лекарственной терапии (OnkLekp)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор лекарственных препаратов, применяемых при проведении лекарственной терапии (OnkLekp)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n020(id_lekp TEXT(6), mnn TEXT, datebeg TEXT(19), dateend TEXT(19))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -1394,7 +1434,6 @@ Function make_n020( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 18.12.24
@@ -1414,6 +1453,7 @@ Function make_n021( db, source )
   Local oXmlDoc, oXmlNode
   Local mID_zap, mCode_sh, mID_lekp, d1, d2, d1_1, d2_1, mLekp_ext, mID_lekp_ext
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'N021.xml'
   nfile := source + nameRef
@@ -1422,8 +1462,9 @@ Function make_n021( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор соответствия лекарственного препарата схеме лекарственной терапии (OnkLpsh)' + hb_eol() )
-  // cmdText := 'CREATE TABLE n021(id_zap INTEGER, code_sh TEXT(10), id_lekp TEXT(6), datebeg TEXT(10), dateend TEXT(10))'
+  st := hb_Utf8ToStr( ' - Классификатор соответствия лекарственного препарата схеме лекарственной терапии (OnkLpsh)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE n021(id_zap INTEGER, code_sh TEXT(10), id_lekp TEXT(6), lekp_ext TEXT(150), id_lekp_ext TEXT(25), datebeg TEXT(19), dateend TEXT(19))'
   // 2018-04-02 12:13:46
   If ! create_table( db, nameRef, cmdText )
@@ -1445,12 +1486,9 @@ Function make_n021( db, source )
         mId_lekp := read_xml_stroke_1251_to_utf8( oXmlNode, 'ID_LEKP' )
         mLekp_ext := read_xml_stroke_1251_to_utf8( oXmlNode, 'LEKP_EXT' )
         mID_lekp_ext := read_xml_stroke_1251_to_utf8( oXmlNode, 'ID_LEKP_EXT' )
-        // d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG') + ' 00:00:00'
-        // d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND') + ' 00:00:00'
 
         Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
         d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-        // s := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
         d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
         Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
         d1 := iif( Empty( d1_1 ), '', hb_ValToStr( d1_1 ) + ' 00:00:00' )
@@ -1480,5 +1518,4 @@ Function make_n021( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil

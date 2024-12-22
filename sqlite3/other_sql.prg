@@ -18,10 +18,9 @@ Function make_other( db, source )
   dlo_lgota(db, source)
   // err_csv_prik(db, source)
   // rekv_smo(db, source)
-
   Return Nil
 
-// 15.06.24
+// 22.12.24
 Function make_p_cel( db, source )
 
   // SHIFR,     "C",    10,      0
@@ -32,7 +31,7 @@ Function make_p_cel( db, source )
   Local mSHIFR, mPCEL
   Local count := 0, cmdTextInsert := textBeginTrans
   Local dbSource := 'pcel'
-
+  local st
 
   cmdText := 'CREATE TABLE usl_p_cel(shifr TEXT(10), p_cel TEXT(4))'
 
@@ -41,11 +40,10 @@ Function make_p_cel( db, source )
   If ! hb_vfExists( nfile )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
-  Else
-    OutStd( hb_eol() + nameRef + ' - Соответствие услуг АПП и цели посещения' + hb_eol() )
   Endif
 
-  OutStd( hb_eol() + 'Соответствие услуг АПП и цели посещения USL_P_CEL' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Соответствие услуг АПП и цели посещения USL_P_CEL', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS usl_p_cel' ) == SQLITE_OK
     OutStd( 'DROP TABLE usl_p_cel - Ok' + hb_eol() )
@@ -83,10 +81,9 @@ Function make_p_cel( db, source )
 
   ( dbSource )->( dbCloseArea() )
   out_obrabotka_eol()
-
   Return Nil
 
-// 24.05.24
+// 22.12.24
 Function make_t007( db, source )
 
   // PROFIL_K,  N,  2
@@ -99,6 +96,7 @@ Function make_t007( db, source )
   Local profil_k, pk_v020, profil, name
   Local count := 0, cmdTextInsert := textBeginTrans
   Local dbSource := 't007'
+  local st
 
   cmdText := 'CREATE TABLE t007(profil_k INTEGER, pk_v020 INTEGER, profil INTEGER, name TEXT)'
 
@@ -107,11 +105,10 @@ Function make_t007( db, source )
   If ! hb_vfExists( nfile )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
-  Else
-    OutStd( hb_eol() + nameRef + ' - Справочник T007' + hb_eol() )
   Endif
 
-  OutStd( hb_eol() + 'Классификатор T007' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Справочник T007', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS t007' ) == SQLITE_OK
     OutStd( 'DROP TABLE t007 - Ok' + hb_eol() )
@@ -154,10 +151,9 @@ Function make_t007( db, source )
   ( dbSource )->( dbCloseArea() )
 
   out_obrabotka_eol()
-
   Return Nil
 
-// 24.05.24
+// 22.12.24
 Function make_t005( db, source )
 
   // CODE,     "N",    4,      0
@@ -171,6 +167,7 @@ Function make_t005( db, source )
   Local mCode, mError, mOpis, d1, d2, d1_1, d2_1
   Local count := 0, cmdTextInsert := textBeginTrans
   Local dbSource := 't005'
+  local st
 
   cmdText := 'CREATE TABLE t005(code INTEGER, error TEXT, opis TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -179,11 +176,10 @@ Function make_t005( db, source )
   If ! hb_vfExists( nfile )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
-  Else
-    OutStd( hb_eol() + nameRef + ' - Справочник ошибок' + hb_eol() )
   Endif
 
-  OutStd( hb_eol() + 'Классификатор кодов ошибок T005' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор кодов ошибок T005', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS t005' ) == SQLITE_OK
     OutStd( 'DROP TABLE t005 - Ok' + hb_eol() )
@@ -233,7 +229,7 @@ Function make_t005( db, source )
   out_obrabotka_eol()
   Return Nil
 
-// 24.05.24
+// 22.12.24
 Function dlo_lgota( db, source )
 
   // Классификатор кодов льгот по ДЛО
@@ -244,6 +240,7 @@ Function dlo_lgota( db, source )
   Local mKod, mName
   Local mArr := {}
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   AAdd( mArr, { '000 --- без льготы ---', '   ' } )
   AAdd( mArr, { '010 Инвалиды войны', '010' } )
@@ -294,7 +291,8 @@ Function dlo_lgota( db, source )
 
   cmdText := 'CREATE TABLE dlo_lgota(kod TEXT(3), name TEXT)'
 
-  OutStd( hb_eol() + 'Классификатор кодов льгот по ДЛО' + hb_eol() )
+  st := hb_Utf8ToStr( 'Классификатор кодов льгот по ДЛО', 'RU866' )	
+  OutStd( hb_eol() + st + hb_eol() )
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS dlo_lgota' ) == SQLITE_OK
     OutStd( 'DROP TABLE dlo_lgota - Ok' + hb_eol() )
@@ -327,11 +325,10 @@ Function dlo_lgota( db, source )
     cmdTextInsert += textCommitTrans
     sqlite3_exec( db, cmdTextInsert )
   Endif
-
   out_obrabotka_eol()
   Return Nil
 
-// 30.03.23
+// 22.12.24
 Function err_csv_prik( db, source )
 
   // Классификатор кодов льгот по ДЛО
@@ -339,10 +336,10 @@ Function err_csv_prik( db, source )
 
   Local stmt
   Local cmdText
-  Local k, j
-  Local oXmlDoc, oXmlNode, oNode1, oNode2
+  Local k
   Local mKod, mName
   Local arr := {}
+  local st
 
   AAdd( arr, { "Неверная команда", 1 } )
   AAdd( arr, { "Отсутствует единый номер полиса для полиса ОМС единого образца", 2 } )
@@ -406,7 +403,8 @@ Function err_csv_prik( db, source )
 
   cmdText := 'CREATE TABLE err_csv_prik(kod INTEGER, name TEXT)'
 
-  OutStd( hb_eol() + 'Коды ошибок прикрепления населения' + hb_eol() )
+  st := hb_Utf8ToStr( 'Коды ошибок прикрепления населения', 'RU866' )	
+  OutStd( hb_eol() + st + hb_eol() )
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS err_csv_prik' ) == SQLITE_OK
     OutStd( 'DROP TABLE err_csv_prik - Ok' + hb_eol() )
@@ -436,18 +434,18 @@ Function err_csv_prik( db, source )
   sqlite3_finalize( stmt )
 
   out_obrabotka_eol()
-
   Return Nil
 
-// 26.12.22
+// 22.12.22
 Function make_isderr( db, source )
 
   Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1
-  Local code, name, name_f
+  Local oXmlDoc, oXmlNode
+  Local code, name
+  local st
 
   // CODE, Целочисленный(3), Код ошибки
   // NAME, Строчный(250), Наименование ошибки
@@ -463,8 +461,10 @@ Function make_isderr( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Справочник ошибок ИСОМПД (Т012)' + hb_eol() )
   Endif
+
+  st := hb_Utf8ToStr( ' - Справочник ошибок ИСОМПД (isderr)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
 
   If sqlite3_exec( db, 'DROP TABLE IF EXISTS isderr' ) == SQLITE_OK
     OutStd( 'DROP TABLE isderr - Ok' + hb_eol() )
@@ -512,7 +512,6 @@ Function make_isderr( db, source )
   Endif
 
   out_obrabotka_eol()
-
   Return Nil
 
 // 15.04.24
@@ -523,6 +522,7 @@ Function rekv_smo( db, source )
   Local k
   Local arr
   Local  mKod, mName, mINN, mKPP, mOGRN, mAddres
+  local st
 
   // 1-код,2-имя,3-ИНН,4-КПП,5-ОГРН,6-адрес,7-банк,8-р.счет,9-БИК
 //  'ФИЛИАЛ ЗАКРЫТОГО АКЦИОНЕРНОГО ОБЩЕСТВА "КАПИТАЛ МЕДИЦИНСКОЕ СТРАХОВАНИЕ" В ГОРОДЕ ВОЛГОГРАДЕ', ;
@@ -601,7 +601,8 @@ Function rekv_smo( db, source )
 
   cmdText := 'CREATE TABLE rekv_smo(kod TEXT(5), name TEXT, inn TEXT(10), kpp TEXT(9), ogrn TEXT(13), addres TEXT)'
 
-  OutStd( hb_eol() + 'Страховые компании' + hb_eol() )
+  st := hb_Utf8ToStr( 'Страховые компании', 'RU866' )	
+  OutStd( hb_eol() + st + hb_eol() )
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS rekv_smo' ) == SQLITE_OK
     OutStd( 'DROP TABLE rekv_smo - Ok' + hb_eol() )
@@ -639,5 +640,4 @@ Function rekv_smo( db, source )
   sqlite3_finalize( stmt )
 
   out_obrabotka_eol()
-
   Return Nil
