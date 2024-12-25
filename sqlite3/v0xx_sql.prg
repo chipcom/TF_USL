@@ -36,7 +36,7 @@ Function make_v0xx( db, source )
 
   Return Nil
 
-// 19.06.24
+// 25.12.24
 Function make_v009( db, source )
 
   // IDRMP,     "N",   3, 0  // Код результата обращения
@@ -52,6 +52,7 @@ Function make_v009( db, source )
   Local oXmlDoc, oXmlNode
   Local mIDRMP, mRmpname, mDL_USLOV, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   cmdText := 'CREATE TABLE v009(idrmp INTEGER, rmpname TEXT, dl_uslov INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -61,7 +62,8 @@ Function make_v009( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор результатов обращения за медицинской помощью (Rezult)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор результатов обращения за медицинской помощью (Rezult)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v009' ) == SQLITE_OK
@@ -133,7 +135,7 @@ Function make_v009( db, source )
 
   Return Nil
 
-// 19.06.24
+// 25.12.24
 Function make_v010( db, source )
 
   // IDSP,       "N",      2,      0  // Код способа оплаты медицинской помощи
@@ -148,6 +150,7 @@ Function make_v010( db, source )
   Local oXmlDoc, oXmlNode
   Local mIDSP, mSpname, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   cmdText := 'CREATE TABLE v010(idsp INTEGER, spname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -157,7 +160,8 @@ Function make_v010( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор способов оплаты медицинской помощи (Sposob)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор способов оплаты медицинской помощи (Sposob)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v010' ) == SQLITE_OK
@@ -226,7 +230,7 @@ Function make_v010( db, source )
 
   Return Nil
 
-// 19.06.24
+// 25.12.24
 Function make_v012( db, source )
 
   // IDIZ,      "N",   3, 0  // Код исхода заболевания
@@ -242,6 +246,7 @@ Function make_v012( db, source )
   Local oXmlDoc, oXmlNode
   Local mIDIZ, mIzname, mDL_USLOV, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   cmdText := 'CREATE TABLE v012(idiz INTEGER, izname TEXT, dl_uslov INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -251,7 +256,8 @@ Function make_v012( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор исходов заболевания (Ishod)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор исходов заболевания (Ishod)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v012' ) == SQLITE_OK
@@ -323,7 +329,7 @@ Function make_v012( db, source )
 
   Return Nil
 
-// 25.06.23
+// 25.12.24
 Function make_v015( db, source )
 
   // RECID,  "N",    3,      0      // Номер записи
@@ -340,6 +346,7 @@ Function make_v015( db, source )
   Local oXmlDoc, oXmlNode
   Local mRecid, mCode, mName, mHigh, mOKSO, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   cmdText := 'CREATE TABLE v015(recid INTEGER, code INTEGER, name TEXT, high TEXT(4), okso TEXT(3), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -349,7 +356,8 @@ Function make_v015( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор медицинских специальностей (Medspec)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор медицинских специальностей (Medspec)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v015' ) == SQLITE_OK
@@ -417,7 +425,7 @@ Function make_v015( db, source )
 
   Return Nil
 
-// 10.01.23
+// 25.12.24
 Function make_v016( db, source )
 
   // IDDT,     "C",        3,      0 // Код типа диспансеризации
@@ -432,6 +440,7 @@ Function make_v016( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode, oNode1, oNode2
   Local mIDDT, mDTNAME, mRule, d1, d2
+  local st
 
   cmdText := 'CREATE TABLE v016(iddt TEXT(3), dtname TEXT, rule TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -441,7 +450,8 @@ Function make_v016( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор типов диспансеризации (DispT)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор типов диспансеризации (DispT)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v016' ) == SQLITE_OK
@@ -503,7 +513,7 @@ Function make_v016( db, source )
 
   Return Nil
 
-// 10.01.23
+// 25.12.24
 Function make_v017( db, source )
 
   // IDDR,     "N",        2,      0 // Код результата диспансеризации
@@ -517,6 +527,7 @@ Function make_v017( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDDR, mDRNAME, d1, d2
+  local st
 
   cmdText := 'CREATE TABLE v017(iddr INTEGER, drname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -526,7 +537,8 @@ Function make_v017( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор результатов диспансеризации (DispR)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор результатов диспансеризации (DispR)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v017' ) == SQLITE_OK
@@ -577,7 +589,7 @@ Function make_v017( db, source )
 
   Return Nil
 
-// 10.01.23
+// 25.12.24
 Function make_v018( db, source )
 
   // IDHVID,     "C",     12,      0 // Код вида высокотехнологичной медицинской помощи
@@ -591,6 +603,7 @@ Function make_v018( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDHVID, mHVIDNAME, d1, d2
+  local st
 
   cmdText := 'CREATE TABLE v018(idhvid TEXT(12), hvidname BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -600,7 +613,8 @@ Function make_v018( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор видов высокотехнологичной медицинской помощи (HVid)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор видов высокотехнологичной медицинской помощи (HVid)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v018' ) == SQLITE_OK
@@ -651,7 +665,7 @@ Function make_v018( db, source )
 
   Return Nil
 
-// 10.01.23
+// 25.12.24
 Function make_v020( db, source )
 
   // IDK_PR,     "N",      3,      0 // Код профиля койки
@@ -665,6 +679,7 @@ Function make_v020( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDK_PR, mK_PRNAME, d1, d2
+  local st
 
   cmdText := 'CREATE TABLE v020(idk_pr INTEGER, k_prname BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -674,7 +689,8 @@ Function make_v020( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор профиля койки (KoPr)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор профиля койки (KoPr)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v020' ) == SQLITE_OK
@@ -725,7 +741,7 @@ Function make_v020( db, source )
 
   Return Nil
 
-// 10.01.23
+// 25.12.24
 Function make_v021( db, source )
 
   // IDSPEC,     "N",      3,      0  // Код специальности
@@ -741,6 +757,7 @@ Function make_v021( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDSPEC, mSPECNAME, mPOSTNAME, mIDPOST_MZ, d1, d2
+  local st
 
   cmdText := 'CREATE TABLE v021(idspec INTEGER, specname BLOB, postname BLOB, idpost_mz TEXT(4), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -750,7 +767,8 @@ Function make_v021( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор медицинских специальностей (должностей) (MedSpec)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор медицинских специальностей (должностей) (MedSpec)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v021' ) == SQLITE_OK
@@ -805,7 +823,7 @@ Function make_v021( db, source )
 
   Return Nil
 
-// 17.01.23
+// 25.12.24
 Function make_v022( db, source )
 
   // IDMPAC,     "N",      5,      0  //  Идентификатор модели пациента
@@ -819,6 +837,7 @@ Function make_v022( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDMPAC, mMPACNAME, d1, d2, d1_1, d2_1
+  local st
 
   cmdText := 'CREATE TABLE v022(idmpac INTEGER, mpacname BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -828,7 +847,8 @@ Function make_v022( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор моделей пациента при оказании высокотехнологичной медицинской помощи (ModPac)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор моделей пациента при оказании высокотехнологичной медицинской помощи (ModPac)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v022' ) == SQLITE_OK
@@ -889,7 +909,7 @@ Function make_v022( db, source )
 
   Return Nil
 
-// 10.01.23
+// 25.12.24
 Function make_v025( db, source )
 
   // IDPC,      "C",   3, 0  // Код цели посещения
@@ -903,6 +923,7 @@ Function make_v025( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDPC, mN_PC, d1, d2
+  local st
 
   cmdText := 'CREATE TABLE v025(idpc TEXT(3), n_pc BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -912,7 +933,8 @@ Function make_v025( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор целей посещения (KPC)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор целей посещения (KPC)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v025' ) == SQLITE_OK
@@ -963,7 +985,7 @@ Function make_v025( db, source )
 
   Return Nil
 
-// 13.01.24
+// 25.12.24
 Function make_v030( db, source )
 
   // SCHEMCOD,  "C",   5, 0  //
@@ -980,6 +1002,7 @@ Function make_v030( db, source )
   Local oXmlDoc, oXmlNode
   Local mSchemCode, mScheme, mDegree, mComment, d1, d2, d1_1, d2_1
   Local strD_End
+  local st
 
   cmdText := 'CREATE TABLE v030(schemcode TEXT(5), scheme TEXT(15), degree INTEGER, comment BLOB, datebeg TEXT(10), dateend TEXT(10), '
   cmdText += 'FOREIGN KEY(degree) REFERENCES Severity(id))'
@@ -990,7 +1013,8 @@ Function make_v030( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Схемы лечения заболевания COVID-19 (TreatReg)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Схемы лечения заболевания COVID-19 (TreatReg)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v030' ) == SQLITE_OK
@@ -1058,7 +1082,7 @@ Function make_v030( db, source )
 
   Return Nil
 
-// 10.01.23
+// 25.12.24
 Function make_v031( db, source )
 
   // DRUGCODE,  "N",   2, 0  //
@@ -1073,6 +1097,7 @@ Function make_v031( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mDrugCode, mDrugGrup, mIndMNN, d1, d2
+  local st
 
   cmdText := 'CREATE TABLE v031(drugcode INTEGER, druggrup TEXT, indmnn INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1082,7 +1107,8 @@ Function make_v031( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Группы препаратов для лечения заболевания COVID-19 (GroupDrugs)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Группы препаратов для лечения заболевания COVID-19 (GroupDrugs)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v031' ) == SQLITE_OK
@@ -1135,7 +1161,7 @@ Function make_v031( db, source )
 
   Return Nil
 
-// 10.01.23
+// 25.12.24
 Function make_v032( db, source )
 
   // SCHEDRUG,  "C",  10, 0  // Сочетание схемы лечения и группы препаратов
@@ -1150,6 +1176,7 @@ Function make_v032( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mScheDrug, mName, mSchemCode, d1, d2
+  local st
 
   cmdText := 'CREATE TABLE v032(schedrug TEXT(10), name TEXT, schemcode TEXT(5), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1159,7 +1186,8 @@ Function make_v032( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Сочетание схемы лечения и группы препаратов (CombTreat)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Сочетание схемы лечения и группы препаратов (CombTreat)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v032' ) == SQLITE_OK
@@ -1212,7 +1240,7 @@ Function make_v032( db, source )
 
   Return Nil
 
-// 10.01.23
+// 25.12.24
 Function make_v033( db, source )
 
   // SCHEDRUG,  "C",  10, 0  //
@@ -1226,6 +1254,7 @@ Function make_v033( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mScheDrug, mDrugCode, d1, d2
+  local st
 
   cmdText := 'CREATE TABLE v033(schedrug TEXT(10), drugcode TEXT(6), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1235,7 +1264,8 @@ Function make_v033( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Соответствие кода препарата схеме лечения (DgTreatReg)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Соответствие кода препарата схеме лечения (DgTreatReg)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v033' ) == SQLITE_OK
@@ -1286,7 +1316,7 @@ Function make_v033( db, source )
 
   Return Nil
 
-// 12.03.24
+// 25.12.24
 Function make_v036( db, source )
 
   // S_CODE    "C",  16, 0
@@ -1302,6 +1332,7 @@ Function make_v036( db, source )
   Local oXmlDoc, oXmlNode
   Local mS_Code, mName, mParam, mComment, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   cmdText := 'CREATE TABLE v036( s_code TEXT(16), name BLOB, param INTEGER, comment TEXT, datebeg TEXT(10), dateend TEXT(10) )'
 
@@ -1311,7 +1342,8 @@ Function make_v036( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v036' ) == SQLITE_OK
@@ -1367,7 +1399,7 @@ Function make_v036( db, source )
 
   Return Nil
 
-// 12.03.24
+// 25.12.24
 Function make_v002( db, source )
 
   // IDPR,       "N",      3,      0  // Код профиля медицинской помощи
@@ -1381,6 +1413,7 @@ Function make_v002( db, source )
   Local oXmlDoc, oXmlNode
   Local mIDPR, mPrname, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   cmdText := 'CREATE TABLE v002(idpr INTEGER, prname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1390,7 +1423,8 @@ Function make_v002( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор профилей оказанной медицинской помощи (ProfOt)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор профилей оказанной медицинской помощи (ProfOt)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v002' ) == SQLITE_OK
@@ -1442,7 +1476,7 @@ Function make_v002( db, source )
 
   Return Nil
 
-// 12.03.24
+// 25.12.24
 Function make_v024( db, source )
 
   // IDDKK,     "C",  10,      0  //  Идентификатор модели пациента
@@ -1456,6 +1490,7 @@ Function make_v024( db, source )
   Local oXmlDoc, oXmlNode
   Local mIDDKK, mDkkname, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   nameRef := 'V024.xml'
   nfile := source + nameRef
@@ -1464,7 +1499,9 @@ Function make_v024( db, source )
     Return Nil
   Endif
 
-  OutStd( hb_eol() + nameRef + ' - Классификатор классификационных критериев (DopKr)' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор классификационных критериев (DopKr)', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
+
   cmdText := 'CREATE TABLE v024(iddkk TEXT(10), dkkname BLOB, datebeg TEXT(19), dateend TEXT(19))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
@@ -1508,7 +1545,7 @@ Function make_v024( db, source )
 
   Return Nil
 
-// 12.03.24
+// 25.12.24
 Function make_v019( db, source )
 
   // IDHM,       "N",      4,      0 // Идентификатор метода высокотехнологичной медицинской помощи
@@ -1527,6 +1564,7 @@ Function make_v019( db, source )
   Local oXmlDoc, oXmlNode
   Local mIDHM, mHMNAME, mDIAG, mHVID, mHGR, mHMODP, mIDMODP, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
   cmdText := 'CREATE TABLE v019(idhm INTEGER, hmname BLOB, diag BLOB, hvid TEXT(12), hgr INTEGER, hmodp BLOB, idmodp INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1536,7 +1574,8 @@ Function make_v019( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор методов высокотехнологичной медицинской помощи (HMet)' + hb_eol() )
+    st := hb_Utf8ToStr( ' - Классификатор методов высокотехнологичной медицинской помощи (HMet)', 'RU866' )	
+    OutStd( hb_eol() + nameRef + st + hb_eol() )
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v019' ) == SQLITE_OK
@@ -1598,7 +1637,7 @@ Function make_v019( db, source )
 
   Return Nil
 
-// 20.12.24
+// 25.12.24
 Function make_v004( db, source )
 
   // V004.xml - Классификатор медицинских специальностей
@@ -1614,6 +1653,7 @@ Function make_v004( db, source )
   Local j, nameRef
   Local mIDMSP, mMSPname, d1, d2, d1_1, d2_1
   Local count := 0, cmdTextInsert := textBeginTrans
+  local st
 
 
   AAdd( _arr, { 'Высшее медицинское образование', 1, date_20110101, empty_date } )
@@ -1852,7 +1892,8 @@ Function make_v004( db, source )
   cmdText := 'CREATE TABLE v004( idmsp INTEGER, mspname TEXT(50), datebeg TEXT(10), dateend TEXT(10) )'
 
   nameRef := 'V004.xml'
-  OutStd( hb_eol() + nameRef + ' - Классификатор медицинских специальностей' + hb_eol() )
+  st := hb_Utf8ToStr( ' - Классификатор медицинских специальностей', 'RU866' )	
+  OutStd( hb_eol() + nameRef + st + hb_eol() )
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v004' ) == SQLITE_OK
     OutStd( 'DROP TABLE v004 - Ok' + hb_eol() )
