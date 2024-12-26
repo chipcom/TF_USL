@@ -4,6 +4,12 @@
 
 #require 'hbsqlit3'
 
+// 26.12.24
+function out_utf8_to_str( str_in )
+
+  OutStd( hb_eol() + hb_Utf8ToStr( str_in, 'RU866' ) + hb_eol() )
+  return nil
+
 // 15.05.22
 Function clear_name_table( table )
 

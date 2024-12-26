@@ -19,7 +19,7 @@ Function make_q0xx( db, source )
 
   Return Nil
 
-// 20.12.24
+// 26.12.24
 Function make_q015( db, source )
 
   Local cmdText
@@ -28,7 +28,6 @@ Function make_q015( db, source )
   Local oXmlDoc, oXmlNode
   Local s_kod, s_name, s_nsi_obj, s_nsi_el, s_usl_test, s_val_el, s_comment, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   // ID_TEST, Строчный(12), Идентификатор проверки.
   // Формируется по шаблону KKKK.00.TTTT, где
@@ -61,10 +60,7 @@ Function make_q015( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Перечень технологических правил реализации ФЛК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (FLK_MPF)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
-
-//    OutStd( hb_eol() + nameRef + ' - Перечень технологических правил реализации ФЛК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (FLK_MPF)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Перечень технологических правил реализации ФЛК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (FLK_MPF)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE IF EXISTS q015' ) == SQLITE_OK
@@ -127,7 +123,7 @@ Function make_q015( db, source )
 
   Return Nil
 
-// 20.12.24
+// 26.12.24
 Function make_q016( db, source )
 
   Local cmdText
@@ -136,7 +132,6 @@ Function make_q016( db, source )
   Local oXmlDoc, oXmlNode
   Local s_kod, s_name, s_desc_test, s_nsi_obj, s_nsi_el, s_usl_test, s_val_el, s_comment, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   // ID_TEST, Строчный(12), Идентификатор проверки.
   // Формируется по шаблону KKKK.RR.TTTT, где
@@ -171,10 +166,7 @@ Function make_q016( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Перечень проверок автоматизированной поддержки МЭК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (MEK_MPF)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
-
-//    OutStd( hb_eol() + nameRef + ' - Перечень проверок автоматизированной поддержки МЭК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (MEK_MPF)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Перечень проверок автоматизированной поддержки МЭК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (MEK_MPF)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE IF EXISTS q016' ) == SQLITE_OK
@@ -239,7 +231,7 @@ Function make_q016( db, source )
 
   Return Nil
 
-// 20.12.24
+// 26.12.24
 Function make_q017( db, source )
 
   Local cmdText
@@ -248,7 +240,6 @@ Function make_q017( db, source )
   Local oXmlDoc, oXmlNode
   Local s_kod, s_name, s_comment, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   // ID_KTEST, Строчный(4), Идентификатор категории проверки
   // NAM_KTEST, Строчный(400), Наименование категории проверки
@@ -264,11 +255,7 @@ Function make_q017( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-
-    st := hb_Utf8ToStr( ' - Перечень категорий проверок ФЛК и МЭК (TEST_K)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
-
-//    OutStd( hb_eol() + nameRef + ' - Перечень категорий проверок ФЛК и МЭК (TEST_K)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Перечень категорий проверок ФЛК и МЭК (TEST_K)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE IF EXISTS q017' ) == SQLITE_OK
