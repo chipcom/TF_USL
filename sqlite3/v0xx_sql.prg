@@ -45,14 +45,12 @@ Function make_v009( db, source )
   // DATEBEG,   "D",   8, 0  // Дата начала действия записи
   // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
-  // Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDRMP, mRmpname, mDL_USLOV, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   cmdText := 'CREATE TABLE v009(idrmp INTEGER, rmpname TEXT, dl_uslov INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -81,9 +79,6 @@ Function make_v009( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    // cmdText := "INSERT INTO v009 (idrmp, rmpname, dl_uslov, datebeg, dateend) VALUES( :idrmp, :rmpname, :dl_uslov, :datebeg, :dateend )"
-    // stmt := sqlite3_prepare( db, cmdText )
-    // If ! Empty( stmt )
     out_obrabotka( nfile )
     k := Len( oXmlDoc:aItems[ 1 ]:aItems )
     For j := 1 To k
@@ -109,26 +104,12 @@ Function make_v009( db, source )
           count := 0
           cmdTextInsert := textBeginTrans
         Endif
-
-        // If sqlite3_bind_int( stmt, 1, Val( mIDRMP ) ) == SQLITE_OK .and. ;
-        // sqlite3_bind_text( stmt, 2, mRmpname ) == SQLITE_OK .and. ;
-        // sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
-        // sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
-        // sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
-        // If sqlite3_step( stmt ) != SQLITE_DONE
-        // out_error( TAG_ROW_INVALID, nfile, j )
-        // Endif
-        // Endif
-        // sqlite3_reset( stmt )
       Endif
     Next j
     If count > 0
       cmdTextInsert += textCommitTrans
       sqlite3_exec( db, cmdTextInsert )
     Endif
-    // Endif
-    // sqlite3_clear_bindings( stmt )
-    // sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
   Return Nil
@@ -141,14 +122,12 @@ Function make_v010( db, source )
   // DATEBEG,   "D",   8, 0  // Дата начала действия записи
   // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
-  // Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDSP, mSpname, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   cmdText := 'CREATE TABLE v010(idsp INTEGER, spname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -177,9 +156,6 @@ Function make_v010( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    // cmdText := "INSERT INTO v010 (idsp, spname, datebeg, dateend) VALUES( :idsp, :spname, :datebeg, :dateend )"
-    // stmt := sqlite3_prepare( db, cmdText )
-    // If ! Empty( stmt )
     out_obrabotka( nfile )
     k := Len( oXmlDoc:aItems[ 1 ]:aItems )
     For j := 1 To k
@@ -190,7 +166,6 @@ Function make_v010( db, source )
         d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
         d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
 
-        // cmdText := "INSERT INTO v010 (idsp, spname, datebeg, dateend) VALUES( :idsp, :spname, :datebeg, :dateend )"
         count++
         cmdTextInsert := cmdTextInsert + "INSERT INTO v010( idsp, spname, datebeg, dateend ) VALUES("
         cmdTextInsert += "'" + mIDSP + "',"
@@ -203,25 +178,12 @@ Function make_v010( db, source )
           count := 0
           cmdTextInsert := textBeginTrans
         Endif
-
-        // If sqlite3_bind_int( stmt, 1, Val( mIDSP ) ) == SQLITE_OK .and. ;
-        // sqlite3_bind_text( stmt, 2, mSpname ) == SQLITE_OK .and. ;
-        // sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
-        // sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
-        // If sqlite3_step( stmt ) != SQLITE_DONE
-        // out_error( TAG_ROW_INVALID, nfile, j )
-        // Endif
-        // Endif
-        // sqlite3_reset( stmt )
       Endif
     Next j
     If count > 0
       cmdTextInsert += textCommitTrans
       sqlite3_exec( db, cmdTextInsert )
     Endif
-    // Endif
-    // sqlite3_clear_bindings( stmt )
-    // sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
   Return Nil
@@ -235,14 +197,12 @@ Function make_v012( db, source )
   // DATEBEG,   "D",   8, 0  // Дата начала действия записи
   // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
-  // Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDIZ, mIzname, mDL_USLOV, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   cmdText := 'CREATE TABLE v012(idiz INTEGER, izname TEXT, dl_uslov INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -271,9 +231,6 @@ Function make_v012( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    // cmdText := "INSERT INTO v012 (idiz, izname, dl_uslov, datebeg, dateend) VALUES( :idiz, :izname, :dl_uslov, :datebeg, :dateend )"
-    // stmt := sqlite3_prepare( db, cmdText )
-    // If ! Empty( stmt )
     out_obrabotka( nfile )
     k := Len( oXmlDoc:aItems[ 1 ]:aItems )
     For j := 1 To k
@@ -285,7 +242,6 @@ Function make_v012( db, source )
         d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
         d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
 
-        // cmdText := "INSERT INTO v012 (idiz, izname, dl_uslov, datebeg, dateend) VALUES( :idiz, :izname, :dl_uslov, :datebeg, :dateend )"
         count++
         cmdTextInsert := cmdTextInsert + "INSERT INTO v012( idiz, izname, dl_uslov, datebeg, dateend ) VALUES("
         cmdTextInsert += "'" + mIDIZ + "',"
@@ -299,26 +255,12 @@ Function make_v012( db, source )
           count := 0
           cmdTextInsert := textBeginTrans
         Endif
-
-        // If sqlite3_bind_int( stmt, 1, Val( mIDIZ ) ) == SQLITE_OK .and. ;
-        // sqlite3_bind_text( stmt, 2, mIzname ) == SQLITE_OK .and. ;
-        // sqlite3_bind_int( stmt, 3, Val( mDL_USLOV ) ) == SQLITE_OK .and. ;
-        // sqlite3_bind_text( stmt, 4, d1 ) == SQLITE_OK .and. ;
-        // sqlite3_bind_text( stmt, 5, d2 ) == SQLITE_OK
-        // If sqlite3_step( stmt ) != SQLITE_DONE
-        // out_error( TAG_ROW_INVALID, nfile, j )
-        // Endif
-        // Endif
-        // sqlite3_reset( stmt )
       Endif
     Next j
     If count > 0
       cmdTextInsert += textCommitTrans
       sqlite3_exec( db, cmdTextInsert )
     Endif
-    // Endif
-    // sqlite3_clear_bindings( stmt )
-    // sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
   Return Nil
@@ -340,7 +282,6 @@ Function make_v015( db, source )
   Local oXmlDoc, oXmlNode
   Local mRecid, mCode, mName, mHigh, mOKSO, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   cmdText := 'CREATE TABLE v015(recid INTEGER, code INTEGER, name TEXT, high TEXT(4), okso TEXT(3), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -432,7 +373,6 @@ Function make_v016( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode, oNode1, oNode2
   Local mIDDT, mDTNAME, mRule, d1, d2
-  local st
 
   cmdText := 'CREATE TABLE v016(iddt TEXT(3), dtname TEXT, rule TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -517,7 +457,6 @@ Function make_v017( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDDR, mDRNAME, d1, d2
-  local st
 
   cmdText := 'CREATE TABLE v017(iddr INTEGER, drname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -591,7 +530,6 @@ Function make_v018( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDHVID, mHVIDNAME, d1, d2
-  local st
 
   cmdText := 'CREATE TABLE v018(idhvid TEXT(12), hvidname BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -665,7 +603,6 @@ Function make_v020( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDK_PR, mK_PRNAME, d1, d2
-  local st
 
   cmdText := 'CREATE TABLE v020(idk_pr INTEGER, k_prname BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -741,7 +678,6 @@ Function make_v021( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDSPEC, mSPECNAME, mPOSTNAME, mIDPOST_MZ, d1, d2
-  local st
 
   cmdText := 'CREATE TABLE v021(idspec INTEGER, specname BLOB, postname BLOB, idpost_mz TEXT(4), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -819,7 +755,6 @@ Function make_v022( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDMPAC, mMPACNAME, d1, d2, d1_1, d2_1
-  local st
 
   cmdText := 'CREATE TABLE v022(idmpac INTEGER, mpacname BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -903,7 +838,6 @@ Function make_v025( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDPC, mN_PC, d1, d2
-  local st
 
   cmdText := 'CREATE TABLE v025(idpc TEXT(3), n_pc BLOB, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -980,7 +914,6 @@ Function make_v030( db, source )
   Local oXmlDoc, oXmlNode
   Local mSchemCode, mScheme, mDegree, mComment, d1, d2, d1_1, d2_1
   Local strD_End
-  local st
 
   cmdText := 'CREATE TABLE v030(schemcode TEXT(5), scheme TEXT(15), degree INTEGER, comment BLOB, datebeg TEXT(10), dateend TEXT(10), '
   cmdText += 'FOREIGN KEY(degree) REFERENCES Severity(id))'
@@ -1073,7 +1006,6 @@ Function make_v031( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mDrugCode, mDrugGrup, mIndMNN, d1, d2
-  local st
 
   cmdText := 'CREATE TABLE v031(drugcode INTEGER, druggrup TEXT, indmnn INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1150,7 +1082,6 @@ Function make_v032( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mScheDrug, mName, mSchemCode, d1, d2
-  local st
 
   cmdText := 'CREATE TABLE v032(schedrug TEXT(10), name TEXT, schemcode TEXT(5), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1226,7 +1157,6 @@ Function make_v033( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mScheDrug, mDrugCode, d1, d2
-  local st
 
   cmdText := 'CREATE TABLE v033(schedrug TEXT(10), drugcode TEXT(6), datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1302,7 +1232,6 @@ Function make_v036( db, source )
   Local oXmlDoc, oXmlNode
   Local mS_Code, mName, mParam, mComment, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   cmdText := 'CREATE TABLE v036( s_code TEXT(16), name BLOB, param INTEGER, comment TEXT, datebeg TEXT(10), dateend TEXT(10) )'
 
@@ -1381,7 +1310,6 @@ Function make_v002( db, source )
   Local oXmlDoc, oXmlNode
   Local mIDPR, mPrname, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   cmdText := 'CREATE TABLE v002(idpr INTEGER, prname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1456,7 +1384,6 @@ Function make_v024( db, source )
   Local oXmlDoc, oXmlNode
   Local mIDDKK, mDkkname, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   nameRef := 'V024.xml'
   nfile := source + nameRef
@@ -1528,7 +1455,6 @@ Function make_v019( db, source )
   Local oXmlDoc, oXmlNode
   Local mIDHM, mHMNAME, mDIAG, mHVID, mHGR, mHMODP, mIDMODP, d1, d2
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   cmdText := 'CREATE TABLE v019(idhm INTEGER, hmname BLOB, diag BLOB, hvid TEXT(12), hgr INTEGER, hmodp BLOB, idmodp INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -1615,8 +1541,6 @@ Function make_v004( db, source )
   Local j, nameRef
   Local mIDMSP, mMSPname, d1, d2, d1_1, d2_1
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
-
 
   AAdd( _arr, { 'Высшее медицинское образование', 1, date_20110101, empty_date } )
   AAdd( _arr, { 'Лечебное дело. Педиатрия', 11, date_20110101, empty_date } )

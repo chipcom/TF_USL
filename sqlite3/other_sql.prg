@@ -16,8 +16,8 @@ Function make_other( db, source )
   make_t007(db, source)
   make_ISDErr(db, source)
   dlo_lgota(db, source)
-  // err_csv_prik(db, source)
-  // rekv_smo(db, source)
+  err_csv_prik(db, source)
+  rekv_smo(db, source)
   Return Nil
 
 // 22.12.24
@@ -31,7 +31,6 @@ Function make_p_cel( db, source )
   Local mSHIFR, mPCEL
   Local count := 0, cmdTextInsert := textBeginTrans
   Local dbSource := 'pcel'
-  local st
 
   cmdText := 'CREATE TABLE usl_p_cel(shifr TEXT(10), p_cel TEXT(4))'
 
@@ -95,7 +94,6 @@ Function make_t007( db, source )
   Local profil_k, pk_v020, profil, name
   Local count := 0, cmdTextInsert := textBeginTrans
   Local dbSource := 't007'
-  local st
 
   cmdText := 'CREATE TABLE t007(profil_k INTEGER, pk_v020 INTEGER, profil INTEGER, name TEXT)'
 
@@ -165,7 +163,6 @@ Function make_t005( db, source )
   Local mCode, mError, mOpis, d1, d2, d1_1, d2_1
   Local count := 0, cmdTextInsert := textBeginTrans
   Local dbSource := 't005'
-  local st
 
   cmdText := 'CREATE TABLE t005(code INTEGER, error TEXT, opis TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
@@ -237,7 +234,6 @@ Function dlo_lgota( db, source )
   Local mKod, mName
   Local mArr := {}
   Local count := 0, cmdTextInsert := textBeginTrans
-  local st
 
   AAdd( mArr, { '000 --- без льготы ---', '   ' } )
   AAdd( mArr, { '010 Инвалиды войны', '010' } )
@@ -324,18 +320,18 @@ Function dlo_lgota( db, source )
   out_obrabotka_eol()
   Return Nil
 
-// 22.12.24
+// 27.12.24
 Function err_csv_prik( db, source )
 
   // Классификатор кодов льгот по ДЛО
   // 1 - NAME(C)  2 - KOD(C)
 
-  Local stmt
+//  Local stmt
   Local cmdText
   Local k
   Local mKod, mName
   Local arr := {}
-  local st
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   AAdd( arr, { "Неверная команда", 1 } )
   AAdd( arr, { "Отсутствует единый номер полиса для полиса ОМС единого образца", 2 } )
@@ -412,21 +408,35 @@ Function err_csv_prik( db, source )
     Return Nil
   Endif
 
-  cmdText := 'INSERT INTO err_csv_prik (kod, name) VALUES( :kod, :name )'
+//  cmdText := 'INSERT INTO err_csv_prik (kod, name) VALUES( :kod, :name )'
   For k := 1 To Len( arr )
-    stmt := sqlite3_prepare( db, cmdText )
-    mKod := arr[ k, 2 ]
+//    stmt := sqlite3_prepare( db, cmdText )
+    mKod := str( arr[ k, 2 ] )
     mName := arr[ k, 1 ]
-    If sqlite3_bind_int( stmt, 1, mKod ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 2, mName ) == SQLITE_OK
-      If sqlite3_step( stmt ) != SQLITE_DONE
-        // out_error('Ошибка к = ', k)
-      Endif
+//    If sqlite3_bind_int( stmt, 1, mKod ) == SQLITE_OK .and. ;
+//        sqlite3_bind_text( stmt, 2, mName ) == SQLITE_OK
+//      If sqlite3_step( stmt ) != SQLITE_DONE
+//        // out_error('Ошибка к = ', k)
+//      Endif
+//    Endif
+//    sqlite3_reset( stmt )
+    count++
+    cmdTextInsert += 'INSERT INTO err_csv_prik (kod, name) VALUES(' ;
+      + "'" + mKod + "'," ;
+      + "'" + mName + "');"
+    If count == COMMIT_COUNT
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+      count := 0
+      cmdTextInsert := textBeginTrans
     Endif
-    sqlite3_reset( stmt )
   Next
-  sqlite3_clear_bindings( stmt )
-  sqlite3_finalize( stmt )
+//  sqlite3_clear_bindings( stmt )
+//  sqlite3_finalize( stmt )
+  If count > 0
+    cmdTextInsert += textCommitTrans
+    sqlite3_exec( db, cmdTextInsert )
+  Endif
 
   out_obrabotka_eol()
   Return Nil
@@ -440,7 +450,7 @@ Function make_isderr( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local code, name
-  local st
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   // CODE, Целочисленный(3), Код ошибки
   // NAME, Строчный(250), Наименование ошибки
@@ -478,9 +488,9 @@ Function make_isderr( db, source )
     Return Nil
   Else
     // cmdText := 'INSERT INTO isderr (code, name, name_f) VALUES(:code, :name, :name_f)'
-    cmdText := 'INSERT INTO isderr (code, name) VALUES(:code, :name)'
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
+//    cmdText := 'INSERT INTO isderr (code, name) VALUES(:code, :name)'
+//    stmt := sqlite3_prepare( db, cmdText )
+//    If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -490,19 +500,34 @@ Function make_isderr( db, source )
           name := read_xml_stroke_1251_to_utf8( oXmlNode, 'NAME' )
           // name_f := read_xml_stroke_1251_to_utf8(oXmlNode, 'NAME_F')
 
-          If sqlite3_bind_int( stmt, 1, Val( code ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 2, name ) == SQLITE_OK // .AND. ;
-            // sqlite3_bind_text(stmt, 3, name_f) == SQLITE_OK
-            If sqlite3_step( stmt ) != SQLITE_DONE
-              out_error( TAG_ROW_INVALID, nfile, j )
-            Endif
+//          If sqlite3_bind_int( stmt, 1, Val( code ) ) == SQLITE_OK .and. ;
+//              sqlite3_bind_text( stmt, 2, name ) == SQLITE_OK // .AND. ;
+//            // sqlite3_bind_text(stmt, 3, name_f) == SQLITE_OK
+//            If sqlite3_step( stmt ) != SQLITE_DONE
+//              out_error( TAG_ROW_INVALID, nfile, j )
+//            Endif
+//          Endif
+//          sqlite3_reset( stmt )
+
+          count++
+          cmdTextInsert += 'INSERT INTO isderr (code, name) VALUES(' ;
+            + "'" + code + "'," ;
+            + "'" + name + "');"
+          If count == COMMIT_COUNT
+            cmdTextInsert += textCommitTrans
+            sqlite3_exec( db, cmdTextInsert )
+            count := 0
+            cmdTextInsert := textBeginTrans
           Endif
-          sqlite3_reset( stmt )
         Endif
       Next j
+//    Endif
+//    sqlite3_clear_bindings( stmt )
+//    sqlite3_finalize( stmt )
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
     Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
   Endif
 
   out_obrabotka_eol()
@@ -516,7 +541,7 @@ Function rekv_smo( db, source )
   Local k
   Local arr
   Local  mKod, mName, mINN, mKPP, mOGRN, mAddres
-  local st
+  Local count := 0, cmdTextInsert := textBeginTrans
 
   // 1-код,2-имя,3-ИНН,4-КПП,5-ОГРН,6-адрес,7-банк,8-р.счет,9-БИК
 //  'ФИЛИАЛ ЗАКРЫТОГО АКЦИОНЕРНОГО ОБЩЕСТВА "КАПИТАЛ МЕДИЦИНСКОЕ СТРАХОВАНИЕ" В ГОРОДЕ ВОЛГОГРАДЕ', ;
@@ -610,27 +635,46 @@ Function rekv_smo( db, source )
 
   cmdText := 'INSERT INTO rekv_smo (kod, name, inn, kpp, ogrn, addres) VALUES( :kod, :name, :inn, :kpp, :ogrn, :addres )'
   For k := 1 To Len( arr )
-    stmt := sqlite3_prepare( db, cmdText )
+//    stmt := sqlite3_prepare( db, cmdText )
     mKod := arr[ k, 1 ]
     mName := arr[ k, 2 ]
     mINN := arr[ k, 3 ]
     mKPP := arr[ k, 4 ]
     mOGRN := arr[ k, 5 ]
     mAddres := arr[ k, 6 ]
-    If sqlite3_bind_text( stmt, 1, mKod ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 2, mName ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 3, mINN ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 4, mKPP ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 5, mOGRN ) == SQLITE_OK .and. ;
-        sqlite3_bind_text( stmt, 6, mAddres ) == SQLITE_OK
-      If sqlite3_step( stmt ) != SQLITE_DONE
-        out_error( 'Ошибка к = ', k )
-      Endif
+//    If sqlite3_bind_text( stmt, 1, mKod ) == SQLITE_OK .and. ;
+//        sqlite3_bind_text( stmt, 2, mName ) == SQLITE_OK .and. ;
+//        sqlite3_bind_text( stmt, 3, mINN ) == SQLITE_OK .and. ;
+//        sqlite3_bind_text( stmt, 4, mKPP ) == SQLITE_OK .and. ;
+//        sqlite3_bind_text( stmt, 5, mOGRN ) == SQLITE_OK .and. ;
+//        sqlite3_bind_text( stmt, 6, mAddres ) == SQLITE_OK
+//      If sqlite3_step( stmt ) != SQLITE_DONE
+//        out_error( 'Ошибка к = ', k )
+//      Endif
+//    Endif
+//    sqlite3_reset( stmt )
+    count++
+//    cmdText := 'INSERT INTO rekv_smo (kod, name, inn, kpp, ogrn, addres) VALUES( :kod, :name, :inn, :kpp, :ogrn, :addres )'
+    cmdTextInsert += 'INSERT INTO rekv_smo (kod, name, inn, kpp, ogrn, addres) VALUES(' ;
+      + "'" + mKod + "'," ;
+      + "'" + mName + "'," ;
+      + "'" + mINN + "'," ;
+      + "'" + mKPP + "'," ;
+      + "'" + mOGRN + "'," ;
+      + "'" + mAddres + "');"
+    If count == COMMIT_COUNT
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+      count := 0
+      cmdTextInsert := textBeginTrans
     Endif
-    sqlite3_reset( stmt )
   Next
-  sqlite3_clear_bindings( stmt )
-  sqlite3_finalize( stmt )
+//  sqlite3_clear_bindings( stmt )
+//  sqlite3_finalize( stmt )
+  If count > 0
+    cmdTextInsert += textCommitTrans
+    sqlite3_exec( db, cmdTextInsert )
+  Endif
 
   out_obrabotka_eol()
   Return Nil
