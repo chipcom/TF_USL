@@ -62,8 +62,7 @@ Function make_v009( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор результатов обращения за медицинской помощью (Rezult)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор результатов обращения за медицинской помощью (Rezult)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v009' ) == SQLITE_OK
@@ -132,7 +131,6 @@ Function make_v009( db, source )
     // sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -160,8 +158,7 @@ Function make_v010( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор способов оплаты медицинской помощи (Sposob)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор способов оплаты медицинской помощи (Sposob)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v010' ) == SQLITE_OK
@@ -227,7 +224,6 @@ Function make_v010( db, source )
     // sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -256,8 +252,7 @@ Function make_v012( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор исходов заболевания (Ishod)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор исходов заболевания (Ishod)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v012' ) == SQLITE_OK
@@ -326,7 +321,6 @@ Function make_v012( db, source )
     // sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -356,8 +350,7 @@ Function make_v015( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор медицинских специальностей (Medspec)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор медицинских специальностей (Medspec)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v015' ) == SQLITE_OK
@@ -422,7 +415,6 @@ Function make_v015( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -450,8 +442,7 @@ Function make_v016( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор типов диспансеризации (DispT)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор типов диспансеризации (DispT)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v016' ) == SQLITE_OK
@@ -510,7 +501,6 @@ Function make_v016( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -537,8 +527,7 @@ Function make_v017( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор результатов диспансеризации (DispR)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор результатов диспансеризации (DispR)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v017' ) == SQLITE_OK
@@ -586,7 +575,6 @@ Function make_v017( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -613,8 +601,7 @@ Function make_v018( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор видов высокотехнологичной медицинской помощи (HVid)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор видов высокотехнологичной медицинской помощи (HVid)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v018' ) == SQLITE_OK
@@ -662,7 +649,6 @@ Function make_v018( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -689,8 +675,7 @@ Function make_v020( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор профиля койки (KoPr)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор профиля койки (KoPr)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v020' ) == SQLITE_OK
@@ -738,7 +723,6 @@ Function make_v020( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -767,8 +751,7 @@ Function make_v021( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор медицинских специальностей (должностей) (MedSpec)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор медицинских специальностей (должностей) (MedSpec)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v021' ) == SQLITE_OK
@@ -820,7 +803,6 @@ Function make_v021( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -847,8 +829,7 @@ Function make_v022( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор моделей пациента при оказании высокотехнологичной медицинской помощи (ModPac)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор моделей пациента при оказании высокотехнологичной медицинской помощи (ModPac)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v022' ) == SQLITE_OK
@@ -906,7 +887,6 @@ Function make_v022( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -933,8 +913,7 @@ Function make_v025( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор целей посещения (KPC)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор целей посещения (KPC)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v025' ) == SQLITE_OK
@@ -982,7 +961,6 @@ Function make_v025( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -1013,8 +991,7 @@ Function make_v030( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Схемы лечения заболевания COVID-19 (TreatReg)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Схемы лечения заболевания COVID-19 (TreatReg)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v030' ) == SQLITE_OK
@@ -1079,7 +1056,6 @@ Function make_v030( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -1107,8 +1083,7 @@ Function make_v031( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Группы препаратов для лечения заболевания COVID-19 (GroupDrugs)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Группы препаратов для лечения заболевания COVID-19 (GroupDrugs)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v031' ) == SQLITE_OK
@@ -1158,7 +1133,6 @@ Function make_v031( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -1186,8 +1160,7 @@ Function make_v032( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Сочетание схемы лечения и группы препаратов (CombTreat)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Сочетание схемы лечения и группы препаратов (CombTreat)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v032' ) == SQLITE_OK
@@ -1237,7 +1210,6 @@ Function make_v032( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -1264,8 +1236,7 @@ Function make_v033( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Соответствие кода препарата схеме лечения (DgTreatReg)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Соответствие кода препарата схеме лечения (DgTreatReg)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v033' ) == SQLITE_OK
@@ -1313,7 +1284,6 @@ Function make_v033( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -1342,8 +1312,7 @@ Function make_v036( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Перечень услуг, требующих имплантацию медицинских изделий (ServImplDv)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v036' ) == SQLITE_OK
@@ -1396,7 +1365,6 @@ Function make_v036( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -1423,8 +1391,7 @@ Function make_v002( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор профилей оказанной медицинской помощи (ProfOt)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор профилей оказанной медицинской помощи (ProfOt)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v002' ) == SQLITE_OK
@@ -1473,7 +1440,6 @@ Function make_v002( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -1497,10 +1463,9 @@ Function make_v024( db, source )
   If ! hb_vfExists( nfile )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
+  else
+    out_utf8_to_str( nameRef + ' - Классификатор классификационных критериев (DopKr)', 'RU866' )	
   Endif
-
-  st := hb_Utf8ToStr( ' - Классификатор классификационных критериев (DopKr)', 'RU866' )	
-  OutStd( hb_eol() + nameRef + st + hb_eol() )
 
   cmdText := 'CREATE TABLE v024(iddkk TEXT(10), dkkname BLOB, datebeg TEXT(19), dateend TEXT(19))'
   If ! create_table( db, nameRef, cmdText )
@@ -1542,7 +1507,6 @@ Function make_v024( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -1574,8 +1538,7 @@ Function make_v019( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    st := hb_Utf8ToStr( ' - Классификатор методов высокотехнологичной медицинской помощи (HMet)', 'RU866' )	
-    OutStd( hb_eol() + nameRef + st + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор методов высокотехнологичной медицинской помощи (HMet)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v019' ) == SQLITE_OK
@@ -1634,7 +1597,6 @@ Function make_v019( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 25.12.24
@@ -1892,8 +1854,7 @@ Function make_v004( db, source )
   cmdText := 'CREATE TABLE v004( idmsp INTEGER, mspname TEXT(50), datebeg TEXT(10), dateend TEXT(10) )'
 
   nameRef := 'V004.xml'
-  st := hb_Utf8ToStr( ' - Классификатор медицинских специальностей', 'RU866' )	
-  OutStd( hb_eol() + nameRef + st + hb_eol() )
+  out_utf8_to_str( nameRef + ' - Классификатор медицинских специальностей', 'RU866' )	
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS v004' ) == SQLITE_OK
     OutStd( 'DROP TABLE v004 - Ok' + hb_eol() )
@@ -1935,5 +1896,4 @@ Function make_v004( db, source )
     sqlite3_exec( db, cmdTextInsert )
   Endif
   out_obrabotka_eol()
-
   Return Nil

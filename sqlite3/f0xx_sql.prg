@@ -42,7 +42,7 @@ Function make_f006( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор видов контроля (VidExp)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор видов контроля (VidExp)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS f006' ) == SQLITE_OK
@@ -96,7 +96,6 @@ Function make_f006( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 01.09.23
@@ -125,7 +124,7 @@ Function make_f010( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор субъектов Российской Федерации (Subekti)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор субъектов Российской Федерации (Subekti)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS f010' ) == SQLITE_OK
@@ -183,7 +182,6 @@ Function make_f010( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 01.09.23
@@ -212,7 +210,7 @@ Function make_f011( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор типов документов, удостоверяющих личность (Tipdoc)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор типов документов, удостоверяющих личность (Tipdoc)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS f011' ) == SQLITE_OK
@@ -270,7 +268,6 @@ Function make_f011( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 01.09.23
@@ -301,7 +298,7 @@ Function make_f014( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Классификатор причин отказа в оплате медицинской помощи (OplOtk)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Классификатор причин отказа в оплате медицинской помощи (OplOtk)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS f014' ) == SQLITE_OK
@@ -363,5 +360,4 @@ Function make_f014( db, source )
     Endif
   Endif
   out_obrabotka_eol()
-
   Return Nil

@@ -41,7 +41,7 @@ Function make_severity( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Степень тяжести состояния пациента (OID)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Степень тяжести состояния пациента (OID)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE IF EXISTS Severity' ) == SQLITE_OK
@@ -97,7 +97,6 @@ Function make_severity( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 26.01.23
@@ -135,7 +134,7 @@ Function make_ed_izm( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Единицы измерения (OID)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Единицы измерения (OID)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE IF EXISTS ed_izm' ) == SQLITE_OK
@@ -210,7 +209,6 @@ Function make_ed_izm( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil
 
 // 07.05.22
@@ -238,7 +236,7 @@ Function make_methintro( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + " - Пути введения лекарственных препаратов, в том числе для льготного обеспечения граждан лекарственными средствами (MethIntro)" + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Пути введения лекарственных препаратов, в том числе для льготного обеспечения граждан лекарственными средствами (MethIntro)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE MethIntro' ) == SQLITE_OK
@@ -325,7 +323,6 @@ Function make_methintro( db, source )
     OutErr( hb_eol() + cmdText + ' - False' + hb_eol() )
   Endif
   sqlite3_exec( db, 'DROP TABLE tmp' )
-
   Return Nil
 
 // 31.01.23
@@ -359,7 +356,7 @@ Function make_implant( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями (OID)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Виды медицинских изделий, имплантируемых в организм человека, и иных устройств для пациентов с ограниченными возможностями (OID)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE implantant' ) == SQLITE_OK
@@ -456,7 +453,6 @@ Function make_implant( db, source )
     Endif
     sqlite3_exec( db, 'DROP TABLE tmp' )
   Endif
-
   Return Nil
 
 // 07.05.22
@@ -482,7 +478,7 @@ Function make_uslugi_mz( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Номенклатура медицинских услуг (OID)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Номенклатура медицинских услуг (OID)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE IF EXISTS Mz_services' ) == SQLITE_OK
@@ -538,5 +534,4 @@ Function make_uslugi_mz( db, source )
     sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
-
   Return Nil

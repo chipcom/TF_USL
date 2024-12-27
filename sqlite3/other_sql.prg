@@ -42,8 +42,7 @@ Function make_p_cel( db, source )
     Return Nil
   Endif
 
-  st := hb_Utf8ToStr( ' - Соответствие услуг АПП и цели посещения USL_P_CEL', 'RU866' )	
-  OutStd( hb_eol() + nameRef + st + hb_eol() )
+  out_utf8_to_str( nameRef + ' - Соответствие услуг АПП и цели посещения USL_P_CEL', 'RU866' )	
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS usl_p_cel' ) == SQLITE_OK
     OutStd( 'DROP TABLE usl_p_cel - Ok' + hb_eol() )
@@ -107,8 +106,7 @@ Function make_t007( db, source )
     Return Nil
   Endif
 
-  st := hb_Utf8ToStr( ' - Справочник T007', 'RU866' )	
-  OutStd( hb_eol() + nameRef + st + hb_eol() )
+  out_utf8_to_str( nameRef + ' - Справочник T007', 'RU866' )	
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS t007' ) == SQLITE_OK
     OutStd( 'DROP TABLE t007 - Ok' + hb_eol() )
@@ -178,8 +176,7 @@ Function make_t005( db, source )
     Return Nil
   Endif
 
-  st := hb_Utf8ToStr( ' - Классификатор кодов ошибок T005', 'RU866' )	
-  OutStd( hb_eol() + nameRef + st + hb_eol() )
+  out_utf8_to_str( nameRef + ' - Классификатор кодов ошибок T005', 'RU866' )	
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS t005' ) == SQLITE_OK
     OutStd( 'DROP TABLE t005 - Ok' + hb_eol() )
@@ -291,8 +288,7 @@ Function dlo_lgota( db, source )
 
   cmdText := 'CREATE TABLE dlo_lgota(kod TEXT(3), name TEXT)'
 
-  st := hb_Utf8ToStr( 'Классификатор кодов льгот по ДЛО', 'RU866' )	
-  OutStd( hb_eol() + st + hb_eol() )
+  out_utf8_to_str( 'Классификатор кодов льгот по ДЛО', 'RU866' )	
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS dlo_lgota' ) == SQLITE_OK
     OutStd( 'DROP TABLE dlo_lgota - Ok' + hb_eol() )
@@ -403,8 +399,7 @@ Function err_csv_prik( db, source )
 
   cmdText := 'CREATE TABLE err_csv_prik(kod INTEGER, name TEXT)'
 
-  st := hb_Utf8ToStr( 'Коды ошибок прикрепления населения', 'RU866' )	
-  OutStd( hb_eol() + st + hb_eol() )
+  out_utf8_to_str( 'Коды ошибок прикрепления населения', 'RU866' )	
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS err_csv_prik' ) == SQLITE_OK
     OutStd( 'DROP TABLE err_csv_prik - Ok' + hb_eol() )
@@ -463,8 +458,7 @@ Function make_isderr( db, source )
   Else
   Endif
 
-  st := hb_Utf8ToStr( ' - Справочник ошибок ИСОМПД (isderr)', 'RU866' )	
-  OutStd( hb_eol() + nameRef + st + hb_eol() )
+  out_utf8_to_str( nameRef + ' - Справочник ошибок ИСОМПД (isderr)', 'RU866' )	
 
   If sqlite3_exec( db, 'DROP TABLE IF EXISTS isderr' ) == SQLITE_OK
     OutStd( 'DROP TABLE isderr - Ok' + hb_eol() )
@@ -601,8 +595,7 @@ Function rekv_smo( db, source )
 
   cmdText := 'CREATE TABLE rekv_smo(kod TEXT(5), name TEXT, inn TEXT(10), kpp TEXT(9), ogrn TEXT(13), addres TEXT)'
 
-  st := hb_Utf8ToStr( 'Страховые компании', 'RU866' )	
-  OutStd( hb_eol() + st + hb_eol() )
+  out_utf8_to_str( 'Страховые компании', 'RU866' )	
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS rekv_smo' ) == SQLITE_OK
     OutStd( 'DROP TABLE rekv_smo - Ok' + hb_eol() )

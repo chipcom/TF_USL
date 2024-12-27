@@ -44,7 +44,7 @@ Function make_o001( db, source )
     out_error( FILE_NOT_EXIST, nfile )
     Return Nil
   Else
-    OutStd( hb_eol() + nameRef + ' - Общероссийский классификатор стран мира (OKSM)' + hb_eol() )
+    out_utf8_to_str( nameRef + ' - Общероссийский классификатор стран мира (OKSM)', 'RU866' )	
   Endif
 
   If sqlite3_exec( db, 'DROP TABLE if EXISTS o001' ) == SQLITE_OK
