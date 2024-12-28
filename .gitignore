@@ -15,6 +15,9 @@
 *.exe
 *.dll
 # игнорировать файлы данных
+*.pdf
+*.doc
+*.docx
 *.xml
 *.dbf
 *.csv
