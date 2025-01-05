@@ -8,7 +8,7 @@
 
 // #define TRACE
 
-// 28.03.23
+// 04.01.25
 Procedure Main( ... )
 
   Local cParam, cParamL
@@ -20,8 +20,6 @@ Procedure Main( ... )
 
   Local lCreateIfNotExist := .t.
   Local nameDB
-  Local lAll := .f.
-  Local lUpdate := .f.
   Local cMask := '*.xml'
   Local db
   Local source
@@ -72,26 +70,12 @@ Procedure Main( ... )
     Case cParamL == '-help'
       about()
       Return
-    Case cParamL == '-quiet'
-    // ? 'quiet'
-    Case cParamL == '-all'
-    // if HB_VFEXISTS(source + FILE_HASH)
-    // HB_VFERASE(source + FILE_HASH)
-    // endif
-      lAll := .t.
-    Case cParamL == '-update'
-      lUpdate := .t.
     Case hb_LeftEq( cParamL, '-in=' )
       source := SubStr( cParam, 4 + 1 )
     Case hb_LeftEq( cParamL, '-out=' )
       destination := SubStr( cParam, 5 + 1 )
     Endcase
   Next
-
-  If lAll .and. lUpdate
-    out_error( INVALID_COMMAND_LINE )
-    Return
-  Endif
 
   If Right( source, 1 ) != os_sep
     source += os_sep
@@ -118,7 +102,7 @@ Procedure Main( ... )
     Return
   Endif
 
-  nameDB := destination + 'chip_mo.db'
+  nameDB := destination + 'test_mo.db'
   db := sqlite3_open( nameDB, lCreateIfNotExist )
 
   If ! Empty( db )
@@ -131,51 +115,20 @@ Procedure Main( ... )
   sqlite3_exec( db, 'PRAGMA page_size=4096' )
 
   // make_O0xx(db, source)
-  make_Q0xx(db, source)
-  make_other(db, source)
-  // make_F0xx(db, source)
-  make_v0xx( db, source )
-  make_N0xx(db, source)
-//  make_mzdrav(db, source)
-
-// if lAll // конвертировать все файлы
-//  make_mzdrav(db, source)
 //  make_Q0xx(db, source)
-//  make_V0xx(db, source)
-//  make_F0xx(db, source)
-//  make_N0xx(db, source)
 //  make_other(db, source)
-// endif
+  // make_F0xx(db, source)
+//  make_v0xx( db, source )
+//  make_N0xx(db, source)
+  make_mzdrav(db, source)
 
-// if lUpdate // конвертировать только файлы из каталога
-//  for each file in hb_vfDirectory( source + cMask, 'HSD' )
-//    name_table := clear_name_table(file[F_NAME])
-//    if name_table == '1.2.643.5.1.13.13.11.1468'
-//      cFunc := 'make_method_inj(db,source)'
-//    elseif name_table == '1.2.643.5.1.13.13.11.1079'
-//      cFunc := 'make_implant(db,source)'
-//    elseif name_table == '1.2.643.5.1.13.13.11.1070'
-//      cFunc := 'make_uslugi_mz(db,source)'
-//    elseif name_table == '1.2.643.5.1.13.13.11.1006'
-//      cFunc := 'make_severity(db,source)'
-//    elseif name_table == '1.2.643.5.1.13.13.11.1358'
-//      cFunc := 'make_ed_izm(db,source)'
-//    else
-//      cFunc := 'make_' + name_table + '(db,source)'
-//    endif
-//    &(cFunc)  // запуск функции конвертации
-//  next
-// endif
-
-  If lAll .or. lUpdate
-    db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
-    If ! Empty( db )
-      If sqlite3_exec( db, 'VACUUM' ) == SQLITE_OK
-        OutStd( hb_eol() + 'Pack - ok' + hb_eol() )
-      Else
-        out_error( PACK_ERROR, nameDB )
-      Endif
+  db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
+  If ! Empty( db )
+    If sqlite3_exec( db, 'VACUUM' ) == SQLITE_OK
+      OutStd( hb_eol() + 'Pack - ok' + hb_eol() )
+    Else
+      out_error( PACK_ERROR, nameDB )
     Endif
-    Endif
+  Endif
   Endif
   Return
