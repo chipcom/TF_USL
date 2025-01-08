@@ -136,7 +136,7 @@ Procedure Main( ... )
   // make_F0xx(db, source)
   make_v0xx( db, source )
   make_N0xx(db, source)
-//  make_mzdrav(db, source)
+  make_mzdrav(db, source)
 
 // if lAll // конвертировать все файлы
 //  make_mzdrav(db, source)
