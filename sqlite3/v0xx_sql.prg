@@ -1370,10 +1370,10 @@ Function make_v002( db, source )
   out_obrabotka_eol()
   Return Nil
 
-// 25.12.24
+// 26.01.25
 Function make_v024( db, source )
 
-  // IDDKK,     "C",  10,      0  //  Идентификатор модели пациента
+  // IDDKK,     "C",  20,      0  //  Идентификатор модели пациента
   // DKKNAME,   "C", 255,      0  // Наименование модели пациента
   // DATEBEG,   "D",   8, 0           // Дата начала действия записи
   // DATEEND,   "D",   8, 0           // Дата окончания действия записи
@@ -1394,7 +1394,7 @@ Function make_v024( db, source )
     out_utf8_to_str( nameRef + ' - Классификатор классификационных критериев (DopKr)', 'RU866' )	
   Endif
 
-  cmdText := 'CREATE TABLE v024(iddkk TEXT(10), dkkname BLOB, datebeg TEXT(19), dateend TEXT(19))'
+  cmdText := 'CREATE TABLE v024(iddkk TEXT(20), dkkname BLOB, datebeg TEXT(19), dateend TEXT(19))'
   If ! create_table( db, nameRef, cmdText )
     Return Nil
   Endif
