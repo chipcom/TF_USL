@@ -8,7 +8,7 @@
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 17.01.23
+// 16.02.25
 Function make_v0xx( db, source )
 
   make_v002( db, source )
@@ -20,11 +20,11 @@ Function make_v0xx( db, source )
   make_v015( db, source )
   // make_V016(db, source)
   // make_V017(db, source)
-  // make_V018(db, source)
-  // make_v019( db, source )
+  make_V018(db, source)
+  make_v019( db, source )
   // make_V020(db, source)
   // make_V021(db, source)
-  // make_V022(db, source)
+  make_V022(db, source)
   make_v024( db, source )
   // make_V025(db, source)
 
