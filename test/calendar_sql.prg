@@ -17,7 +17,7 @@ Function make_other( db, source )
 // 20.02.25
 Function db_holiday( db ) //, source )
 
-  // Классификатор кодов льгот по ДЛО
+  // Календарь выходных и праздничных дней
   // 1 - NAME(C)  2 - KOD(C)
 
   Local cmdText
@@ -227,17 +227,17 @@ Function db_holiday( db ) //, source )
   Endif
 
   For k := 1 To Len( arr_holiday )
-    mYear := arr_holiday[ k, 1 ]
+    mYear := str( arr_holiday[ k, 1 ], 4 )
     mArr := arr_holiday[ k, 2 ]
 
     for i := 1 to 2
-      mMonth := mArr[ i, 1 ]
+      mMonth := AllTrim( str( mArr[ i, 1 ], 2 ) )
       mHoliday := mArr[ i, 2 ]
       count++
-      cmdTextInsert += 'INSERT INTO calendar (m_year, m_month, description ) VALUES(' ;
-        + "'" + str( mYear, 4 ) + "'," ;
-        + "'" + str( mMonth, 2 ) + "'," ;
-        + "'" + mHoliday + "')"
+      cmdTextInsert += "INSERT INTO calendar (m_year, m_month, description ) VALUES(" ;
+        + "'" + mYear + "'," ;
+        + "'" + mMonth + "'," ;
+        + "'" + mHoliday + "');"
       If count == COMMIT_COUNT
         cmdTextInsert += textCommitTrans
         sqlite3_exec( db, cmdTextInsert )
@@ -247,7 +247,6 @@ Function db_holiday( db ) //, source )
     next
 
   Next
-
   If count > 0
     cmdTextInsert += textCommitTrans
     sqlite3_exec( db, cmdTextInsert )
