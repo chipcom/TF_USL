@@ -132,12 +132,12 @@ Procedure Main( ... )
 
   // make_O0xx(db, source)
   make_Q0xx(db, source)
-  make_other(db, source)
   // make_F0xx(db, source)
   make_v0xx( db, source )
   make_N0xx(db, source)
   make_mzdrav(db, source)
   make_TFOMS( db, source )
+  make_other(db, source)
 
 // if lAll // конвертировать все файлы
 //  make_mzdrav(db, source)

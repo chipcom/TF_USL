@@ -689,6 +689,7 @@ Function db_holiday( db ) //, source )
   Local k, i
   Local mYear, mMonth, mHoliday
   Local mArr
+  Local nameView
   Local count := 0, cmdTextInsert := textBeginTrans
 
   Local arr_holiday := { ;
@@ -895,7 +896,7 @@ Function db_holiday( db ) //, source )
     mYear := str( arr_holiday[ k, 1 ], 4 )
     mArr := arr_holiday[ k, 2 ]
 
-    for i := 1 to 2
+    for i := 1 to 12
       mMonth := AllTrim( str( mArr[ i, 1 ], 2 ) )
       mHoliday := mArr[ i, 2 ]
       count++
@@ -916,5 +917,19 @@ Function db_holiday( db ) //, source )
     cmdTextInsert += textCommitTrans
     sqlite3_exec( db, cmdTextInsert )
   Endif
+  for k := 1 to Len( arr_holiday )
+    mYear := str( arr_holiday[ k, 1 ], 4 )
+    nameView := 'year' + mYear
+    If sqlite3_exec( db, 'DROP VIEW if EXISTS ' + nameView ) == SQLITE_OK
+      OutStd( 'DROP VIEW ' + nameView + ' - Ok' + hb_eol() )
+    Endif
+    cmdText := 'CREATE VIEW ' + nameView + ' AS SELECT m_month, description FROM calendar WHERE m_year=' + mYear + ';'
+    If sqlite3_exec( db, cmdText ) == SQLITE_OK
+      OutStd( 'CREATE VIEW ' + nameView + ' - Ok' + hb_eol() )
+    Else
+      OutStd( 'CREATE VIEW ' + nameView + ' - False' + hb_eol() )
+      Return Nil
+    Endif
+  next
   out_obrabotka_eol()
   Return Nil
