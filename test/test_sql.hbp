@@ -4,6 +4,7 @@
 
 # hbsqlit3.hbc
 # xhb.hbc
+hbmisc.hbc
 
 -mt
 -inc
@@ -18,6 +19,8 @@
 #error_func.prg
 
 test_sql.prg
-calendar_sql.prg
+exfcm.prg
+planZakaz_sql.prg
+#calendar_sql.prg
 
 test_sql.rc

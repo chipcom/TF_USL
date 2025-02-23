@@ -50,7 +50,10 @@ procedure main( ... )
     sqlite3_exec(db, 'PRAGMA auto_vacuum=0')
     sqlite3_exec(db, 'PRAGMA page_size=4096')
     sqlite3_exec( db, 'PRAGMA user_version = 1000' )
-    make_other( db )
+//    make_other( db )
+    exfcm()
+//    db_planzakaz( db )
+
 //    clear_db( db )  
 //    make_table( db )
 
