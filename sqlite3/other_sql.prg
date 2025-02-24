@@ -8,7 +8,7 @@
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 01.06.23
+// 24.02.25
 Function make_other( db, source )
 
   make_p_cel( db, source )
@@ -19,6 +19,7 @@ Function make_other( db, source )
   err_csv_prik(db, source)
   rekv_smo(db, source)
   db_holiday(db, source)
+  db_planzakaz( db, source )
   Return Nil
 
 // 22.12.24

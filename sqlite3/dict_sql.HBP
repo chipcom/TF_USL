@@ -1,9 +1,14 @@
--L..\..\_mylib_hbt
+#-L..\..\_mylib_hbt
+-i..\..\include
+-L..\..\LIB
+
 -lMyLib_HBT
+-lFunLib
 -lhbct
 
 hbsqlit3.hbc
 xhb.hbc
+hbmisc.hbc
 
 -mt
 -inc
@@ -29,5 +34,6 @@ o0xx_sql.prg
 n0xx_sql.prg
 other_sql.prg
 tfoms_sql.prg
+planZakaz_sql.prg
 
 dict_sql.rc

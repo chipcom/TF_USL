@@ -886,7 +886,8 @@ Function db_planzakaz( db ) //, source )
     Return Nil
   Endif
 
-  USE test.csv VIA "FCOMMA"
+  dbUseArea( .t., 'FCOMMA', 'test.csv', , .f., .f. )
+//  USE test.csv VIA "FCOMMA"
   dbGoTop()
   DO WHILE ! Eof()
      mArr := split( FIELD->LINE, ',' )

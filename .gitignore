@@ -20,7 +20,7 @@
 *.docx
 *.xml
 *.dbf
-#*.csv
+*.csv
 *.ntx
 *.dbt
 *.zip
