@@ -1,5 +1,9 @@
--L..\..\_mylib_hbt
+-i..\..\include
+-L..\..\LIB
+
 -lMyLib_HBT
+-lFunLib
+
 -lhbct
 
 # hbsqlit3.hbc
@@ -19,7 +23,7 @@ hbmisc.hbc
 #error_func.prg
 
 test_sql.prg
-exfcm.prg
+#exfcm.prg
 planZakaz_sql.prg
 #calendar_sql.prg
 
