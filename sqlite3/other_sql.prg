@@ -10,7 +10,7 @@ REQUEST FCOMMA
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 24.02.25
+// 27.02.25
 Function make_other( db, source )
 
   make_p_cel( db, source )
@@ -22,6 +22,7 @@ Function make_other( db, source )
   rekv_smo(db, source)
   db_holiday(db, source)
   db_planzakaz( db, source )
+  make_planDRZ( db, source )
   Return Nil
 
 // 22.12.24
@@ -975,5 +976,66 @@ Function db_holiday_old( db, source )
       Return Nil
     Endif
   next
+  out_obrabotka_eol()
+  Return Nil
+
+// 27.02.25
+Function make_planDRZ( db, source )
+
+  // План на выполнение диспансеризации репродуктивного здоровья
+  // 1 - year(N)  2 - kod(C) 3 - kol_m(N) 4 - kol_f(N)  // 5 - name_u(C)
+
+  Local cmdText
+  Local mKod, mYear, mKol_m, mKol_f //, mName
+  Local arr := {}
+  Local count := 0, cmdTextInsert := textBeginTrans
+  Local mArr, nameRef, nfile
+
+  nameRef := 'plan_DRZ.csv'
+  nfile := source + nameRef
+
+  cmdText := 'CREATE TABLE plan_drz( year INTEGER, kod_mo TEXT(6), kol_m INTEGER, kol_f INTEGER )'
+
+  out_utf8_to_str( 'Плановые показатели по проведению диспансеризации репродуктивного здоровья', 'RU866' )	
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS plan_drz' ) == SQLITE_OK
+    OutStd( 'DROP TABLE plan_drz - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE plan_drz - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE plan_drz - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  dbUseArea( .t., 'FCOMMA', nfile, , .f., .f. )
+  dbGoTop()
+  DO WHILE ! Eof()
+     mArr := split( FIELD->LINE, ',' )
+
+     mYear := AllTrim( mArr[ 1 ] )
+     mKod := AllTrim( mArr[ 2 ] )
+     mKol_m := AllTrim( mArr[ 3 ] )
+     mKol_f := AllTrim( mArr[ 4 ] )
+
+     count++
+     cmdTextInsert += 'INSERT INTO plan_drz ( year, kod_mo, kol_m, kol_f ) VALUES(' ;
+      + "'" + mYear + "'," ;
+      + "'" + mKod + "'," ;
+      + "'" + mKol_m + "'," ;
+      + "'" + mKol_f + "');"
+     If count == COMMIT_COUNT
+       cmdTextInsert += textCommitTrans
+       sqlite3_exec( db, cmdTextInsert )
+       count := 0
+       cmdTextInsert := textBeginTrans
+     Endif
+    dbSkip()
+  ENDDO
+  If count > 0
+    cmdTextInsert += textCommitTrans
+    sqlite3_exec( db, cmdTextInsert )
+  Endif
   out_obrabotka_eol()
   Return Nil
