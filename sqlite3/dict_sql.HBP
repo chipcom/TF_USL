@@ -1,4 +1,3 @@
-#-L..\..\_mylib_hbt
 -i..\..\include
 -L..\..\LIB
 
@@ -19,7 +18,7 @@ hbmisc.hbc
 
 -gtwvg
 
-xmlparse.c
+..\..\2.x\system\xmlparse.c
 hxmldoc.prg
 xml_func.prg
 error_func.prg
