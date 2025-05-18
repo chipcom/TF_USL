@@ -10,19 +10,20 @@ REQUEST FCOMMA
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 27.02.25
+// 18.05.25
 Function make_other( db, source )
 
   make_p_cel( db, source )
-  make_t005(db, source)
-  make_t007(db, source)
-  make_ISDErr(db, source)
-  dlo_lgota(db, source)
-  err_csv_prik(db, source)
-  rekv_smo(db, source)
-  db_holiday(db, source)
+  make_t005( db, source )
+  make_t007( db, source )
+  make_ISDErr( db, source )
+  dlo_lgota( db, source )
+  err_csv_prik( db, source )
+  rekv_smo( db, source )
+  db_holiday( db, source )
   db_planzakaz( db, source )
   make_planDRZ( db, source )
+  db_diagnoze_dn( db, source )
   Return Nil
 
 // 22.12.24
@@ -1039,3 +1040,55 @@ Function make_planDRZ( db, source )
   Endif
   out_obrabotka_eol()
   Return Nil
+
+// 18.05.25
+function db_diagnoze_dn( db, source )
+
+  // список диагнозов для диспансерного наблюдения
+
+  Local cmdText
+  Local mDiag
+  Local nameRef, nfile
+  Local count := 0, cmdTextInsert := textBeginTrans
+  local aYear := {}
+
+  nameRef := 'diagnozeDN.csv'
+  nfile := source + nameRef
+
+  cmdText := 'CREATE TABLE diagnozeDN( diag TEXT(10) )'
+
+  out_utf8_to_str( 'список диагнозов для диспансерного наблюдения', 'RU866' )	
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS diagnozeDN' ) == SQLITE_OK
+    OutStd( 'DROP TABLE diagnozeDN - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE diagnozeDN - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE diagnozeDN - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  dbUseArea( .t., 'FCOMMA', nfile, , .f., .f. )
+  dbGoTop()
+  DO WHILE ! Eof()
+    mDiag := FIELD->LINE
+    count++
+    cmdTextInsert += "INSERT INTO diagnozeDN ( diag ) VALUES(" ;
+      + "'" + alltrim( mDiag ) + "');"
+    If count == COMMIT_COUNT
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+      count := 0
+      cmdTextInsert := textBeginTrans
+    Endif
+    dbSkip()
+  enddo
+
+  If count > 0
+    cmdTextInsert += textCommitTrans
+    sqlite3_exec( db, cmdTextInsert )
+  Endif
+
+  return nil
