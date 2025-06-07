@@ -1,5 +1,5 @@
--i..\..\INCLUDE
--L..\..\LIB
+-i../../INCLUDE
+-L../../LIB
 
 -lMyLib_HBT
 -lFunLib
@@ -12,13 +12,13 @@ hbmisc.hbc
 -mt
 -inc
 
--workdir=d:\_MO\TEMP\SQL_MO
+-workdir=/home/vb/_MO/TEMP/SQL_MO
 -odict_sql
 -icon=database.ico
 
--gtwvg
+#-gtwvg
 
-..\..\2.x\system\xmlparse.c
+../../2.x/SYSTEM/xmlparse.c
 hxmldoc.prg
 xml_func.prg
 error_func.prg
