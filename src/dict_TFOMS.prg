@@ -92,7 +92,7 @@ Function make_T001(source, destination)
   }
   local dbName := '_mo_t001'
   local dbSource := 'T001'
-  local mName := '', mArr
+  local mName := ''
 
   OutStd( 'Т001.dbf - Справочник МО и обособленных подразделений, финансируемых самостоятельно' + hb_eol() )
   dbcreate(destination + '_mo_t001', _mo_T001)
@@ -121,7 +121,7 @@ Function make_T001(source, destination)
   (dbName)->(dbCloseArea())
   return NIL
 
-// 14.03.25
+// 08.06.25
 Function work_SprUnit(source, destination)
   // Структура справочника учетных единиц объема медицинской помощи SprUnite.xml(T009)
   //
@@ -147,7 +147,7 @@ Function work_SprUnit(source, destination)
   local oXmlDoc, oXmlNode, oNode1, oNode2
   local nameFile := prefixFileName() + 'unit'
 
-  nameRef := 'SprUnit.xml'
+  nameRef := 'SPRUNIT.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -196,7 +196,7 @@ Function work_SprUnit(source, destination)
   close databases
   return NIL
 
-// 23.05.23
+// 08.05.25
 Function work_MOServ(source, destination)
   Local _mo_moserv := { ;
     {'CODEM',      'C',      6,      0}, ;
@@ -209,7 +209,7 @@ Function work_MOServ(source, destination)
   local oXmlDoc, oXmlNode, oNode1, oNode2, oNode3, oNode4
   local nameFile := prefixFileName() + 'moserv'
 
-  nameRef := 'S_MOServ.xml'
+  nameRef := 'S_MOSERV.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -270,7 +270,7 @@ Function work_MOServ(source, destination)
   close databases
   return NIL
 
-// 23.05.23
+// 08.06.25
 Function work_Prices(source, destination)
   Local _mo_prices := { ;
     {'SHIFR',      'C',     10,      0}, ;
@@ -285,7 +285,7 @@ Function work_Prices(source, destination)
   local lvzros_reb, lshifr, lLEVEL
   local nameFile := prefixFileName() + 'prices'
 
-  nameRef := 'S_Prices.xml'
+  nameRef := 'S_PRICES.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -472,7 +472,7 @@ Function work_t006(source, destination)
   Local oXmlDoc, oXmlNode, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
   Local lshifr, lsy, lDS, lDS1, lDS2, oNode1, oNode2, lkz, kl, kl1, kl2
-  local nfile, nameRef, j, j1, k, i, s
+  local nfile, nameRef, j, j1, k, s
 
   Local _mo_usl := { ;
     {'SHIFR',      'C',     10,      0}, ;
@@ -762,7 +762,7 @@ Function work_t006(source, destination)
   close databases
   return NIL
 
-// 12.02.22
+// 08.06.25
 Function work_SprMU(source, destination)
   local nameFileUnit := prefixFileName() + 'unit'
   local nameFileUsl := prefixFileName() + 'usl'
@@ -784,7 +784,7 @@ Function work_SprMU(source, destination)
   local nfile, nameRef, j, j1, k, s, i, lshifr, arr_u
   local oXmlDoc, oXmlNode, oNode1, oNode2
 
-  nameRef := 'SprMU.xml'
+  nameRef := 'SPRMU.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -954,11 +954,11 @@ Function work_SprMU(source, destination)
 
 // 12.02.22
 Function work_SprDS(source, destination)
-  Local fl := .f., lfp, s
+  Local fl := .f.
   local nameFileUslF := prefixFileName() + 'uslf'
   local nfile, nameRef, j, k
 
-  nameRef := 'SprDS.xml'
+  nameRef := 'SPRDS.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -1069,7 +1069,7 @@ Function work_SprDS(source, destination)
   close databases
   return NIL
 
-// 12.02.22
+// 08.06.25
 Function work_SprKslp(source, destination)
   Local _mo_kslp := { ;
     {'CODE',       'N',      2,      0}, ;
@@ -1082,7 +1082,7 @@ Function work_SprKslp(source, destination)
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'kslp'
 
-  nameRef := 'SprKslp.xml'
+  nameRef := 'SPRKSLP.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -1132,7 +1132,7 @@ Function work_SprKslp(source, destination)
   close databases
   return NIL
 
-// 12.02.22
+// 08.06.25
 Function work_SprKiro(source, destination)
   Local _mo_kiro := { ;
     {'CODE',       'N',      2,      0}, ;
@@ -1145,7 +1145,7 @@ Function work_SprKiro(source, destination)
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'kiro'
 
-  nameRef := 'S_KIRO.xml'
+  nameRef := 'S_KIRO.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -1443,7 +1443,7 @@ Function work_uslc(source, destination)
   close databases
   return NIL
 
-// 02.02.23
+// 08.06.25
 // S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
 Function work_SprSubDiv(source, destination)
 
@@ -1458,8 +1458,9 @@ Function work_SprSubDiv(source, destination)
   }
   local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'subdiv'
+  local oXmlDoc, oXmlNode, oNode1, oNode2
 
-  nameRef := 'S_SubDiv.xml'
+  nameRef := 'S_SUBDIV.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -1506,7 +1507,7 @@ Function work_SprSubDiv(source, destination)
   close databases
   return NIL
 
-// 02.02.23
+// 08.06.25
 Function work_SprDep(source, destination)
   Local _mo_dep := { ;
     {'CODEM',      'C',      6,      0}, ;
@@ -1533,7 +1534,7 @@ Function work_SprDep(source, destination)
   local nameFileDepPr := prefixFileName() + 'deppr'
   local oXmlDoc, oXmlNode, oNode1, oNode2, oNode3, oNode4
 
-  nameRef := 'S_Dep.xml'
+  nameRef := 'S_DEP.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
     out_error(FILE_NOT_EXIST, nfile)
@@ -1612,7 +1613,7 @@ Function work_SprDep(source, destination)
   close databases
   return NIL
 
-// 20.05.23
+// 08.06.25
 Function work_LvlPay(source, destination)
   Local _mo_lvlpay := { ;
     {'CODEM',      'C',      6,      0}, ;
@@ -1627,7 +1628,7 @@ Function work_LvlPay(source, destination)
   local nameFile := prefixFileName() + 'lvlpay', cAlias
   local oXmlDoc, oXmlNode, oNode1, oNode2, oNode3, oNode4, oNode5, oNode6
 
-  nameRef := 'S_LvlPay.xml'
+  nameRef := 'S_LVLPAY.XML'
   cAlias := 'LP'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
