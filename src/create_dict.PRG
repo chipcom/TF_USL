@@ -106,7 +106,6 @@ proc main( ... )
   local curent_dir
   local lExists
   local os_sep := hb_osPathSeparator()
-  local fp, i, s
   local t1, t2
 
 
@@ -115,9 +114,12 @@ proc main( ... )
 
   t1 := seconds()
 
-  source := upper(beforatnum(os_sep, exename())) + os_sep
-  destination := upper(beforatnum(os_sep, exename())) + os_sep
-  curent_dir := upper(beforatnum(os_sep, exename())) + os_sep
+//  source := upper(beforatnum(os_sep, exename())) + os_sep
+//  destination := upper(beforatnum(os_sep, exename())) + os_sep
+//  curent_dir := upper(beforatnum(os_sep, exename())) + os_sep
+  source := beforatnum( hb_ps(), exename() ) + hb_ps()
+  destination := beforatnum( hb_ps(), exename() ) + hb_ps()
+  curent_dir := beforatnum( hb_ps(), exename() ) + hb_ps()
 
   aParams := hb_AParams()
 
@@ -191,16 +193,16 @@ proc main( ... )
   // Справочники ТФОМС
   dbcreate(destination + nameFileUsl, _mo_usl)
   // work_Shema(source, destination)
+  lFlag := work_SprKslp(source, destination)
+  lFlag := work_SprKiro(source, destination)
   lFlag := work_SprSubDiv(source, destination)
   lFlag := work_SprDep(source, destination)
-  work_LvlPay(source, destination)
-  work_MOServ(source, destination)
-  work_Prices(source, destination)
-  work_mo_uslf(source, destination)
-  work_SprUnit(source, destination)
-  work_SprKslp(source, destination)
-  work_SprKiro(source, destination)
-  work_SprMU(source, destination)
+  lFlag := work_LvlPay(source, destination)
+  lFlag := work_MOServ(source, destination)
+  lFlag := work_Prices(source, destination)
+  lFlag := work_mo_uslf(source, destination)
+  lFlag := work_SprUnit(source, destination)
+  lFlag := work_SprMU(source, destination)
   work_SprDS(source, destination)
   work_t006(source, destination)
   close databases
@@ -314,22 +316,6 @@ proc main( ... )
     endif
     skip
   enddo
-  // fp := fcreate(curent_dir + '_mo_prof.txt')
-  // n_list := 1
-  // tek_stroke := 0
-  // for j := 1 to len(aup)
-  //   s := aup[j, 1] + iif(aup[j, 2] == 0, 'взр', 'реб') + '.{'
-  //   asort(aup[j, 3])
-  //   for i := 1 to len(aup[j, 3])
-  //     s += lstr(aup[j, 3,i]) + '-' + alltrim(inieditspr(A__MENUVERT, glob_V002, aup[j, 3, i]))
-  //     if i < len(aup[j, 3])
-  //       s += ','
-  //     endif
-  //   next
-  //   add_string(s + '}')
-  // next
-  // fclose(fp)
-  //
   aup := {}
   use (destination + '_mo_spec') new alias SPEC
   index on fsort_usl(shifr) to tmp_spec
@@ -344,21 +330,6 @@ proc main( ... )
     endif
     skip
   enddo
-  // fp := fcreate(curent_dir + '_mo_spec.txt')
-  // n_list := 1
-  // tek_stroke := 0
-  // for j := 1 to len(aup)
-  //   s := aup[j, 1] + iif(aup[j, 2] == 0, 'взр', 'реб') + '.{'
-  //   asort(aup[j, 3])
-  //   for i := 1 to len(aup[j, 3])
-  //     s += lstr(aup[j, 3, i]) + '-' + alltrim(inieditspr(A__MENUVERT, glob_V021, aup[j, 3, i]))
-  //     if i < len(aup[j, 3])
-  //       s += ','
-  //     endif
-  //   next
-  //   add_string(s + '}')
-  // next
-  fclose(fp)
   close databases
   HB_VFERASE(curent_dir + 'tmp*.dbf')
   HB_VFERASE(curent_dir + 'tmp*.ntx')
