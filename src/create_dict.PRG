@@ -61,9 +61,9 @@ external errorsys
 // 01.11.21
 // вернуть префикс справочного файла для года
 function prefixFileName()
-  return '_mo' + substr(CURENT_YEAR, 4, 1)
+  return '_mo' + substr( CURENT_YEAR, 4, 1 )
 
-// 26.09.23
+// 09.06.25
 proc main( ... )
   Local _mo_usl := { ;
     {'SHIFR',      'C',     10,      0}, ;
@@ -99,6 +99,7 @@ proc main( ... )
   local k006dbf := nameFileK006 + '.dbf'
   local k006dbt := nameFileK006 + '.dbt'
   local nResult
+  local lFlag
 
   local source
   local destination
@@ -121,22 +122,22 @@ proc main( ... )
   aParams := hb_AParams()
 
 //  f_first()
-REQUEST HB_CODEPAGE_RU866
-HB_CDPSELECT("RU866")
-REQUEST HB_LANG_RU866
-HB_LANGSELECT("RU866")
+  REQUEST HB_CODEPAGE_RU866
+  HB_CDPSELECT("RU866")
+  REQUEST HB_LANG_RU866
+  HB_LANGSELECT("RU866")
 
-REQUEST DBFNTX
-RDDSETDEFAULT("DBFNTX")
+  REQUEST DBFNTX
+  RDDSETDEFAULT("DBFNTX")
 
-SET SCOREBOARD OFF
-SET EXACT ON
-SET DATE GERMAN
-SET WRAP ON
-SET CENTURY ON
-SET EXCLUSIVE ON
-SET DELETED ON
-setblink(.f.)
+  SET SCOREBOARD OFF
+  SET EXACT ON
+  SET DATE GERMAN
+  SET WRAP ON
+  SET CENTURY ON
+  SET EXCLUSIVE ON
+  SET DELETED ON
+  setblink(.f.)
 
   FOR EACH cParam IN aParams
     cParamL := Lower( cParam )
@@ -186,12 +187,12 @@ setblink(.f.)
   OutStd( 'Справочники ТФОМС.' + hb_eol() )
   OutStd( '********' + hb_eol() )
 
-  make_uslugi_mz(source, destination)  // Справочник минздрава для формирования файлов ТФОМС
+  lFlag := make_uslugi_mz(source, destination)  // Справочник минздрава для формирования файлов ТФОМС
   // Справочники ТФОМС
   dbcreate(destination + nameFileUsl, _mo_usl)
   // work_Shema(source, destination)
-  work_SprSubDiv(source, destination)
-  work_SprDep(source, destination)
+  lFlag := work_SprSubDiv(source, destination)
+  lFlag := work_SprDep(source, destination)
   work_LvlPay(source, destination)
   work_MOServ(source, destination)
   work_Prices(source, destination)

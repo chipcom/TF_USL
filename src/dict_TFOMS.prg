@@ -1443,59 +1443,59 @@ Function work_uslc(source, destination)
   close databases
   return NIL
 
-// 08.06.25
-// S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
-Function work_SprSubDiv(source, destination)
+// 09.06.25 S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
+Function work_SprSubDiv( source, destination )
 
   Local _mo_subdiv := { ;
-    {'CODEM',      'C',      6,      0}, ;
-    {'MCODE',      'C',      6,      0}, ;
-    {'CODE',       'N',      3,      0}, ;
-    {'NAME',       'C',     60,      0}, ;
-    {'flag',       'N',      1,      0}, ;
-    {'DATEBEG',    'D',      8,      0}, ;
-    {'DATEEND',    'D',      8,      0} ;
+    { 'CODEM',      'C',      6,      0 }, ;
+    { 'MCODE',      'C',      6,      0 }, ;
+    { 'CODE',       'N',      3,      0 }, ;
+    { 'NAME',       'C',     60,      0 }, ;
+    { 'flag',       'N',      1,      0 }, ;
+    { 'DATEBEG',    'D',      8,      0 }, ;
+    { 'DATEEND',    'D',      8,      0 } ;
   }
-  local nfile, nameRef, j, k
+  local nfile, nameRef, j, k, j1
   local nameFile := prefixFileName() + 'subdiv'
   local oXmlDoc, oXmlNode, oNode1, oNode2
 
   nameRef := 'S_SUBDIV.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
+    out_error( FILE_NOT_EXIST, nfile )
+    return .f.
   endif
 
-  dbcreate(destination + nameFile, _mo_subdiv)
-  use (destination + nameFile) new alias SD
-  oXmlDoc := HXMLDoc():Read(nfile)
+  dbcreate( destination + nameFile, _mo_subdiv )
+  use ( destination + nameFile ) new alias SD
+  oXmlDoc := HXMLDoc():Read( nfile )
   OutStd( nameRef + ' - список 11 учреждений с разными уровнями оплаты' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
-    return nil
+    out_error( FILE_READ_ERROR, nfile )
+    SD->( dbCloseArea() )
+//    CLOSE databases
+    return .f.
   else
-    out_obrabotka(nfile)
-    k := Len( oXmlDoc:aItems[1]:aItems )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
     FOR j := 1 TO k
-      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
       if 'MO_PLACES' == oXmlNode:title
-        out_obrabotka_count(j, k)
-        if (oNode1 := oXmlNode:Find('PLACES')) != NIL
+        out_obrabotka_count( j, k )
+        if ( oNode1 := oXmlNode:Find( 'PLACES' ) ) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
-            oNode2 := oNode1:aItems[j1]
+            oNode2 := oNode1:aItems[ j1 ]
             if 'PLACE' == oNode2:title
-              if (str(year(xml2date(mo_read_xml_stroke(oNode2, 'D_E',))), 4) >= CURENT_YEAR) .or. empty(str(year(xml2date(mo_read_xml_stroke(oNode2, 'D_E',))), 4))
+              if ( str( year( xml2date( mo_read_xml_stroke( oNode2, 'D_E', ) ) ), 4 ) >= CURENT_YEAR ) .or. empty( str( year( xml2date( mo_read_xml_stroke( oNode2, 'D_E', ) ) ), 4 ) )
                 select SD
                 append blank
-                sd->codem   := mo_read_xml_stroke(oXmlNode, 'CODEM',)
-                sd->mcode   := mo_read_xml_stroke(oXmlNode, 'MCODE',)
-                sd->code    := val(mo_read_xml_stroke(oNode2, 'CODE',))
-                sd->NAME    := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oNode2, 'NAME_FULL',))))
-                sd->flag    := val(mo_read_xml_stroke(oNode2, 'FLAG',))
-                sd->DATEBEG := xml2date(mo_read_xml_stroke(oNode2, 'D_B',))
-                sd->DATEEND := xml2date(mo_read_xml_stroke(oNode2, 'D_E',))
+                sd->codem   := mo_read_xml_stroke( oXmlNode, 'CODEM', )
+                sd->mcode   := mo_read_xml_stroke( oXmlNode, 'MCODE',)
+                sd->code    := val(mo_read_xml_stroke( oNode2, 'CODE',))
+                sd->NAME    := ltrim( charrem( eos, charone( ' ', mo_read_xml_stroke( oNode2, 'NAME_FULL', ) ) ) )
+                sd->flag    := val( mo_read_xml_stroke( oNode2, 'FLAG', ) )
+                sd->DATEBEG := xml2date( mo_read_xml_stroke( oNode2, 'D_B', ) )
+                sd->DATEEND := xml2date( mo_read_xml_stroke( oNode2, 'D_E', ) )
               endif
             endif
           next j1
@@ -1504,30 +1504,31 @@ Function work_SprSubDiv(source, destination)
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
-  return NIL
+  SD->( dbCloseArea() )
+//  close databases
+  return .t.
 
-// 08.06.25
-Function work_SprDep(source, destination)
+// 09.06.25
+Function work_SprDep( source, destination )
   Local _mo_dep := { ;
-    {'CODEM',      'C',      6,      0}, ;
-    {'MCODE',      'C',      6,      0}, ;
-    {'CODE',       'N',      3,      0}, ;
-    {'place',      'N',      3,      0}, ;
-    {'NAME',       'C',    100,      0}, ;
-    {'NAME_SHORT', 'C',     35,      0}, ;
-    {'usl_ok',     'N',      1,      0}, ;
-    {'vmp',        'N',      1,      0}, ;
-    {'DATEBEG',    'D',      8,      0}, ;
-    {'DATEEND',    'D',      8,      0} ;
+    { 'CODEM',      'C',      6,      0 }, ;
+    { 'MCODE',      'C',      6,      0 }, ;
+    { 'CODE',       'N',      3,      0 }, ;
+    { 'place',      'N',      3,      0 }, ;
+    { 'NAME',       'C',    100,      0 }, ;
+    { 'NAME_SHORT', 'C',     35,      0 }, ;
+    { 'usl_ok',     'N',      1,      0 }, ;
+    { 'vmp',        'N',      1,      0 }, ;
+    { 'DATEBEG',    'D',      8,      0 }, ;
+    { 'DATEEND',    'D',      8,      0 } ;
   }
   Local _mo_deppr := { ;
-    {'CODEM',      'C',      6,      0}, ;
-    {'MCODE',      'C',      6,      0}, ;
-    {'CODE',       'N',      3,      0}, ;
-    {'place',      'N',      3,      0}, ;
-    {'pr_berth',   'N',      3,      0}, ;
-    {'pr_mp',      'N',      3,      0} ;
+    { 'CODEM',      'C',      6,      0 }, ;
+    { 'MCODE',      'C',      6,      0 }, ;
+    { 'CODE',       'N',      3,      0 }, ;
+    { 'place',      'N',      3,      0 }, ;
+    { 'pr_berth',   'N',      3,      0 }, ;
+    { 'pr_mp',      'N',      3,      0 } ;
   }
   local nfile, nameRef, j, j1, j2, k
   local nameFileDep := prefixFileName() + 'dep'
@@ -1537,59 +1538,59 @@ Function work_SprDep(source, destination)
   nameRef := 'S_DEP.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
+    out_error( FILE_NOT_EXIST, nfile )
+    return .t.
   endif
 
-  dbcreate(destination + nameFileDep, _mo_dep)
-  dbcreate(destination + nameFileDepPr, _mo_deppr)
+  dbcreate( destination + nameFileDep, _mo_dep )
+  dbcreate( destination + nameFileDepPr, _mo_deppr )
 
-  use (destination + nameFileDep) new alias DEP
-  use (destination + nameFileDepPr) new alias DP
+  use ( destination + nameFileDep ) new alias DEP
+  use ( destination + nameFileDepPr ) new alias DP
 
-  oXmlDoc := HXMLDoc():Read(nfile)
+  oXmlDoc := HXMLDoc():Read( nfile )
   OutStd( nameRef + ' - список отделений по 11-й стационарам с разными уровнями оплаты' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
+    out_error( FILE_READ_ERROR, nfile )
     CLOSE databases
-    return nil
+    return .f.
   else
-    out_obrabotka(nfile)
-    k := Len( oXmlDoc:aItems[1]:aItems )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
     FOR j := 1 TO k
-      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
       if 'MO_DEPARTMENTS' == oXmlNode:title
-        out_obrabotka_count(j, k)
-        if (oNode1 := oXmlNode:Find('DEPARTMENTS')) != NIL
+        out_obrabotka_count( j, k )
+        if ( oNode1 := oXmlNode:Find( 'DEPARTMENTS' ) ) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
-            oNode2 := oNode1:aItems[j1]
-            if (str(year(xml2date(mo_read_xml_stroke(oNode2, 'D_E',))), 4) >= CURENT_YEAR) .or. empty(str(year(xml2date(mo_read_xml_stroke(oNode2, 'D_E',))), 4))
+            oNode2 := oNode1:aItems[ j1 ]
+            if ( str( year( xml2date( mo_read_xml_stroke( oNode2, 'D_E', ) ) ), 4 ) >= CURENT_YEAR) .or. empty( str( year( xml2date( mo_read_xml_stroke( oNode2, 'D_E', ) ) ), 4 ) )
               if 'DEPARTMENT' == oNode2:title
                 select DEP
                 append blank
-                dep->codem   := mo_read_xml_stroke(oXmlNode, 'CODEM',)
-                dep->mcode   := mo_read_xml_stroke(oXmlNode, 'MCODE',)
-                dep->code    := val(mo_read_xml_stroke(oNode2, 'CODE',))
-                dep->NAME    := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oNode2, 'NAME_FULL',))))
-                dep->NAME_SHORT := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oNode2, 'NAME_SHORT',))))
-                dep->usl_ok  := val(mo_read_xml_stroke(oNode2, 'USL_OK',))
-                dep->vmp     := val(mo_read_xml_stroke(oNode2, 'VMP',))
-                dep->DATEBEG := xml2date(mo_read_xml_stroke(oNode2, 'D_B',))
-                dep->DATEEND := xml2date(mo_read_xml_stroke(oNode2, 'D_E',))
-                if (oNode3 := oNode2:Find('PLACES')) != NIL
+                dep->codem   := mo_read_xml_stroke( oXmlNode, 'CODEM', )
+                dep->mcode   := mo_read_xml_stroke( oXmlNode, 'MCODE', )
+                dep->code    := val(mo_read_xml_stroke( oNode2, 'CODE', ) )
+                dep->NAME    := ltrim( charrem( eos, charone( ' ', mo_read_xml_stroke( oNode2, 'NAME_FULL', ) ) ) )
+                dep->NAME_SHORT := ltrim( charrem( eos, charone( ' ', mo_read_xml_stroke( oNode2, 'NAME_SHORT', ) ) ) )
+                dep->usl_ok  := val( mo_read_xml_stroke(oNode2, 'USL_OK', ) )
+                dep->vmp     := val( mo_read_xml_stroke(oNode2, 'VMP', ) )
+                dep->DATEBEG := xml2date( mo_read_xml_stroke( oNode2, 'D_B', ) )
+                dep->DATEEND := xml2date( mo_read_xml_stroke( oNode2, 'D_E', ) )
+                if ( oNode3 := oNode2:Find( 'PLACES' ) ) != NIL
                   for j2 := 1 TO Len( oNode3:aItems )
-                    oNode4 := oNode3:aItems[j2]
-                    if 'PLACE' == oNode4:title .and. !empty(oNode4:aItems) .and. valtype(oNode4:aItems[1]) == 'C'
+                    oNode4 := oNode3:aItems[ j2 ]
+                    if 'PLACE' == oNode4:title .and. ! empty( oNode4:aItems ) .and. valtype( oNode4:aItems[ 1 ] ) == 'C'
                       if j2 > 1
-                        out_error(TAG_PLACE_ERROR, nfile, dep->NAME)
+                        out_error( TAG_PLACE_ERROR, nfile, dep->NAME )
                       endif
-                      dep->place := int(val(hb_AnsiToOem(alltrim(oNode4:aItems[1]))))
+                      dep->place := int( val( hb_AnsiToOem( alltrim( oNode4:aItems[ 1 ] ) ) ) )
                     endif
                   next j2
                 endif
-                if (oNode3 := oNode2:Find('PROFILS')) != NIL
+                if ( oNode3 := oNode2:Find( 'PROFILS' ) ) != NIL
                   for j2 := 1 TO Len( oNode3:aItems )
-                    oNode4 := oNode3:aItems[j2]
+                    oNode4 := oNode3:aItems[ j2 ]
                     if 'PROFIL' == oNode4:title
                       select DP
                       append blank
@@ -1597,8 +1598,8 @@ Function work_SprDep(source, destination)
                       dp->mcode    := dep->mcode
                       dp->code     := dep->code
                       dp->place    := dep->place
-                      dp->PR_BERTH := val(mo_read_xml_stroke(oNode4, 'PR_BERTH',))
-                      dp->PR_MP    := val(mo_read_xml_stroke(oNode4, 'PR_MP',))
+                      dp->PR_BERTH := val( mo_read_xml_stroke( oNode4, 'PR_BERTH', ) )
+                      dp->PR_MP    := val( mo_read_xml_stroke( oNode4, 'PR_MP', ) )
                     endif
                   next j2
                 endif
@@ -1611,7 +1612,7 @@ Function work_SprDep(source, destination)
   ENDIF
   out_obrabotka_eol()
   close databases
-  return NIL
+  return .t.
 
 // 08.06.25
 Function work_LvlPay(source, destination)
