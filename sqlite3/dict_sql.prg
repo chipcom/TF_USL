@@ -75,9 +75,6 @@ Procedure Main( ... )
     Case cParamL == '-quiet'
     // ? 'quiet'
     Case cParamL == '-all'
-    // if HB_VFEXISTS(source + FILE_HASH)
-    // HB_VFERASE(source + FILE_HASH)
-    // endif
       lAll := .t.
     Case cParamL == '-update'
       lUpdate := .t.

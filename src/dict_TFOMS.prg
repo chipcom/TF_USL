@@ -951,65 +951,68 @@ Function work_SprMU( source, destination )
   close databases
   return .t.
 
-// 12.02.22
-Function work_SprDS(source, destination)
+// 10.06.25
+Function work_SprDS( source, destination )
+
   Local fl := .f.
   local nameFileUslF := prefixFileName() + 'uslf'
-  local nfile, nameRef, j, k
+  local nfile, nameRef, j, k, j1o2
+  local oXmlDoc, o1, o2, ngrp, oXmlNode
+  local j1, lshifr, muetv, muetd, oNode1, oNode2, bd, ed
 
   nameRef := 'SPRDS.XML'
   nfile := source + nameRef
   if ! hb_vfExists( nfile )
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
+    out_error( FILE_NOT_EXIST, nfile )
+    return .f.
   endif
-  use (destination + '_mo_prof') new alias PROF
-  use (destination + '_mo_spec') new alias SPEC
-  use (destination + nameFileUslF) new alias LUSL
+  use ( destination + '_mo_prof' ) new alias PROF
+  use ( destination + '_mo_spec' ) new alias SPEC
+  use ( destination + nameFileUslF ) new alias LUSL
   index on shifr to tmp_lusl
-  oXmlDoc := HXMLDoc():Read(nfile)
+  oXmlDoc := HXMLDoc():Read( nfile )
   OutStd( nameRef + ' - федеральный справочник услуг' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
+    out_error( FILE_READ_ERROR, nfile )
     CLOSE databases
-    return nil
+    return .f.
   else
-    out_obrabotka(nfile)
-    k := Len( oXmlDoc:aItems[1]:aItems )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
     FOR j := 1 TO k
-      out_obrabotka_count(j, k)
-      o1 := oXmlDoc:aItems[1]:aItems[j]
+      out_obrabotka_count( j, k )
+      o1 := oXmlDoc:aItems[ 1 ]:aItems[ j ]
       if 'GRP' == o1:title
         ngrp := val(mo_read_xml_stroke(o1, 'C_GRP',))
         if (o2 := o1:Find('ZAPS')) != NIL
           for j1o2 := 1 TO Len( o2:aItems )
-            oXmlNode := o2:aItems[j1o2]
+            oXmlNode := o2:aItems[ j1o2 ]
             if 'ZAP' == oXmlNode:title
-              lshifr := mo_read_xml_stroke(oXmlNode, 'CodeMU',)
+              lshifr := mo_read_xml_stroke( oXmlNode, 'CodeMU', )
               fl := .f.
               muetv := muetd := 0
-              if (oNode1 := oXmlNode:Find('UETV')) != NIL
+              if ( oNode1 := oXmlNode:Find( 'UETV' ) ) != NIL
                 for j1 := 1 TO Len( oNode1:aItems )
-                  oNode2 := oNode1:aItems[j1]
+                  oNode2 := oNode1:aItems[ j1 ]
                   if 'UET_A' == oNode2:title
-                    bd := xml2date(mo_read_xml_stroke(oNode2, 'DA_B',))
-                    ed := xml2date(mo_read_xml_stroke(oNode2, 'DA_E',))
-                    if between_date(bd, ed, sys_date)
-                      mUETV := val(mo_read_xml_stroke(oNode2, 'VAL_UETA',))
+                    bd := xml2date( mo_read_xml_stroke( oNode2, 'DA_B', ) )
+                    ed := xml2date( mo_read_xml_stroke( oNode2, 'DA_E', ) )
+                    if between_date( bd, ed, sys_date )
+                      mUETV := val( mo_read_xml_stroke( oNode2, 'VAL_UETA', ) )
                       fl := .t.
                       exit
                     endif
                   endif
                 next j1
               endif
-              if (oNode1 := oXmlNode:Find('UETD')) != NIL
+              if ( oNode1 := oXmlNode:Find( 'UETD' ) ) != NIL
                 for j1 := 1 TO Len( oNode1:aItems )
-                  oNode2 := oNode1:aItems[j1]
+                  oNode2 := oNode1:aItems[ j1 ]
                   if 'UET_C' == oNode2:title
-                    bd := xml2date(mo_read_xml_stroke(oNode2, 'DC_B',))
-                    ed := xml2date(mo_read_xml_stroke(oNode2, 'DC_E',))
-                    if between_date(bd, ed, sys_date)
-                      mUETD := val(mo_read_xml_stroke(oNode2, 'VAL_UETC',))
+                    bd := xml2date( mo_read_xml_stroke( oNode2, 'DC_B', ) )
+                    ed := xml2date( mo_read_xml_stroke( oNode2, 'DC_E', ) )
+                    if between_date( bd, ed, sys_date )
+                      mUETD := val( mo_read_xml_stroke( oNode2, 'VAL_UETC', ) )
                       fl := .t.
                       exit
                     endif
@@ -1018,7 +1021,7 @@ Function work_SprDS(source, destination)
               endif
               if fl
                 select LUSL
-                find (padr(lshifr, 20))
+                find ( padr( lshifr, 20 ) )
                 if found()
                   lusl->tip := 1
                 else
@@ -1029,31 +1032,31 @@ Function work_SprDS(source, destination)
                 lusl->UETV := mUETV
                 lusl->UETD := mUETD
                 lusl->grp  := ngrp
-                lusl->NAME := ltrim(charrem(eos, charone(' ', mo_read_xml_stroke(oXmlNode, 'NameMU',))))
-                lusl->DATEBEG := xml2date(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
-                lusl->DATEEND := xml2date(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
-                lusl->zf := val(mo_read_xml_stroke(oXmlNode, 'T_FORMULA',))
-                if (oNode1 := oXmlNode:Find('PROFILES')) != NIL
+                lusl->NAME := ltrim( charrem( eos, charone( ' ', mo_read_xml_stroke( oXmlNode, 'NameMU', ) ) ) )
+                lusl->DATEBEG := xml2date( mo_read_xml_stroke( oXmlNode, 'DATEBEG', ) )
+                lusl->DATEEND := xml2date( mo_read_xml_stroke( oXmlNode, 'DATEEND', ) )
+                lusl->zf := val( mo_read_xml_stroke( oXmlNode, 'T_FORMULA', ) )
+                if ( oNode1 := oXmlNode:Find( 'PROFILES' ) ) != NIL
                   for j1 := 1 TO Len( oNode1:aItems )
-                    oNode2 := oNode1:aItems[j1]
+                    oNode2 := oNode1:aItems[ j1 ]
                     if 'PROFILE' == oNode2:title
                       select PROF
                       append blank
                       prof->SHIFR := lshifr
-                      prof->VZROS_REB := val(mo_read_xml_stroke(oNode2, 'P_AGE',)) - 1
-                      prof->profil := val(mo_read_xml_stroke(oNode2, 'P_CODE',))
+                      prof->VZROS_REB := val( mo_read_xml_stroke( oNode2, 'P_AGE', ) ) - 1
+                      prof->profil := val( mo_read_xml_stroke( oNode2, 'P_CODE', ) )
                     endif
                   next j1
                 endif
-                if (oNode1 := oXmlNode:Find('SPECIALTIES')) != NIL
+                if ( oNode1 := oXmlNode:Find( 'SPECIALTIES' ) ) != NIL
                   for j1 := 1 TO Len( oNode1:aItems )
-                    oNode2 := oNode1:aItems[j1]
+                    oNode2 := oNode1:aItems[ j1 ]
                     if 'SPECIALTY' == oNode2:title
                       select SPEC
                       append blank
                       spec->SHIFR := lshifr
-                      spec->VZROS_REB := val(mo_read_xml_stroke(oNode2, 'S_AGE',)) - 1
-                      spec->PRVS_NEW := val(mo_read_xml_stroke(oNode2, 'S_CODE',))
+                      spec->VZROS_REB := val( mo_read_xml_stroke( oNode2, 'S_AGE', ) ) - 1
+                      spec->PRVS_NEW := val( mo_read_xml_stroke( oNode2, 'S_CODE', ) )
                     endif
                   next j1
                 endif
@@ -1066,7 +1069,7 @@ Function work_SprDS(source, destination)
   ENDIF
   out_obrabotka_eol()
   close databases
-  return NIL
+  return .t.
 
 // 09.06.25
 Function work_SprKslp(source, destination)
@@ -1118,10 +1121,10 @@ Function work_SprKslp(source, destination)
               select KS
               append blank
               ks->code    := val( mo_read_xml_stroke( oXmlNode, 'CODE', ) )
-//              ks->NAME    := ltrim( charrem( eos, charone( ' ', mo_read_xml_stroke( oXmlNode, 'NAME', ) ) ) )
-//              ks->NAME_F  := ltrim( charrem( eos, charone( ' ', mo_read_xml_stroke( oXmlNode, 'NAME_F', ) ) ) )
-              ks->NAME    := ltrim( charrem( eos, charone( ' ', hb_Translate( mo_read_xml_stroke( oXmlNode, 'NAME', ), 'RU1251', "RU866" ) ) ) )
-              ks->NAME_F  := ltrim( charrem( eos, charone( ' ', hb_Translate( mo_read_xml_stroke( oXmlNode, 'NAME_F', ), 'RU1251', "RU866" ) ) ) )
+              ks->NAME    := ltrim( charrem( eos, charone( ' ', mo_read_xml_stroke( oXmlNode, 'NAME', ) ) ) )
+              ks->NAME_F  := ltrim( charrem( eos, charone( ' ', mo_read_xml_stroke( oXmlNode, 'NAME_F', ) ) ) )
+//              ks->NAME    := ltrim( charrem( eos, charone( ' ', hb_Translate( mo_read_xml_stroke( oXmlNode, 'NAME', ), 'RU1251', "RU866" ) ) ) )
+//              ks->NAME_F  := ltrim( charrem( eos, charone( ' ', hb_Translate( mo_read_xml_stroke( oXmlNode, 'NAME_F', ), 'RU1251', "RU866" ) ) ) )
               ks->COEFF   := val( mo_read_xml_stroke( oNode2, 'C_VAL', ) )
               ks->DATEBEG := xml2date( mo_read_xml_stroke( oNode2, 'D_B', ) )
               ks->DATEEND := xml2date( mo_read_xml_stroke( oNode2, 'D_E', ) )

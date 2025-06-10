@@ -54,8 +54,6 @@
 #include 'function.ch'
 #include 'settings.ch'
 
-#define FILE_HASH   'files.hst'   // ¨¬ο δ ©«  ¤«ο ενθ¥Ά δ ©«®Ά
-
 external errorsys
 
 // 01.11.21
@@ -63,7 +61,7 @@ external errorsys
 function prefixFileName()
   return '_mo' + substr( CURENT_YEAR, 4, 1 )
 
-// 09.06.25
+// 10.06.25
 proc main( ... )
   Local _mo_usl := { ;
     {'SHIFR',      'C',     10,      0}, ;
@@ -150,9 +148,6 @@ proc main( ... )
       CASE cParamL == '-quiet'
         // ? 'quiet'
       CASE cParamL == '-all'
-        if HB_VFEXISTS(source + FILE_HASH)
-          HB_VFERASE(source + FILE_HASH)
-        endif
       CASE hb_LeftEq( cParamL, '-in=' )
         source := SubStr( cParam, 4 + 1 )
       CASE hb_LeftEq( cParamL, '-out=' )
@@ -177,13 +172,6 @@ proc main( ... )
     quit
   endi
  
-  // make_Q015(source, destination)
-  // make_Q016(source, destination)
-  // make_Q017(source, destination)
-
-  // InitSpravFFOMS(source, destination)
-  //
-  // read_spr_N00X(source, destination)
   //
   OutStd( '********' + hb_eol() )
   OutStd( '‘―ΰ Ά®η­¨ª¨ ’”‘.' + hb_eol() )
@@ -203,8 +191,8 @@ proc main( ... )
   lFlag := work_mo_uslf(source, destination)
   lFlag := work_SprUnit(source, destination)
   lFlag := work_SprMU(source, destination)
-  work_SprDS(source, destination)
-  work_t006(source, destination)
+  lFlag := work_SprDS(source, destination)
+  lFlag := work_t006(source, destination)
   close databases
   //
   HB_VFERASE(destination + k006dbf)

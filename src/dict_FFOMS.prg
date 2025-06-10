@@ -5,7 +5,7 @@
 #include 'function.ch'
 #include 'settings.ch'
 
-***** 11.02.22
+// 11.02.22
 Function work_V002(source, destination)
   local _mo_V002 := {;
     {"IDPR",       "N",      3,      0},;
@@ -59,7 +59,7 @@ Function work_V002(source, destination)
   close databases
   return NIL
 
-***** 11.02.22
+// 11.02.22
 Function work_V016(source, destination)
   local _mo_V016 := {;
     {"IDDT",      "C",   3, 0},;  // Код типа диспансеризации
@@ -122,7 +122,7 @@ Function work_V016(source, destination)
   close databases
   return NIL
 
-***** 11.02.22
+// 11.02.22
 Function work_V017(source, destination)
   local _mo_V017 := {;
     {"IDDR",      "N",   2, 0},;  // Код результата диспансеризации
@@ -173,7 +173,7 @@ Function work_V017(source, destination)
   close databases
   return NIL
 
-***** 11.02.22
+// 11.02.22
 Function work_V021(source, destination)
 
   local _mo_V021 := {;
@@ -233,7 +233,7 @@ Function work_V021(source, destination)
   close databases
   return NIL
 
-* 12.02.22 вернуть массив по справочнику регионов ТФОМС V002.xml
+// 12.02.22 вернуть массив по справочнику регионов ТФОМС V002.xml
 function getV002(destination)
   // V002.xml - 
   //  1 - PRNAME(C)  2 - IDPR(N)  3 - DATEBEG(D)  4 - DATEEND(D)
@@ -250,7 +250,7 @@ function getV002(destination)
 
   return _v002
 
-***** 11.02.22
+// 11.02.22
 Function work_V009(source, destination)
   local _mo_V009 := {;
     {"IDRMP",     "N",   3, 0},;  // Код результата обращения
@@ -302,7 +302,7 @@ Function work_V009(source, destination)
   close databases
   return NIL
 
-***** 11.02.22
+// 11.02.22
 Function work_V010(source, destination)
   local _mo_V010 := {;
     {"IDSP",      "N",   2, 0},;  // Код способа оплаты медицинской помощи
@@ -351,7 +351,7 @@ Function work_V010(source, destination)
   close databases
   return NIL
 
-***** 11.02.22
+// 11.02.22
 Function work_V012(source, destination)
   local _mo_V012 := {;
     {"IDIZ",      "N",   3, 0},;  // Код исхода заболевания
@@ -402,7 +402,7 @@ Function work_V012(source, destination)
   close databases
   return NIL
 
-* 12.02.22 вернуть массив по справочнику ТФОМС V021.xml
+// 12.02.22 вернуть массив по справочнику ТФОМС V021.xml
 function getV021(destination)
   // V021.xml - Классификатор медицинских специальностей (последний)
   //  1 - SPECNAME(C)  2 - IDSPEC(N)  3 - DATEBEG(D)  4 - DATEEND(D)
@@ -419,7 +419,7 @@ function getV021(destination)
 
   return _v021
 
-***** 12.02.22
+// 12.02.22
 Function work_V015(source, destination)
   local _mo_V015 := {;
     {"NAME",   "C",  254,      0},;
@@ -476,7 +476,7 @@ Function work_V015(source, destination)
   close databases
   return NIL
   
-***** 12.02.22
+// 12.02.22
 Function work_V018(source, destination)
   local _mo_V018 := {;
     {"IDHVID",     "C",     12,      0},;
@@ -526,7 +526,7 @@ Function work_V018(source, destination)
   close databases
   return NIL
   
-***** 10.02.22
+// 10.02.22
 Function work_V019(source, destination)
   local _mo_V019 := {;
     {"IDHM",       "N",      4,      0},; // Идентификатор метода высокотехнологичной медицинской помощи
@@ -594,7 +594,7 @@ Function work_V019(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_V020(source, destination)
   local _mo_V020 := {;
     {"IDK_PR",     "N",      3,      0},; // Код профиля койки
@@ -642,7 +642,7 @@ Function work_V020(source, destination)
   close databases
   return NIL
 
-***** 11.02.22
+// 11.02.22
 Function work_V022(source, destination)
   local _mo_V022 := {;
     {"IDMPAC",     "N",      5,      0},;
@@ -693,7 +693,7 @@ Function work_V022(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_V025(source, destination)
   local _mo_V025 := {;
     {"IDPC",      "C",   3, 0},;  // Код цели посещения
@@ -742,7 +742,7 @@ Function work_V025(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_V030(source, destination)
   local _mo_V030 := {;
     {"SCHEMCOD",  "C",   3, 0},;  // 
@@ -796,7 +796,7 @@ Function work_V030(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_V031(source, destination)
   local _mo_V031 := {;
     {"DRUGCODE",  "N",   2, 0},;  // 
@@ -847,7 +847,7 @@ Function work_V031(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_V032(source, destination)
   local _mo_V032 := {;
     {"SCHEDRUG",  "C",  10, 0},;  // Сочетание схемы лечения и группы препаратов
@@ -898,7 +898,7 @@ Function work_V032(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_V033(source, destination)
   local _mo_V033 := {;
     {"SCHEDRUG",  "C",   5, 0},;  // 
@@ -946,7 +946,7 @@ Function work_V033(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_V034(source, destination)
   local _mo_V034 := {;
     {"UNITCODE",  "N",   3, 0},;  // код единицы измерения дозы
@@ -997,7 +997,7 @@ Function work_V034(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_V035(source, destination)
   local _mo_V035 := {;
     {"METHCODE",  "N",   3, 0},;  // 
@@ -1045,7 +1045,7 @@ Function work_V035(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_V036(source, destination)
   local _mo_V036 := {;
     {"S_CODE",    "C",  16, 0},;  // 
@@ -1099,7 +1099,7 @@ Function work_V036(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function work_V037(source, destination)
   local _mo_V037 := {;
     {"CODE",      "N",   5, 0},;  // 
@@ -1153,169 +1153,7 @@ Function work_V037(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
-Function make_Q015(source, destination)
-
-  local _mo_Q015 := {;
-    {"KOD",       "C",     12,      0},;
-    {"NAME",      "C",     60,      0},;
-    {"NSI_OBJ",   "C",      4,      0},;
-    {"NSI_EL",    "C",     20,      0},;
-    {"USL_TEST",  "M",     10,      0},;
-    {"VAL_EL",    "M",     10,      0},;
-    {"COMMENT",   "M",     10,      0},;
-    {"DATEBEG",   "D",      8,      0},;
-    {"DATEEND",   "D",      8,      0};
-  }
-  local nfile, nameRef, j, k
-
-  nameRef := "Q015.xml"
-  nfile := source + nameRef
-  if ! hb_vfExists( nfile )
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-  dbcreate(destination + "_mo_q015", _mo_Q015)
-  use (destination + '_mo_Q015') new alias Q015
-  oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - Перечень технологических правил реализации ФЛК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (FLK_MPF)" + hb_eol() )
-  IF Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
-    return nil
-  else
-    out_obrabotka(nfile)
-    k := Len( oXmlDoc:aItems[1]:aItems )
-    FOR j := 1 TO k
-      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZAP" == upper(oXmlNode:title)
-        out_obrabotka_count(j, k)
-        select Q015
-        append blank
-        Q015->KOD := mo_read_xml_stroke(oXmlNode,"ID_TEST",)
-        Q015->NAME := mo_read_xml_stroke(oXmlNode,"ID_EL",)
-
-        Q015->NSI_OBJ := mo_read_xml_stroke(oXmlNode,"NSI_OBJ",)
-        Q015->NSI_EL := mo_read_xml_stroke(oXmlNode,"NSI_EL",)
-        Q015->USL_TEST := mo_read_xml_stroke(oXmlNode,"USL_TEST",)
-        Q015->VAL_EL := mo_read_xml_stroke(oXmlNode,"VAL_EL",)
-        Q015->COMMENT := mo_read_xml_stroke(oXmlNode,"COMMENT",)
-        Q015->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
-        Q015->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-
-      endif
-    NEXT j
-  ENDIF
-  out_obrabotka_eol()
-  close databases
-  return NIL
-
-***** 12.02.22
-Function make_Q016(source, destination)
-
-  local _mo_Q016 := {;
-    {"KOD",       "C",     12,      0},;
-    {"NAME",      "C",     60,      0},;
-    {"NSI_OBJ",   "C",      4,      0},;
-    {"NSI_EL",    "C",     20,      0},;
-    {"USL_TEST",  "M",     10,      0},;
-    {"VAL_EL",    "M",     10,      0},;
-    {"COMMENT",   "M",     10,      0},;
-    {"DATEBEG",   "D",      8,      0},;
-    {"DATEEND",   "D",      8,      0};
-  }
-  local nfile, nameRef, j, k
-
-  nameRef := "Q016.xml"
-  nfile := source + nameRef
-  if ! hb_vfExists( nfile )
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-  dbcreate(destination + "_mo_q016", _mo_Q016)
-  use (destination + '_mo_Q016') new alias Q016
-  oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - Перечень проверок автоматизированной поддержки МЭК в ИС ведения персонифицированного учета сведений об оказанной медицинской помощи (MEK_MPF)" + hb_eol() )
-  IF Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
-    return nil
-  else
-    out_obrabotka(nfile)
-    k := Len( oXmlDoc:aItems[1]:aItems )
-    FOR j := 1 TO k
-      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZAP" == upper(oXmlNode:title)
-        out_obrabotka_count(j, k)
-        select Q016
-        append blank
-        Q016->KOD := mo_read_xml_stroke(oXmlNode,"ID_TEST",)
-        Q016->NAME := mo_read_xml_stroke(oXmlNode,"DESC_TEST",)
-
-        Q016->NSI_OBJ := mo_read_xml_stroke(oXmlNode,"NSI_OBJ",)
-        Q016->NSI_EL := mo_read_xml_stroke(oXmlNode,"NSI_EL",)
-        Q016->USL_TEST := mo_read_xml_stroke(oXmlNode,"USL_TEST",)
-        Q016->VAL_EL := mo_read_xml_stroke(oXmlNode,"VAL_EL",)
-        Q016->COMMENT := mo_read_xml_stroke(oXmlNode,"COMMENT",)
-        Q016->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
-        Q016->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-    
-      endif
-    NEXT j
-  ENDIF
-  out_obrabotka_eol()
-  close databases
-  return NIL
-
-***** 12.02.22
-Function make_Q017(source, destination)
-
-  local _mo_Q017 := {;
-    {"ID_KTEST",   "C",      4,      0},;
-    {"NAM_KTEST",  "C",    250,      0},;
-    {"COMMENT",    "M",     10,      0},;
-    {"DATEBEG",    "D",      8,      0},;
-    {"DATEEND",    "D",      8,      0};
-  }
-  local nfile, nameRef, j, k
-
-  nameRef := "Q017.xml"
-  nfile := source + nameRef
-  if ! hb_vfExists( nfile )
-    out_error(FILE_NOT_EXIST, nfile)
-    return nil
-  endif
-  dbcreate(destination + "_mo_q017", _mo_Q017)
-  use (destination + '_mo_Q017') new alias Q017
-  oXmlDoc := HXMLDoc():Read(nfile)
-  OutStd( nameRef + " - Перечень категорий проверок ФЛК и МЭК (TEST_K)" + hb_eol() )
-  IF Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
-    return nil
-  else
-    out_obrabotka(nfile)
-    k := Len( oXmlDoc:aItems[1]:aItems )
-    FOR j := 1 TO k
-      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if "ZAP" == upper(oXmlNode:title)
-        out_obrabotka_count(j, k)
-        select Q017
-        append blank
-        Q017->ID_KTEST := mo_read_xml_stroke(oXmlNode,"ID_KTEST",)
-        Q017->NAM_KTEST := mo_read_xml_stroke(oXmlNode,"NAM_KTEST",)
-        Q017->COMMENT := mo_read_xml_stroke(oXmlNode,"COMMENT",)
-        Q017->DATEBEG := ctod(mo_read_xml_stroke(oXmlNode,"DATEBEG",))
-        Q017->DATEEND := ctod(mo_read_xml_stroke(oXmlNode,"DATEEND",))
-    
-      endif
-    NEXT j
-  ENDIF
-  out_obrabotka_eol()
-  close databases
-  return NIL
-
-***** 12.02.22
+// 12.02.22
 Function make_O001(source, destination)
 
     //  1 - NAME11(C)  2 - KOD(C)  3 - DATEBEG(D)  4 - DATEEND(D)  5 - ALFA2(C)  6 - ALFA3(C)
@@ -1374,7 +1212,7 @@ Function make_O001(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function make_F006(source, destination)
 
   //  1 - VIDNAME(C)  2 - IDVID(N)  3 - DATEBEG(D)  4 - DATEEND(D)
@@ -1421,7 +1259,7 @@ Function make_F006(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function make_F010(source, destination)
 
   //  1 - SUBNAME(C) 2 - KOD_TF(N)  3 - OKRUG(N)  4 - KOD_OKATO(C)  5 - DATEBEG(D)  6 - DATEEND(D)
@@ -1472,7 +1310,7 @@ Function make_F010(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function make_F011(source, destination)
 
   //  1 - DOCNAME(C)  2 - IDDOC(N) 3 - DOCSER(C) 4 - DOCNUM(C) 5 - DATEBEG(D)  6 - DATEEND(D)
@@ -1523,7 +1361,7 @@ Function make_F011(source, destination)
   close databases
   return NIL
 
-***** 12.02.22
+// 12.02.22
 Function make_F014(source, destination)
 
   local _mo_F014 := {;
@@ -1571,16 +1409,4 @@ Function make_F014(source, destination)
   ENDIF
   out_obrabotka_eol()
   close databases
-  return NIL
-
-*****
-Function InitSpravFFOMS(source, destination)
-
-  // V002.dbf - Классификатор профилей оказанной медицинской помощи
-  //  1 - PRNAME(C)  2 - IDPR(N)  3 - DATEBEG(D)  4 - DATEEND(D)
-  Public glob_V002 := getV002(destination)
-  
-  // V021.xml - Классификатор медицинских специальностей (последний)
-  //  1 - SPECNAME(C)  2 - IDSPEC(N)  3 - DATEBEG(D)  4 - DATEEND(D)
-  Public glob_V021 := getV021(destination)
   return NIL
