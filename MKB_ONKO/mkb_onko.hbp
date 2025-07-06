@@ -1,0 +1,28 @@
+-i..\..\include
+-L..\..\LIB
+
+-lMyLib_HBT
+-lFunLib
+
+-lhbct
+
+# hbsqlit3.hbc
+# xhb.hbc
+hbmisc.hbc
+
+-mt
+-inc
+
+-workdir=d:\_MO\TEMP\TEST_SQL_MO
+-omkb_onko
+-icon=database.ico
+
+xmlparse.c
+hxmldoc.prg
+#xml_func.prg
+#error_func.prg
+
+mkb_onko.prg
+oid_mzdrav.prg
+
+mkb_onko.rc
