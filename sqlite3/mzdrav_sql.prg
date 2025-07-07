@@ -19,7 +19,89 @@ Function make_mzdrav( db, source )
   make_implant(db, source)      // справочник имплантов
   make_MethIntro(db, source)    // справочник способов введения лекарственных препаратов
   make_mzrf798(db, source)    // справочник характеристик высвобождения активных веществ из лекарственных препаратов
+  make_mkb_mkbo(db, source)    // справочник Соответствие кодов МКБ-10 и кодов МКБ-О Топография для классификации TNM
 
+  Return Nil
+
+// 07.07.25
+function make_mkb_mkbo( db, source )
+
+  Local cmdText
+  Local nfile, nameRef
+  Local k, j, k1, j1, j2, k2
+  Local oXmlDoc, oXmlNode, oNode1
+  Local mICD10, mICD10T, mTNM7, mTNM8
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  // 1) ICD10, Код МКБ-10, Строковое, обязательное поле, Обязательное;
+  // 2) ICDOTopography, Код МКБ-О Топография, Строковое, обязательное поле, Обязательное;
+  // 3) TNM_7, TNM 7 версия, Логическое;
+  // 4) TNM_8, TNM 8 версия, Логическое;
+  
+  // Логическое храним как целое 0 - false, 1 - true
+  cmdText := 'CREATE TABLE mkb_mkbo( icd10 TEXT(10) PRIMARY KEY NOT NULL, icd10top TEXT(10), tnm_7 INTEGER, tnm_8 INTEGER)'
+
+  nameRef := '1.2.643.5.1.13.13.99.2.734.xml'  // может меняться из-за версий
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Соответствие кодов МКБ-10 и кодов МКБ-О Топография для классификации TNM', 'RU866' )
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE IF EXISTS mkb_mkbo' ) == SQLITE_OK
+    OutStd( 'DROP TABLE mkb_mkbo - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE mkb_mkbo - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE mkb_mkbo - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+     k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+     For j := 1 To k
+       oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+       If "ENTRIES" == Upper( oXmlNode:title )
+         k1 := Len( oXmlNode:aItems )
+         For j1 := 1 To k1
+           oNode1 := oXmlNode:aItems[ j1 ]
+           If "ENTRY" == Upper( oNode1:title )
+              mICD10 := mo_read_xml_stroke( oNode1, 'ICD10', , , 'utf8' )
+              mICD10T := mo_read_xml_stroke( oNode1, 'ICDOTopography', , , 'utf8' )
+              mTNM7 := iif( lower( mo_read_xml_stroke( oNode1, 'TNM_7', , , 'utf8' ) ) == 'true', '1', '0' )
+              mTNM8 := iif( lower( mo_read_xml_stroke( oNode1, 'TNM_8', , , 'utf8' ) ) == 'true', '1', '0' )
+
+            count++
+            cmdTextInsert := cmdTextInsert + "INSERT INTO mkb_mkbo( icd10, icd10top, tnm_7, tnm_8 ) VALUES("
+            cmdTextInsert += "'" + mICD10 + "',"
+            cmdTextInsert += "'" + mICD10T + "',"
+            cmdTextInsert += "" + mTNM7 + ","
+            cmdTextInsert += "" + mTNM8 + ");"
+            If count == COMMIT_COUNT
+              cmdTextInsert += textCommitTrans
+              sqlite3_exec( db, cmdTextInsert )
+              count := 0
+              cmdTextInsert := textBeginTrans
+            Endif
+           Endif
+         Next j1
+       Endif
+     Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
+  Endif
+  out_obrabotka_eol()
   Return Nil
 
 // 08.01.25
