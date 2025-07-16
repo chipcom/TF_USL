@@ -10,25 +10,158 @@
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 08.01.25
+// 16.07.25
 Function make_mzdrav( db, source )
 
 //  make_uslugi_mz(db, source) // не используем (для будующего)
-  make_ed_izm(db, source)       // справочник единиц измерения
+  make_ed_izm( db, source )       // справочник единиц измерения
   make_severity( db, source )   // справочник тяжести заболевания
-  make_implant(db, source)      // справочник имплантов
-  make_MethIntro(db, source)    // справочник способов введения лекарственных препаратов
-  make_mzrf798(db, source)    // справочник характеристик высвобождения активных веществ из лекарственных препаратов
-  make_mkb_mkbo(db, source)    // справочник Соответствие кодов МКБ-10 и кодов МКБ-О Топография для классификации TNM
-
+  make_implant( db, source )      // справочник имплантов
+  make_MethIntro( db, source )    // справочник способов введения лекарственных препаратов
+  make_mzrf798( db, source )    // справочник характеристик высвобождения активных веществ из лекарственных препаратов
+  make_mkb_mkbo( db, source )    // справочник Соответствие кодов МКБ-10 и кодов МКБ-О Топография для классификации TNM
+  make_onko_stad( db, source )    // справочник TNM. Стадирование злокачественных опухолей
   Return Nil
+
+// 16.07.28
+function make_onko_stad( db, source )
+
+  Local cmdText
+  Local nfile, nameRef
+  Local k, j, k1, j1
+  Local oXmlDoc, oXmlNode, oNode1
+  Local mID, mShort, mICDTop, mMorph, mStage, mTumor, mIDTumor
+  Local mNodus, mIDNodus, mMetastasis, mIDMetastasis
+  Local mClassif, mVersion
+//  Local mAddition, mIDAddition  // пока не используем
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  // 1) ID, Код, Целочисленное, обязательное поле, Обязательное;
+  // 2) ShortNameOfTopography, Краткое наименование топографии, Строковое, обязательное поле,
+  // Обязательное;
+  // 3) ICDOTopography, МКБ-О Топография, Строковое, соответствует уникальному идентификатору
+  // записи справочника «МКБ-О-3 Топография» (OID: 1.2.643.5.1.13.13.11.1487);
+  // 4) Morphology, Гистологическая группа, Строковое, обязательное поле, Обязательное;
+  // 5) Stage, Стадирование по TNM, Строковое, обязательное поле, Обязательное;
+  // 6) Tumor, Tumor, Строковое, обязательное поле, Обязательное;
+  // 7) ID_Tumor, Код Tumor, Целочисленное, соответствует уникальному идентификатору записи
+  // справочника «TNM. Описание категорий» (OID: 1.2.643.5.1.13.13.99.2.547);
+  // 8) Nodus, Nodus, Строковое, необязательное поле;
+  // 9) ID_Nodus, Код Nodus, Целочисленное, соответствует уникальному идентификатору записи
+  // справочника «TNM. Описание категорий» (OID: 1.2.643.5.1.13.13.99.2.547);
+  // 10) Metastasis, Metastasis, Строковое, обязательное поле, Обязательное;
+  // 11) ID_Metastasis, Код Metastasis, Целочисленное, соответствует уникальному идентификатору записи
+  // справочника «TNM. Описание категорий» (OID: 1.2.643.5.1.13.13.99.2.547);
+  // 12) Addition, Дополнительная информация, Строковое, необязательное поле;
+  // 13) ID_Addition, Код дополнительной информации, Целочисленное, соответствует уникальному
+  // идентификатору записи справочника «TNM. Описание категорий» (OID: 1.2.643.5.1.13.13.99.2.547);
+  // 14) Classification, Вид классификации, Целочисленное, обязательное поле
+  // Возможные виды классификации:
+  //  1 – клиническая,
+  //  2 – патологоанатомическая,
+  //  3 – клиническая и патологоанатомическая.;
+  // 15) Version, Версия TNM, Целочисленное, обязательное поле, Обязательное;
+
+  // Логическое храним как целое 0 - false, 1 - true
+  cmdText := 'CREATE TABLE onko_stad( id INTEGER PRIMARY KEY NOT NULL, shortname TEXT(100), icdtop TEXT(10), morph TEXT(20), stage TEXT(5), '
+  cmdText += 'tumor TEXT(5), id_tumor INTEGER, nodus TEXT(5), id_nodus INTEGER, metastas TEXT(5), id_metastas INTEGER, '
+  cmdText += 'classification INTEGER, versionTNM INTEGER)'
+//  cmdText += 'addition TEXT(5), id_addition INTEGER, classification INTEGER, versionTNM INTEGER)'  // пока не используем
+
+  nameRef := '1.2.643.5.1.13.13.99.2.546.xml'  // может меняться из-за версий
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - TNM. Стадирование злокачественных опухолей', 'RU866' )
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE IF EXISTS onko_stad' ) == SQLITE_OK
+    OutStd( 'DROP TABLE onko_stad - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE onko_stad - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE onko_stad - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+     k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+     For j := 1 To k
+       oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+       If "ENTRIES" == Upper( oXmlNode:title )
+         k1 := Len( oXmlNode:aItems )
+         For j1 := 1 To k1
+           oNode1 := oXmlNode:aItems[ j1 ]
+           If "ENTRY" == Upper( oNode1:title )
+              mID := mo_read_xml_stroke( oNode1, 'ID', , , 'utf8' )
+              mShort := mo_read_xml_stroke( oNode1, 'ShortNameOfTopography', , , 'utf8' )
+              mICDTOP := mo_read_xml_stroke( oNode1, 'ICDOTopography', , , 'utf8' )
+              mMorph := mo_read_xml_stroke( oNode1, 'Morphology', , , 'utf8' )
+              mStage := mo_read_xml_stroke( oNode1, 'Stage', , , 'utf8' )
+              mTumor := mo_read_xml_stroke( oNode1, 'Tumor', , , 'utf8' )
+              mIDTumor := mo_read_xml_stroke( oNode1, 'ID_Tumor', , , 'utf8' )
+              mNodus := mo_read_xml_stroke( oNode1, 'Nodus', , , 'utf8' )
+              mIDNodus := mo_read_xml_stroke( oNode1, 'ID_Nodus', , , 'utf8' )
+              mMetastasis := mo_read_xml_stroke( oNode1, 'Metastasis', , , 'utf8' )
+              mIDMetastasis := mo_read_xml_stroke( oNode1, 'ID_Metastasis', , , 'utf8' )
+//              mAddition := mo_read_xml_stroke( oNode1, 'Addition', , , 'utf8' )  // пока не используем
+//              mIDAddition := mo_read_xml_stroke( oNode1, 'ID_Addition', , , 'utf8' )  // пока не используем
+              mClassif := mo_read_xml_stroke( oNode1, 'Classification', , , 'utf8' )
+              mVersion := mo_read_xml_stroke( oNode1, 'Version', , , 'utf8' )
+
+            count++
+            cmdTextInsert := cmdTextInsert + "INSERT INTO onko_stad( id, shortname, icdtop, morph, stage, "
+            cmdTextInsert += "tumor, id_tumor, nodus, id_nodus, metastas, id_metastas, "
+            cmdTextInsert += "classification, versionTNM ) VALUES("
+//            cmdTextInsert += "addition, id_addition, classification, versionTNM ) VALUES("  // пока не используем
+            cmdTextInsert += "" + mID + ","
+            cmdTextInsert += "'" + mShort + "',"
+            cmdTextInsert += "'" + mICDTop + "',"
+            cmdTextInsert += "'" + mMorph + "',"
+            cmdTextInsert += "'" + mStage + "',"
+            cmdTextInsert += "'" + mTumor + "',"
+            cmdTextInsert += "" + mIDTumor + ","
+            cmdTextInsert += "'" + mNodus + "',"
+            cmdTextInsert += "" + mIDNodus + ","
+            cmdTextInsert += "'" + mMetastasis + "',"
+            cmdTextInsert += "" + mIDMetastasis + ","
+//            cmdTextInsert += "'" + mAddition + "',"  // пока не используем
+//            cmdTextInsert += "" + iif( Empty( mIDAddition ), 'NULL', mAddition ) + ","  // пока не используем
+            cmdTextInsert += "" + mClassif + ","
+            cmdTextInsert += "" + mVersion + ");"
+            If count == COMMIT_COUNT
+              cmdTextInsert += textCommitTrans
+              sqlite3_exec( db, cmdTextInsert )
+              count := 0
+              cmdTextInsert := textBeginTrans
+            Endif
+           Endif
+         Next j1
+       Endif
+     Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
+  Endif
+  out_obrabotka_eol()
+  return nil
 
 // 07.07.25
 function make_mkb_mkbo( db, source )
 
   Local cmdText
   Local nfile, nameRef
-  Local k, j, k1, j1, j2, k2
+  Local k, j, k1, j1
   Local oXmlDoc, oXmlNode, oNode1
   Local mICD10, mICD10T, mTNM7, mTNM8
   Local count := 0, cmdTextInsert := textBeginTrans
