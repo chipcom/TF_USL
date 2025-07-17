@@ -23,7 +23,7 @@ Function make_mzdrav( db, source )
   make_onko_stad( db, source )    // справочник TNM. Стадирование злокачественных опухолей
   Return Nil
 
-// 16.07.28
+// 17.07.28
 function make_onko_stad( db, source )
 
   Local cmdText
@@ -33,7 +33,7 @@ function make_onko_stad( db, source )
   Local mID, mShort, mICDTop, mMorph, mStage, mTumor, mIDTumor
   Local mNodus, mIDNodus, mMetastasis, mIDMetastasis
   Local mClassif, mVersion
-//  Local mAddition, mIDAddition  // пока не используем
+  Local mIDAddition //, mAddition  // пока не используем
   Local count := 0, cmdTextInsert := textBeginTrans
 
   // 1) ID, Код, Целочисленное, обязательное поле, Обязательное;
@@ -63,10 +63,14 @@ function make_onko_stad( db, source )
   // 15) Version, Версия TNM, Целочисленное, обязательное поле, Обязательное;
 
   // Логическое храним как целое 0 - false, 1 - true
+/*  // пока не используем
   cmdText := 'CREATE TABLE onko_stad( id INTEGER PRIMARY KEY NOT NULL, shortname TEXT(100), icdtop TEXT(10), morph TEXT(20), stage TEXT(5), '
   cmdText += 'tumor TEXT(5), id_tumor INTEGER, nodus TEXT(5), id_nodus INTEGER, metastas TEXT(5), id_metastas INTEGER, '
-  cmdText += 'classification INTEGER, versionTNM INTEGER)'
-//  cmdText += 'addition TEXT(5), id_addition INTEGER, classification INTEGER, versionTNM INTEGER)'  // пока не используем
+  cmdText += 'addition TEXT(5), id_addition INTEGER, classification INTEGER, versionTNM INTEGER)'
+*/
+  cmdText := 'CREATE TABLE onko_stad( id INTEGER PRIMARY KEY NOT NULL, icdtop TEXT(10), stage TEXT(5), '
+  cmdText += 'id_tumor INTEGER, id_nodus INTEGER, id_metastas INTEGER, '
+  cmdText += 'id_addition INTEGER, classification INTEGER, versionTNM INTEGER)'
 
   nameRef := '1.2.643.5.1.13.13.99.2.546.xml'  // может меняться из-за версий
   nfile := source + nameRef
@@ -114,28 +118,33 @@ function make_onko_stad( db, source )
               mMetastasis := mo_read_xml_stroke( oNode1, 'Metastasis', , , 'utf8' )
               mIDMetastasis := mo_read_xml_stroke( oNode1, 'ID_Metastasis', , , 'utf8' )
 //              mAddition := mo_read_xml_stroke( oNode1, 'Addition', , , 'utf8' )  // пока не используем
-//              mIDAddition := mo_read_xml_stroke( oNode1, 'ID_Addition', , , 'utf8' )  // пока не используем
+              mIDAddition := mo_read_xml_stroke( oNode1, 'ID_Addition', , , 'utf8' )
               mClassif := mo_read_xml_stroke( oNode1, 'Classification', , , 'utf8' )
               mVersion := mo_read_xml_stroke( oNode1, 'Version', , , 'utf8' )
 
             count++
+/*            // пока не используем
             cmdTextInsert := cmdTextInsert + "INSERT INTO onko_stad( id, shortname, icdtop, morph, stage, "
             cmdTextInsert += "tumor, id_tumor, nodus, id_nodus, metastas, id_metastas, "
-            cmdTextInsert += "classification, versionTNM ) VALUES("
-//            cmdTextInsert += "addition, id_addition, classification, versionTNM ) VALUES("  // пока не используем
+            cmdTextInsert += "addition, id_addition, classification, versionTNM ) VALUES("
+*/
+
+            cmdTextInsert := cmdTextInsert + "INSERT INTO onko_stad( id, icdtop, stage, "
+            cmdTextInsert += "id_tumor, id_nodus, id_metastas, "
+            cmdTextInsert += "id_addition, classification, versionTNM ) VALUES("
             cmdTextInsert += "" + mID + ","
-            cmdTextInsert += "'" + mShort + "',"
+//            cmdTextInsert += "'" + mShort + "',"
             cmdTextInsert += "'" + mICDTop + "',"
-            cmdTextInsert += "'" + mMorph + "',"
+//            cmdTextInsert += "'" + mMorph + "',"
             cmdTextInsert += "'" + mStage + "',"
-            cmdTextInsert += "'" + mTumor + "',"
+//            cmdTextInsert += "'" + mTumor + "',"
             cmdTextInsert += "" + mIDTumor + ","
-            cmdTextInsert += "'" + mNodus + "',"
+//            cmdTextInsert += "'" + mNodus + "',"
             cmdTextInsert += "" + mIDNodus + ","
-            cmdTextInsert += "'" + mMetastasis + "',"
+//            cmdTextInsert += "'" + mMetastasis + "',"
             cmdTextInsert += "" + mIDMetastasis + ","
 //            cmdTextInsert += "'" + mAddition + "',"  // пока не используем
-//            cmdTextInsert += "" + iif( Empty( mIDAddition ), 'NULL', mAddition ) + ","  // пока не используем
+            cmdTextInsert += "" + iif( Empty( mIDAddition ), 'NULL', mIDAddition ) + ","  // пока не используем
             cmdTextInsert += "" + mClassif + ","
             cmdTextInsert += "" + mVersion + ");"
             If count == COMMIT_COUNT
