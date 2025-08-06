@@ -9,6 +9,9 @@ hbsqlit3.hbc
 xhb.hbc
 hbmisc.hbc
 
+hbodbc.hbc
+sddodbc.hbc
+
 -mt
 -inc
 
