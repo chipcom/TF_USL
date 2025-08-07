@@ -14,7 +14,7 @@
 REQUEST SDDODBC, SQLMIX 
 REQUEST HB_CODEPAGE_RU1251
 
-#define COMMIT_COUNT  100
+#define COMMIT_COUNT  500
 
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
@@ -32,7 +32,7 @@ Function make_mzdrav( db, source )
   make_onko_stad( db, source )    // справочник TNM. Стадирование злокачественных опухолей
   Return Nil
 
-// 06.08.25
+// 07.08.25
 function make_onko_stad( db, source )
 
   Local cmdText
@@ -78,7 +78,7 @@ function make_onko_stad( db, source )
 
   // Логическое храним как целое 0 - false, 1 - true
   cmdText := 'CREATE TABLE onko_stad( id INTEGER PRIMARY KEY NOT NULL, icdtop TEXT(10), stage TEXT(5), '
-  cmdText += 'id_tumor INTEGER, id_nodus INTEGER, id_metastas INTEGER)'
+  cmdText += 'id_tumor INTEGER, id_nodus INTEGER, id_metastas INTEGER, versionTNM INTEGER)'
 //  cmdText += 'id_addition INTEGER, classification INTEGER, versionTNM INTEGER)'
 
   nameRef := '1.2.643.5.1.13.13.99.2.546.csv'  // может меняться из-за версий
@@ -102,13 +102,13 @@ function make_onko_stad( db, source )
     Return Nil
   Endif
 
+  cAlias := 'XLS_STAD'
   rddSetDefault( 'SQLMIX' ) 
   // ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=TEST1.XLS;' })
   ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=onko123.xls;' })
-  ? 'Use:', dbUseArea( .T., , 'select * from [111$] ', 'XL_PCEL') 
+  ? 'Use:', dbUseArea( .T., , 'select * from [111$] ', cAlias ) //'XL_PCEL') 
   ? 'Alias:', Alias() 
 
-  cAlias := 'XL_PCEL'
   ( cAlias )->( dbGoto( 3 ) )
   DO WHILE ! ( cAlias )->( Eof() )
 //?( cAlias )->( Recno() )
@@ -140,16 +140,20 @@ function make_onko_stad( db, source )
     mIDAddition := ( ( cAlias )->( fieldget( 13 ) ) )
     mClassif := ( ( cAlias )->( fieldget( 14 ) ) )
     mVersion := ( ( cAlias )->( fieldget( 15 ) ) )
+    if ValType( mVersion ) == 'N'
+      mVersion := str( mVersion )
+    endif
 
     count++
     cmdTextInsert := cmdTextInsert + "INSERT INTO onko_stad( id, icdtop, stage, "
-    cmdTextInsert += "id_tumor, id_nodus, id_metastas ) VALUES( "
+    cmdTextInsert += "id_tumor, id_nodus, id_metastas, versionTNM ) VALUES( "
     cmdTextInsert += "" + mID + ","
     cmdTextInsert += "'" + mICDTop + "',"
     cmdTextInsert += "'" + mStage + "',"
     cmdTextInsert += "" + mIDTumor + ","
     cmdTextInsert += "" + mIDNodus + ","
-    cmdTextInsert += "" + mIDMetastasis + ");"
+    cmdTextInsert += "" + mIDMetastasis + "," //");"
+    cmdTextInsert += "" + mVersion + ");"
     If count == COMMIT_COUNT
       cmdTextInsert += textCommitTrans
       sqlite3_exec( db, cmdTextInsert )
