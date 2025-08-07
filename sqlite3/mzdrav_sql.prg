@@ -42,7 +42,7 @@ function make_onko_stad( db, source )
   Local mClassif, mVersion
   Local mIDAddition, mAddition  // пока не используем
   Local count := 0, cmdTextInsert := textBeginTrans
-  Local cAlias
+  Local cAlias, connect_string
 
   // 1) ID, Код, Целочисленное, обязательное поле, Обязательное;
   // 2) ShortNameOfTopography, Краткое наименование топографии, Строковое, обязательное поле,
@@ -76,13 +76,14 @@ function make_onko_stad( db, source )
     hb_SDDODBC_Register() 
   #endif 
 
+?'START 1 546'
   // Логическое храним как целое 0 - false, 1 - true
   cmdText := 'CREATE TABLE onko_stad( id INTEGER PRIMARY KEY NOT NULL, icdtop TEXT(10), stage TEXT(5), '
   cmdText += 'id_tumor INTEGER, id_nodus INTEGER, id_metastas INTEGER, versionTNM INTEGER)'
 //  cmdText += 'id_addition INTEGER, classification INTEGER, versionTNM INTEGER)'
 
-  nameRef := '1.2.643.5.1.13.13.99.2.546.csv'  // может меняться из-за версий
-  nameRef := '123.csv'  // может меняться из-за версий
+  nameRef := 'onko123.xls'  // может меняться из-за версий
+  nameRef := '1.2.643.5.1.13.13.99.2.546.xls'  // может меняться из-за версий
   nfile := source + nameRef
   If ! hb_vfExists( nfile )
     out_error( FILE_NOT_EXIST, nfile )
@@ -101,12 +102,13 @@ function make_onko_stad( db, source )
     OutStd( 'CREATE TABLE onko_stad - False' + hb_eol() )
     Return Nil
   Endif
-
-  cAlias := 'XLS_STAD'
+?'START 2 546'
+  cAlias := 'XLS_ONKO'
   rddSetDefault( 'SQLMIX' ) 
-  // ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=TEST1.XLS;' })
-  ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=onko123.xls;' })
-  ? 'Use:', dbUseArea( .T., , 'select * from [111$] ', cAlias ) //'XL_PCEL') 
+  connect_string := 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=' + nfile + ';'
+//  ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=onko123.xls;' })
+  ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', connect_string })
+  ? 'Use:', dbUseArea( .T., , 'select * from [111$] ', cAlias )   //'XL_PCEL') 
   ? 'Alias:', Alias() 
 
   ( cAlias )->( dbGoto( 3 ) )
