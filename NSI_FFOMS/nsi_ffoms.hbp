@@ -1,0 +1,27 @@
+-i..\..\include
+-L..\..\LIB
+
+# -lMyLib_HBT
+# -lFunLib
+-lhbct
+
+hbsqlit3.hbc
+xhb.hbc
+hbmisc.hbc
+
+-mt
+-inc
+
+-workdir=d:\_MO\TEMP\NSI
+-onsi_ffoms
+-icon=database.ico
+
+-gtwvg
+
+nsi_ffoms.prg
+table_func.prg
+web_func.prg
+other_func.prg
+error_nsi.prg
+
+nsi_ffoms.rc

@@ -1,0 +1,3 @@
+Options Path C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Harbour\bin;C:\MinGW\bin;C:\hb32\bin;C:\hb32\comp\mingw\bin;C:\Users\vb\.cargo\bin;C:\Users\vb\AppData\Local\Programs\Python\Launcher\;C:\Users\vb\AppData\Local\Microsoft\WindowsApps;;C:\Users\vb\AppData\Local\Programs\Microsoft VS Code\bin
+Options Colors {"W+/BG","N/BG","R/BG","N+/BG","W+/B","GR+/B","W/B","N/W","R/W","N/BG","R/BG"}
+Monitor Local
