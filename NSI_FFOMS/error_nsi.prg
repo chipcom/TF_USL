@@ -1,4 +1,4 @@
-#include 'nsi.ch'
+#include 'nsi_ffoms.ch'
 
 // 13.04.25
 Function out_error( nError, nfile, j, k )
