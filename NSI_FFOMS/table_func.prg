@@ -38,7 +38,7 @@ function checking_file( db, download )
   aChecking := get_checking( db )
   aGeneral := get_general( db )
 
-  for i := 1 to Len( aChecking )
+  for i := 1 to Len( aChecking ) 
     code := aChecking[ i, 1 ]
     version := AllTrim( aChecking[ i, 2 ] )
     last_update := aChecking[ i, 3 ]
@@ -111,13 +111,14 @@ function init_db( destination )
 
   db := sqlite3_open( nameDB, lCreateIfNotExist )
 
-  if ! exists_table( db, 'general' )
+//  if ! exists_table( db, 'general' )
+    drop_table( db, 'general' )
     if ! tbl_general( db )
       st := hb_Utf8ToStr( 'Ошибка создания таблицы general в файле: ' + nameDB, 'RU866' )	
       OutStd( hb_eol() + st + hb_eol() )
       return nil
     Endif
-  endif
+//  endif
   if ! exists_table( db, 'checking' )
     if ! tbl_checking( db )
       st := hb_Utf8ToStr( 'Ошибка создания таблицы checking в файле: ' + nameDB, 'RU866' )	
