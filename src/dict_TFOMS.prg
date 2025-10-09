@@ -465,7 +465,7 @@ Function work_mo_uslf( source, destination )
   close databases
   return .t.
 
-// 23.05.23
+// 09.10.25
 Function work_t006(source, destination)
   Local oXmlDoc, oXmlNode, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
@@ -675,6 +675,10 @@ Function work_t006(source, destination)
               if (lshifr = 'st36.013' .or. lshifr = 'st36.014' .or. lshifr = 'st36.015' .or. lshifr = 'st36.031') ;
                   .and. empty(lDS) .and. empty(lsy)
                 d6->DS  := lDS  := 'Z92.8'
+              endif
+
+              if lshifr = 'st36.048' .and. empty(lDS) .and. empty(lsy)  // согласно письму 12-20-607 от 01.10ю25
+                d6->DS  := lDS  := 'Z92.9'
               endif
 
               d6->AGE  := mo_read_xml_stroke(oNode2, 'AGE',)
