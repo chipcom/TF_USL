@@ -693,7 +693,7 @@ Function work_t006(source, destination)
               d6->DATEBEG := xml2date(mo_read_xml_stroke(oNode2, 'D_FROM',))
               d6->DATEEND := xml2date(mo_read_xml_stroke(oNode2, 'D_TO',))
               d6->name := t6->NAME
-              if !empty(d6->AD_CR) .and. !eq_any(left(d6->AD_CR, 2), 'sh', 'mt' )   //, 'rb')
+              if !empty(d6->AD_CR) .and. !eq_any(left(d6->AD_CR, 2), 'sh', 'mt', 'rb')
                 select IT
                 find (padr(d6->AD_CR, 10) + str(t6->usl_ok, 1) + padr(lds, 2300) + padr(lds1, 150) + padr(lds2, 250))
                 if !found()

@@ -7,9 +7,11 @@
 -i..\..\include\libxlsxwriter\include
 -i..\..\include
 xhb.hbc
+hbodbc.hbc
+sddodbc.hbc
 
 -workdir=d:\_MO\TEMP\MO_MKB10
--oconvertMKB_2025
+-oconvert_MKB
 -icon=database.ico
 
 convertMKB_2025.prg
