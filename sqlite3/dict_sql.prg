@@ -8,7 +8,7 @@
 
 // #define TRACE
 
-// 28.03.23
+// 28.11.25
 Procedure Main( ... )
 
   Local cParam, cParamL
@@ -132,7 +132,7 @@ Procedure Main( ... )
   // make_F0xx(db, source)
   make_v0xx( db, source )
   make_N0xx(db, source)
-  make_other(db, source)
+  make_other(db, source, destination )
   make_mzdrav(db, source)
 
 // if lAll // конвертировать все файлы
@@ -164,15 +164,15 @@ Procedure Main( ... )
 //  next
 // endif
 
-  If lAll .or. lUpdate
-    db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
-    If ! Empty( db )
-      If sqlite3_exec( db, 'VACUUM' ) == SQLITE_OK
-        OutStd( hb_eol() + 'Pack - ok' + hb_eol() )
-      Else
-        out_error( PACK_ERROR, nameDB )
+    If lAll .or. lUpdate
+      db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
+      If ! Empty( db )
+        If sqlite3_exec( db, 'VACUUM' ) == SQLITE_OK
+          OutStd( hb_eol() + 'Pack - ok' + hb_eol() )
+        Else
+          out_error( PACK_ERROR, nameDB )
+        Endif
       Endif
-    Endif
     Endif
   Endif
   Return
