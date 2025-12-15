@@ -10,8 +10,8 @@ REQUEST FCOMMA
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 18.05.25
-Function make_other( db, source )
+// 28.11.25
+Function make_other( db, source, destination )
 
   make_p_cel( db, source )
   make_t005( db, source )
@@ -24,7 +24,42 @@ Function make_other( db, source )
   db_planzakaz( db, source )
   make_planDRZ( db, source )
   db_diagnoze_dn( db, source )
+//  db_enp( source, destination )
   Return Nil
+
+#define DEF_SMO   '34001' // Капитал
+// 28.11.25
+function db_enp( source, destination )
+
+  Local nameRef, nfile, file_destination
+  local aDbf
+  local mArr
+
+  aDbf := { ;
+    { 'ENP',   'C',  16, 0 }, ;
+    { 'SMO',   'C',   5, 0 } ;
+  }
+
+  nameRef := 'enp.csv'
+  nfile := source + nameRef
+  file_destination := destination + '_mo_enp'
+
+  out_utf8_to_str( nameRef + ' - номера ЕНП для R01', 'RU866' )
+
+  dbcreate( file_destination, aDbf, , .t., 'polis'  )
+
+  dbUseArea( .t., 'FCOMMA', nfile, , .f., .f. )
+  dbGoTop()
+  do while ! Eof()
+    mArr := split( FIELD->LINE, ';' )
+    polis->( dbAppend() )
+    polis->ENP := mArr[ 1 ]
+    polis->SMO := DEF_SMO
+
+    dbSkip()
+  enddo
+
+  return nil
 
 // 22.12.24
 Function make_p_cel( db, source )
