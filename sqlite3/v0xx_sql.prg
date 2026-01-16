@@ -33,6 +33,8 @@ Function make_v0xx( db, source )
   // make_V032(db, source)
   // make_V033(db, source)
   make_v036( db, source )
+  make_v039( db, source )
+  make_v040( db, source )
 
   Return Nil
 
@@ -1818,6 +1820,154 @@ Function make_v004( db, source )
   If count > 0
     cmdTextInsert += textCommitTrans
     sqlite3_exec( db, cmdTextInsert )
+  Endif
+  out_obrabotka_eol()
+  Return Nil
+
+// 16.01.26
+Function make_v039( db, source )
+
+  // ID_VZ     "C",   2, 0 Код вида занятости
+  // N_VZ",    "C", 254, 0 Наименование вида занятости
+  // DATEBEG,  "D",   8, 0 Дата начала действия записи
+  // DATEEND,  "D",   8, 0 Дата окончания действия записи
+
+  Local cmdText
+  Local k, j
+  Local nfile, nameRef
+  Local oXmlDoc, oXmlNode
+  Local mID_Vz, mN_Vz, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  cmdText := 'CREATE TABLE v039( id_vz INTEGER, n_vz TEXT(60), datebeg TEXT(10), dateend TEXT(10) )'
+
+  nameRef := 'V039.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Классификатор видов занятости (KVZ)', 'RU866' )	
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS v039' ) == SQLITE_OK
+    OutStd( 'DROP TABLE v039 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE v039 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE v039 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mID_Vz := read_xml_stroke_1251_to_utf8( oXmlNode, 'ID_VZ' )
+        mN_Vz := read_xml_stroke_1251_to_utf8( oXmlNode, 'N_VZ' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+
+        count++
+        cmdTextInsert += 'INSERT INTO v039(id_vz, n_vz, datebeg, dateend) VALUES(' ;
+          + "" + mID_Vz + "," ;
+          + "'" + mN_vz + "'," ;
+          + "'" + d1 + "'," ;
+          + "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
+        Endif
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
+  Endif
+  out_obrabotka_eol()
+  Return Nil
+
+// 16.01.26
+Function make_v040( db, source )
+
+  // ID_MOP    "C",   3, 0 Код места обращения (посещения)
+  // N_MOP,    "C", 254, 0 Наименование места обращения (посещения)
+  // DATEBEG,  "D",   8, 0 Дата начала действия записи
+  // DATEEND,  "D",   8, 0 Дата окончания действия записи
+
+  Local cmdText
+  Local k, j
+  Local nfile, nameRef
+  Local oXmlDoc, oXmlNode
+  Local mID_Mop, mN_Mop, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  cmdText := 'CREATE TABLE v040( id_mop INTEGER, n_mop TEXT(150), datebeg TEXT(10), dateend TEXT(10) )'
+
+  nameRef := 'V040.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Классификатор мест обращений (посещений) (KMOP)', 'RU866' )	
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS v040' ) == SQLITE_OK
+    OutStd( 'DROP TABLE v040 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE v040 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE v040 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mID_Mop := read_xml_stroke_1251_to_utf8( oXmlNode, 'ID_MOP' )
+        mN_Mop := read_xml_stroke_1251_to_utf8( oXmlNode, 'N_MOP' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+
+        count++
+        cmdTextInsert += 'INSERT INTO v039(id_mop, n_mop, datebeg, dateend) VALUES(' ;
+          + "" + mID_Mop + "," ;
+          + "'" + mN_Mop + "'," ;
+          + "'" + d1 + "'," ;
+          + "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
+        Endif
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
   Endif
   out_obrabotka_eol()
   Return Nil
