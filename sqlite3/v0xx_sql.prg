@@ -1951,7 +1951,7 @@ Function make_v040( db, source )
         d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
 
         count++
-        cmdTextInsert += 'INSERT INTO v039(id_mop, n_mop, datebeg, dateend) VALUES(' ;
+        cmdTextInsert += 'INSERT INTO v040(id_mop, n_mop, datebeg, dateend) VALUES(' ;
           + "" + mID_Mop + "," ;
           + "'" + mN_Mop + "'," ;
           + "'" + d1 + "'," ;
