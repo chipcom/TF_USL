@@ -8,7 +8,7 @@ REQUEST HB_CODEPAGE_RU1251, HB_CODEPAGE_RU866
 PROCEDURE Main() 
   
   local _f032 := { ;
-    { 'UIDMO',    'C',  17, 0 }, ;
+    { 'UIDMO',    'C',  11, 0 }, ;
     { 'IDMO',     'C',  17, 0 }, ;
     { 'MCOD',     'C',   6, 0 }, ;
     { 'OSP',      'C',   1, 0 } ;
