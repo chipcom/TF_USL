@@ -4,6 +4,7 @@
 #include 'dbinfo.ch'
   
 REQUEST HB_CODEPAGE_RU1251, HB_CODEPAGE_RU866 
+Request HB_CODEPAGE_UTF8
   
 PROCEDURE Main() 
   
@@ -23,11 +24,18 @@ PROCEDURE Main()
     { 'NAM_SPMO', 'C', 150, 0 },  ;
     { 'OSP',      'C',   1, 0 } ;
   }
-  local oXmlDoc, oXmlNode
-  local cAlias := 'F032', nameRef, nfile, k, j
-  local source := '.\'
-  local mMcod, mUIDSPMO, mOSP
 
+  local _m003 := { ;
+    { 'ID',       'N',  3, 0 }, ;
+    { 'PROFILE',  'C', 70, 0 } ;
+  }
+
+  local oXmlDoc, oXmlNode, oNode1
+  local cAlias, nameRef, nfile, k, j, k1, j1
+  local mMcod, mUIDSPMO, mOSP, mID, mProfile
+  local source := '.\'
+
+  cAlias := 'F032'
   nameRef := 'F032.xml'
   nfile := source + nameRef
 
@@ -87,6 +95,41 @@ PROCEDURE Main()
           ( cAlias )->NAM_SPMO := substr( mo_read_xml_stroke( oXmlNode, 'NAM_SPMO', ), 1, 150 )
         endif
       ENDIF
+    NEXT j
+  endif
+
+  ( cAlias )->( dbCloseArea() )
+
+  HB_CDPSELECT('UTF8')
+
+  cAlias := 'M003'
+  nameRef := '1.2.643.5.1.13.13.11.1119.xml'
+  nfile := source + nameRef
+
+  dbcreate('_mo_m003', _m003)
+  dbUseArea( .t.,, '_mo_m003', cAlias, .f., .f. )
+  ( cAlias )->(dbGoTop())
+
+  oXmlDoc := HXMLDoc():Read( nfile )
+  IF Empty( oXmlDoc:aItems )
+    ( cAlias )->( dbCloseArea() )
+  else
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ENTRIES' == Upper( oXmlNode:title )
+         k1 := Len( oXmlNode:aItems )
+         For j1 := 1 To k1
+          oNode1 := oXmlNode:aItems[ j1 ]
+          IF 'ENTRY' == Upper( oNode1:title )
+            mID := mo_read_xml_stroke( oNode1, 'ID', )
+            mProfile := SubStr( mo_read_xml_stroke( oNode1, 'PROFILE', , , 'UTF8' ), 1, 70 )
+            ( cAlias )->( dbAppend() )
+            ( cAlias )->ID := Val( mID )
+            ( cAlias )->PROFILE := mProfile
+          ENDIF
+        next j1
+      endif
     NEXT j
   endif
 
