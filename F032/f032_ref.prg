@@ -99,7 +99,7 @@ PROCEDURE Main()
   endif
 
   ( cAlias )->( dbCloseArea() )
-
+/*
   HB_CDPSELECT('UTF8')
 
   cAlias := 'M003'
@@ -134,7 +134,7 @@ PROCEDURE Main()
   endif
 
   ( cAlias )->( dbCloseArea() )
-
+*/
   RETURN
 
 // строка даты для XML-файла

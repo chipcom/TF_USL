@@ -23,6 +23,7 @@ Static textCommitTrans := 'COMMIT;'
 Function make_mzdrav( db, source )
 
 //  make_uslugi_mz(db, source) // не используем (для будующего)
+  make_M003( db, source )       // профили медицинской помощи Минздрава
   make_ed_izm( db, source )       // справочник единиц измерения
   make_severity( db, source )   // справочник тяжести заболевания
   make_implant( db, source )      // справочник имплантов
@@ -1110,6 +1111,80 @@ Function make_uslugi_mz( db, source )
     Endif
     sqlite3_clear_bindings( stmt )
     sqlite3_finalize( stmt )
+  Endif
+  out_obrabotka_eol()
+  Return Nil
+
+// 18.01.26
+Function make_M003( db, source )
+
+  Local cmdText
+  Local nfile, nameRef
+  Local k, j, k1, j1
+  Local oXmlDoc, oXmlNode, oNode1
+  Local mID, mProfile
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  // 1) ID, Уникальный идентификатор , Целочисленный, числовой формат, обязательное поле;
+  // 2) PROFILE, Полное название профиля, Строчный, текстовый формат, обязательное поле;
+  cmdText := 'CREATE TABLE m003( id INTEGER, profile TEXT(70) )'
+
+  nameRef := '1.2.643.5.1.13.13.11.1119.xml'  // может меняться из-за версий
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Профили медицинской помощи (OID)', 'RU866' )	
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE IF EXISTS m003' ) == SQLITE_OK
+    OutStd( 'DROP TABLE m003 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE m003 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE m003 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ENTRIES' == Upper( oXmlNode:title )
+        k1 := Len( oXmlNode:aItems )
+        For j1 := 1 To k1
+          oNode1 := oXmlNode:aItems[ j1 ]
+          If 'ENTRY' == Upper( oNode1:title )
+            mID := mo_read_xml_stroke( oNode1, 'ID', , , 'UTF8' )
+            mProfile := mo_read_xml_stroke( oNode1, 'PROFILE', , , 'UTF8' )
+
+            count++
+            cmdTextInsert := cmdTextInsert + 'INSERT INTO m003 (id, profile) VALUES('
+            cmdTextInsert += '' + mID + ','
+            cmdTextInsert += '"' + mProfile + '");'
+
+            If count == COMMIT_COUNT
+              cmdTextInsert += textCommitTrans
+              sqlite3_exec( db, cmdTextInsert )
+              count := 0
+              cmdTextInsert := textBeginTrans
+            Endif
+          Endif
+        Next j1
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
   Endif
   out_obrabotka_eol()
   Return Nil
