@@ -12,7 +12,10 @@ PROCEDURE Main()
     { 'UIDMO',    'C',  11, 0 }, ;
     { 'IDMO',     'C',  17, 0 }, ;
     { 'MCOD',     'C',   6, 0 }, ;
-    { 'OSP',      'C',   1, 0 } ;
+    { 'OSP',      'C',   1, 0 }, ;
+    { 'NAMEMOK',  'C',  50, 0 }, ;
+    { 'NAMEMOP',  'C', 150, 0 }, ;
+    { 'ADDRESS',  'C', 250, 0 } ;
   }
 //    { 'NAME_MOK', 'C',  50, 0 }, ;
 //    { 'NAME_MOP', 'C', 150, 0 }  ;
@@ -33,6 +36,7 @@ PROCEDURE Main()
   local oXmlDoc, oXmlNode, oNode1
   local cAlias, nameRef, nfile, k, j, k1, j1
   local mMcod, mUIDSPMO, mOSP, mID, mProfile
+  local mNamemok, mNamemop, mAddress
   local source := '.\'
 
   cAlias := 'F032'
@@ -53,15 +57,16 @@ PROCEDURE Main()
       IF "ZAP" == Upper( oXmlNode:title )
 //        mOSP := mo_read_xml_stroke( oXmlNode, 'OSP', )
         mMcod := mo_read_xml_stroke( oXmlNode, 'MCOD', )
-        if SubStr( mMcod, 1, 2 ) == '34'  // 
+//        if SubStr( mMcod, 1, 2 ) == '34'  // 
           ( cAlias )->( dbAppend() )
           ( cAlias )->UIDMO := mo_read_xml_stroke( oXmlNode, 'UIDMO', )
           ( cAlias )->IDMO := mo_read_xml_stroke( oXmlNode, 'IDMO', )
           ( cAlias )->MCOD := mMcod // mo_read_xml_stroke( oXmlNode, 'MCOD', )
           ( cAlias )->OSP := mo_read_xml_stroke( oXmlNode, 'OSP', )
-//          ( cAlias )->NAMEMOK := mo_read_xml_stroke( oXmlNode, 'NAM_MOK', )
-//          ( cAlias )->NAMEMOP := mo_read_xml_stroke( oXmlNode, 'NAM_MOP', )
-        endif
+          ( cAlias )->NAMEMOK := mo_read_xml_stroke( oXmlNode, 'NAM_MOK', )
+          ( cAlias )->NAMEMOP := mo_read_xml_stroke( oXmlNode, 'NAM_MOP', )
+          ( cAlias )->ADDRESS := mo_read_xml_stroke( oXmlNode, 'JURADDRESS_ADDRESS', )
+//        endif
       ENDIF
     NEXT j
   endif
