@@ -10,8 +10,8 @@ Static textCommitTrans := 'COMMIT;'
 
 // 16.02.25
 Function make_v0xx( db, source )
-
   make_v002( db, source )
+
   make_v004( db, source )
 
   make_v009( db, source )
@@ -22,7 +22,9 @@ Function make_v0xx( db, source )
   // make_V017(db, source)
   make_V018(db, source)
   make_v019( db, source )
-  // make_V020(db, source)
+
+  make_V020(db, source)
+
   make_V021(db, source)
   make_V022(db, source)
   make_v024( db, source )
@@ -591,11 +593,13 @@ Function make_v018( db, source )
   out_obrabotka_eol()
   Return Nil
 
-// 25.12.24
+// 23.01.26
 Function make_v020( db, source )
 
   // IDK_PR,     "N",      3,      0 // Код профиля койки
   // K_PRNAME,   "C",    254,      0 // Наименование профиля койки
+  // ID_PR,      "N",      2,      0 // Код профиля медицинской помощи
+  // PRNAME,     "C",    254,      0 // Наименование профиля медицинской помощи
   // DATEBEG,    "D",      8,      0 // Дата начала действия записи
   // DATEEND,    "D",      8,      0  // Дата окончания действия записи
 
@@ -605,8 +609,9 @@ Function make_v020( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDK_PR, mK_PRNAME, d1, d2
+  Local mId_pr, mPrname
 
-  cmdText := 'CREATE TABLE v020(idk_pr INTEGER, k_prname BLOB, datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE v020(idk_pr INTEGER, k_prname TEXT, id_pr INTEGER, prname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
   nameRef := 'V020.xml'
   nfile := source + nameRef
@@ -633,7 +638,7 @@ Function make_v020( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    cmdText := "INSERT INTO v020 (idk_pr, k_prname, datebeg, dateend) VALUES( :idk_pr, :k_prname, :datebeg, :dateend )"
+    cmdText := "INSERT INTO v020 (idk_pr, k_prname, id_pr, prname, datebeg, dateend) VALUES( :idk_pr, :k_prname, :mId_pr, :mPrname, :datebeg, :dateend )"
     stmt := sqlite3_prepare( db, cmdText )
     If ! Empty( stmt )
       out_obrabotka( nfile )
@@ -641,15 +646,21 @@ Function make_v020( db, source )
       For j := 1 To k
         oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
         If 'ZAP' == Upper( oXmlNode:title )
+          mId_pr := 0
+          mPrname := ''
           mIDK_PR := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDK_PR' )
           mK_PRNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'K_PRNAME' )
+          mID_PR := Val( read_xml_stroke_1251_to_utf8( oXmlNode, 'ID_PR' ) )
+          mPrname := read_xml_stroke_1251_to_utf8( oXmlNode, 'PRNAME' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
 
           If sqlite3_bind_int( stmt, 1, Val( mIDK_PR ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mK_PRNAME ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 4, d2 ) == SQLITE_OK
+              sqlite3_bind_int( stmt, 3, mId_pr ) == SQLITE_OK .and. ;
+              sqlite3_bind_text( stmt, 4, mPrname ) == SQLITE_OK .and. ;
+              sqlite3_bind_text( stmt, 5, d1 ) == SQLITE_OK .and. ;
+              sqlite3_bind_text( stmt, 6, d2 ) == SQLITE_OK
             If sqlite3_step( stmt ) != SQLITE_DONE
               out_error( TAG_ROW_INVALID, nfile, j )
             Endif
@@ -1298,12 +1309,13 @@ Function make_v036( db, source )
   out_obrabotka_eol()
   Return Nil
 
-// 25.12.24
+// 23.01.26
 Function make_v002( db, source )
 
-  // IDPR,       "N",      3,      0  // Код профиля медицинской помощи
-  // PRNAME,     "C",    350,      0  // Наименование профиля медицинской помощи
-  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // IDPR,      "N",   3, 0   // Код профиля медицинской помощи
+  // PRNAME,    "C", 350, 0   // Наименование профиля медицинской помощи
+  // IS_IDENT,  "C",   1, 0   // Признак тождественных работ (услуг)
+  // DATEBEG,   "D",   8, 0   // Дата начала действия записи
   // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
   Local cmdText
@@ -1311,9 +1323,10 @@ Function make_v002( db, source )
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDPR, mPrname, d1, d2
+  local mIs_ident, mParent_id
   Local count := 0, cmdTextInsert := textBeginTrans
 
-  cmdText := 'CREATE TABLE v002(idpr INTEGER, prname TEXT, datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE v002(idpr INTEGER, prname TEXT, is_ident TEXT(1), parent_id INTEGER, datebeg TEXT(10), dateend TEXT(10))'
 
   nameRef := 'V002.xml'
   nfile := source + nameRef
@@ -1345,15 +1358,21 @@ Function make_v002( db, source )
     For j := 1 To k
       oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
       If 'ZAP' == Upper( oXmlNode:title )
+        mIs_ident := ''
+        mParent_id := ''
         mIDPR := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDPR' )
         mPrname := read_xml_stroke_1251_to_utf8( oXmlNode, 'PRNAME' )
+        mIs_ident := read_xml_stroke_1251_to_utf8( oXmlNode, 'IS_IDENT' )
+        mParent_id := read_xml_stroke_1251_to_utf8( oXmlNode, 'PARENT_ID' )
         d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
         d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
 
         count++
-        cmdTextInsert += 'INSERT INTO v002(idpr, prname, datebeg, dateend) VALUES(' ;
+        cmdTextInsert += 'INSERT INTO v002(idpr, prname, is_ident, parent_id, datebeg, dateend) VALUES(' ;
           + "'" + mIDPR + "'," ;
           + "'" + mPrname + "'," ;
+          + "'" + mIs_ident + "'," ;
+          + "'" + mParent_id + "'," ;
           + "'" + d1 + "'," ;
           + "'" + d2 + "');"
         If count == COMMIT_COUNT
