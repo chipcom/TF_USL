@@ -8,7 +8,7 @@
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 16.02.25
+// 25.01.26
 Function make_v0xx( db, source )
   make_v002( db, source )
 
@@ -19,7 +19,7 @@ Function make_v0xx( db, source )
   make_v012( db, source )
   make_v015( db, source )
   make_V016(db, source)
-  // make_V017(db, source)
+  make_V017(db, source)
   make_V018(db, source)
   make_v019( db, source )
 
@@ -28,12 +28,12 @@ Function make_v0xx( db, source )
   make_V021(db, source)
   make_V022(db, source)
   make_v024( db, source )
-  // make_V025(db, source)
+  make_V025(db, source)
 
-  // make_V030(db, source)
-  // make_V031(db, source)
-  // make_V032(db, source)
-  // make_V033(db, source)
+  make_V030(db, source)
+  make_V031(db, source)
+  make_V032(db, source)
+  make_V033(db, source)
   make_v036( db, source )
   make_v039( db, source )
   make_v040( db, source )
@@ -852,7 +852,8 @@ Function make_v025( db, source )
   Local oXmlDoc, oXmlNode
   Local mIDPC, mN_PC, d1, d2
 
-  cmdText := 'CREATE TABLE v025(idpc TEXT(3), n_pc BLOB, datebeg TEXT(10), dateend TEXT(10))'
+//  cmdText := 'CREATE TABLE v025(idpc TEXT(3), n_pc BLOB, datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE v025(idpc TEXT(3), n_pc TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
   nameRef := 'V025.xml'
   nfile := source + nameRef
