@@ -8,37 +8,192 @@
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 25.01.26
+// 26.01.26
 Function make_v0xx( db, source )
+
+
   make_v002( db, source )
-
   make_v004( db, source )
-
   make_v009( db, source )
   make_v010( db, source )
   make_v012( db, source )
   make_v015( db, source )
-  make_V016(db, source)
-  make_V017(db, source)
-  make_V018(db, source)
+  make_V016( db, source )
+  make_V017( db, source )
+  make_V018( db, source )
   make_v019( db, source )
-
-  make_V020(db, source)
-
-  make_V021(db, source)
-  make_V022(db, source)
+  make_V020( db, source )
+  make_V021( db, source )
+  make_V022( db, source )
   make_v024( db, source )
-  make_V025(db, source)
-
-  make_V030(db, source)
-  make_V031(db, source)
-  make_V032(db, source)
-  make_V033(db, source)
+  make_V025( db, source )
+  make_V030( db, source )
+  make_V031( db, source )
+  make_V032( db, source )
+  make_V033( db, source )
   make_v036( db, source )
   make_v039( db, source )
-  make_v040( db, source )
+
+  make_v041( db, source )
+  make_v042( db, source )
 
   Return Nil
+
+// 26.01.26
+Function make_v041( db, source )
+
+  // ID_SL,     'C',   5,   0 // Номер коэффициента сложности лечения пациента (номер КСЛП, установленный на федеральном уровне)
+  // N_SL,      'C',1000,   0 // Случаи, для которых установлен КСЛП
+  // PG_SL,     'C',  10,   0 // Уровень программы государственных гарантий (БП ОМС, ТП ОМС)
+  // K_SL,      'N',   4,   2 // Значение КСЛП
+  // DATEBEG,   "D",   8,   0 // Дата начала действия записи
+  // DATEEND,   "D",   8,   0 // Дата окончания действия записи
+
+  Local cmdText
+  Local k, j
+  Local nfile, nameRef
+  Local oXmlDoc, oXmlNode
+  Local mID_SL, mN_SL, mPG_SL, mK_SL, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  cmdText := 'CREATE TABLE v041(id_sl TEXT(5), n_sl TEXT, pg_sl TEXT(10), k_sl REAL, datebeg TEXT(10), dateend TEXT(10))'
+
+  nameRef := 'V041.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Классификатор коэффициентов сложности лечения пациента (KSLP)', 'RU866' )	
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS v041' ) == SQLITE_OK
+    OutStd( 'DROP TABLE v041 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE v041 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE v041 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mID_SL := read_xml_stroke_1251_to_utf8( oXmlNode, 'ID_SL' )
+        mN_SL := read_xml_stroke_1251_to_utf8( oXmlNode, 'N_SL' )
+        mPG_SL := read_xml_stroke_1251_to_utf8( oXmlNode, 'PG_SL' )
+        mK_SL := read_xml_stroke_1251_to_utf8( oXmlNode, 'K_SL' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+
+        count++
+        cmdTextInsert := cmdTextInsert + "INSERT INTO v041( id_sl, n_sl, pg_sl, k_sl, datebeg, dateend ) VALUES("
+        cmdTextInsert += "'" + mID_SL + "',"
+        cmdTextInsert += "'" + mN_SL + "',"
+        cmdTextInsert += "'" + mPG_SL + "',"
+        cmdTextInsert += "" + mK_SL + ","
+        cmdTextInsert += "'" + d1 + "',"
+        cmdTextInsert += "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
+        Endif
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
+  Endif
+  out_obrabotka_eol()
+
+  return Nil
+
+// 26.01.26
+Function make_v042( db, source )
+
+  // ID_PR,     'C',   2,   0 // Код причины оплаты за прерванный случай лечения
+  // N_PR,      'C',1000,   0 // Наименование причины оплаты за прерванный случай лечения
+  // DATEBEG,   "D",   8,   0 // Дата начала действия записи
+  // DATEEND,   "D",   8,   0 // Дата окончания действия записи
+
+  Local cmdText
+  Local k, j
+  Local nfile, nameRef
+  Local oXmlDoc, oXmlNode
+  Local mID_PR, mN_pr, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  cmdText := 'CREATE TABLE v042(id_pr TEXT(2), n_pr TEXT, datebeg TEXT(10), dateend TEXT(10))'
+
+  nameRef := 'V042.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Классификатор причин оплаты за прерванный случай лечения (KPPSL)', 'RU866' )	
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS v042' ) == SQLITE_OK
+    OutStd( 'DROP TABLE v042 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE v042 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE v042 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mID_PR := read_xml_stroke_1251_to_utf8( oXmlNode, 'ID_PR' )
+        mN_PR := read_xml_stroke_1251_to_utf8( oXmlNode, 'N_PR' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+
+        count++
+        cmdTextInsert := cmdTextInsert + "INSERT INTO v042( id_pr, n_pr, datebeg, dateend ) VALUES("
+        cmdTextInsert += "'" + mID_PR + "',"
+        cmdTextInsert += "'" + mN_pr + "',"
+        cmdTextInsert += "'" + d1 + "',"
+        cmdTextInsert += "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
+        Endif
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
+  Endif
+  out_obrabotka_eol()
+  return Nil
 
 // 25.12.24
 Function make_v009( db, source )
