@@ -1,3 +1,4 @@
+#include 'hbsqlit3.ch'
 #include 'function.ch'
 #include 'dict_error.ch'
 

@@ -1,3 +1,4 @@
+#include 'hbsqlit3.ch'
 #include 'function.ch'
 #include 'dict_error.ch'
 
@@ -10,8 +11,8 @@ REQUEST FCOMMA
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 28.11.25
-Function make_other( db, source, destination )
+// 27.01.26
+Function make_other( db, source )   //  , destination )
 
   make_p_cel( db, source )
   make_t005( db, source )
@@ -276,6 +277,8 @@ Function dlo_lgota( db, source )
   Local mArr := {}
   Local count := 0, cmdTextInsert := textBeginTrans
 
+  source := ''
+
   AAdd( mArr, { '000 --- без льготы ---', '   ' } )
   AAdd( mArr, { '010 Инвалиды войны', '010' } )
   AAdd( mArr, { '011 Участники Великой Отечественной войны, ставшие инвалидами', '011' } )
@@ -374,6 +377,7 @@ Function err_csv_prik( db, source )
   Local arr := {}
   Local count := 0, cmdTextInsert := textBeginTrans
 
+  source := ''
   AAdd( arr, { "Неверная команда", 1 } )
   AAdd( arr, { "Отсутствует единый номер полиса для полиса ОМС единого образца", 2 } )
   AAdd( arr, { 'Длина временного номера полиса не равна 9', 3 } )
@@ -485,7 +489,6 @@ Function err_csv_prik( db, source )
 // 22.12.22
 Function make_isderr( db, source )
 
-  Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
@@ -577,15 +580,15 @@ Function make_isderr( db, source )
 // 15.04.24
 Function rekv_smo( db, source )
 
-  Local stmt
   Local cmdText
   Local k
   Local arr
   Local  mKod, mName, mINN, mKPP, mOGRN, mAddres
   Local count := 0, cmdTextInsert := textBeginTrans
 
+  source := ''
   // 1-код,2-имя,3-ИНН,4-КПП,5-ОГРН,6-адрес,7-банк,8-р.счет,9-БИК
-//  'ФИЛИАЛ ЗАКРЫТОГО АКЦИОНЕРНОГО ОБЩЕСТВА "КАПИТАЛ МЕДИЦИНСКОЕ СТРАХОВАНИЕ" В ГОРОДЕ ВОЛГОГРАДЕ', ;
+  //  'ФИЛИАЛ ЗАКРЫТОГО АКЦИОНЕРНОГО ОБЩЕСТВА "КАПИТАЛ МЕДИЦИНСКОЕ СТРАХОВАНИЕ" В ГОРОДЕ ВОЛГОГРАДЕ', ;
   arr := { ;
     { '34001', ;
     'АСП ООО Капитал МС - Филиал в Волгоградской области', ;
@@ -726,7 +729,7 @@ Function db_holiday_old( db, source )
   // Календарь выходных и праздничных дней
 
   Local cmdText
-  Local k, i
+  Local k
   Local mYear, mMonth, mHoliday
   Local mArr, nameView, nameRef, nfile
   Local count := 0, cmdTextInsert := textBeginTrans

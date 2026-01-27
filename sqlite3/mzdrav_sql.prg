@@ -1,5 +1,6 @@
 // Справочники Министерства здравоохранения РФ
 
+#include 'hbsqlit3.ch'
 #include 'function.ch'
 #include 'dict_error.ch'
 
@@ -178,8 +179,6 @@ function make_onko_stad_2( db, source )
 
   Local cmdText
   Local nfile, nameRef
-  Local k, j, k1, j1
-  Local oXmlDoc, oXmlNode, oNode1
   Local mID, mShort, mICDTop, mMorph, mStage, mTumor, mIDTumor
   Local mNodus, mIDNodus, mMetastasis, mIDMetastasis
   Local mClassif, mVersion

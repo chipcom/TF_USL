@@ -1,3 +1,4 @@
+#include 'hbsqlit3.ch'
 #include 'function.ch'
 #include 'dict_error.ch'
 
@@ -1719,6 +1720,8 @@ Function make_v004( db, source )
   Local mIDMSP, mMSPname, d1, d2, d1_1, d2_1
   Local count := 0, cmdTextInsert := textBeginTrans
 
+  source := ''
+  
   AAdd( _arr, { 'Высшее медицинское образование', 1, date_20110101, empty_date } )
   AAdd( _arr, { 'Лечебное дело. Педиатрия', 11, date_20110101, empty_date } )
   AAdd( _arr, { 'Акушерство и гинекология', 1101, date_20110101, empty_date } )

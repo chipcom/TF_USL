@@ -1,5 +1,6 @@
 // Справочники федерального фонда медицинского страхования РФ типа N0xx
 
+#include 'hbsqlit3.ch'
 #include 'function.ch'
 #include 'dict_error.ch'
 

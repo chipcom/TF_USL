@@ -1,3 +1,4 @@
+#include 'hbsqlit3.ch'
 #include 'directry.ch'
 #include 'function.ch'
 #include 'dict_error.ch'
@@ -98,9 +99,11 @@ Function out_obrabotka_eol()
 
   Return Nil
 
-// 14.02.22
+// 27.01.26
 Function out_obrabotka_count( j, k )
 
+  j := 0
+  k := 0
   // OutStd( str(j / k * 100, 6, 2) + "%" )
 
   Return Nil

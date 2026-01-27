@@ -1,3 +1,4 @@
+#include 'hbsqlit3.ch'
 #include 'function.ch'
 #include 'dict_error.ch'
 
@@ -26,11 +27,10 @@ Function make_o001( db, source )
   // DATEBEG, "D",    8,      0
   // DATEEND, "D",    8,      0
 
-  Local stmt, stmtTMP
-  Local cmdText, cmdTextTMP
+  Local cmdText
   Local k, j
   Local nfile, nameRef
-  Local oXmlDoc, oXmlNode, oNode1, oNode2
+  Local oXmlDoc, oXmlNode
   Local mKod, mName11, mName12, mAlfa2, mAlfa3, d1, d2, d1_1
   Local mArr
 
