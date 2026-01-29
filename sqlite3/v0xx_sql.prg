@@ -9,9 +9,8 @@
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 26.01.26
+// 29.01.26
 Function make_v0xx( db, source )
-
 
   make_v002( db, source )
   make_v004( db, source )
@@ -34,7 +33,7 @@ Function make_v0xx( db, source )
   make_V033( db, source )
   make_v036( db, source )
   make_v039( db, source )
-
+  make_v040( db, source )
   make_v041( db, source )
   make_v042( db, source )
 
@@ -676,7 +675,7 @@ Function make_v017( db, source )
   out_obrabotka_eol()
   Return Nil
 
-// 25.12.24
+// 29.01.26
 Function make_v018( db, source )
 
   // IDHVID,     "C",     12,      0 // Код вида высокотехнологичной медицинской помощи
@@ -684,14 +683,16 @@ Function make_v018( db, source )
   // DATEBEG,    "D",      8,      0 // Дата начала действия записи
   // DATEEND,    "D",      8,      0 // Дата окончания действия записи
 
-  Local stmt
+//  Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDHVID, mHVIDNAME, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
 
-  cmdText := 'CREATE TABLE v018(idhvid TEXT(12), hvidname BLOB, datebeg TEXT(10), dateend TEXT(10))'
+//  cmdText := 'CREATE TABLE v018(idhvid TEXT(12), hvidname BLOB, datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE v018(idhvid TEXT(12), hvidname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
   nameRef := 'V018.xml'
   nfile := source + nameRef
@@ -718,9 +719,9 @@ Function make_v018( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    cmdText := "INSERT INTO v018 (idhvid, hvidname, datebeg, dateend) VALUES( :idhvid, :hvidname, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
+//    cmdText := "INSERT INTO v018 (idhvid, hvidname, datebeg, dateend) VALUES( :idhvid, :hvidname, :datebeg, :dateend )"
+//    stmt := sqlite3_prepare( db, cmdText )
+//    If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -731,6 +732,19 @@ Function make_v018( db, source )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
 
+          count++
+          cmdTextInsert += 'INSERT INTO v018(idhvid, hvidname, datebeg, dateend) VALUES(' ;
+            + "'" + mIDHVID + "'," ;
+            + "'" + mHVIDNAME + "'," ;
+            + "'" + d1 + "'," ;
+            + "'" + d2 + "');"
+          If count == COMMIT_COUNT
+            cmdTextInsert += textCommitTrans
+            sqlite3_exec( db, cmdTextInsert )
+            count := 0
+            cmdTextInsert := textBeginTrans
+          Endif
+/*
           If sqlite3_bind_text( stmt, 1, mIDHVID ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mHVIDNAME ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -740,11 +754,106 @@ Function make_v018( db, source )
             Endif
           Endif
           sqlite3_reset( stmt )
+*/
         Endif
       Next j
+//    Endif
+//    sqlite3_clear_bindings( stmt )
+//    sqlite3_finalize( stmt )
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
     Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
+  Endif
+  out_obrabotka_eol()
+  Return Nil
+
+// 29.01.26
+Function make_v019( db, source )
+
+  // IDHM,       "N",      4,      0 // Идентификатор метода высокотехнологичной медицинской помощи
+  // HMNAME,     "C",   1000,      0; // Наименование метода высокотехнологичной медицинской помощи
+  // DIAG,       "C",   1000,      0 // Верхние уровни кодов диагноза по МКБ для данного метода; указываются через разделитель ";".
+  // HVID,       "C",     12,      0 // Код вида высокотехнологичной медицинской помощи для данного метода
+  // HGR,        "N",      3,      0 // Номер группы высокотехнологичной медицинской помощи для данного метода
+  // HMODP,      "C",   1000,      0 // Модель пациента для методов высокотехнологичной медицинской помощи с одинаковыми значениями поля "HMNAME". Не заполняется, начиная с версии 3.0
+  // IDMODP,     "N",      5,      0 // Идентификатор модели пациента для данного метода (начиная с версии 3.0, заполняется значением поля IDMPAC классификатора V022)
+  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
+  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
+
+  Local cmdText
+  Local k, j
+  Local nfile, nameRef
+  Local oXmlDoc, oXmlNode
+  Local mIDHM, mHMNAME, mDIAG, mHVID, mHGR, mHMODP, mIDMODP, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+//  cmdText := 'CREATE TABLE v019(idhm INTEGER, hmname BLOB, diag BLOB, hvid TEXT(12), hgr INTEGER, hmodp BLOB, idmodp INTEGER, datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE v019(idhm INTEGER, hmname TEXT, diag TEXT, hvid TEXT(12), hgr INTEGER, hmodp TEXT, idmodp INTEGER, datebeg TEXT(10), dateend TEXT(10))'
+
+  nameRef := 'V019.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Классификатор методов высокотехнологичной медицинской помощи (HMet)', 'RU866' )	
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS v019' ) == SQLITE_OK
+    OutStd( 'DROP TABLE v019 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE v019 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE v019 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mIDHM := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDHM' )
+        mHMNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'HMNAME' )
+        mDIAG := read_xml_stroke_1251_to_utf8( oXmlNode, 'DIAG' )
+        mHVID := read_xml_stroke_1251_to_utf8( oXmlNode, 'HVID' )
+        mHGR := read_xml_stroke_1251_to_utf8( oXmlNode, 'HGR' )
+        mHMODP := read_xml_stroke_1251_to_utf8( oXmlNode, 'HMODP' )
+        mIDMODP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDMODP' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+
+        count++
+        cmdTextInsert += 'INSERT INTO v019(idhm, hmname, diag, hvid, hgr, hmodp, idmodp, datebeg, dateend) VALUES(' ;
+          + "'" + AllTrim( mIDHM ) + "'," ;
+          + "'" + mHMNAME + "'," ;
+          + "'" + mDIAG + "'," ;
+          + "'" + mHVID + "'," ;
+          + "'" + AllTrim( mHGR ) + "'," ;
+          + "'" + mHMODP + "'," ;
+          + "'" + AllTrim( mIDMODP ) + "'," ;
+          + "'" + d1 + "'," ;
+          + "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
+        Endif
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
   Endif
   out_obrabotka_eol()
   Return Nil
@@ -831,24 +940,26 @@ Function make_v020( db, source )
   out_obrabotka_eol()
   Return Nil
 
-// 25.12.24
+// 29.01.26
 Function make_v021( db, source )
 
-  // IDSPEC,     "N",      3,      0  // Код специальности
-  // SPECNAME,   "C", 254             // Наименование специальности
-  // POSTNAME,   "C",    400,      0  // Наименование должности
-  // IDPOST_MZ,   "C",    4,      0  // Код должности в соответствии с НСИ Минздрава России (OID 1.2.643.5.1.13.13.11.1002)
-  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
-  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
+  // IDSPEC,     "N",   3, 0 // Код специальности
+  // SPECNAME,   "C", 254, 0 // Наименование специальности
+  // POSTNAME,   "C", 400, 0 // Наименование должности
+  // IDPOST_MZ,  "C",   4, 0 // Код должности в соответствии с НСИ Минздрава России (OID 1.2.643.5.1.13.13.11.1002)
+  // DATEBEG,    "D",   8, 0 // Дата начала действия записи
+  // DATEEND,    "D",   8, 0 // Дата окончания действия записи
 
-  Local stmt
+//  Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDSPEC, mSPECNAME, mPOSTNAME, mIDPOST_MZ, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
 
-  cmdText := 'CREATE TABLE v021(idspec INTEGER, specname BLOB, postname BLOB, idpost_mz TEXT(4), datebeg TEXT(10), dateend TEXT(10))'
+//  cmdText := 'CREATE TABLE v021(idspec INTEGER, specname BLOB, postname BLOB, idpost_mz TEXT(4), datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE v021(idspec INTEGER, specname TEXT, postname TEXT, idpost_mz TEXT(4), datebeg TEXT(10), dateend TEXT(10))'
 
   nameRef := 'V021.xml'
   nfile := source + nameRef
@@ -876,8 +987,8 @@ Function make_v021( db, source )
     Return Nil
   Else
     cmdText := "INSERT INTO v021 (idspec, specname, postname, idpost_mz, datebeg, dateend) VALUES( :idspec, :specname, :postname, :idpost_mz, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
+//    stmt := sqlite3_prepare( db, cmdText )
+//    If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -889,7 +1000,7 @@ Function make_v021( db, source )
           mIDPOST_MZ := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDPOST_MZ' )
           d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
           d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-
+/*
           If sqlite3_bind_int( stmt, 1, Val( mIDSPEC ) ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mSPECNAME ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 3, mPOSTNAME ) == SQLITE_OK .and. ;
@@ -901,31 +1012,53 @@ Function make_v021( db, source )
             Endif
           Endif
           sqlite3_reset( stmt )
+*/
+        count++
+//    cmdText := "INSERT INTO v021 (idspec, specname, postname, idpost_mz, datebeg, dateend) VALUES( :idspec, :specname, :postname, :idpost_mz, :datebeg, :dateend )"
+        cmdTextInsert += 'INSERT INTO v021(idspec, specname, postname, idpost_mz, datebeg, dateend) VALUES(' ;
+          + "" + mIDSPEC + "," ;
+          + "'" + mSPECNAME + "'," ;
+          + "'" + mPOSTNAME + "'," ;
+          + "'" + mIDPOST_MZ + "'," ;
+          + "'" + d1 + "'," ;
+          + "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
+        Endif
         Endif
       Next j
+//    Endif
+//    sqlite3_clear_bindings( stmt )
+//    sqlite3_finalize( stmt )
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
     Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
   Return Nil
 
-// 25.12.24
+// 29.01.26
 Function make_v022( db, source )
 
-  // IDMPAC,     "N",      5,      0  //  Идентификатор модели пациента
-  // MPACNAME,   "M",     10,      0  // Наименование модели пациента
-  // DATEBEG,   "D",   8, 0           // Дата начала действия записи
-  // DATEEND,   "D",   8, 0           // Дата окончания действия записи
+  // IDMPAC,    "N",  5, 0 //  Идентификатор модели пациента
+  // MPACNAME,  "M", 10, 0 // Наименование модели пациента
+  // DATEBEG,   "D",  8, 0 // Дата начала действия записи
+  // DATEEND,   "D",  8, 0 // Дата окончания действия записи
 
-  Local stmt
+//  Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mIDMPAC, mMPACNAME, d1, d2, d1_1, d2_1
+  Local count := 0, cmdTextInsert := textBeginTrans
 
-  cmdText := 'CREATE TABLE v022(idmpac INTEGER, mpacname BLOB, datebeg TEXT(10), dateend TEXT(10))'
+//  cmdText := 'CREATE TABLE v022(idmpac INTEGER, mpacname BLOB, datebeg TEXT(10), dateend TEXT(10))'
+  cmdText := 'CREATE TABLE v022(idmpac INTEGER, mpacname TEXT, datebeg TEXT(10), dateend TEXT(10))'
 
   nameRef := 'V022.xml'
   nfile := source + nameRef
@@ -953,8 +1086,8 @@ Function make_v022( db, source )
     Return Nil
   Else
     cmdText := "INSERT INTO v022 (idmpac, mpacname, datebeg, dateend) VALUES( :idmpac, :mpacname, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
+//    stmt := sqlite3_prepare( db, cmdText )
+//    If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -973,7 +1106,7 @@ Function make_v022( db, source )
             Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
             d1 := hb_ValToStr( d1_1 )
             d2 := hb_ValToStr( d2_1 )
-
+/*
             If sqlite3_bind_int( stmt, 1, Val( mIDMPAC ) ) == SQLITE_OK .and. ;
                 sqlite3_bind_text( stmt, 2, mMPACNAME ) == SQLITE_OK .and. ;
                 sqlite3_bind_text( stmt, 3, d1 ) == SQLITE_OK .and. ;
@@ -985,10 +1118,30 @@ Function make_v022( db, source )
           Endif
           sqlite3_reset( stmt )
         Endif
+*/
+            count++
+//    cmdText := "INSERT INTO v022 (idmpac, mpacname, datebeg, dateend) VALUES( :idmpac, :mpacname, :datebeg, :dateend )"
+            cmdTextInsert += 'INSERT INTO v022(idmpac, mpacname, datebeg, dateend) VALUES(' ;
+              + "" + mIDMPAC + "," ;
+              + "'" + mMPACNAME + "'," ;
+              + "'" + d1 + "'," ;
+              + "'" + d2 + "');"
+            If count == COMMIT_COUNT
+              cmdTextInsert += textCommitTrans
+              sqlite3_exec( db, cmdTextInsert )
+              count := 0
+              cmdTextInsert := textBeginTrans
+            Endif
+          endif
+        endif
       Next j
+//    Endif
+//    sqlite3_clear_bindings( stmt )
+//    sqlite3_finalize( stmt )
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
     Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
   Return Nil
@@ -1067,7 +1220,7 @@ Function make_v025( db, source )
   out_obrabotka_eol()
   Return Nil
 
-// 25.12.24
+// 29.01.26
 Function make_v030( db, source )
 
   // SCHEMCOD,  "C",   5, 0  //
@@ -1077,15 +1230,17 @@ Function make_v030( db, source )
   // DATEBEG,   "D",   8, 0  // Дата начала действия записи
   // DATEEND,   "D",   8, 0   // Дата окончания действия записи
 
-  Local stmt
+//  Local stmt
   Local cmdText
   Local k, j
   Local nfile, nameRef
   Local oXmlDoc, oXmlNode
   Local mSchemCode, mScheme, mDegree, mComment, d1, d2, d1_1, d2_1
   Local strD_End
+  Local count := 0, cmdTextInsert := textBeginTrans
 
-  cmdText := 'CREATE TABLE v030(schemcode TEXT(5), scheme TEXT(15), degree INTEGER, comment BLOB, datebeg TEXT(10), dateend TEXT(10), '
+//  cmdText := 'CREATE TABLE v030(schemcode TEXT(5), scheme TEXT(15), degree INTEGER, comment BLOB, datebeg TEXT(10), dateend TEXT(10), '
+  cmdText := 'CREATE TABLE v030(schemcode TEXT(5), scheme TEXT(15), degree INTEGER, comment TEXT, datebeg TEXT(10), dateend TEXT(10), '
   cmdText += 'FOREIGN KEY(degree) REFERENCES Severity(id))'
 
   nameRef := 'V030.xml'
@@ -1113,9 +1268,9 @@ Function make_v030( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-    cmdText := "INSERT INTO v030 (schemcode, scheme, degree, comment, datebeg, dateend) VALUES( :schemcode, :scheme, :degree, :comment, :datebeg, :dateend )"
-    stmt := sqlite3_prepare( db, cmdText )
-    If ! Empty( stmt )
+//    cmdText := "INSERT INTO v030 (schemcode, scheme, degree, comment, datebeg, dateend) VALUES( :schemcode, :scheme, :degree, :comment, :datebeg, :dateend )"
+//    stmt := sqlite3_prepare( db, cmdText )
+//    If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -1140,7 +1295,7 @@ Function make_v030( db, source )
           Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
           d1 := hb_ValToStr( d1_1 )
           d2 := hb_ValToStr( d2_1 )
-
+/*
           If sqlite3_bind_text( stmt, 1, mSchemCode ) == SQLITE_OK .and. ;
               sqlite3_bind_text( stmt, 2, mScheme ) == SQLITE_OK .and. ;
               sqlite3_bind_int( stmt, 3, Val( mDegree ) ) == SQLITE_OK .and. ;
@@ -1152,11 +1307,31 @@ Function make_v030( db, source )
             Endif
           Endif
           sqlite3_reset( stmt )
+*/
+          count++
+//    cmdText := "INSERT INTO v030 (schemcode, scheme, degree, comment, datebeg, dateend) VALUES( :schemcode, :scheme, :degree, :comment, :datebeg, :dateend )"
+          cmdTextInsert += 'INSERT INTO v030(schemcode, scheme, degree, comment, datebeg, dateend) VALUES(' ;
+            + "'" + mSchemCode + "'," ;
+            + "'" + mScheme + "'," ;
+            + "" + mDegree + "," ;
+            + "'" + mComment + "'," ;
+            + "'" + d1 + "'," ;
+            + "'" + d2 + "');"
+          If count == COMMIT_COUNT
+            cmdTextInsert += textCommitTrans
+            sqlite3_exec( db, cmdTextInsert )
+            count := 0
+            cmdTextInsert := textBeginTrans
+          Endif
         Endif
       Next j
+//    Endif
+//    sqlite3_clear_bindings( stmt )
+//    sqlite3_finalize( stmt )
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
     Endif
-    sqlite3_clear_bindings( stmt )
-    sqlite3_finalize( stmt )
   Endif
   out_obrabotka_eol()
   Return Nil
@@ -1596,95 +1771,6 @@ Function make_v024( db, source )
         cmdTextInsert += 'INSERT INTO v024(iddkk, dkkname, datebeg, dateend) VALUES(' ;
           + "'" + mIDDKK + "'," ;
           + "'" + mDkkname + "'," ;
-          + "'" + d1 + "'," ;
-          + "'" + d2 + "');"
-        If count == COMMIT_COUNT
-          cmdTextInsert += textCommitTrans
-          sqlite3_exec( db, cmdTextInsert )
-          count := 0
-          cmdTextInsert := textBeginTrans
-        Endif
-      Endif
-    Next j
-    If count > 0
-      cmdTextInsert += textCommitTrans
-      sqlite3_exec( db, cmdTextInsert )
-    Endif
-  Endif
-  out_obrabotka_eol()
-  Return Nil
-
-// 25.12.24
-Function make_v019( db, source )
-
-  // IDHM,       "N",      4,      0 // Идентификатор метода высокотехнологичной медицинской помощи
-  // HMNAME,     "C",   1000,      0; // Наименование метода высокотехнологичной медицинской помощи
-  // DIAG,       "C",   1000,      0 // Верхние уровни кодов диагноза по МКБ для данного метода; указываются через разделитель ";".
-  // HVID,       "C",     12,      0 // Код вида высокотехнологичной медицинской помощи для данного метода
-  // HGR,        "N",      3,      0 // Номер группы высокотехнологичной медицинской помощи для данного метода
-  // HMODP,      "C",   1000,      0 // Модель пациента для методов высокотехнологичной медицинской помощи с одинаковыми значениями поля "HMNAME". Не заполняется, начиная с версии 3.0
-  // IDMODP,     "N",      5,      0 // Идентификатор модели пациента для данного метода (начиная с версии 3.0, заполняется значением поля IDMPAC классификатора V022)
-  // DATEBEG,    "D",      8,      0 // Дата начала действия записи
-  // DATEEND,    "D",      8,      0 // Дата окончания действия записи
-
-  Local cmdText
-  Local k, j
-  Local nfile, nameRef
-  Local oXmlDoc, oXmlNode
-  Local mIDHM, mHMNAME, mDIAG, mHVID, mHGR, mHMODP, mIDMODP, d1, d2
-  Local count := 0, cmdTextInsert := textBeginTrans
-
-  cmdText := 'CREATE TABLE v019(idhm INTEGER, hmname BLOB, diag BLOB, hvid TEXT(12), hgr INTEGER, hmodp BLOB, idmodp INTEGER, datebeg TEXT(10), dateend TEXT(10))'
-
-  nameRef := 'V019.xml'
-  nfile := source + nameRef
-  If ! hb_vfExists( nfile )
-    out_error( FILE_NOT_EXIST, nfile )
-    Return Nil
-  Else
-    out_utf8_to_str( nameRef + ' - Классификатор методов высокотехнологичной медицинской помощи (HMet)', 'RU866' )	
-  Endif
-
-  If sqlite3_exec( db, 'DROP TABLE if EXISTS v019' ) == SQLITE_OK
-    OutStd( 'DROP TABLE v019 - Ok' + hb_eol() )
-  Endif
-
-  If sqlite3_exec( db, cmdText ) == SQLITE_OK
-    OutStd( 'CREATE TABLE v019 - Ok' + hb_eol() )
-  Else
-    OutStd( 'CREATE TABLE v019 - False' + hb_eol() )
-    Return Nil
-  Endif
-
-  oXmlDoc := hxmldoc():read( nfile )
-  If Empty( oXmlDoc:aItems )
-    out_error( FILE_READ_ERROR, nfile )
-    Return Nil
-  Else
-    out_obrabotka( nfile )
-    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
-    For j := 1 To k
-      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
-      If 'ZAP' == Upper( oXmlNode:title )
-        mIDHM := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDHM' )
-        mHMNAME := read_xml_stroke_1251_to_utf8( oXmlNode, 'HMNAME' )
-        mDIAG := read_xml_stroke_1251_to_utf8( oXmlNode, 'DIAG' )
-        mHVID := read_xml_stroke_1251_to_utf8( oXmlNode, 'HVID' )
-        mHGR := read_xml_stroke_1251_to_utf8( oXmlNode, 'HGR' )
-        mHMODP := read_xml_stroke_1251_to_utf8( oXmlNode, 'HMODP' )
-        mIDMODP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDMODP' )
-        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
-        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
-
-        count++
-        cmdTextInsert += 'INSERT INTO v019(idhm, hmname, diag, hvid, hgr, hmodp, idmodp, datebeg, dateend) VALUES(' ;
-          + "'" + AllTrim( mIDHM ) + "'," ;
-          + "'" + mHMNAME + "'," ;
-          + "'" + mDIAG + "'," ;
-          + "'" + mHVID + "'," ;
-          + "'" + AllTrim( mHGR ) + "'," ;
-          + "'" + mHMODP + "'," ;
-          + "'" + AllTrim( mIDMODP ) + "'," ;
           + "'" + d1 + "'," ;
           + "'" + d2 + "');"
         If count == COMMIT_COUNT
