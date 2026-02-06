@@ -86,7 +86,9 @@ Function make_f032( source, destination )
     { 'OSP',      'C',   1, 0 }, ;
     { 'NAMEMOK',  'C',  50, 0 }, ;
     { 'NAMEMOP',  'C', 150, 0 }, ;
-    { 'ADDRESS',  'C', 250, 0 } ;
+    { 'ADDRESS',  'C', 250, 0 }, ;
+    { 'DBEGIN',   'D',   8, 0 }, ;
+    { 'DEND',     'D',   8, 0 } ;
   }
 //    { 'NAME_MOK', 'C',  50, 0 }, ;
 //    { 'NAME_MOP', 'C', 150, 0 }  ;
@@ -113,6 +115,7 @@ Function make_f032( source, destination )
   IF Empty( oXmlDoc:aItems )
     ( cAlias )->( dbCloseArea() )
   else
+    Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
     k := Len( oXmlDoc:aItems[ 1 ]:aItems )
     FOR j := 1 TO k
       oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
@@ -128,9 +131,12 @@ Function make_f032( source, destination )
           ( cAlias )->NAMEMOK := mo_read_xml_stroke( oXmlNode, 'NAM_MOK', )
           ( cAlias )->NAMEMOP := mo_read_xml_stroke( oXmlNode, 'NAM_MOP', )
           ( cAlias )->ADDRESS := mo_read_xml_stroke( oXmlNode, 'JURADDRESS_ADDRESS', )
+          ( cAlias )->DBEGIN := CToD( mo_read_xml_stroke( oXmlNode, 'DATEBEG', ) )
+          ( cAlias )->DEND := CToD( mo_read_xml_stroke( oXmlNode, 'DATEEND', ) )
 //        endif
       ENDIF
     NEXT j
+    Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
   endif
   out_obrabotka_eol()
 
