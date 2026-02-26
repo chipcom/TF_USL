@@ -1079,8 +1079,75 @@ Function work_SprDS( source, destination )
   close databases
   return .t.
 
-// 09.06.25
+// 26.02.26
 Function work_SprKslp(source, destination)
+  
+  Local _mo_kslp := { ;
+    {'CODE',       'N',      2,      0}, ;
+    {'NAME',       'C',     55,      0}, ;
+    {'NAME_F',     'C',    255,      0}, ;
+    {'COEFF',      'N',      4,      2}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0}, ;
+    {'ID_SL',      'C',      5,      0}, ;
+    {'PG_SL',      'C',      6,      0} ;
+  }
+  local nfile, nameRef, j, k, mCurent_year, mPG_SL
+  local oXmlDoc, oXmlNode, dBeg, dEnd, mID_SL
+  local nameFile := prefixFileName() + 'kslp'
+
+  nameRef := 'V041.XML'
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    return .f.
+  endif
+
+  dbcreate( destination + nameFile, _mo_kslp )
+  use ( destination + nameFile ) new alias KS
+
+  oXmlDoc := HXMLDoc():Read( nfile )
+  OutStd( nameRef + ' - §´Ô äëÉ - äëãè' + hb_eol() )
+  IF Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    dbCloseAll()
+    return .f.
+  else
+    out_obrabotka( nfile )
+    mCurent_year := val( CURENT_YEAR )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      if 'ZAP' == upper( oXmlNode:title )
+        out_obrabotka_count( j, k )
+        dBeg := ctod( mo_read_xml_stroke( oXmlNode, 'DATEBEG', ) )
+        dEnd := ctod( mo_read_xml_stroke( oXmlNode, 'DATEEND', ) )
+        mID_SL := mo_read_xml_stroke( oXmlNode, 'ID_SL', )
+        mPG_SL := mo_read_xml_stroke( oXmlNode, 'PG_SL', )
+        if ( year( dBeg ) <= mCurent_year ) ;
+            .and. ( ( year( dEnd ) >= mCurent_year ) .or. Empty( dEnd ) ) ;
+            .and. ( mPG_SL == 'Åè éåë' )
+          select KS
+          ks->( dbAppend() )
+          ks->code    := val( substr( mID_SL, 3 ) )   //mo_read_xml_stroke( oXmlNode, 'CODE', ) )
+          ks->NAME    := ltrim( charrem( eos, charone( ' ', substr( mo_read_xml_stroke( oXmlNode, 'N_SL', ), 1, 55 ) ) ) )
+          ks->NAME_F  := ltrim( charrem( eos, charone( ' ', substr( mo_read_xml_stroke( oXmlNode, 'N_SL', ), 1, 255 ) ) ) )
+          ks->COEFF   := val( mo_read_xml_stroke( oXmlNode, 'K_SL', ) )
+          ks->DATEBEG := dBeg   //  ctod( mo_read_xml_stroke( oXmlNode, 'DATEBEG', ) )   // xml2date
+          ks->DATEEND := dEnd   //  ctod( mo_read_xml_stroke( oXmlNode, 'DATEEND', ) )
+          ks->ID_SL   := mID_SL //  mo_read_xml_stroke( oXmlNode, 'ID_SL', )
+          ks->PG_SL   := mPG_SL //  mo_read_xml_stroke( oXmlNode, 'PG_SL', )
+        endif
+      endif
+    NEXT j
+  ENDIF
+  out_obrabotka_eol()
+  dbCloseAll()
+
+  return .t.
+
+// 09.06.25
+Function work_SprKslp_old(source, destination)
   
   Local _mo_kslp := { ;
     {'CODE',       'N',      2,      0}, ;
