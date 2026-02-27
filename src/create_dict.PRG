@@ -61,8 +61,9 @@ external errorsys
 function prefixFileName()
   return '_mo' + substr( CURENT_YEAR, 4, 1 )
 
-// 10.06.25
+// 27.02.26
 proc main( ... )
+
   Local _mo_usl := { ;
     {'SHIFR',      'C',     10,      0}, ;
     {'NAME',       'C',    255,      0}, ;
@@ -79,12 +80,17 @@ proc main( ... )
     {'KSLP',       'N',      2,      0}, ;
     {'KSLPS',      'C',     30,      0}, ;
     {'KIRO',       'N',      2,      0}, ;
-    {'KIROS',      'C',     15,      0}, ;
+    {'KIROS',      'C',     30,      0}, ;
     {'UETV',       'N',      5,      2}, ; // УЕТ - сейчас не используются
     {'UETD',       'N',      5,      2}, ; // УЕТ - сейчас не используются
+    { 'TYPE_KSG',  'N',   1, 0 }, ; // 2)
     {'DATEBEG',    'D',      8,      0}, ; // дата начала действия - по умолчанию т.г
     {'DATEEND',    'D',      8,      0} ;  // дата конец действия - по умолчанию т.г
   }
+//    { 'KPPSLS',    'C',  30, 0 }, ; // 1)
+//    {'KIROS',      'C',     15,      0}, ;
+// 1) Перечень кодов причин оплаты за прерванный случай, которые могут быть применены к данной КСГ. Если элемент отсутствует, то к случаям с данной КСГ не применяется оплата за прерванный случай.
+// 2) Признак выполнения в рамках оплаты по данной КСГ хирургического вмешательства и (или) проведения тромболитической терапии для определения доли оплаты (коэффициента) прерванного случая.
 
   local cParam, cParamL
   local aParams
@@ -239,29 +245,29 @@ proc main( ... )
   use (destination + nameFileUsl) new alias LUSL
   index on shifr to tmp_lusl
 
-  use (destination + 't006_u') new alias T006
-  index on fsort_usl(shifr) to tmp6
+  use ( destination + 't006_u' ) new alias T006
+  index on fsort_usl( FIELD->shifr ) to tmp6
   go top
-  do while !eof()
+  do while ! eof()
     ar := get_field()
     select LUSL
-    find (t006->shifr)
+    find ( t006->shifr )
     if found()
     endif
     append blank
-    aeval(ar, {|x, i| fieldput(i, x) } )
+    aeval( ar, { | x, i | fieldput( i, x ) } )
     //
     // РАЗОБРАТЬ
     //
-    if left(t006->shifr, 2) == 'st'
+    if left( t006->shifr, 2 ) == 'st'
       lusl->idsp := lusl->idsps := '33' // КСГ в стационаре
       lusl->unit_code := 29
       lusl->units := '29'  // случай госпитализации
-      if left(t006->shifr, 5) == 'st37.'
+      if left( t006->shifr, 5 ) == 'st37.'
         lusl->unit_code := 142
         lusl->units := '142' // случай госпитализации при реабилитации
       endif
-    elseif alltrim(t006->shifr) == 'ds18.002' // лек.терапия у пациентов на диализе
+    elseif alltrim( t006->shifr ) == 'ds18.002' // лек.терапия у пациентов на диализе
       lusl->idsp := lusl->idsps := '33' // КСГ в дневном стационаре ????
       lusl->unit_code := 259
       lusl->units := '259' // случай диализа
@@ -269,7 +275,7 @@ proc main( ... )
       lusl->idsp := lusl->idsps := '33' // КСГ в дневном стационаре
       lusl->unit_code := 143
       lusl->units := '143' // случай лечения
-      if left(t006->shifr, 5) == 'ds37.'
+      if left( t006->shifr, 5 ) == 'ds37.'
         // реабилитация в дневном стационаре
       endif
     endif
@@ -445,9 +451,9 @@ Function between_date(_begin_date, _end_date, date1, date2)
 
 // вернуть в массиве запись базы данных
 Function get_field()
-  Local arr := array(fcount())
+  Local arr := array( fcount() )
 
-  aeval(arr, {|x, i| arr[i] := fieldget(i) }  )
+  aeval( arr, { | x, i | arr[ i ] := fieldget( i ) }  )
   return arr
 
 // 15.01.14 функция сортировки шифров услуг по возрастанию (для команды INDEX)
