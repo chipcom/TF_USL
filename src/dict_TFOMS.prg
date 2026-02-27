@@ -1460,6 +1460,60 @@ Function work_SprKslp(source, destination)
   return .t.
 
 // 09.06.25
+Function work_SprKiro( source, destination )
+  
+  Local _mo_kiro := { ;
+    {'CODE',       'N',      2,      0}, ;
+    {'NAME',       'C',     55,      0}, ;
+    {'NAME_F',     'C',    255,      0}, ;
+    {'DATEBEG',    'D',      8,      0}, ;
+    {'DATEEND',    'D',      8,      0} ;
+  }
+//    {'COEFF',      'N',      4,      2}, ;
+  local nfile, nameRef, j, j1, k
+  local nameFile := prefixFileName() + 'kiro'
+  local oXmlDoc, oXmlNode, oNode1, oNode2
+
+  nameRef := 'V042.XML'
+  nfile := source + nameRef
+  if ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    return .f.
+  endif
+
+  dbcreate( destination + nameFile, _mo_kiro )
+  use ( destination + nameFile ) new alias KS
+
+  oXmlDoc := HXMLDoc():Read( nfile )
+  OutStd( nameRef + ' - ¤«ï Š‘ƒ - ŠˆŽ' + hb_eol() )
+  IF Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    CLOSE databases
+    return .f.
+  else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    FOR j := 1 TO k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      if 'ZAP' == upper( oXmlNode:title )
+        out_obrabotka_count( j, k )
+        select KS
+        append blank
+        ks->code    := val( mo_read_xml_stroke( oXmlNode, 'ID_PR', ) )    //  'CODE', ) )
+        ks->NAME    := ltrim( charrem( eos, charone( ' ', substr( mo_read_xml_stroke( oXmlNode, 'N_PR', ), 1, 55 ) ) ) )
+        ks->NAME_F  := ltrim( charrem( eos, charone( ' ', substr( mo_read_xml_stroke( oXmlNode, 'N_PR', ), 1, 255 ) ) ) )
+//              ks->COEFF   := val( mo_read_xml_stroke( oNode2, 'C_VAL', ) )
+        ks->DATEBEG := ctod( mo_read_xml_stroke( oXmlNode, 'DATEBEG', ) )
+          ks->DATEEND := ctod( mo_read_xml_stroke( oXmlNode, 'DATEEND', ) )
+//        endif
+      endif
+    NEXT j
+  ENDIF
+  out_obrabotka_eol()
+  close databases
+  return .t.
+
+// 09.06.25
 Function work_SprKslp_old(source, destination)
   
   Local _mo_kslp := { ;
@@ -1527,7 +1581,7 @@ Function work_SprKslp_old(source, destination)
   return .t.
 
 // 09.06.25
-Function work_SprKiro( source, destination )
+Function work_SprKiro_old( source, destination )
   
   Local _mo_kiro := { ;
     {'CODE',       'N',      2,      0}, ;
