@@ -9,6 +9,7 @@
 
 // 23.05.23
 Function work_Shema(source, destination)
+
   Local _mo_shema := { ;
     {'KOD',        'C',     10,      0}, ;
     {'NAME',       'C',    255,      0}, ;
@@ -18,7 +19,7 @@ Function work_Shema(source, destination)
   local nfile, nameRef, j, k
   local mkod, mname, mDATEBEG, mDATEEND
   local nameFile := prefixFileName() + 'shema'
-  local oXmlDoc, oXmlNode
+  local oXmlDoc, oXmlNode, fl
 
   nameRef := 'V024.xml'
   nfile := source + nameRef
@@ -29,7 +30,7 @@ Function work_Shema(source, destination)
 
   dbcreate(destination + nameFile, _mo_shema)
   use (destination + nameFile) new alias SH
-  index on kod to tmp_shema
+  index on FIELD->kod to tmp_shema
 
   oXmlDoc := HXMLDoc():Read(nfile)
   OutStd( nameRef + ' - для КСГ - Допкритерии' + hb_eol() )
@@ -102,7 +103,7 @@ Function make_T001(source, destination)
   dbUseArea( .t., , source + dbSource, dbSource, .f., .f. )
   (dbSource)->(dbGoTop())
   do while !(dbSource)->(EOF())
-    if (dbSource)->(DATEEND) > FIRST_DAY  //0d20210101
+    if (dbSource)->DATEEND > FIRST_DAY  //0d20210101
       (dbName)->(dbAppend())
       (dbName)->MCOD := (dbSource)->MCOD
       (dbName)->CODEM := (dbSource)->CODEM
@@ -386,16 +387,16 @@ Function work_mo_uslf( source, destination )
   dbcreate( destination + nameFileUslF, _mo_uslf )
   use ( destination + nameFileUslF ) new alias LUSL
 
-  index on shifr to tmp_usl
+  index on FIELD->shifr to tmp_usl
   // use (source + 'onko_napr') new alias ON
   // index on kod to tmp_on
   // use (source + 'onko_ksg') new alias OK
   // index on kod to tmp_ok
   use ( source + 'par_org' ) new alias PO
-  index on kod to tmp_po
+  index on FIELD->kod to tmp_po
   // use (source + 'v001') new
   use ( source + '_usl_mz' ) new alias v001
-  index on IDRB to tmp1
+  index on FIELD->IDRB to tmp1
   out_obrabotka( '_usl_mz.dbf (v001.dbf)' )
   go top
   do while ! eof()
@@ -467,10 +468,11 @@ Function work_mo_uslf( source, destination )
 
 // 27.02.26
 Function work_t006(source, destination)
+
   Local oXmlDoc, oXmlNode, af := {}
   local nameFileIt1 := prefixFileName() + 'it1'
   Local lshifr, lsy, lDS, lDS1, lDS2, oNode1, oNode2, lkz, kl, kl1, kl2
-  local nfile, nameRef, j, j1, k, s
+  local nfile, nameRef, j, j1, k, s, slist, is
 
   Local _mo_usl := { ;
     { 'SHIFR',     'C',  10, 0 }, ;
@@ -778,6 +780,7 @@ Function work_t006(source, destination)
   close databases
   return NIL
 
+/*
 // 06.11.25
 Function work_t006_old(source, destination)
   Local oXmlDoc, oXmlNode, af := {}
@@ -858,7 +861,7 @@ Function work_t006_old(source, destination)
   // {'DS',         'C',   2300,      0}, ;
 
   use (destination + nameFileIt1) new alias it
-  index on code+str(usl_ok, 1) + ds + ds1 + ds2 to tmp_it
+  index on FIELD->code + str( FIELD->usl_ok, 1 ) + FIELD->ds + FIELD->ds1 + FIELD->ds2 to tmp_it
   use (destination + 't006_u') new alias t6
   use (destination + 't006_2') new alias t62
   use (destination + 't006_d') new alias d6
@@ -1080,6 +1083,7 @@ Function work_t006_old(source, destination)
   out_obrabotka_eol()
   close databases
   return NIL
+*/
 
 // 09.06.25
 Function work_SprMU( source, destination )
@@ -1120,10 +1124,10 @@ Function work_SprMU( source, destination )
   use ( destination + '_mo_spec' ) new alias SPEC
 
   use ( destination + nameFileUsl ) new alias LUSL
-  index on shifr to tmp_lusl
+  index on FIELD->shifr to tmp_lusl
 
   use ( destination + nameFileUnit ) new alias UN
-  index on str( code, 3 ) to tmp_unit
+  index on str( FIELD->code, 3 ) to tmp_unit
   oXmlDoc := HXMLDoc():Read( nfile )
   OutStd( nameRef + ' - справочник услуг /наименование, шифр услуги' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
@@ -1290,7 +1294,7 @@ Function work_SprDS( source, destination )
   use ( destination + '_mo_prof' ) new alias PROF
   use ( destination + '_mo_spec' ) new alias SPEC
   use ( destination + nameFileUslF ) new alias LUSL
-  index on shifr to tmp_lusl
+  index on FIELD->shifr to tmp_lusl
   oXmlDoc := HXMLDoc():Read( nfile )
   OutStd( nameRef + ' - федеральный справочник услуг' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
@@ -1470,9 +1474,9 @@ Function work_SprKiro( source, destination )
     {'DATEEND',    'D',      8,      0} ;
   }
 //    {'COEFF',      'N',      4,      2}, ;
-  local nfile, nameRef, j, j1, k
+  local nfile, nameRef, j, k
   local nameFile := prefixFileName() + 'kiro'
-  local oXmlDoc, oXmlNode, oNode1, oNode2
+  local oXmlDoc, oXmlNode
 
   nameRef := 'V042.XML'
   nfile := source + nameRef
@@ -1646,7 +1650,7 @@ Function work_SprKiro_old( source, destination )
   return .t.
 
 // 21.06.23
-Function work_uslc(source, destination)
+Function work_uslc( source, destination )
   Local _mo_uslc := { ;
     {'CODEMO',     'C',      6,      0}, ;
     {'SHIFR',      'C',     10,      0}, ;
@@ -1682,20 +1686,20 @@ Function work_uslc(source, destination)
   use (destination + nameFileSubDiv) new alias SD
   //
   // use (destination + 'not_usl') new
-  // index on shifr to not_usl
+  // index on FIELD->shifr to not_usl
   // use (destination + 'not_lev') new
-  // index on codem + shifr + str(usl_ok, 1) + level + str(depart, 3) to not_lev
+  // index on FIELD->codem + FIELD->shifr + str( FIELD->usl_ok, 1 ) + FIELD->level + str( FIELD->depart, 3 ) to not_lev
 
   use (destination + nameFileUsl) new alias LUSL
-  index on shifr to tmp_lusl
+  index on FIELD->shifr to tmp_lusl
 
   use (destination + nameFile) new alias LUSLC
 
   use (destination + nameFilePrices) new alias PRIC
-  index on shifr + str(vzros_reb, 1) + level to tmp_prices
+  index on FIELD->shifr + str( FIELD->vzros_reb, 1 ) + FIELD->level to tmp_prices
   
   use (destination + nameFileLvlPay) new alias LP
-  index on codem + str(usl_ok, 1) + level + str(depart, 3) to tmp_lvlpay
+  index on FIELD->codem + str( FIELD->usl_ok, 1 ) + FIELD->level + str( FIELD->depart, 3 ) to tmp_lvlpay
 
   use (destination + nameFileMoServ) new alias SERV
   go top
