@@ -28,16 +28,16 @@ PROCEDURE Main()
     hb_SDDODBC_Register() 
   #endif 
   
-  dbcreate('_mo5vmp_usl', _vmp_usl)
-  dbUseArea( .t.,, '_mo5vmp_usl', 'MO5VMP', .f., .f. )
-  MO5VMP->(dbGoTop())
+  dbcreate('_mo6vmp_usl', _vmp_usl)
+  dbUseArea( .t.,, '_mo6vmp_usl', 'MO6VMP', .f., .f. )
+  MO6VMP->(dbGoTop())
 
   Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
   HB_SETCODEPAGE( 'RU1251' ) 
   
   rddSetDefault( 'SQLMIX' ) 
   // ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=TEST1.XLS;' })
-  ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=VMP25.XLS;' })
+  ? 'Connect:', rddInfo( RDDI_CONNECT, { 'ODBC', 'Driver={Microsoft Excel Driver (*.xls)};DriverId=790;Dbq=VMP26.XLS;' })
   ? 'Use:', dbUseArea( .T., , 'select * from [111$] ', 'VMP') 
   ? 'Alias:', Alias() 
   // ? "DB struct:", hb_ValToExp( dbStruct() ) 
@@ -46,24 +46,24 @@ PROCEDURE Main()
   VMP->(dbGoTop())
   VMP->(dbSkip())
   while !empty((VMP->(fieldget(1)))) // != nil //(eof())
-    MO5VMP->(dbAppend())
-    MO5VMP->SHIFR := VMP->(fieldget(1))
+    MO6VMP->(dbAppend())
+    MO6VMP->SHIFR := VMP->(fieldget(1))
     // if VMP->(fieldget(7)) != nil
     if VMP->(fieldget(6)) != nil
-      // MO5VMP->HVID := hb_ValToStr(VMP->(fieldget(7)))
-      MO5VMP->HVID := alltrim(Str(VMP->(fieldget(6)), 12))
+      // MO6VMP->HVID := hb_ValToStr(VMP->(fieldget(7)))
+      MO6VMP->HVID := alltrim(Str(VMP->(fieldget(6)), 12))
     endif
-    // MO5VMP->HMETHOD := VMP->(fieldget(9))
-    MO5VMP->HMETHOD := VMP->(fieldget(8))
+    // MO6VMP->HMETHOD := VMP->(fieldget(9))
+    MO6VMP->HMETHOD := VMP->(fieldget(8))
     // if VMP->(fieldget(10)) != nil
     if VMP->(fieldget(11)) != nil
-      // MO5VMP->MODEL := val(alltrim(VMP->(fieldget(10))))
-      MO5VMP->MODEL := VMP->(fieldget(11))
+      // MO6VMP->MODEL := val(alltrim(VMP->(fieldget(10))))
+      MO6VMP->MODEL := VMP->(fieldget(11))
     endif
-    // MO5VMP->DIAGNOZIS := VMP->(fieldget(12))
-    MO5VMP->DIAGNOZIS := StrTran(VMP->(fieldget(10)), ', ', ';')
-    MO5VMP->DATEBEG := VMP->(fieldget(13))
-    MO5VMP->DATEEND := VMP->(fieldget(14))
+    // MO6VMP->DIAGNOZIS := VMP->(fieldget(12))
+    MO6VMP->DIAGNOZIS := StrTran(VMP->(fieldget(10)), ', ', ';')
+    MO6VMP->DATEBEG := VMP->(fieldget(13))
+    MO6VMP->DATEEND := VMP->(fieldget(14))
 
     VMP->(dbSkip())
   end
@@ -73,6 +73,6 @@ PROCEDURE Main()
   // dbGoTop() 
   // Browse() 
   VMP->(dbCloseArea())
-  MO5VMP->(dbCloseArea())
+  MO6VMP->(dbCloseArea())
   
   RETURN
