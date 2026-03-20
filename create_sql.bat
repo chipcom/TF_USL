@@ -5,3 +5,5 @@ copy d:\_mo\tf_usl\out\_mo_f032.dbf d:\_mo\_arc\
 copy d:\_mo\tf_usl\out\_mo_f032.dbf d:\_mo\chip\EXE
 copy d:\_mo\tf_usl\out\_mo_f033.dbf d:\_mo\_arc\
 copy d:\_mo\tf_usl\out\_mo_f033.dbf d:\_mo\chip\EXE
+copy d:\_mo\tf_usl\out\_mo_f034.dbf d:\_mo\_arc\
+copy d:\_mo\tf_usl\out\_mo_f034.dbf d:\_mo\chip\EXE

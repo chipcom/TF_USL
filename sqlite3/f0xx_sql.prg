@@ -18,6 +18,7 @@ Function make_f0xx( db, source, destination )
   make_f014( db, source )
   make_f032( source, destination )
   make_f033( source, destination )
+  make_f034( source, destination )
 
   Return Nil
 
@@ -75,6 +76,58 @@ Function make_f033( source, destination )
   ( cAlias )->( dbCloseArea() )
 
   return nil
+
+// 20.03.26
+function make_f034( source, destination )
+
+  local _f034 := { ;
+    { 'UIDSPMO',  'C',  17, 0 }, ;
+    { 'MPVID',    'N',   4, 0 }, ;
+    { 'MPUSL',    'N',   2, 0 }, ;
+    { 'MPROF',    'N',   3, 0 }  ;
+  }
+  local oXmlDoc, oXmlNode
+  local cAlias, nameRef, nfile, k, j
+  local mUIDSPMO
+
+  cAlias := 'F034'
+  nameRef := 'F034.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - F034 Справочник видов, условий и профилей медицинской помощи, оказываемой МО (VUP)', 'RU866' )	
+  Endif
+
+  dbcreate( destination + '_mo_f034', _f034 )
+  dbUseArea( .t., , destination + '_mo_f034', cAlias, .f., .f. )
+  ( cAlias )->(dbGoTop())
+
+  oXmlDoc := HXMLDoc():Read( nfile )
+  IF Empty( oXmlDoc:aItems )
+    ( cAlias )->( dbCloseArea() )
+  else
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      if "ZAP" == Upper( oXmlNode:title )
+        mUIDSPMO := mo_read_xml_stroke( oXmlNode, 'UIDSPMO', )
+        if SubStr( mUIDSPMO, 1, 2 ) == '34'
+          ( cAlias )->( dbAppend() )
+          ( cAlias )->UIDSPMO := mUIDSPMO
+          ( cAlias )->MPVID := val( mo_read_xml_stroke( oXmlNode, 'MPVID', ) )
+          ( cAlias )->MPUSL := val( mo_read_xml_stroke( oXmlNode, 'MPUSL', ) )
+          ( cAlias )->MPROF := val( mo_read_xml_stroke( oXmlNode, 'MPROF', ) )
+        endif
+      endif
+    next j
+  endif
+  out_obrabotka_eol()
+
+  ( cAlias )->( dbCloseArea() )
+
+  return Nil
 
 // 25.01.26
 Function make_f032( source, destination )
