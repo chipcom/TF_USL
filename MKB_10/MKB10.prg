@@ -3,11 +3,11 @@
 external errorsys
 
 proc main()
-  local sys_date := date(), sys_year := year(date())
+  local sys_date := date(), sys_year := year( date() )
   local dbName := '_mo_mkb'
   local dbTFOMS := 'mkb_10_tf'
   local dbNTX := dbTFOMS + '.ntx'
-  local aResult
+  local aResult, i, lenResult
 
   f_first()
 
@@ -23,34 +23,34 @@ proc main()
   // { 'KOL',   'N',  1, 0 };  // Число строк в наименовании
 
   dbUseArea( .t.,, dbTFOMS, dbTFOMS, .t., .f. )
-  index on CODED to (dbTFOMS)
+  index on FIELD->CODED to ( dbTFOMS )
 
   dbUseArea( .t.,, dbName, dbName, .t., .f. )
 
-  (dbTFOMS)->(dbGoTop())
-  do while ! (dbTFOMS)->(EOF())
-    aResult := splitStrToArray( alltrim((dbTFOMS)->NAMED), 65 )
-    lenResult := len(aResult)
+  ( dbTFOMS )->( dbGoTop() )
+  do while ! ( dbTFOMS)->(EOF() )
+    aResult := splitStrToArray( alltrim( ( dbTFOMS )->NAMED ), 65 )
+    lenResult := len( aResult )
 
     for i := 1 to lenResult
-      (dbName)->(dbAppend())
-      (dbName)->SHIFR := (dbTFOMS)->CODED
-      (dbName)->NAME  := aResult[i]
-      (dbName)->KS    := i - 1
-      (dbName)->DBEGIN:= (dbTFOMS)->DATE_B
-      (dbName)->DEND  := (dbTFOMS)->DATE_E
-      if ! empty((dbTFOMS)->W)
-        (dbName)->POL   := iif((dbTFOMS)->W == '1', 'М', 'Ж')
+      ( dbName )->( dbAppend() )
+      ( dbName )->SHIFR := ( dbTFOMS )->CODED
+      ( dbName )->NAME  := aResult[ i ]
+      ( dbName )->KS    := i - 1
+      ( dbName )->DBEGIN:= ( dbTFOMS )->DATE_B
+      ( dbName )->DEND  := ( dbTFOMS )->DATE_E
+      if ! empty( ( dbTFOMS )->W )
+        ( dbName )->POL   := iif( ( dbTFOMS )->W == '1', 'М', 'Ж' )
       endif
       // (dbName)->KOL   := lenResult
     next
 
-    (dbTFOMS)->(dbSkip())
+    ( dbTFOMS )->( dbSkip() )
   end
 
   dbCloseAll()  // закроем всё
 
-  filedelete(dbNTX)
+  filedelete( dbNTX )
 
   f_end()
   return
