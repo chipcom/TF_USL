@@ -65,7 +65,7 @@ function dir_exe()
   endif
   return dir
 
-// 20.03.26
+// 26.03.26
 function arrReference()
 
   Local arr := {}
@@ -74,10 +74,15 @@ function arrReference()
   AAdd( arr, 'f010' )
   AAdd( arr, 'f011' )
   AAdd( arr, 'f014' )
+  AAdd( arr, 'f031' )
   AAdd( arr, 'f032' )
   AAdd( arr, 'f033' )
   AAdd( arr, 'f034' )
-//  AAdd( arr, 'f037' )
+  AAdd( arr, 'f035' )
+  AAdd( arr, 'f036' )
+  AAdd( arr, 'f037' )
+  AAdd( arr, 'f038' )
+  AAdd( arr, 'f039' )
   AAdd( arr, 'n001' )
   AAdd( arr, 'n002' )
   AAdd( arr, 'n003' )

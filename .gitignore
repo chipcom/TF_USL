@@ -32,11 +32,11 @@
 *.s3db
 *.hst
 *.db
+*.db3
 /sqlite3/chip_mo.db-journal
 /src_sqlite3/*.db
 /build
-/TFOMS_22
-/TFOMS_21
+/TFOMS
 /TFOMS
 /FFOMS
 /MZDRAV

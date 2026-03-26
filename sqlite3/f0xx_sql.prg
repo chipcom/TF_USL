@@ -9,18 +9,302 @@
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 25.01.26
+// 26.03.26
 Function make_f0xx( db, source, destination )
 
   make_f006( db, source )
   make_f010( db, source )
   make_f011( db, source )
   make_f014( db, source )
+
+  make_f031( source, destination )
   make_f032( source, destination )
   make_f033( source, destination )
   make_f034( source, destination )
+  make_f035( source, destination )
+  make_f036( source, destination )
+  make_f037( source, destination )
+  make_f038( source, destination )
 
   Return Nil
+
+// 26.03.26
+function make_f038( source, destination )
+
+  local _f038 := { ;
+    { 'IDADDRESS', 'N',  19, 0 }, ;
+    { 'UIDMO',     'C',  17, 0 }, ;
+    { 'UIDSPMO',   'C',  17, 0 }, ;
+    { 'N_DOC',     'C',  32, 0 }, ;
+    { 'ADDR',      'C', 250, 0 }, ;
+    { 'ADDR_GAR',  'C',  36, 0 } ;
+  }
+  local oXmlDoc, oXmlNode
+  local cAlias, nameRef, nfile, k, j
+  local mMCOD
+
+  cAlias := 'F038'
+  nameRef := 'F038.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - F038 Справочник адресов оказания медицинской помощи (ADDRMP)', 'RU866' )	
+  Endif
+
+  dbcreate( destination + '_mo_f038', _f038 )
+  dbUseArea( .t., , destination + '_mo_f038', cAlias, .f., .f. )
+  ( cAlias )->(dbGoTop())
+
+  oXmlDoc := HXMLDoc():Read( nfile )
+  IF Empty( oXmlDoc:aItems )
+    ( cAlias )->( dbCloseArea() )
+  else
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      if "ZAP" == Upper( oXmlNode:title )
+//        mMCOD := mo_read_xml_stroke( oXmlNode, 'MCOD', )
+//        if SubStr( mMCOD, 1, 2 ) == '34'
+          ( cAlias )->( dbAppend() )
+          ( cAlias )->IDADDRESS := val( mo_read_xml_stroke( oXmlNode, 'IDADDRESS', ) )
+          ( cAlias )->UIDMO := mo_read_xml_stroke( oXmlNode, 'UIDMO', )
+          ( cAlias )->UIDSPMO := mo_read_xml_stroke( oXmlNode, 'UIDSPMO', )
+          ( cAlias )->N_DOC := mo_read_xml_stroke( oXmlNode, 'N_DOC', )
+          ( cAlias )->ADDR := mo_read_xml_stroke( oXmlNode, 'ADDR', )
+          ( cAlias )->ADDR_GAR := mo_read_xml_stroke( oXmlNode, 'ADDR_GAR', )
+//        endif
+      endif
+    next j
+  endif
+  out_obrabotka_eol()
+
+  ( cAlias )->( dbCloseArea() )
+
+  return Nil
+
+// 26.03.26
+function make_f037( source, destination )
+
+  local _f037 := { ;
+    { 'IDMO',      'C',  17, 0 }, ;
+    { 'OID_MO',    'C',  35, 0 }, ;
+    { 'MCOD',      'C',   6, 0 }, ;
+    { 'UIDMO',     'C',  17, 0 }, ;
+    { 'N_DOC',     'C',  32, 0 } ;
+  }
+  local oXmlDoc, oXmlNode
+  local cAlias, nameRef, nfile, k, j
+  local mMCOD
+
+  cAlias := 'F037'
+  nameRef := 'F037.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - F037 лицензий медицинских организаций (LicMO)', 'RU866' )	
+  Endif
+
+  dbcreate( destination + '_mo_f037', _f037 )
+  dbUseArea( .t., , destination + '_mo_f037', cAlias, .f., .f. )
+  ( cAlias )->(dbGoTop())
+
+  oXmlDoc := HXMLDoc():Read( nfile )
+  IF Empty( oXmlDoc:aItems )
+    ( cAlias )->( dbCloseArea() )
+  else
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      if "ZAP" == Upper( oXmlNode:title )
+        mMCOD := mo_read_xml_stroke( oXmlNode, 'MCOD', )
+        if SubStr( mMCOD, 1, 2 ) == '34'
+          ( cAlias )->( dbAppend() )
+          ( cAlias )->MCOD := mMCOD
+          ( cAlias )->IDMO := mo_read_xml_stroke( oXmlNode, 'IDMO', )
+          ( cAlias )->OID_MO := mo_read_xml_stroke( oXmlNode, 'OID_MO', )
+          ( cAlias )->UIDMO := mo_read_xml_stroke( oXmlNode, 'UIDMO', )
+          ( cAlias )->N_DOC := mo_read_xml_stroke( oXmlNode, 'N_DOC', )
+        endif
+      endif
+    next j
+  endif
+  out_obrabotka_eol()
+
+  ( cAlias )->( dbCloseArea() )
+
+  return Nil
+
+// 26.03.26
+function make_f036( source, destination )
+
+  local _f036 := { ;
+    { 'IDMO',      'C',  17, 0 }, ;
+    { 'MCOD',      'C',   6, 0 }, ;
+    { 'UIDMO',     'C',  17, 0 }, ;
+    { 'OID_MO',    'C',  35, 0 }, ;
+    { 'FAM_RUK',   'C',  40, 0 }, ;
+    { 'IM_RUK',    'C',  40, 0 }, ;
+    { 'OT_RUK',    'C',  40, 0 }, ;
+    { 'TYPE_RUK',  'C',   1, 0 } ;
+  }
+  local oXmlDoc, oXmlNode
+  local cAlias, nameRef, nfile, k, j
+  local mMCOD
+
+  cAlias := 'F036'
+  nameRef := 'F036.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - F036 Справочник руководителей медицинских организаций (RukMO)', 'RU866' )	
+  Endif
+
+  dbcreate( destination + '_mo_f036', _f036 )
+  dbUseArea( .t., , destination + '_mo_f036', cAlias, .f., .f. )
+  ( cAlias )->(dbGoTop())
+
+  oXmlDoc := HXMLDoc():Read( nfile )
+  IF Empty( oXmlDoc:aItems )
+    ( cAlias )->( dbCloseArea() )
+  else
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      if "ZAP" == Upper( oXmlNode:title )
+        mMCOD := mo_read_xml_stroke( oXmlNode, 'MCOD', )
+        if SubStr( mMCOD, 1, 2 ) == '34'
+          ( cAlias )->( dbAppend() )
+          ( cAlias )->MCOD := mMCOD
+          ( cAlias )->IDMO := mo_read_xml_stroke( oXmlNode, 'IDMO', )
+          ( cAlias )->OID_MO := mo_read_xml_stroke( oXmlNode, 'OID_MO', )
+          ( cAlias )->UIDMO := mo_read_xml_stroke( oXmlNode, 'UIDMO', )
+          ( cAlias )->FAM_RUK := mo_read_xml_stroke( oXmlNode, 'FAM_RUK', )
+          ( cAlias )->IM_RUK := mo_read_xml_stroke( oXmlNode, 'IM_RUK', )
+          ( cAlias )->OT_RUK := mo_read_xml_stroke( oXmlNode, 'OT_RUK', )
+          ( cAlias )->TYPE_RUK := mo_read_xml_stroke( oXmlNode, 'TYPE_RUK', )
+        endif
+      endif
+    next j
+  endif
+  out_obrabotka_eol()
+
+  ( cAlias )->( dbCloseArea() )
+
+  return Nil
+
+// 26.03.26
+function make_f035( source, destination )
+
+  local _f035 := { ;
+    { 'IDMO',      'C',  17, 0 }, ;
+    { 'MCOD',      'C',   6, 0 }, ;
+    { 'UIDMO',     'C',  17, 0 }, ;
+    { 'NAM_UMOP',  'C', 250, 0 }, ;
+    { 'NAM_UMOK',  'C',  50, 0 }, ;
+    { 'OID_MO',    'C',  35, 0 } ;
+  }
+  local oXmlDoc, oXmlNode
+  local cAlias, nameRef, nfile, k, j
+  local mMCOD
+
+  cAlias := 'F035'
+  nameRef := 'F035.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - F035 Справочник учредителей медицинских организаций, являющихся государственными (муниципальными) учреждениями (UMO)', 'RU866' )	
+  Endif
+
+  dbcreate( destination + '_mo_f035', _f035 )
+  dbUseArea( .t., , destination + '_mo_f035', cAlias, .f., .f. )
+  ( cAlias )->(dbGoTop())
+
+  oXmlDoc := HXMLDoc():Read( nfile )
+  IF Empty( oXmlDoc:aItems )
+    ( cAlias )->( dbCloseArea() )
+  else
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      if "ZAP" == Upper( oXmlNode:title )
+        mMCOD := mo_read_xml_stroke( oXmlNode, 'MCOD', )
+        if SubStr( mMCOD, 1, 2 ) == '34'
+          ( cAlias )->( dbAppend() )
+          ( cAlias )->MCOD := mMCOD
+          ( cAlias )->IDMO := mo_read_xml_stroke( oXmlNode, 'IDMO', )
+          ( cAlias )->UIDMO := mo_read_xml_stroke( oXmlNode, 'UIDMO', )
+          ( cAlias )->NAM_UMOP := substr( mo_read_xml_stroke( oXmlNode, 'NAM_UMOP', ), 1, 250 )
+          ( cAlias )->NAM_UMOK := substr( mo_read_xml_stroke( oXmlNode, 'NAM_UMOK', ), 1, 50 )
+          ( cAlias )->OID_MO := mo_read_xml_stroke( oXmlNode, 'OID_MO', )
+        endif
+      endif
+    next j
+  endif
+  out_obrabotka_eol()
+
+  ( cAlias )->( dbCloseArea() )
+
+  return Nil
+
+// 26.03.26
+function make_f031( source, destination )
+
+  local _f031 := { ;
+    { 'IDMO',      'C',  17, 0 }, ;
+    { 'NAM_MOP',   'C', 250, 0 }, ;
+    { 'NAM_MOK',   'C',  50, 0 }, ;
+    { 'OID_MO',    'C',  35, 0 } ;
+  }
+  local oXmlDoc, oXmlNode
+  local cAlias, nameRef, nfile, k, j
+  local mIDMO
+
+  cAlias := 'F031'
+  nameRef := 'F031.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - F031 Единый реестр медицинских организаций (ERMO)', 'RU866' )	
+  Endif
+
+  dbcreate( destination + '_mo_f031', _f031 )
+  dbUseArea( .t., , destination + '_mo_f031', cAlias, .f., .f. )
+  ( cAlias )->(dbGoTop())
+
+  oXmlDoc := HXMLDoc():Read( nfile )
+  IF Empty( oXmlDoc:aItems )
+    ( cAlias )->( dbCloseArea() )
+  else
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    for j := 1 to k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      if "ZAP" == Upper( oXmlNode:title )
+        mIDMO := mo_read_xml_stroke( oXmlNode, 'IDMO', )
+        if SubStr( mIDMO, 1, 2 ) == '34'
+          ( cAlias )->( dbAppend() )
+          ( cAlias )->IDMO := mIDMO
+          ( cAlias )->NAM_MOP := substr( mo_read_xml_stroke( oXmlNode, 'NAM_MOP', ), 1, 250 )
+          ( cAlias )->NAM_MOK := substr( mo_read_xml_stroke( oXmlNode, 'NAM_MOK', ), 1, 50 )
+          ( cAlias )->OID_MO := mo_read_xml_stroke( oXmlNode, 'OID_MO', )
+        endif
+      endif
+    next j
+  endif
+  out_obrabotka_eol()
+
+  ( cAlias )->( dbCloseArea() )
+
+  return Nil
 
 // 25.01.26
 Function make_f033( source, destination )
