@@ -263,7 +263,8 @@ function make_f031( source, destination )
     { 'IDMO',      'C',  17, 0 }, ;
     { 'NAM_MOP',   'C', 250, 0 }, ;
     { 'NAM_MOK',   'C',  50, 0 }, ;
-    { 'OID_MO',    'C',  35, 0 } ;
+    { 'OID_MO',    'C',  35, 0 }, ;
+    { 'ADDR_J_GAR','C',  36, 0 } ;
   }
   local oXmlDoc, oXmlNode
   local cAlias, nameRef, nfile, k, j
@@ -300,6 +301,7 @@ function make_f031( source, destination )
           ( cAlias )->NAM_MOP := substr( mo_read_xml_stroke( oXmlNode, 'NAM_MOP', ), 1, 250 )
           ( cAlias )->NAM_MOK := substr( mo_read_xml_stroke( oXmlNode, 'NAM_MOK', ), 1, 50 )
           ( cAlias )->OID_MO := mo_read_xml_stroke( oXmlNode, 'OID_MO', )
+          ( cAlias )->ADDR_J_GAR := mo_read_xml_stroke( oXmlNode, 'ADDR_J_GAR', )
         endif
       endif
     next j
