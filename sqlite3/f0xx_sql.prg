@@ -9,7 +9,7 @@
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 26.03.26
+// 28.03.26
 Function make_f0xx( db, source, destination )
 
   make_f006( db, source )
@@ -21,8 +21,8 @@ Function make_f0xx( db, source, destination )
   make_f032( source, destination )
   make_f033( source, destination )
   make_f034( source, destination )
-  make_f035( source, destination )
-  make_f036( source, destination )
+//  make_f035( source, destination )
+//  make_f036( source, destination )
   make_f037( source, destination )
   make_f038( source, destination )
 
@@ -41,7 +41,7 @@ function make_f038( source, destination )
   }
   local oXmlDoc, oXmlNode
   local cAlias, nameRef, nfile, k, j
-  local mMCOD
+  local mUIDMO   //  , mMCOD
 
   cAlias := 'F038'
   nameRef := 'F038.xml'
@@ -67,6 +67,8 @@ function make_f038( source, destination )
       if "ZAP" == Upper( oXmlNode:title )
 //        mMCOD := mo_read_xml_stroke( oXmlNode, 'MCOD', )
 //        if SubStr( mMCOD, 1, 2 ) == '34'
+        mUIDMO := mo_read_xml_stroke( oXmlNode, 'UIDMO', )
+        if SubStr( mUIDMO, 1, 2 ) == '34'
           ( cAlias )->( dbAppend() )
           ( cAlias )->IDADDRESS := val( mo_read_xml_stroke( oXmlNode, 'IDADDRESS', ) )
           ( cAlias )->UIDMO := mo_read_xml_stroke( oXmlNode, 'UIDMO', )
@@ -74,7 +76,7 @@ function make_f038( source, destination )
           ( cAlias )->N_DOC := mo_read_xml_stroke( oXmlNode, 'N_DOC', )
           ( cAlias )->ADDR := mo_read_xml_stroke( oXmlNode, 'ADDR', )
           ( cAlias )->ADDR_GAR := mo_read_xml_stroke( oXmlNode, 'ADDR_GAR', )
-//        endif
+        endif
       endif
     next j
   endif
@@ -254,7 +256,7 @@ function make_f035( source, destination )
 
   return Nil
 
-// 26.03.26
+// 28.03.26
 function make_f031( source, destination )
 
   local _f031 := { ;
@@ -265,7 +267,7 @@ function make_f031( source, destination )
   }
   local oXmlDoc, oXmlNode
   local cAlias, nameRef, nfile, k, j
-  local mIDMO
+  local mOKTMO  //  , mIDMO
 
   cAlias := 'F031'
   nameRef := 'F031.xml'
@@ -289,10 +291,12 @@ function make_f031( source, destination )
     for j := 1 to k
       oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
       if "ZAP" == Upper( oXmlNode:title )
-        mIDMO := mo_read_xml_stroke( oXmlNode, 'IDMO', )
-        if SubStr( mIDMO, 1, 2 ) == '34'
+//        mIDMO := mo_read_xml_stroke( oXmlNode, 'IDMO', )
+//        if SubStr( mIDMO, 1, 2 ) == '34'
+        mOKTMO := mo_read_xml_stroke( oXmlNode, 'OKTMO', )
+        if SubStr( mOKTMO, 1, 2 ) == '18'
           ( cAlias )->( dbAppend() )
-          ( cAlias )->IDMO := mIDMO
+          ( cAlias )->IDMO := mo_read_xml_stroke( oXmlNode, 'IDMO', )
           ( cAlias )->NAM_MOP := substr( mo_read_xml_stroke( oXmlNode, 'NAM_MOP', ), 1, 250 )
           ( cAlias )->NAM_MOK := substr( mo_read_xml_stroke( oXmlNode, 'NAM_MOK', ), 1, 50 )
           ( cAlias )->OID_MO := mo_read_xml_stroke( oXmlNode, 'OID_MO', )
@@ -361,11 +365,12 @@ Function make_f033( source, destination )
 
   return nil
 
-// 20.03.26
+// 28.03.26
 function make_f034( source, destination )
 
   local _f034 := { ;
     { 'UIDSPMO',  'C',  17, 0 }, ;
+    { 'IDADDRESS','N',  19, 0 }, ;
     { 'MPVID',    'N',   4, 0 }, ;
     { 'MPUSL',    'N',   2, 0 }, ;
     { 'MPROF',    'N',   3, 0 }  ;
@@ -400,6 +405,7 @@ function make_f034( source, destination )
         if SubStr( mUIDSPMO, 1, 2 ) == '34'
           ( cAlias )->( dbAppend() )
           ( cAlias )->UIDSPMO := mUIDSPMO
+          ( cAlias )->IDADDRESS := val( mo_read_xml_stroke( oXmlNode, 'IDADDRESS', ) )
           ( cAlias )->MPVID := val( mo_read_xml_stroke( oXmlNode, 'MPVID', ) )
           ( cAlias )->MPUSL := val( mo_read_xml_stroke( oXmlNode, 'MPUSL', ) )
           ( cAlias )->MPROF := val( mo_read_xml_stroke( oXmlNode, 'MPROF', ) )
@@ -417,7 +423,7 @@ function make_f034( source, destination )
 Function make_f032( source, destination )
 
   local _f032 := { ;
-    { 'UIDMO',    'C',  11, 0 }, ;
+    { 'UIDMO',    'C',  17, 0 }, ;
     { 'IDMO',     'C',  17, 0 }, ;
     { 'MCOD',     'C',   6, 0 }, ;
     { 'OSP',      'C',   1, 0 }, ;

@@ -9,10 +9,10 @@ copy d:\_mo\tf_usl\out\_mo_f033.dbf d:\_mo\_arc\
 copy d:\_mo\tf_usl\out\_mo_f033.dbf d:\_mo\chip\EXE
 copy d:\_mo\tf_usl\out\_mo_f034.dbf d:\_mo\_arc\
 copy d:\_mo\tf_usl\out\_mo_f034.dbf d:\_mo\chip\EXE
-copy d:\_mo\tf_usl\out\_mo_f035.dbf d:\_mo\_arc\
-copy d:\_mo\tf_usl\out\_mo_f035.dbf d:\_mo\chip\EXE
-copy d:\_mo\tf_usl\out\_mo_f036.dbf d:\_mo\_arc\
-copy d:\_mo\tf_usl\out\_mo_f036.dbf d:\_mo\chip\EXE
+rem copy d:\_mo\tf_usl\out\_mo_f035.dbf d:\_mo\_arc\
+rem copy d:\_mo\tf_usl\out\_mo_f035.dbf d:\_mo\chip\EXE
+rem copy d:\_mo\tf_usl\out\_mo_f036.dbf d:\_mo\_arc\
+rem copy d:\_mo\tf_usl\out\_mo_f036.dbf d:\_mo\chip\EXE
 copy d:\_mo\tf_usl\out\_mo_f037.dbf d:\_mo\_arc\
 copy d:\_mo\tf_usl\out\_mo_f037.dbf d:\_mo\chip\EXE
 copy d:\_mo\tf_usl\out\_mo_f038.dbf d:\_mo\_arc\
