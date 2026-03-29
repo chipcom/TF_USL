@@ -14,6 +14,7 @@ Function make_v0xx( db, source )
 
   make_v002( db, source )
   make_v004( db, source )
+  make_v008( db, source )
   make_v009( db, source )
   make_v010( db, source )
   make_v012( db, source )
@@ -194,6 +195,80 @@ Function make_v042( db, source )
   Endif
   out_obrabotka_eol()
   return Nil
+
+// 29.03.26
+Function make_v008( db, source )
+
+  // IDVMP,     "N",   4, 0  // Код вида МП
+  // VMPNAME,   "C", 254, 0  // Наименование вида МП
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+
+  Local cmdText
+  Local k, j
+  Local nfile, nameRef
+  Local oXmlDoc, oXmlNode
+  Local mIDVMP, mVMPname, d1, d2
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  cmdText := 'CREATE TABLE v008( idvmp INTEGER, vmpname TEXT, datebeg TEXT(10), dateend TEXT(10))'
+
+  nameRef := 'V008.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Классификатор видов медицинской помощи (VidMp)', 'RU866' )	
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS v008' ) == SQLITE_OK
+    OutStd( 'DROP TABLE v008 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE v008 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE v008 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mIDVMP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDVMP' )
+        mVMPname := read_xml_stroke_1251_to_utf8( oXmlNode, 'VMPNAME' )
+        d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+
+        count++
+        cmdTextInsert := cmdTextInsert + "INSERT INTO v008( idvmp, vmpname, datebeg, dateend ) VALUES("
+        cmdTextInsert += "'" + mIDVMP + "',"
+        cmdTextInsert += "'" + mVMPname + "',"
+        cmdTextInsert += "'" + d1 + "',"
+        cmdTextInsert += "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert )
+          count := 0
+          cmdTextInsert := textBeginTrans
+        Endif
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
+  Endif
+  out_obrabotka_eol()
+  Return Nil
 
 // 25.12.24
 Function make_v009( db, source )
