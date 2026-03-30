@@ -244,7 +244,8 @@ Function make_v008( db, source )
       oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
       If 'ZAP' == Upper( oXmlNode:title )
         mIDVMP := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDVMP' )
-        mVMPname := read_xml_stroke_1251_to_utf8( oXmlNode, 'VMPNAME' )
+        mVMPname := StrTran( read_xml_stroke_1251_to_utf8( oXmlNode, 'VMPNAME' ), 'медицинская помощь', 'МП' )
+        mVMPname := StrTran( mVMPname, 'телемедицинских технологий', 'телемедицины' )
         d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
         d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
 
