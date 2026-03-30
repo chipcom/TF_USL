@@ -144,7 +144,7 @@ Function make_f033( source, destination )
   local _f033 := { ;
     { 'UIDSPMO',  'C',  17, 0 }, ;
     { 'IDSPMO',   'C',  17, 0 }, ;
-    { 'NAM_SK',   'C',  50, 0 }, ;
+    { 'NAM_SK',   'C',  80, 0 }, ;
     { 'NAM_SPMO', 'C', 150, 0 },  ;
     { 'OSP',      'C',   1, 0 } ;
   }
@@ -181,7 +181,7 @@ Function make_f033( source, destination )
           ( cAlias )->UIDSPMO := mUIDSPMO
           ( cAlias )->IDSPMO := mo_read_xml_stroke( oXmlNode, 'IDSPMO', )
           ( cAlias )->OSP := mOSP
-          ( cAlias )->NAM_SK := substr( mo_read_xml_stroke( oXmlNode, 'NAM_SK_SPMO', ), 1, 50 )
+          ( cAlias )->NAM_SK := substr( mo_read_xml_stroke( oXmlNode, 'NAM_SK_SPMO', ), 1, 80 )
           ( cAlias )->NAM_SPMO := substr( mo_read_xml_stroke( oXmlNode, 'NAM_SPMO', ), 1, 150 )
         endif
       ENDIF
