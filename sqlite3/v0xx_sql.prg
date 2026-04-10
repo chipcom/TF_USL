@@ -28,6 +28,7 @@ Function make_v0xx( db, source )
   make_V022( db, source )
   make_v024( db, source )
   make_V025( db, source )
+  make_v029( db, source )
   make_V030( db, source )
   make_V031( db, source )
   make_V032( db, source )
@@ -1298,6 +1299,83 @@ Function make_v025( db, source )
   out_obrabotka_eol()
   Return Nil
 
+// 10.04.26
+Function make_v029( db, source )
+
+  // IDMET,   'N',   2, 0  // Код метода диагностического исследования
+  // N_MET,   'C', 100, 0  // Наименование метода диагностического исследования
+  // DATEBEG, 'D',   8, 0  // Дата начала действия записи
+  // DATEEND, 'D',   8, 0  // Дата окончания действия записи
+
+  Local cmdText
+  Local k, j
+  Local nfile, nameRef
+  Local oXmlDoc, oXmlNode
+  Local mIDMET, mN_MET, d1, d2  //, d1_1, d2_1
+//  Local strD_End
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  cmdText := 'CREATE TABLE v029( idmet INTEGER, n_met TEXT, datebeg TEXT(10), dateend TEXT(10) )'
+//  cmdText += 'FOREIGN KEY(degree) REFERENCES Severity(id))'
+
+  nameRef := 'V029.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Классификатор методов диагностического исследования (MET_ISSL)', 'RU866' )	
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS v029' ) == SQLITE_OK
+    OutStd( 'DROP TABLE v029 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE v029 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE v029 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+      out_obrabotka( nfile )
+      k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+      For j := 1 To k
+        oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+        If 'ZAP' == Upper( oXmlNode:title )
+          mIDMET := read_xml_stroke_1251_to_utf8( oXmlNode, 'IDMET' )
+          mN_MET := read_xml_stroke_1251_to_utf8( oXmlNode, 'N_MET' )
+          d1 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+          d2 := date_xml_sqlite( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+//          d1 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEBEG')
+//          d2 := read_xml_stroke_1251_to_utf8(oXmlNode, 'DATEEND')
+          count++
+          cmdTextInsert += 'INSERT INTO v029(idmet, n_met, datebeg, dateend) VALUES(' ;
+            + "" + mIDMET + "," ;
+            + "'" + mN_MET + "'," ;
+            + "'" + d1 + "'," ;
+            + "'" + d2 + "');"
+          If count == COMMIT_COUNT
+            cmdTextInsert += textCommitTrans
+            sqlite3_exec( db, cmdTextInsert )
+            count := 0
+            cmdTextInsert := textBeginTrans
+          Endif
+        Endif
+      Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
+  Endif
+  out_obrabotka_eol()
+  Return Nil
+
 // 29.01.26
 Function make_v030( db, source )
 
@@ -1317,7 +1395,6 @@ Function make_v030( db, source )
   Local strD_End
   Local count := 0, cmdTextInsert := textBeginTrans
 
-//  cmdText := 'CREATE TABLE v030(schemcode TEXT(5), scheme TEXT(15), degree INTEGER, comment BLOB, datebeg TEXT(10), dateend TEXT(10), '
   cmdText := 'CREATE TABLE v030(schemcode TEXT(5), scheme TEXT(15), degree INTEGER, comment TEXT, datebeg TEXT(10), dateend TEXT(10), '
   cmdText += 'FOREIGN KEY(degree) REFERENCES Severity(id))'
 
@@ -1346,9 +1423,6 @@ Function make_v030( db, source )
     out_error( FILE_READ_ERROR, nfile )
     Return Nil
   Else
-//    cmdText := "INSERT INTO v030 (schemcode, scheme, degree, comment, datebeg, dateend) VALUES( :schemcode, :scheme, :degree, :comment, :datebeg, :dateend )"
-//    stmt := sqlite3_prepare( db, cmdText )
-//    If ! Empty( stmt )
       out_obrabotka( nfile )
       k := Len( oXmlDoc:aItems[ 1 ]:aItems )
       For j := 1 To k
@@ -1373,21 +1447,7 @@ Function make_v030( db, source )
           Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
           d1 := hb_ValToStr( d1_1 )
           d2 := hb_ValToStr( d2_1 )
-/*
-          If sqlite3_bind_text( stmt, 1, mSchemCode ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 2, mScheme ) == SQLITE_OK .and. ;
-              sqlite3_bind_int( stmt, 3, Val( mDegree ) ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 4, mComment ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 5, d1 ) == SQLITE_OK .and. ;
-              sqlite3_bind_text( stmt, 6, d2 ) == SQLITE_OK
-            If sqlite3_step( stmt ) != SQLITE_DONE
-              out_error( TAG_ROW_INVALID, nfile, j )
-            Endif
-          Endif
-          sqlite3_reset( stmt )
-*/
           count++
-//    cmdText := "INSERT INTO v030 (schemcode, scheme, degree, comment, datebeg, dateend) VALUES( :schemcode, :scheme, :degree, :comment, :datebeg, :dateend )"
           cmdTextInsert += 'INSERT INTO v030(schemcode, scheme, degree, comment, datebeg, dateend) VALUES(' ;
             + "'" + mSchemCode + "'," ;
             + "'" + mScheme + "'," ;
