@@ -25,7 +25,9 @@ Function make_other( db, source )   //  , destination )
   db_planzakaz( db, source )
   make_planDRZ( db, source )
   db_diagnoze_dn( db, source )
+  make_plans( db, source )
 //  db_enp( source, destination )
+
   Return Nil
 
 #define DEF_SMO   '34001' // Капитал
@@ -1070,6 +1072,76 @@ Function make_planDRZ( db, source )
        count := 0
        cmdTextInsert := textBeginTrans
      Endif
+    dbSkip()
+  ENDDO
+  If count > 0
+    cmdTextInsert += textCommitTrans
+    sqlite3_exec( db, cmdTextInsert )
+  Endif
+  out_obrabotka_eol()
+  Return Nil
+
+// 14.05.25
+Function make_plans( db, source )
+
+  // План на выполнение диспансеризации репродуктивного здоровья и диспансеризации/профилактики несовершеннолетних
+  // 1 - year(N)  2 - kod(C) 3 - kol_m(N) 4 - kol_f(N) 5 - children0_14(N) 6 - children15_17(N) 7 - young_men(N)  8 - children_inv(N) // 9 - name_u(C)
+
+  Local cmdText
+  Local mKod, mYear, mKol_m, mKol_f //, mName
+  Local mChildren0_14, mChildren15_17, mYoung_men, mChildren_inv
+  Local arr := {}
+  Local count := 0, cmdTextInsert := textBeginTrans
+  Local mArr, nameRef, nfile
+
+  nameRef := 'plan_KZVO.csv'
+  nfile := source + nameRef
+
+  cmdText := 'CREATE TABLE plans( year INTEGER, kod_mo TEXT(6), kol_m INTEGER, kol_f INTEGER, kol0_14 INTEGER, kol15_17 INTEGER, young_men INTEGER, children_inv INTEGER )'
+
+  out_utf8_to_str( 'Плановые показатели по проведению диспансеризации репродуктивного здоровья и диспансеризации/профилактики несовершеннолетних', 'RU866' )	
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS plans' ) == SQLITE_OK
+    OutStd( 'DROP TABLE plans - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE plans - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE plans - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  dbUseArea( .t., 'FCOMMA', nfile, , .f., .f. )
+  dbGoTop()
+  DO WHILE ! Eof()
+    mArr := split( FIELD->LINE, ',' )
+
+    mYear := AllTrim( mArr[ 1 ] )
+    mKod := AllTrim( mArr[ 2 ] )
+    mKol_m := AllTrim( mArr[ 3 ] )
+    mKol_f := AllTrim( mArr[ 4 ] )
+    mChildren0_14 := AllTrim( mArr[ 5 ] )
+    mChildren15_17 := AllTrim( mArr[ 6 ] )
+    mYoung_men := AllTrim( mArr[ 7 ] )
+    mChildren_inv := AllTrim( mArr[ 8 ] )
+
+    count++
+    cmdTextInsert += 'INSERT INTO plans ( year, kod_mo, kol_m, kol_f, kol0_14, kol15_17, young_men, children_inv ) VALUES(' ;
+      + "'" + mYear + "'," ;
+      + "'" + mKod + "'," ;
+      + "'" + mKol_m + "'," ;
+      + "'" + mKol_f + "'," ;
+      + "'" + mChildren0_14 + "'," ;
+      + "'" + mChildren15_17 + "'," ;
+      + "'" + mYoung_men + "'," ;
+      + "'" + mChildren_inv + "');"
+    If count == COMMIT_COUNT
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+      count := 0
+      cmdTextInsert := textBeginTrans
+    Endif
     dbSkip()
   ENDDO
   If count > 0
