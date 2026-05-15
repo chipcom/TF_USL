@@ -11,7 +11,7 @@ REQUEST FCOMMA
 Static textBeginTrans := 'BEGIN TRANSACTION;'
 Static textCommitTrans := 'COMMIT;'
 
-// 27.01.26
+// 14.05.26
 Function make_other( db, source )   //  , destination )
 
   make_p_cel( db, source )
@@ -1081,15 +1081,16 @@ Function make_planDRZ( db, source )
   out_obrabotka_eol()
   Return Nil
 
-// 14.05.25
+// 15.05.25
 Function make_plans( db, source )
 
   // План на выполнение диспансеризации репродуктивного здоровья и диспансеризации/профилактики несовершеннолетних
-  // 1 - year(N)  2 - kod(C) 3 - kol_m(N) 4 - kol_f(N) 5 - children0_14(N) 6 - children15_17(N) 7 - young_men(N)  8 - children_inv(N) // 9 - name_u(C)
+  // 1 - year(N)  2 - kod(C) 3 - kol_m(N) 4 - kol_f(N) 5 - children0_14(N) 6 - children15_17(N) 7 - young_men(N)  8 - children_inv(N)
+  // 9 - children_stac(N) 10 - children_family(N) // 11 - name_u(C)
 
   Local cmdText
   Local mKod, mYear, mKol_m, mKol_f //, mName
-  Local mChildren0_14, mChildren15_17, mYoung_men, mChildren_inv
+  Local mChildren0_14, mChildren15_17, mYoung_men, mChildren_inv, mChildren_stac, mChildren_family
   Local arr := {}
   Local count := 0, cmdTextInsert := textBeginTrans
   Local mArr, nameRef, nfile
@@ -1097,7 +1098,7 @@ Function make_plans( db, source )
   nameRef := 'plan_KZVO.csv'
   nfile := source + nameRef
 
-  cmdText := 'CREATE TABLE plans( year INTEGER, kod_mo TEXT(6), kol_m INTEGER, kol_f INTEGER, kol0_14 INTEGER, kol15_17 INTEGER, young_men INTEGER, children_inv INTEGER )'
+  cmdText := 'CREATE TABLE plans( year INTEGER, kod_mo TEXT(6), kol_m INTEGER, kol_f INTEGER, kol0_14 INTEGER, kol15_17 INTEGER, young_men INTEGER, children_inv INTEGER, children_stac INTEGER, children_family INTEGER )'
 
   out_utf8_to_str( 'Плановые показатели по проведению диспансеризации репродуктивного здоровья и диспансеризации/профилактики несовершеннолетних', 'RU866' )	
 
@@ -1125,9 +1126,11 @@ Function make_plans( db, source )
     mChildren15_17 := AllTrim( mArr[ 6 ] )
     mYoung_men := AllTrim( mArr[ 7 ] )
     mChildren_inv := AllTrim( mArr[ 8 ] )
+    mChildren_stac := AllTrim( mArr[ 9 ] )
+    mChildren_family := AllTrim( mArr[ 10 ] )
 
     count++
-    cmdTextInsert += 'INSERT INTO plans ( year, kod_mo, kol_m, kol_f, kol0_14, kol15_17, young_men, children_inv ) VALUES(' ;
+    cmdTextInsert += 'INSERT INTO plans ( year, kod_mo, kol_m, kol_f, kol0_14, kol15_17, young_men, children_inv, children_stac, children_family ) VALUES(' ;
       + "'" + mYear + "'," ;
       + "'" + mKod + "'," ;
       + "'" + mKol_m + "'," ;
@@ -1135,7 +1138,9 @@ Function make_plans( db, source )
       + "'" + mChildren0_14 + "'," ;
       + "'" + mChildren15_17 + "'," ;
       + "'" + mYoung_men + "'," ;
-      + "'" + mChildren_inv + "');"
+      + "'" + mChildren_inv + "'," ;
+      + "'" + mChildren_stac + "'," ;
+      + "'" + mChildren_family + "');"
     If count == COMMIT_COUNT
       cmdTextInsert += textCommitTrans
       sqlite3_exec( db, cmdTextInsert )
