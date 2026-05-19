@@ -466,7 +466,7 @@ Function work_mo_uslf( source, destination )
   close databases
   return .t.
 
-// 27.02.26
+// 19.05.26
 Function work_t006(source, destination)
 
   Local oXmlDoc, oXmlNode, af := {}
@@ -543,7 +543,7 @@ Function work_t006(source, destination)
     { 'NAME',       'C',    255, 0 } ;
   } )
   dbcreate( destination + nameFileIt1, { ;
-    { 'CODE',       'C',     10, 0 }, ;
+    { 'CODE',       'C',     15, 0 }, ;
     { 'USL_OK',     'N',      1, 0 }, ;
     { 'DS',         'M',     10, 0 }, ;
     { 'DS1',        'C',    150, 0 }, ;
