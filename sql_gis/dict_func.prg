@@ -38,31 +38,67 @@ Function create_table( db, table, cmdText )
 
   Return ret
 
-// 12.05.22
+// 23.05.26
 Function drop_table( db, table )
 
   // db - дескриптор SQL БД
   // table - имя таблицы SQL БД
-  Local cmdText
+  Local cmdText, lRet := .f.
 
   cmdText := 'DROP TABLE if EXISTS ' + table
 
   If sqlite3_exec( db, cmdText ) == SQLITE_OK
     OutStd( 'DROP TABLE ' + table + ' - Ok', hb_eol() )
+    lRet := .t.
   Endif
 
-  Return Nil
+  Return lRet
 
+// 12.05.22
+Function create_index( db, name_index, cmdText )
+
+  // db - дескриптор SQL БД
+  // name_index - имя индекса вида name.xml
+  // cmdText - строка команды SQL для создания таблицы SQL БД
+  Local ret := .f.
+
+//  table := clear_name_table( table )
+
+  drop_index( db, name_index )
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE INDEX ' + name_index + ' - Ok', hb_eol() )
+    ret := .t.
+  Else
+    OutStd( 'CREATE INDEX ' + name_index + ' - False', hb_eol() )
+  Endif
+
+  Return ret
+
+// 23.05.26
+Function drop_index( db, name )
+
+  // db - дескриптор SQL БД
+  // name - имя индекса SQL БД
+  Local cmdText, lRet := .f.
+
+  cmdText := 'DROP INDEX if EXISTS ' + name
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'DROP INDEX ' + name + ' - Ok', hb_eol() )
+    lRet := .t.
+  Endif
+
+  Return lRet
+
+// 23.05.26
 Procedure about()
 
-  OutStd( 'Конвертер справочников обязательного медицинского страхования', hb_eol(), ;
+  OutStd( 'Конвертер справочников ГИС ОМС', hb_eol(), ;
     'Copyright (c) 2022, Vladimir G.Baykin', hb_eol(), hb_eol() )
   OutStd( 'Syntax:  create_dict [options] ', hb_eol(), hb_eol() )
   OutStd( 'Опции:', hb_eol(), ;
     '      -in=<source directory>', hb_eol(), ;
     '      -out=<destination directory>', hb_eol(), ;
-    '      -all - конвертировать все', hb_eol(), ;
-    '      -update - конвертация отдельных файлов', hb_eol(), ;
     '      -help - помощь', hb_eol() )
 
   Return
