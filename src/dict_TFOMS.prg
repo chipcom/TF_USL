@@ -466,7 +466,7 @@ Function work_mo_uslf( source, destination )
   close databases
   return .t.
 
-// 19.05.26
+// 26.05.26
 Function work_t006(source, destination)
 
   Local oXmlDoc, oXmlNode, af := {}
@@ -689,9 +689,9 @@ Function work_t006(source, destination)
                 d6->DS  := lDS  := 'Z92.8'
               endif
 
-              if lshifr = 'st36.048' .and. empty(lDS) .and. empty(lsy)  // согласно письму 12-20-607 от 01.10.25
-                d6->DS  := lDS  := 'Z92.9'
-              endif
+//              if lshifr = 'st36.048' .and. empty(lDS) .and. empty(lsy)  // согласно письму 12-20-607 от 01.10.25
+//                d6->DS  := lDS  := 'Z92.9'
+//              endif
 
               if lshifr = 'st36.049' .and. empty(lDS) .and. empty(lsy)  // согласно письму 12-20-647 от 20.10.25
                 d6->DS  := lDS  := 'Z03.8'
