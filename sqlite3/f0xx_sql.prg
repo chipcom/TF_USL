@@ -16,6 +16,7 @@ Function make_f0xx( db, source, destination )
   make_f010( db, source )
   make_f011( db, source )
   make_f014( db, source )
+  make_f019( db, source )
 
   make_f031( source, destination )
   make_f032( source, destination )
@@ -26,6 +27,101 @@ Function make_f0xx( db, source, destination )
   make_f037( source, destination )
   make_f038( source, destination )
 
+  Return Nil
+
+// 27.05.26
+Function make_f019( db, source )
+
+  // TF_OKATO,  "C", 5, 0  // Код субъекта РФ по ОКАТО
+  // ORGTYPEE,  "C", 1, 0  // Тип организации: 0 – ФОМС; 1 – ТФОМС; 2 – СМО
+  // ORGCOD,    "N", 5, 0  // Уникальный порядковый номер организации в справочнике
+  // NAM_ORGP,  "C", 250, 0 // Наименование организации (полное)
+  // NAM_ORGK,  "C", 250, 0 // Наименование организации (краткое)
+  // TF_KOD,    "C", 2, 0  // Код ТФОМС из Справоч¬ника территориальных фондов ОМС (F001)
+  // SMOCOD,    "C", 5, 0  // Код СМО в ЕРСМО
+  // DATEBEG,   "D",   8, 0  // Дата начала действия записи
+  // DATEEND,   "D",   8, 0   // Дата окончания действия записи
+
+  Local cmdText
+  Local k, j
+  Local nfile, nameRef
+  Local oXmlDoc, oXmlNode
+  Local mTF_OKATO, mORGTYPE, mORGCOD, mNAM_ORGP, mNAM_ORGK, mTF_KOD, mSMOCOD, d1, d2, d1_1, d2_1
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  cmdText := 'CREATE TABLE f019( tf_okato TEXT(5), orgtype TEXT(5), orgcod INTEGER, nam_orgp TEXT, nam_orgk TEXT, tf_kod TEXT(2), smocod TEXT(5), datebeg TEXT(10), dateend TEXT(10) )'
+
+  nameRef := 'F019.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Справочник организаций, осуществляющих оплату медицинской помощи по обязательному медицинскому страхованию (РersAccOrg)', 'RU866' )	
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS f019' ) == SQLITE_OK
+    OutStd( 'DROP TABLE f019 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE f019 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE f019 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      If 'ZAP' == Upper( oXmlNode:title )
+        mTF_OKATO := read_xml_stroke_1251_to_utf8( oXmlNode, 'TF_OKATO' )
+        mORGTYPE := read_xml_stroke_1251_to_utf8( oXmlNode, 'ORGTYPE' )
+        mORGCOD := read_xml_stroke_1251_to_utf8( oXmlNode, 'ORGCOD' )
+        mNAM_ORGP := read_xml_stroke_1251_to_utf8( oXmlNode, 'NAM_ORGP' )
+        mNAM_ORGK := read_xml_stroke_1251_to_utf8( oXmlNode, 'NAM_ORGK' )
+        mTF_KOD := read_xml_stroke_1251_to_utf8( oXmlNode, 'TF_KOD' )
+        mSMOCOD := read_xml_stroke_1251_to_utf8( oXmlNode, 'SMOCOD' )
+
+        Set( _SET_DATEFORMAT, 'dd.mm.yyyy' )
+        d1_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEBEG' ) )
+        d2_1 := CToD( read_xml_stroke_1251_to_utf8( oXmlNode, 'DATEEND' ) )
+        Set( _SET_DATEFORMAT, 'yyyy-mm-dd' )
+        d1 := hb_ValToStr( d1_1 )
+        d2 := hb_ValToStr( d2_1 )
+
+        count++
+//  cmdText := 'CREATE TABLE f019( tf_okato TEXT(5), orgtype TEXT(5), orgcod INTEGER, nam_orgp TEXT, nam_orgk TEXT, tf_kod TEXT(2), smocod TEXT(5), datebeg TEXT(10), dateend TEXT(10) )'
+        cmdTextInsert += 'INSERT INTO f019( tf_okato, orgtype, orgcod, nam_orgp, nam_orgk, tf_kod, smocod, datebeg, dateend) VALUES(' ;
+          + "'" + mTF_OKATO + "'," ;
+          + "'" + mORGTYPE + "'," ;
+          + "'" + mORGCOD + "'," ;
+          + "'" + AllTrim( mNAM_ORGP ) + "'," ;
+          + "'" + AllTrim( mNAM_ORGK ) + "'," ;
+          + "'" + mTF_KOD + "'," ;
+          + "'" + mSMOCOD + "'," ;
+          + "'" + d1 + "'," ;
+          + "'" + d2 + "');"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          sqlite3_exec( db, cmdTextInsert, , .t., 'RU866' )
+          count := 0
+          cmdTextInsert := textBeginTrans
+        Endif
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
+  Endif
+  out_obrabotka_eol()
   Return Nil
 
 // 26.03.26

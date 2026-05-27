@@ -43,11 +43,12 @@ Function clear_name_table( table )
 
   Return hb_FNameName( table )
 
+// 27.05.26
 function about()
 
   OutStd( 'Утилита работы с сайтом ФФОМС http://nsi.ffoms.ru', hb_eol(), ;
-    'Copyright (c) 2025, Vladimir G.Baykin', hb_eol(), hb_eol() )
-  OutStd( 'Syntax:  nsi [options] ', hb_eol(), hb_eol() )
+    'Copyright (c) 2025-2026, Vladimir G.Baykin', hb_eol(), hb_eol() )
+  OutStd( 'Syntax:  nsi_ffoms [options] ', hb_eol(), hb_eol() )
   OutStd( 'Опции:', hb_eol(), ;
     '      -out=<destination directory>', hb_eol(), ;
     '      -help - помощь', hb_eol() )
@@ -55,7 +56,7 @@ function about()
   
   Return nil
 
-// 14.04.25
+// 27.05.25
 function dir_exe()
   
   static dir
@@ -74,6 +75,7 @@ function arrReference()
   AAdd( arr, 'f010' )
   AAdd( arr, 'f011' )
   AAdd( arr, 'f014' )
+  AAdd( arr, 'f019' )
   AAdd( arr, 'f031' )
   AAdd( arr, 'f032' )
   AAdd( arr, 'f033' )
