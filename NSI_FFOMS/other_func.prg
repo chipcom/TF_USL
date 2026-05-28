@@ -71,6 +71,7 @@ function arrReference()
 
   Local arr := {}
 
+  AAdd( arr, 'f002' )
   AAdd( arr, 'f006' )
   AAdd( arr, 'f010' )
   AAdd( arr, 'f011' )
