@@ -12,6 +12,7 @@ Static textCommitTrans := 'COMMIT;'
 // 28.03.26
 Function make_f0xx( db, source, destination )
 
+  make_f002( db, source )
   make_f006( db, source )
   make_f010( db, source )
   make_f011( db, source )
@@ -26,6 +27,91 @@ Function make_f0xx( db, source, destination )
 //  make_f036( source, destination )
   make_f037( source, destination )
   make_f038( source, destination )
+
+  Return Nil
+
+// 28.05.26
+Function make_f002( db, source )
+
+  // TF_OKATO,  "C", 5, 0  // Код субъекта РФ по ОКАТО
+  // SMOCOD,    "C", 5, 0  // Код СМО в ЕРСМО
+  // NAM_SMOP,  "C", 1000, 0 // Наименование организации (полное)
+  // NAM_SMOK,  "C", 250, 0 // Наименование организации (краткое)
+  // INN,       "C", 12, 0  // ИНН
+  // OGRN,      "C", 15, 0  // ОГРН
+  // ORG,       "N", 1, 0  // Тип организации: 1 – головная; 2 – филиал
+
+  Local cmdText
+  Local k, j, err
+  Local nfile, nameRef
+  Local oXmlDoc, oXmlNode
+  Local mTF_OKATO, mSMOCOD, mNAM_SMOP, mNAM_SMOK, mINN, mOGRN, mORG
+  Local count := 0, cmdTextInsert := textBeginTrans
+
+  cmdText := 'CREATE TABLE f002( tf_okato TEXT(5), smocod TEXT(5), nam_smop TEXT, nam_smok TEXT, inn TEXT(12), ogrn TEXT(15), org INTEGER )'
+
+  nameRef := 'F002.xml'
+  nfile := source + nameRef
+  If ! hb_vfExists( nfile )
+    out_error( FILE_NOT_EXIST, nfile )
+    Return Nil
+  Else
+    out_utf8_to_str( nameRef + ' - Единый реестр страховых медицинских организаций, осуществляющих деятельность в сфере обязательного медицинского страхования. Реестр СМО', 'RU866' )	
+  Endif
+
+  If sqlite3_exec( db, 'DROP TABLE if EXISTS f002' ) == SQLITE_OK
+    OutStd( 'DROP TABLE f002 - Ok' + hb_eol() )
+  Endif
+
+  If sqlite3_exec( db, cmdText ) == SQLITE_OK
+    OutStd( 'CREATE TABLE f002 - Ok' + hb_eol() )
+  Else
+    OutStd( 'CREATE TABLE f002 - False' + hb_eol() )
+    Return Nil
+  Endif
+
+  oXmlDoc := hxmldoc():read( nfile )
+  If Empty( oXmlDoc:aItems )
+    out_error( FILE_READ_ERROR, nfile )
+    Return Nil
+  Else
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
+    For j := 1 To k
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+
+      If oXmlNode:title == 'insCompany'
+        mTF_OKATO := read_xml_stroke_1251_to_utf8( oXmlNode, 'TF_OKATO' )
+        mSMOCOD := read_xml_stroke_1251_to_utf8( oXmlNode, 'SMOCOD' )
+        mNAM_SMOP := mo_read_xml_stroke( oXmlNode, 'NAM_SMOP', , , 'UTF8' )
+        mNAM_SMOK := mo_read_xml_stroke( oXmlNode, 'NAM_SMOK', , , 'UTF8' )
+        mINN := read_xml_stroke_1251_to_utf8( oXmlNode, 'INN' )
+        mOGRN := read_xml_stroke_1251_to_utf8( oXmlNode, 'OGRN' )
+        mORG := read_xml_stroke_1251_to_utf8( oXmlNode, 'ORG' )
+
+        count++
+        cmdTextInsert += 'INSERT INTO f002( tf_okato, smocod, inn, ogrn, org, nam_smok, nam_smop ) VALUES( ' ;
+          + "'" + mTF_OKATO + "'," ;
+          + "'" + mSMOCOD + "'," ;
+          + "'" + mINN + "'," ;
+          + "'" + mOGRN + "'," ;
+          + "" + mORG + "," ;
+          + "'" + AllTrim( mNAM_SMOK ) + "'," ;
+          + "'" + AllTrim( mNAM_SMOP ) + "' );"
+        If count == COMMIT_COUNT
+          cmdTextInsert += textCommitTrans
+          err := sqlite3_exec( db, cmdTextInsert, , .t., 'RU866' )
+          count := 0
+          cmdTextInsert := textBeginTrans
+        Endif
+      Endif
+    Next j
+    If count > 0
+      cmdTextInsert += textCommitTrans
+      sqlite3_exec( db, cmdTextInsert )
+    Endif
+  Endif
+  out_obrabotka_eol()
 
   Return Nil
 
