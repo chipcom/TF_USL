@@ -466,7 +466,7 @@ Function work_mo_uslf( source, destination )
   close databases
   return .t.
 
-// 26.05.26
+// 03.06.26
 Function work_t006(source, destination)
 
   Local oXmlDoc, oXmlNode, af := {}
@@ -581,7 +581,8 @@ Function work_t006(source, destination)
         t6->NAME    := charone(' ', mo_read_xml_stroke(oXmlNode, 'NAME',))
         t6->USL_OK  := val(mo_read_xml_stroke(oXmlNode, 'USL',))
         t6->USL_OKS := lstr(t6->USL_OK)
-        t6->ST      := val(mo_read_xml_stroke(oXmlNode, 'ST',))
+//        t6->ST      := val(mo_read_xml_stroke(oXmlNode, 'ST',))
+        t6->ST      := 1
         //t6->DURV    :=      val(mo_read_xml_stroke(oXmlNode, 'DUR_A',))
         //t6->DURD    :=      val(mo_read_xml_stroke(oXmlNode, 'DUR_C',))
         t6->BUKVA   := upper( mo_read_xml_stroke( oXmlNode, 'PAR', ) )
@@ -1113,7 +1114,7 @@ Function work_SprMU( source, destination )
   if ! hb_vfExists( nfile )
     out_error( FILE_NOT_EXIST, nfile )
     return .f.
-  endif
+  endif 
 
   dbcreate( destination + '_mo_t2_v1', _t2_v1 )
   use ( destination + '_mo_t2_v1' ) new alias T2V1
