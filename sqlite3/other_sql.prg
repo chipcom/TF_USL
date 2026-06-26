@@ -64,7 +64,7 @@ function db_enp( source, destination )
 
   return nil
 
-// 22.12.24
+// 26.06.26
 Function make_p_cel( db, source )
 
   // SHIFR,     "C",    10,      0
@@ -72,13 +72,13 @@ Function make_p_cel( db, source )
 
   Local cmdText
   Local nfile, nameRef
-  Local mSHIFR, mPCEL
+  Local mSHIFR, mPCEL, mArr
   Local count := 0, cmdTextInsert := textBeginTrans
   Local dbSource := 'pcel'
 
   cmdText := 'CREATE TABLE usl_p_cel(shifr TEXT(10), p_cel TEXT(4))'
 
-  nameRef := 'p_cel_usl.dbf'
+  nameRef := 'p_cel_usl.csv'  //  'p_cel_usl.dbf'
   nfile := source + nameRef
   If ! hb_vfExists( nfile )
     out_error( FILE_NOT_EXIST, nfile )
@@ -98,10 +98,12 @@ Function make_p_cel( db, source )
     Return Nil
   Endif
 
-  dbUseArea( .t., , nfile, dbSource, .t., .f. )
-  Do While !( dbSource )->( Eof() )
-    mSHIFR := AllTrim( ( dbSource )->SHIFR )
-    mPCEL := AllTrim( ( dbSource )->P_CEL )
+  dbUseArea( .t., 'FCOMMA', nfile, , .f., .f. )
+  dbGoTop()
+  Do While ! Eof()
+    mArr := split( FIELD->LINE, ';' )
+    mSHIFR := AllTrim( mArr[ 1 ] )
+    mPCEL := AllTrim( mArr[ 2 ] )
 
     count++
     cmdTextInsert += 'INSERT INTO usl_p_cel(shifr, p_cel) VALUES('
@@ -114,7 +116,7 @@ Function make_p_cel( db, source )
       cmdTextInsert := textBeginTrans
     Endif
 
-    ( dbSource )->( dbSkip() )
+    dbSkip()
   End Do
   If count > 0
     cmdTextInsert += textCommitTrans
