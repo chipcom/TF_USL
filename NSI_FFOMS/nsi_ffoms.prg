@@ -9,7 +9,7 @@
 
 // #define TRACE
 
-// 13.06.25
+// 23.07.26
 Procedure Main( ... )
 
   Local cParam, cParamL
@@ -22,6 +22,7 @@ Procedure Main( ... )
   Local download
   Local lExists
   local st
+  local lUnZip
 
   Request HB_CODEPAGE_UTF8
   Request HB_CODEPAGE_RU1251
@@ -48,6 +49,7 @@ Procedure Main( ... )
   source := dir_exe()
   destination := dir_exe()
   download := ''
+  lUnZip := .f.
 
   aParams := hb_AParams()
   For Each cParam in aParams
@@ -62,6 +64,8 @@ Procedure Main( ... )
       destination := SubStr( cParam, 5 + 1 )
     Case hb_LeftEq( cParamL, '-download=' )
       download := SubStr( cParam, 10 + 1 )
+    Case hb_LeftEq( cParamL, '-unzip' )
+      lUnZip := .t.
     Endcase
   Next
 
@@ -114,7 +118,7 @@ Procedure Main( ... )
     sqlite3_exec( db, 'PRAGMA auto_vacuum=0' )
     sqlite3_exec( db, 'PRAGMA page_size=4096' )
 
-    checking_file( db, download )
+    checking_file( db, download, lUnZip )
 
     db := sqlite3_open_v2( nameDB, SQLITE_OPEN_READWRITE + SQLITE_OPEN_EXCLUSIVE )
     If ! Empty( db )

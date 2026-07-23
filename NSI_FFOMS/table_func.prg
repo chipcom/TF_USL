@@ -28,8 +28,8 @@ function Update_row( db, code, hStruct )
   endif
   return nil
 
-// 12.08.25
-function checking_file( db, download )
+// 23.07.26
+function checking_file( db, download, lUnzip )
 
   Local aChecking, aGeneral, i
   Local code, version, last_update, j
@@ -46,7 +46,7 @@ function checking_file( db, download )
       if compare_version( AllTrim( aGeneral[ j, 3 ] ), version )
 
         hStruct := FindDictionary( Upper( code ) )
-        GetFile( hStruct, download )
+        GetFile( hStruct, download, lUnzip )
         Update_row( db, code, hStruct )
 
       endif

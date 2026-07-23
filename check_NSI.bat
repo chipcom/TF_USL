@@ -1,1 +1,1 @@
-nsi_ffoms -out=.\out -download=.\download
+nsi_ffoms -out=.\out -download=.\download -unzip

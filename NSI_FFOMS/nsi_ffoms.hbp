@@ -8,6 +8,7 @@
 hbsqlit3.hbc
 xhb.hbc
 hbmisc.hbc
+hbmzip.hbc
 
 -mt
 -inc
