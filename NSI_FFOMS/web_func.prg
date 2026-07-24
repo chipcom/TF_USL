@@ -60,7 +60,7 @@ function GetStructure( code )
 
   return hArr
 
-// 23.07.26 GetFile загружает zip-архив последней версии справочника в формате XML
+// 24.07.26 GetFile загружает zip-архив последней версии справочника в формате XML
 function GetFile( hDict, destination, lUnzip )
 
   local lReturn := .f., s, id, version
@@ -68,7 +68,6 @@ function GetFile( hDict, destination, lUnzip )
   local timeout := 5, headers
   local st, zipFile, nameZIP
   local hUnzip, fl, n, nErr, cFile
-  Local arr_f := {}
 
   if isnil( destination ) .or. Empty( destination )
     destination := '.\'
@@ -111,7 +110,6 @@ function GetFile( hDict, destination, lUnzip )
             Do While nErr == 0
               hb_unzipFileInfo( hUnzip, @cFile )// , @dDate, @cTime,,,, @nSize, @nCompSize, @lCrypted, @cComment )
               hb_unzipExtractCurrentFile( hUnzip, destination + cFile )// , cPassword)
-              AAdd( arr_f, cFile )
               nErr := hb_unzipFileNext( hUnzip )
             Enddo
           Endif
