@@ -549,38 +549,38 @@ Function work_t006(source, destination)
     { 'DS1',        'C',    150, 0 }, ;
     { 'DS2',        'C',    250, 0 } ;
   } )
-  // {'DS',         'C',   2300,      0 }, ;
+//    { 'DS',         'C',   2300, 0 }, ;
 
   use ( destination + nameFileIt1 ) new alias it
   index on FIELD->code + str( FIELD->usl_ok, 1 ) + FIELD->ds + FIELD->ds1 + FIELD->ds2 to tmp_it
   use ( destination + 't006_u' ) new alias t6
   use ( destination + 't006_2' ) new alias t62
   use ( destination + 't006_d' ) new alias d6
-  oXmlDoc := HXMLDoc():Read(nfile)
+  oXmlDoc := HXMLDoc():Read( nfile )
   kl := kl1 := kl2 := 0
   OutStd( nameRef + ' - КСГ' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
+    out_error( FILE_READ_ERROR, nfile )
     CLOSE databases
     return nil
   else
-    out_obrabotka(nfile)
-    k := Len( oXmlDoc:aItems[1]:aItems )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
     FOR j := 1 TO k
-      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
       if 'ZGLV' == oXmlNode:title
-        if !((j1 := mo_read_xml_stroke(oXmlNode, 'YEAR_REPORT',)) == CURENT_YEAR)
-          out_error(TAG_YEAR_REPORT, nfile, j1)
+        if !( ( j1 := mo_read_xml_stroke( oXmlNode, 'YEAR_REPORT', ) ) == CURENT_YEAR )
+          out_error( TAG_YEAR_REPORT, nfile, j1 )
           exit
         endif
       elseif 'KSG' == oXmlNode:title
-        out_obrabotka_count(j, k)
+        out_obrabotka_count( j, k )
         select T6
         append blank
-        t6->SHIFR   := mo_read_xml_stroke(oXmlNode, 'CODE',)
-        t6->NAME    := charone(' ', mo_read_xml_stroke(oXmlNode, 'NAME',))
-        t6->USL_OK  := val(mo_read_xml_stroke(oXmlNode, 'USL',))
-        t6->USL_OKS := lstr(t6->USL_OK)
+        t6->SHIFR   := mo_read_xml_stroke( oXmlNode, 'CODE', )
+        t6->NAME    := charone(' ', mo_read_xml_stroke( oXmlNode, 'NAME', ) )
+        t6->USL_OK  := val(mo_read_xml_stroke( oXmlNode, 'USL', ) )
+        t6->USL_OKS := lstr( t6->USL_OK )
 //        t6->ST      := val(mo_read_xml_stroke(oXmlNode, 'ST',))
         t6->ST      := 1
         //t6->DURV    :=      val(mo_read_xml_stroke(oXmlNode, 'DUR_A',))
@@ -590,15 +590,15 @@ Function work_t006(source, destination)
         t6->DATEEND := xml2date( mo_read_xml_stroke( oXmlNode, 'D_END', ) )
         t6->TYPE_KSG := val( mo_read_xml_stroke( oXmlNode, 'TYPE_KSG', ) )
         lkz         := val( mo_read_xml_stroke( oXmlNode, 'K_Z', ) )
-        if (oNode1 := oXmlNode:Find('VMP')) != NIL
+        if ( oNode1 := oXmlNode:Find( 'VMP' ) ) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
-            oNode2 := oNode1:aItems[j1]
-            if 'TYPE_MP' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
-              s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
-              if empty(t6->VMP_F)
+            oNode2 := oNode1:aItems[ j1 ]
+            if 'TYPE_MP' == oNode2:title .and. !empty( oNode2:aItems ) .and. valtype( oNode2:aItems[ 1 ] ) == 'C'
+              s := hb_AnsiToOem(alltrim( oNode2:aItems[ 1 ] ) )
+              if empty( t6->VMP_F )
                 t6->VMP_F := s
               endif
-              t6->VMP_S := iif(empty(t6->VMP_S), '', rtrim(t6->VMP_S) + ',') + s
+              t6->VMP_S := iif( empty( t6->VMP_S ), '', rtrim( t6->VMP_S ) + ',' ) + s
             endif
           next j1
         endif
@@ -616,77 +616,77 @@ Function work_t006(source, destination)
         endif
 
 //        if (oNode1 := oXmlNode:Find('KIROS')) != NIL
-        if (oNode1 := oXmlNode:Find('KPPSLS')) != NIL
+        if (oNode1 := oXmlNode:Find( 'KPPSLS' ) ) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
-            oNode2 := oNode1:aItems[j1]
+            oNode2 := oNode1:aItems[ j1 ]
 //            if 'KIRO' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
-            if 'ID_PR' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
-              s := hb_AnsiToOem(alltrim(oNode2:aItems[1]))
-              if empty(t6->KIRO)
-                t6->KIRO := val(s)
+            if 'ID_PR' == oNode2:title .and. !empty( oNode2:aItems ) .and. valtype( oNode2:aItems[ 1 ] ) == 'C'
+              s := hb_AnsiToOem( alltrim( oNode2:aItems[ 1 ] ) )
+              if empty( t6->KIRO )
+                t6->KIRO := val( s )
               endif
-              t6->KIROS := iif(empty(t6->KIROS), '', rtrim(t6->KIROS) + ',') + s
+              t6->KIROS := iif( empty( t6->KIROS ), '', rtrim( t6->KIROS ) + ',' ) + s
             endif
           next j1
         endif
 
-        if (oNode1 := oXmlNode:Find('REGULATIONS')) != NIL
+        if ( oNode1 := oXmlNode:Find( 'REGULATIONS' ) ) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
-            oNode2 := oNode1:aItems[j1]
+            oNode2 := oNode1:aItems[ j1 ]
             if 'RULE' == oNode2:title
               select D6
               append blank
               d6->code := t6->SHIFR
-              d6->DS  := lDS  := alltrim(mo_read_xml_stroke(oNode2, 'DS',)) + ' '
-              d6->DS1 := lDS1 := alltrim(mo_read_xml_stroke(oNode2, 'DS1',)) + ' '
-              d6->DS2 := lDS2 := alltrim(mo_read_xml_stroke(oNode2, 'DS2',)) + ' '
-              d6->SY   := mo_read_xml_stroke(oNode2, 'SY',)
+              d6->DS  := lDS  := alltrim( mo_read_xml_stroke( oNode2, 'DS', ) ) + ' '
+              d6->DS1 := lDS1 := alltrim( mo_read_xml_stroke( oNode2, 'DS1', ) ) + ' '
+              d6->DS2 := lDS2 := alltrim( mo_read_xml_stroke( oNode2, 'DS2', ) ) + ' '
+              d6->SY   := mo_read_xml_stroke( oNode2, 'SY', )
 
               // для реабилитации после COVID-19            
-              lshifr := lower(alltrim(t6->SHIFR))
-              lsy     := mo_read_xml_stroke(oNode2, 'SY',)
-              if (lshifr = 'st37.021' .or. lshifr = 'st37.022' .or. lshifr = 'st37.023' ) .and. empty(lDS) .and. empty(lsy)
+              lshifr := lower( alltrim( t6->SHIFR ) )
+              lsy     := mo_read_xml_stroke( oNode2, 'SY', )
+              if ( lshifr = 'st37.021' .or. lshifr = 'st37.022' .or. lshifr = 'st37.023' ) .and. empty( lDS ) .and. empty( lsy )
                 d6->DS  := lDS  := 'U09.9'
               endif
 
-              if (lshifr = 'ds36.008' .or. lshifr = 'ds36.009' .or. lshifr = 'ds36.010' ;
-                  .or. lshifr = 'st36.017' .or. lshifr = 'st36.018' .or. lshifr = 'st36.019') ;
-                  .and. empty(lDS) .and. empty(lsy)
+              if ( lshifr = 'ds36.008' .or. lshifr = 'ds36.009' .or. lshifr = 'ds36.010' ;
+                  .or. lshifr = 'st36.017' .or. lshifr = 'st36.018' .or. lshifr = 'st36.019' ) ;
+                  .and. empty( lDS ) .and. empty( lsy )
                 d6->DS  := lDS  := 'Z92.2'
               endif
 
-              if (lshifr = 'ds37.015' .or. lshifr = 'ds37.016' ;
+              if ( lshifr = 'ds37.015' .or. lshifr = 'ds37.016' ;
                   .or. lshifr = 'st37.021' .or. lshifr = 'st37.022' .or. lshifr = 'st37.023' ) ;
-                  .and. empty(lDS) .and. empty(lsy)
+                  .and. empty(lDS) .and. empty( lsy )
                 d6->DS  := lDS  := 'U09.9'
               endif
 
-              if lshifr = 'st32.019' .and. empty(lDS) .and. ! empty(lsy)
+              if lshifr = 'st32.019' .and. empty( lDS ) .and. ! empty( lsy )
                 d6->DS  := lDS  := 'Z92.4'
               endif
 
-              if (lshifr = 'st36.028' .or. lshifr = 'st36.029' .or. lshifr = 'st36.030' .or. lshifr = 'st36.031' .or. ;
+              if ( lshifr = 'st36.028' .or. lshifr = 'st36.029' .or. lshifr = 'st36.030' .or. lshifr = 'st36.031' .or. ;
                   lshifr = 'st36.032' .or. lshifr = 'st36.033' .or. lshifr = 'st36.034' .or. lshifr = 'st36.035' .or. ;
                   lshifr = 'st36.036' .or. lshifr = 'st36.037' .or. lshifr = 'st36.038' .or. lshifr = 'st36.039' .or. ;
                   lshifr = 'st36.040' .or. lshifr = 'st36.041' .or. lshifr = 'st36.042' .or. lshifr = 'st36.043' .or. ;
-                  lshifr = 'st36.044' .or. lshifr = 'st36.045' .or. lshifr = 'st36.046' .or. lshifr = 'st36.047') ;
-                  .and. empty(lDS) .and. empty(lsy)
+                  lshifr = 'st36.044' .or. lshifr = 'st36.045' .or. lshifr = 'st36.046' .or. lshifr = 'st36.047' ) ;
+                  .and. empty( lDS ) .and. empty( lsy )
                 d6->DS  := lDS  := 'Z92.2'
               endif
 
-              if (lshifr = 'ds36.015' .or. lshifr = 'ds36.016' .or. lshifr = 'ds36.017' .or. lshifr = 'ds36.018' .or. ;
+              if ( lshifr = 'ds36.015' .or. lshifr = 'ds36.016' .or. lshifr = 'ds36.017' .or. lshifr = 'ds36.018' .or. ;
                   lshifr = 'ds36.019' .or. lshifr = 'ds36.020' .or. lshifr = 'ds36.021' .or. lshifr = 'ds36.022' .or. ;
                   lshifr = 'ds36.023' .or. lshifr = 'ds36.024' .or. lshifr = 'ds36.025' .or. lshifr = 'ds36.026' .or. ;
                   lshifr = 'ds36.027' .or. lshifr = 'ds36.028' .or. lshifr = 'ds36.029' .or. lshifr = 'ds36.030' .or. ;
-                  lshifr = 'ds36.031' .or. lshifr = 'ds36.032' .or. lshifr = 'ds36.033' .or. lshifr = 'ds36.034') ;
-                  .and. empty(lDS) .and. empty(lsy)
+                  lshifr = 'ds36.031' .or. lshifr = 'ds36.032' .or. lshifr = 'ds36.033' .or. lshifr = 'ds36.034' ) ;
+                  .and. empty( lDS ) .and. empty( lsy )
                 d6->DS  := lDS  := 'Z92.2'
               endif
 
               // Для пункта 5.21. Особенности формирования КСГ st36.013-st36.015 для случаев проведения антимикробной
               // терапии инфекций, вызванных полирезистентными микроорганизмами (инструкции для КСГ)
-              if (lshifr = 'st36.013' .or. lshifr = 'st36.014' .or. lshifr = 'st36.015' .or. lshifr = 'st36.031') ;
-                  .and. empty(lDS) .and. empty(lsy)
+              if ( lshifr = 'st36.013' .or. lshifr = 'st36.014' .or. lshifr = 'st36.015' .or. lshifr = 'st36.031' ) ;
+                  .and. empty( lDS ) .and. empty( lsy )
                 d6->DS  := lDS  := 'Z92.8'
               endif
 
@@ -694,21 +694,23 @@ Function work_t006(source, destination)
 //                d6->DS  := lDS  := 'Z92.9'
 //              endif
 
-              if lshifr = 'st36.049' .and. empty(lDS) .and. empty(lsy)  // согласно письму 12-20-647 от 20.10.25
+              if lshifr = 'st36.049' .and. empty( lDS ) .and. empty( lsy )  // согласно письму 12-20-647 от 20.10.25
                 d6->DS  := lDS  := 'Z03.8'
               endif
 
-              d6->AGE  := mo_read_xml_stroke(oNode2, 'AGE',)
-              d6->SEX  := mo_read_xml_stroke(oNode2, 'SEX',)
-              d6->LOS  := alltrim(mo_read_xml_stroke(oNode2, 'LOS',))
-              d6->AD_CR := mo_read_xml_stroke(oNode2, 'AD_CRITERION',)
-              d6->AD_CR1 := mo_read_xml_stroke(oNode2, 'OTHER_CRITERIA',)
-              d6->DATEBEG := xml2date(mo_read_xml_stroke(oNode2, 'D_FROM',))
-              d6->DATEEND := xml2date(mo_read_xml_stroke(oNode2, 'D_TO',))
+              d6->AGE  := mo_read_xml_stroke( oNode2, 'AGE', )
+              d6->SEX  := mo_read_xml_stroke( oNode2, 'SEX', )
+              d6->LOS  := alltrim(mo_read_xml_stroke( oNode2, 'LOS', ) )
+              d6->AD_CR := mo_read_xml_stroke( oNode2, 'AD_CRITERION', )
+              d6->AD_CR1 := mo_read_xml_stroke( oNode2, 'OTHER_CRITERIA', )
+              d6->DATEBEG := xml2date(mo_read_xml_stroke( oNode2, 'D_FROM', ) )
+              d6->DATEEND := xml2date(mo_read_xml_stroke( oNode2, 'D_TO', ) )
               d6->name := t6->NAME
-              if !empty(d6->AD_CR) .and. !eq_any(left(d6->AD_CR, 2), 'sh', 'mt', 'rb')
+              if !empty( d6->AD_CR ) .and. !eq_any( left( d6->AD_CR, 2 ), 'sh', 'mt', 'rb' )
+                lds := StrTran( lds, ' ', '' )
+                lds := StrTran( lds, ',', ', ' )
                 select IT
-                find (padr(d6->AD_CR, 10) + str(t6->usl_ok, 1) + padr(lds, 2300) + padr(lds1, 150) + padr(lds2, 250))
+                find ( padr( d6->AD_CR, 10 ) + str( t6->usl_ok, 1 ) + padr( lds, 2300 ) + padr( lds1, 150 ) + padr( lds2, 250 ) )
                 if !found()
                   append blank
                   it->CODE := d6->AD_CR
@@ -717,20 +719,20 @@ Function work_t006(source, destination)
                   it->DS1 := lDS1
                   it->DS2 := lDS2
                 endif
-                kl := max(kl, len(lDS))
-                kl1 := max(kl1, len(lDS1))
-                kl2 := max(kl2, len(lDS2))
+                kl := max( kl, len( lDS ) )
+                kl1 := max( kl1, len( lDS1 ) )
+                kl2 := max( kl2, len( lDS2 ) )
               endif
-              if empty(lDS) // нет основного диагноза
+              if empty( lDS ) // нет основного диагноза
                 select T62
                 append blank
                 t62->SHIFR := t6->SHIFR
                 t62->kz := lkz
                 //t62->PROFIL := ksg->PROFIL
-                if !empty(lDS1)
+                if !empty( lDS1 )
                   t62->DS1 := lDS1
                 endif
-                if !empty(lDS2)
+                if !empty( lDS2 )
                   t62->DS2 := lDS2
                 endif
                 t62->SY  := d6->SY
@@ -741,22 +743,22 @@ Function work_t006(source, destination)
                 t62->AD_CR1 := d6->AD_CR1
                 t62->DATEBEG := d6->DATEBEG
                 t62->DATEEND := d6->DATEEND
-                t62->ns := d6->(recno())
+                t62->ns := d6->( recno() )
               else
-                sList := alltrim(lDS)
-                for is := 1 to numtoken(sList, ',')
-                  s := alltrim(token(sList, ',', is))
-                  if !empty(s)
+                sList := alltrim( lDS )
+                for is := 1 to numtoken( sList, ',' )
+                  s := alltrim(token( sList, ',', is ) )
+                  if !empty( s )
                     select T62
                     append blank
                     t62->SHIFR :=t6->SHIFR
                     t62->kz := lkz
                     //t62->PROFIL := ksg->PROFIL
                     t62->DS := s
-                    if !empty(lDS1)
+                    if !empty( lDS1 )
                       t62->DS1 := lDS1
                     endif
-                    if !empty(lDS2)
+                    if !empty( lDS2 )
                       t62->DS2 := lDS2
                     endif
                     t62->SY  := d6->SY
@@ -767,7 +769,7 @@ Function work_t006(source, destination)
                     t62->AD_CR1 := d6->AD_CR1
                     t62->DATEBEG := d6->DATEBEG
                     t62->DATEEND := d6->DATEEND
-                    t62->ns := d6->(recno())
+                    t62->ns := d6->( recno() )
                   endif
                 next
               endif
