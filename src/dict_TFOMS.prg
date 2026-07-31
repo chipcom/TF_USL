@@ -466,7 +466,7 @@ Function work_mo_uslf( source, destination )
   close databases
   return .t.
 
-// 03.06.26
+// 31.07.26
 Function work_t006(source, destination)
 
   Local oXmlDoc, oXmlNode, af := {}
@@ -552,7 +552,8 @@ Function work_t006(source, destination)
 //    { 'DS',         'C',   2300, 0 }, ;
 
   use ( destination + nameFileIt1 ) new alias it
-  index on FIELD->code + str( FIELD->usl_ok, 1 ) + FIELD->ds + FIELD->ds1 + FIELD->ds2 to tmp_it
+//  index on FIELD->code + str( FIELD->usl_ok, 1 ) to tmp_it    // + FIELD->ds + FIELD->ds1 + FIELD->ds2 to tmp_it
+  index on FIELD->code + str( FIELD->usl_ok, 1 ) to tmp_it    // + FIELD->ds + FIELD->ds1 + FIELD->ds2 to tmp_it
   use ( destination + 't006_u' ) new alias t6
   use ( destination + 't006_2' ) new alias t62
   use ( destination + 't006_d' ) new alias d6
@@ -561,7 +562,7 @@ Function work_t006(source, destination)
   OutStd( nameRef + ' - КСГ' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
-    CLOSE databases
+    dbCloseAll()
     return nil
   else
     out_obrabotka( nfile )
@@ -576,7 +577,8 @@ Function work_t006(source, destination)
       elseif 'KSG' == oXmlNode:title
         out_obrabotka_count( j, k )
         select T6
-        append blank
+//        append blank
+        t6->( dbAppend() )
         t6->SHIFR   := mo_read_xml_stroke( oXmlNode, 'CODE', )
         t6->NAME    := charone(' ', mo_read_xml_stroke( oXmlNode, 'NAME', ) )
         t6->USL_OK  := val(mo_read_xml_stroke( oXmlNode, 'USL', ) )
@@ -615,11 +617,9 @@ Function work_t006(source, destination)
           next j1
         endif
 
-//        if (oNode1 := oXmlNode:Find('KIROS')) != NIL
         if (oNode1 := oXmlNode:Find( 'KPPSLS' ) ) != NIL
           for j1 := 1 TO Len( oNode1:aItems )
             oNode2 := oNode1:aItems[ j1 ]
-//            if 'KIRO' == oNode2:title .and. !empty(oNode2:aItems) .and. valtype(oNode2:aItems[1]) == 'C'
             if 'ID_PR' == oNode2:title .and. !empty( oNode2:aItems ) .and. valtype( oNode2:aItems[ 1 ] ) == 'C'
               s := hb_AnsiToOem( alltrim( oNode2:aItems[ 1 ] ) )
               if empty( t6->KIRO )
@@ -710,9 +710,11 @@ Function work_t006(source, destination)
                 lds := StrTran( lds, ' ', '' )
                 lds := StrTran( lds, ',', ', ' )
                 select IT
-                find ( padr( d6->AD_CR, 10 ) + str( t6->usl_ok, 1 ) + padr( lds, 2300 ) + padr( lds1, 150 ) + padr( lds2, 250 ) )
-                if !found()
-                  append blank
+//                find ( padr( d6->AD_CR, 10 ) + str( t6->usl_ok, 1 ) + padr( lds, 2300 ) + padr( lds1, 150 ) + padr( lds2, 250 ) )
+//                it->( dbSeek( padr( d6->AD_CR, 10 ) + str( t6->usl_ok, 1 ) ) )
+                it->( dbSeek( padr( d6->AD_CR, 15 ) + str( t6->usl_ok, 1 ) ) )
+                if !it->( found() )
+                  it->( dbAppend() )
                   it->CODE := d6->AD_CR
                   it->USL_OK := t6->USL_OK
                   it->DS := lDS
@@ -725,7 +727,8 @@ Function work_t006(source, destination)
               endif
               if empty( lDS ) // нет основного диагноза
                 select T62
-                append blank
+//                append blank
+                t62->( dbAppend() )
                 t62->SHIFR := t6->SHIFR
                 t62->kz := lkz
                 //t62->PROFIL := ksg->PROFIL
@@ -750,7 +753,8 @@ Function work_t006(source, destination)
                   s := alltrim(token( sList, ',', is ) )
                   if !empty( s )
                     select T62
-                    append blank
+//                    append blank
+                    t62->( dbAppend() )
                     t62->SHIFR :=t6->SHIFR
                     t62->kz := lkz
                     //t62->PROFIL := ksg->PROFIL
@@ -780,7 +784,7 @@ Function work_t006(source, destination)
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return NIL
 
 /*
