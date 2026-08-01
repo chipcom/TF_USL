@@ -8,7 +8,7 @@
 #include 'settings.ch'
 
 // 23.05.23
-Function work_Shema(source, destination)
+Function work_Shema( source, destination )
 
   Local _mo_shema := { ;
     {'KOD',        'C',     10,      0}, ;
@@ -28,42 +28,43 @@ Function work_Shema(source, destination)
     return nil
   endif
 
-  dbcreate(destination + nameFile, _mo_shema)
-  use (destination + nameFile) new alias SH
+  dbcreate( destination + nameFile, _mo_shema )
+  use ( destination + nameFile ) new alias SH
   index on FIELD->kod to tmp_shema
 
-  oXmlDoc := HXMLDoc():Read(nfile)
+  oXmlDoc := HXMLDoc():Read( nfile )
   OutStd( nameRef + ' - для КСГ - Допкритерии' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
-    out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
+    out_error( FILE_READ_ERROR, nfile )
+    dbCloseAll()
     return nil
   else
-    out_obrabotka(nfile)
-    k := Len( oXmlDoc:aItems[1]:aItems )
+    out_obrabotka( nfile )
+    k := Len( oXmlDoc:aItems[ 1 ]:aItems )
     FOR j := 1 TO k
-      oXmlNode := oXmlDoc:aItems[1]:aItems[j]
-      if 'ZAP' == upper(oXmlNode:title)
-        out_obrabotka_count(j, k)
-        mkod := mo_read_xml_stroke(oXmlNode, 'IDDKK',)
-        mname := ltrim(charrem(eos,charone(' ', mo_read_xml_stroke(oXmlNode, 'DKKNAME',))))
-        mDATEBEG := ctod(mo_read_xml_stroke(oXmlNode, 'DATEBEG',))
-        mDATEEND := ctod(mo_read_xml_stroke(oXmlNode, 'DATEEND',))
+      oXmlNode := oXmlDoc:aItems[ 1 ]:aItems[ j ]
+      if 'ZAP' == upper( oXmlNode:title )
+        out_obrabotka_count( j, k )
+        mkod := mo_read_xml_stroke( oXmlNode, 'IDDKK', )
+        mname := ltrim( charrem( eos, charone( ' ', mo_read_xml_stroke( oXmlNode, 'DKKNAME', ) ) ) )
+        mDATEBEG := ctod( mo_read_xml_stroke( oXmlNode, 'DATEBEG', ) )
+        mDATEEND := ctod( mo_read_xml_stroke( oXmlNode, 'DATEEND', ) )
         fl := .t.
-        if !empty(mDATEEND) .and. mDATEEND < FIRST_DAY
+        if !empty( mDATEEND ) .and. mDATEEND < FIRST_DAY
           fl := .f.
         endif
         if fl
           select SH
-          find (mkod)
-          if found()
+          sh->( dbSeek( mkod ) )
+          if sh->( found() )
             if mDATEBEG > sh->DATEBEG
               sh->NAME := mname
               sh->DATEBEG := mDATEBEG
               sh->DATEEND := mDATEEND
             endif
           else
-            append blank
+//            append blank
+            sh->( dbAppend() )
             sh->kod := mkod
             sh->NAME := mname
             sh->DATEBEG := mDATEBEG
@@ -74,11 +75,11 @@ Function work_Shema(source, destination)
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return NIL
 
 // 15.02.22
-Function make_T001(source, destination)
+Function make_T001( source, destination )
 
   local _mo_T001 := { ;
     { 'MCOD',       'C',    6,      0 }, ;
@@ -97,30 +98,30 @@ Function make_T001(source, destination)
   local mName := ''
 
   OutStd( 'Т001.dbf - Справочник МО и обособленных подразделений, финансируемых самостоятельно' + hb_eol() )
-  dbcreate(destination + '_mo_t001', _mo_T001)
+  dbcreate( destination + '_mo_t001', _mo_T001 )
   dbUseArea( .t., , destination + dbName, dbName, .t., .f. )
 
   dbUseArea( .t., , source + dbSource, dbSource, .f., .f. )
-  (dbSource)->(dbGoTop())
-  do while !(dbSource)->(EOF())
-    if (dbSource)->DATEEND > FIRST_DAY  //0d20210101
-      (dbName)->(dbAppend())
-      (dbName)->MCOD := (dbSource)->MCOD
-      (dbName)->CODEM := (dbSource)->CODEM
-      (dbName)->NAMEF := (dbSource)->NAMEF
-      (dbName)->NAMES := (dbSource)->NAMES
-      (dbName)->ADRES := (dbSource)->ADRES_M
-      (dbName)->MAIN := (dbSource)->MAIN
-      (dbName)->PFA := (dbSource)->PFA
-      (dbName)->PFS := (dbSource)->PFS
-      (dbName)->DATEBEG := (dbSource)->DATEBEG
-      (dbName)->DATEEND := (dbSource)->DATEEND
+  ( dbSource )->( dbGoTop() )
+  do while !( dbSource )->( EOF() )
+    if ( dbSource)->DATEEND > FIRST_DAY  //0d20210101
+      ( dbName )->( dbAppend() )
+      ( dbName )->MCOD := ( dbSource )->MCOD
+      ( dbName )->CODEM := ( dbSource )->CODEM
+      ( dbName )->NAMEF := ( dbSource )->NAMEF
+      ( dbName )->NAMES := ( dbSource )->NAMES
+      ( dbName )->ADRES := ( dbSource )->ADRES_M
+      ( dbName )->MAIN := ( dbSource )->MAIN
+      ( dbName )->PFA := ( dbSource )->PFA
+      ( dbName )->PFS := ( dbSource )->PFS
+      ( dbName )->DATEBEG := ( dbSource )->DATEBEG
+      ( dbName )->DATEEND := ( dbSource )->DATEEND
     endif
-    (dbSource)->(dbSkip())
+    ( dbSource )->( dbSkip() )
   enddo
   out_obrabotka_eol()
-  (dbSource)->(dbCloseArea())
-  (dbName)->(dbCloseArea())
+  ( dbSource )->( dbCloseArea() )
+  ( dbName )->( dbCloseArea() )
   return NIL
 
 // 09.06.25
@@ -137,13 +138,13 @@ Function work_SprUnit( source, destination )
   // количества медуслуг, отнесенных к одной учетной единице
 
   Local _mo_unit := { ;
-    {'CODE',       'N',      3,      0}, ;
-    {'pz',         'N',      3,      0}, ;
-    {'ii',         'N',      3,      0}, ;
-    {'c_t',        'N',      1,      0}, ;  
-    {'NAME',       'C',     60,      0}, ;
-    {'DATEBEG',    'D',      8,      0}, ;
-    {'DATEEND',    'D',      8,      0} ;
+    { 'CODE',    'N',  3, 0 }, ;
+    { 'pz',      'N',  3, 0 }, ;
+    { 'ii',      'N',  3, 0 }, ;
+    { 'c_t',     'N',  1, 0 }, ;  
+    { 'NAME',    'C', 60, 0 }, ;
+    { 'DATEBEG', 'D',  8, 0 }, ;
+    { 'DATEEND', 'D',  8, 0 } ;
   }
   local nfile, nameRef, j, j1, k
   local oXmlDoc, oXmlNode, oNode1, oNode2
@@ -163,7 +164,7 @@ Function work_SprUnit( source, destination )
   OutStd( nameRef + ' - справочник видов помощи /план-заказ' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
-    CLOSE databases
+    dbCloseAll()
     return .f.
   else
     out_obrabotka( nfile )
@@ -178,7 +179,8 @@ Function work_SprUnit( source, destination )
       elseif 'ZAP' == oXmlNode:title
         out_obrabotka_count( j, k )
         select UN
-        append blank
+//        append blank
+        un->( dbAppend() )
         un->code := val(mo_read_xml_stroke( oXmlNode, 'CODE', ) )
         un->NAME := ltrim( charrem( eos, charone( ' ', mo_read_xml_stroke( oXmlNode, 'NAME', ) ) ) )
         un->c_t  := val( mo_read_xml_stroke( oXmlNode, 'C_T', ) )
@@ -195,17 +197,17 @@ Function work_SprUnit( source, destination )
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return .t.
 
 // 09.05.25
 Function work_MOServ(source, destination)
   Local _mo_moserv := { ;
-    {'CODEM',      'C',      6,      0}, ;
-    {'MCODE',      'C',      6,      0}, ;
-    {'SHIFR',      'C',     10,      0}, ;
-    {'DATEBEG',    'D',      8,      0}, ;
-    {'DATEEND',    'D',      8,      0} ;
+    { 'CODEM',   'C',  6, 0 }, ;
+    { 'MCODE',   'C',  6, 0 }, ;
+    { 'SHIFR',   'C', 10, 0 }, ;
+    { 'DATEBEG', 'D',  8, 0 }, ;
+    { 'DATEEND', 'D',  8, 0 } ;
   }
   local nfile, nameRef, j, j1, j2, k
   local oXmlDoc, oXmlNode, oNode1, oNode2, oNode3, oNode4
@@ -225,7 +227,7 @@ Function work_MOServ(source, destination)
   OutStd( nameRef + ' - даты действия услуги вообще' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
-    CLOSE databases
+    dbCloseAll()
     return .f.
   else
     out_obrabotka( nfile )
@@ -269,7 +271,7 @@ Function work_MOServ(source, destination)
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return .t.
 
 // 09.06.25
@@ -302,7 +304,7 @@ Function work_Prices( source, destination )
   OutStd( nameRef + ' - цена и дата действия по уровню' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
-    CLOSE databases
+    dbCloseAll()
     return .f.
   else
     out_obrabotka( nfile )
@@ -359,7 +361,7 @@ Function work_Prices( source, destination )
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return .t.
 
 // 05.06.25
@@ -463,7 +465,7 @@ Function work_mo_uslf( source, destination )
     skip
   enddo
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return .t.
 
 // 31.07.26
@@ -877,7 +879,7 @@ Function work_t006_old(source, destination)
   OutStd( nameRef + ' - КСГ' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error(FILE_READ_ERROR, nfile)
-    CLOSE databases
+    dbCloseAll()
     return nil
   else
     out_obrabotka(nfile)
@@ -1088,7 +1090,7 @@ Function work_t006_old(source, destination)
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return NIL
 */
 
@@ -1139,7 +1141,7 @@ Function work_SprMU( source, destination )
   OutStd( nameRef + ' - справочник услуг /наименование, шифр услуги' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
-    CLOSE databases
+    dbCloseAll()
     return .f.
   else
     out_obrabotka( nfile )
@@ -1280,7 +1282,7 @@ Function work_SprMU( source, destination )
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return .t.
 
 // 10.06.25
@@ -1306,7 +1308,7 @@ Function work_SprDS( source, destination )
   OutStd( nameRef + ' - федеральный справочник услуг' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
-    CLOSE databases
+    dbCloseAll()
     return .f.
   else
     out_obrabotka( nfile )
@@ -1400,7 +1402,7 @@ Function work_SprDS( source, destination )
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return .t.
 
 // 26.02.26
@@ -1499,7 +1501,7 @@ Function work_SprKiro( source, destination )
   OutStd( nameRef + ' - для КСГ - КИРО' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
-    CLOSE databases
+    dbCloseAll()
     return .f.
   else
     out_obrabotka( nfile )
@@ -1521,7 +1523,7 @@ Function work_SprKiro( source, destination )
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return .t.
 
 // 09.06.25
@@ -1553,7 +1555,7 @@ Function work_SprKslp_old(source, destination)
   OutStd( nameRef + ' - для КСГ - КСЛП' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
-    CLOSE databases
+    dbCloseAll()
     return .f.
   else
     out_obrabotka( nfile )
@@ -1588,7 +1590,7 @@ Function work_SprKslp_old(source, destination)
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return .t.
 
 // 09.06.25
@@ -1620,7 +1622,7 @@ Function work_SprKiro_old( source, destination )
   OutStd( nameRef + ' - для КСГ - КИРО' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
-    CLOSE databases
+    dbCloseAll()
     return .f.
   else
     out_obrabotka( nfile )
@@ -1653,7 +1655,7 @@ Function work_SprKiro_old( source, destination )
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return .t.
 
 // 21.06.23
@@ -1901,7 +1903,7 @@ Function work_uslc( source, destination )
   enddo
 
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return NIL
 
 // 09.06.25 S_Subdiv.xml - список 11 учреждений с разными уровнями оплаты
@@ -1934,7 +1936,7 @@ Function work_SprSubDiv( source, destination )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
     SD->( dbCloseArea() )
-//    CLOSE databases
+//    dbCloseAll()
     return .f.
   else
     out_obrabotka( nfile )
@@ -1966,7 +1968,7 @@ Function work_SprSubDiv( source, destination )
   ENDIF
   out_obrabotka_eol()
   SD->( dbCloseArea() )
-//  close databases
+//  dbCloseAll()
   return .t.
 
 // 09.06.25
@@ -2013,7 +2015,7 @@ Function work_SprDep( source, destination )
   OutStd( nameRef + ' - список отделений по 11-й стационарам с разными уровнями оплаты' + hb_eol() )
   IF Empty( oXmlDoc:aItems )
     out_error( FILE_READ_ERROR, nfile )
-    CLOSE databases
+    dbCloseAll()
     return .f.
   else
     out_obrabotka( nfile )
@@ -2072,7 +2074,7 @@ Function work_SprDep( source, destination )
     NEXT j
   ENDIF
   out_obrabotka_eol()
-  close databases
+  dbCloseAll()
   return .t.
 
 // 09.06.25
