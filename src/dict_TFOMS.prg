@@ -476,6 +476,8 @@ Function work_t006(source, destination)
   Local lshifr, lsy, lDS, lDS1, lDS2, oNode1, oNode2, lkz, kl, kl1, kl2
   local nfile, nameRef, j, j1, k, s, slist, is
 
+  local lFindAD_CR := .f.
+
   Local _mo_usl := { ;
     { 'SHIFR',     'C',  10, 0 }, ;
     { 'NAME',      'C', 255, 0 }, ;   // по новому 500
@@ -709,13 +711,26 @@ Function work_t006(source, destination)
               d6->DATEEND := xml2date(mo_read_xml_stroke( oNode2, 'D_TO', ) )
               d6->name := t6->NAME
               if !empty( d6->AD_CR ) .and. !eq_any( left( d6->AD_CR, 2 ), 'sh', 'mt', 'rb' )
-                lds := StrTran( lds, ' ', '' )
-                lds := StrTran( lds, ',', ', ' )
+                lFindAD_CR := .f.
+
+//                lds := StrTran( lds, ' ', '' )
+                lds := StrTran( StrTran( lds, ' ', '' ), ',', ', ' )
+                lds1 := StrTran( StrTran( lds1, ' ', '' ), ',', ', ' )
+                lds2 := StrTran( StrTran( lds2, ' ', '' ), ',', ', ' )
                 select IT
 //                find ( padr( d6->AD_CR, 10 ) + str( t6->usl_ok, 1 ) + padr( lds, 2300 ) + padr( lds1, 150 ) + padr( lds2, 250 ) )
 //                it->( dbSeek( padr( d6->AD_CR, 10 ) + str( t6->usl_ok, 1 ) ) )
                 it->( dbSeek( padr( d6->AD_CR, 15 ) + str( t6->usl_ok, 1 ) ) )
-                if !it->( found() )
+                do while it->code == padr( d6->AD_CR, 15 ) .and. it->USL_OK == t6->usl_ok .and. !it->( Eof() )
+                  if StrTran( StrTran( it->DS, ' ', '' ), ',', ', ' ) == lds .and. ;
+                      StrTran( StrTran( it->DS1, ' ', '' ), ',', ', ' ) == lds1 .and. ;
+                      StrTran( StrTran( it->DS2, ' ', '' ), ',', ', ' ) == lds2
+                    lFindAD_CR := .t.
+                  endif
+                  it->( dbSkip() )
+                enddo
+//                if !it->( found() )
+                if ! lFindAD_CR
                   it->( dbAppend() )
                   it->CODE := d6->AD_CR
                   it->USL_OK := t6->USL_OK
