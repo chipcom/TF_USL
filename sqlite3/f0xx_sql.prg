@@ -1153,7 +1153,7 @@ Function make_f033s( db, source )
 
   return nil
 
-// 23.05.26
+// 12.08.26
 Function make_f032s( db, source )
 
 //    UIDMO, C, 17; IDMO, C, 17; MCOD, C, 6; OSP, C, 1; NAMEMOK, C, 50; NAMEMOP, C, 150;
@@ -1166,7 +1166,7 @@ Function make_f032s( db, source )
   local mUIDMO, mIDMO, mMCOD, mOSP, mNameMOK, mNameMOP, mAddress  //  , dBeg, dEnd
   Local count := 0, cmdTextInsert := textBeginTrans
 
-  cmdText := 'CREATE TABLE f032( uidmo TEXT(17) PRIMARY KEY, idmo TEXT(17), mcod TEXT(6), osp TEXT(1), namemop TEXT, namemok TEXT, address TEXT, dbegin TEXT(10), dbend TEXT(10) )'
+  cmdText := 'CREATE TABLE f032( uidmo TEXT(17) PRIMARY KEY, region TEXT(2), idmo TEXT(17), mcod TEXT(6), osp TEXT(1), namemop TEXT, namemok TEXT, address TEXT, dbegin TEXT(10), dbend TEXT(10) )'
 
   table := 'f032'
   nameRef := 'F032.xml'
@@ -1199,8 +1199,9 @@ Function make_f032s( db, source )
         mAddress := read_xml_stroke_1251_to_utf8( oXmlNode, 'JURADDRESS_ADDRESS', )
 
         count++
-        cmdTextInsert += 'INSERT INTO f032( uidmo, idmo, mcod, osp, namemop, namemok, address ) VALUES(' ;
+        cmdTextInsert += 'INSERT INTO f032( uidmo, region, idmo, mcod, osp, namemop, namemok, address ) VALUES(' ;
           + "'" + mUIDMO + "'," ;
+          + "'" + SubStr( mMCOD, 1, 2 ) + "'," ;
           + "'" + mIDMO + "'," ;
           + "'" + mMCOD + "'," ;
           + "'" + mOSP + "'," ;
